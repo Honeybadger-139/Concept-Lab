@@ -32,7 +32,11 @@ export async function generateStaticParams() {
       "13-advanced-document-retrieval",
       "14-multi-query-rag",
     ],
-    ml: ["ml-placeholder"],
+    ml: [
+      "01-ml-basics-supervised",
+      "02-linear-regression",
+      "03-logistic-regression-classification"
+    ],
     advanced: ["advanced-placeholder"],
     langgraph: ["15-rag-langgraph"],
   };

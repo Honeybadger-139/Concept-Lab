@@ -1,0 +1,21 @@
+{
+  "name": "concept-lab",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Interactive learning from transcripts: RAG, ML, and more. Theory, examples, animations, and tools.",
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6"
+  }
+}

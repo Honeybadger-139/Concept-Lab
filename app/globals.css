@@ -1,0 +1,92 @@
+/* Concept Lab – design tokens */
+:root {
+  --font-body: "Segoe UI", "Avenir Next", Helvetica Neue, Arial, sans-serif;
+  --bg-primary: #080d1a;
+  --bg-secondary: #0e1525;
+  --bg-tertiary: #151e32;
+  --text-primary: #e8eef8;
+  --text-secondary: #a8b5c9;
+  --text-tertiary: #7e8da5;
+  --accent-primary: #6366f1;
+  --accent-tertiary: #a78bfa;
+  --glass-border: rgba(229, 238, 252, 0.09);
+  --glass-bg: rgba(14, 21, 37, 0.72);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--accent-tertiary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.section-padding {
+  padding-top: 2rem;
+  padding-bottom: 4rem;
+}
+
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.backLink:hover {
+  color: var(--accent-tertiary);
+  text-decoration: none;
+}
+
+.nodeBlock {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: var(--bg-secondary);
+}
+
+.nodeBlock h2 {
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+.nodeBlock p,
+.nodeBlock ul {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.placeholder {
+  color: var(--text-tertiary);
+  font-style: italic;
+}

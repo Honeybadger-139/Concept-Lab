@@ -1,0 +1,283 @@
+/* ─────────────────────────────────────────────────────────
+   FlashCardDeck — 3D flip card revision widget
+   ───────────────────────────────────────────────────────── */
+
+.deck {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.labelRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  color: var(--accent-tertiary);
+}
+
+.subtitle {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.counter {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.sep {
+  color: var(--text-tertiary);
+  margin: 0 0.2em;
+}
+
+/* ── Progress bar ── */
+.progressTrack {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--bg-tertiary);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #a78bfa);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.progressLabel {
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  margin: 0;
+  text-align: right;
+}
+
+/* ── 3D scene ── */
+.scene {
+  perspective: 1200px;
+  width: 100%;
+  height: 230px;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+
+.scene:focus-visible .card {
+  outline: 2px solid rgba(99, 102, 241, 0.7);
+  outline-offset: 3px;
+  border-radius: var(--radius-lg);
+}
+
+/* The card itself — preserve 3D for children */
+.card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius-lg);
+}
+
+.flipped {
+  transform: rotateY(180deg);
+}
+
+/* Shared face styles */
+.face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.75rem 2rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  text-align: center;
+  transition: box-shadow 0.2s ease;
+}
+
+.face:hover {
+  box-shadow: 0 4px 24px rgba(99, 102, 241, 0.12);
+}
+
+/* Answer face — flipped 180° and tinted */
+.back {
+  background: rgba(99, 102, 241, 0.07);
+  border-color: rgba(99, 102, 241, 0.3);
+  transform: rotateY(180deg);
+}
+
+.faceBadge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.875rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.answerBadge {
+  color: var(--accent-tertiary);
+  opacity: 1;
+}
+
+.cardText {
+  font-size: 0.975rem;
+  line-height: 1.65;
+  color: var(--text-primary);
+  margin: 0;
+  max-width: 48ch;
+}
+
+.tapHint {
+  position: absolute;
+  bottom: 0.75rem;
+  right: 0.875rem;
+  font-size: 0.65rem;
+  color: var(--text-tertiary);
+  opacity: 0.45;
+  letter-spacing: 0.04em;
+}
+
+/* ── Controls ── */
+.controls {
+  display: flex;
+  gap: 0.625rem;
+  align-items: center;
+}
+
+.btn {
+  padding: 0.5rem 1.125rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.btn:hover:not(:disabled) {
+  border-color: rgba(99, 102, 241, 0.4);
+  color: var(--text-primary);
+  background: rgba(99, 102, 241, 0.06);
+}
+
+.btn:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+}
+
+.flipBtn {
+  flex: 1;
+  background: rgba(99, 102, 241, 0.1);
+  border-color: rgba(99, 102, 241, 0.3);
+  color: var(--accent-tertiary);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.flipBtn:hover {
+  background: rgba(99, 102, 241, 0.18) !important;
+  border-color: rgba(99, 102, 241, 0.55) !important;
+  color: var(--accent-tertiary) !important;
+}
+
+/* ── Dot navigator ── */
+.dots {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 0.25rem 0;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--glass-border);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
+}
+
+.dot:hover {
+  border-color: rgba(99, 102, 241, 0.5);
+  background: rgba(99, 102, 241, 0.2);
+}
+
+.dotActive {
+  border-color: var(--accent-tertiary);
+  background: var(--accent-tertiary);
+  transform: scale(1.2);
+}
+
+.dotDone {
+  background: rgba(99, 102, 241, 0.35);
+  border-color: rgba(99, 102, 241, 0.5);
+}
+
+.dotActive.dotDone {
+  background: var(--accent-tertiary);
+  border-color: var(--accent-tertiary);
+}
+
+/* ── Footer ── */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+.keyHint {
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  opacity: 0.45;
+  margin: 0;
+}
+
+.resetBtn {
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  transition: color 0.18s ease;
+}
+
+.resetBtn:hover {
+  color: var(--color-danger);
+}

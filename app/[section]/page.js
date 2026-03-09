@@ -1,18 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  getSection,
-  getNodesBySection,
-} from "@/data/curriculumData";
+import { getSection, getNodesBySection, sections } from "@/data/curriculumData";
+import SectionProgress from "@/components/SectionProgress";
 import styles from "./section.module.css";
 
+// Auto-derive from data — no manual maintenance needed
 export async function generateStaticParams() {
-  return [
-    { section: "rag" },
-    { section: "ml" },
-    { section: "advanced" },
-    { section: "langgraph" },
-  ];
+  return sections.map((s) => ({ section: s.id }));
 }
 
 export async function generateMetadata({ params }) {
@@ -41,19 +35,8 @@ export default async function SectionPage({ params }) {
           <p className={styles.description}>{sec.description}</p>
         </header>
 
-        <div className={styles.grid}>
-          {nodes.map((node) => (
-            <Link
-              key={node.slug}
-              href={`/${section}/${node.slug}`}
-              className={`${styles.card} glass`}
-            >
-              <span className={styles.order}>{node.order > 0 ? node.order : "—"}</span>
-              <h2>{node.title}</h2>
-              <p>{node.excerpt}</p>
-            </Link>
-          ))}
-        </div>
+        {/* Client component handles progress badges + bar */}
+        <SectionProgress sectionId={section} nodes={nodes} />
       </section>
     </main>
   );

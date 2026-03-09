@@ -36,11 +36,18 @@ export const sections = [
     order: 3,
   },
   {
+    id: "langgraph",
+    title: "LangGraph",
+    description:
+      "Building stateful, multi-actor AI agents with LangGraph: graphs, nodes, state, human-in-the-loop, multi-agent systems, corrective RAG, and production deployment.",
+    order: 4,
+  },
+  {
     id: "advanced",
     title: "Advanced ML",
     description:
       "Advanced algorithms and deeper dives — neural networks, decision trees, ensemble methods. Content grows as you learn.",
-    order: 4,
+    order: 5,
   },
 ];
 
@@ -771,11 +778,24 @@ const mlNodes = [
     title: "Multiple Linear Regression",
     order: 21,
     excerpt: "Extending to many features simultaneously — the vectorised dot product form.",
-    theory: "<p>Real problems have multiple input features. Multiple linear regression handles this:</p><p><code>ŷ = w₁x₁ + w₂x₂ + ... + wₙxₙ + b = w⃗ · x⃗ + b</code></p><p>The dot product w⃗ · x⃗ computes the sum of each feature multiplied by its weight — this is the vectorised form. Each weight wᵢ represents how much feature xᵢ independently contributes to the prediction, holding all other features constant.</p><p>With n features, we have n weights + 1 bias = n+1 parameters to learn.</p>",
-    example: "House price: ŷ = 200·(sqft) + 50000·(bedrooms) + 30000·(bathrooms) − 1000·(age in years) + 80000. Each coefficient independently captures that feature's contribution.",
+    theory: "<p>Real problems have multiple input features. <b>Multiple linear regression</b> handles this with the vectorised form:</p><p><code>ŷ = w⃗ · x⃗ + b = w₁x₁ + w₂x₂ + ... + wₙxₙ + b</code></p><p>The dot product w⃗ · x⃗ computes the sum of each feature multiplied by its weight. Each weight wᵢ represents how much feature xᵢ independently contributes to the prediction, holding all other features constant.</p><p>With n features, we have n weights + 1 bias = n+1 parameters to learn. This is the real-world form — virtually every practical ML model uses multiple features.</p><p><b>Why the vector form matters:</b> Writing ŷ = w⃗ · x⃗ + b instead of the expanded sum is not just notation — it's the form that maps directly to NumPy's <code>np.dot(w, x)</code>, which runs in parallel on hardware. The vector form enables vectorised computation across all features simultaneously.</p><p><b>Gradient descent for multiple features:</b> The update rule generalises cleanly — for each weight wⱼ, update using the partial derivative with respect to that feature: wⱼ := wⱼ − α · (1/m) Σ(ŷᵢ − yᵢ) · xᵢⱼ. All n weights update simultaneously each iteration.</p>",
+    example: "House price prediction: ŷ = 200·(sqft) + 50000·(bedrooms) + 30000·(bathrooms) − 1000·(age) + 80000. Each coefficient independently captures that feature's contribution. Adding 1 bedroom adds $50,000 to the predicted price, regardless of the other features.",
     animation: null,
     tool: null,
-    interviewPrep: null,
+    interviewPrep: {
+      questions: [
+        "How does the gradient descent update rule change when moving from simple to multiple linear regression?",
+        "What does each weight wⱼ represent in a multiple linear regression model?",
+        "Why is the vectorised form ŷ = w⃗·x⃗ + b preferred over the expanded sum notation?",
+      ],
+      seniorTip: "The vectorised form is not just cleaner notation — it's a performance contract. np.dot(w, x) exploits BLAS (Basic Linear Algebra Subprograms) libraries that are hand-tuned for CPU cache architecture and SIMD instructions. For a model with 1,000 features, this is the difference between microseconds and milliseconds per prediction. At production scale (millions of predictions/day), this matters enormously."
+    },
+    flashCards: [
+      { q: "What is the vectorised form of multiple linear regression?", a: "ŷ = w⃗ · x⃗ + b, where w⃗ is the weight vector and x⃗ is the feature vector. The dot product computes the weighted sum of all features simultaneously." },
+      { q: "How many parameters does a multiple linear regression model with n features have?", a: "n + 1 parameters: n weights (w₁ through wₙ) plus 1 bias term b." },
+      { q: "What does weight wⱼ represent in multiple linear regression?", a: "The independent contribution of feature xⱼ to the prediction, holding all other features constant. If wⱼ = 50000 for 'bedrooms', adding 1 bedroom adds $50,000 to the predicted price regardless of other features." },
+      { q: "How does the gradient descent update rule generalise to multiple features?", a: "For each weight wⱼ: wⱼ := wⱼ − α · (1/m) Σ(ŷᵢ − yᵢ) · xᵢⱼ. All n weights update simultaneously each iteration using their respective feature values." },
+    ],
   },
   {
     slug: "22-vectorisation",
@@ -783,17 +803,24 @@ const mlNodes = [
     title: "Vectorisation",
     order: 22,
     excerpt: "Why vectorised code is 100× faster — numpy and hardware parallelism.",
-    theory: "<p><b>Vectorisation</b> replaces explicit Python for-loops with matrix/vector operations that execute in parallel on CPU/GPU hardware.</p><p>A naive Python loop processes one element at a time sequentially. NumPy's vectorised operations leverage SIMD (Single Instruction, Multiple Data) hardware — applying one instruction to many values simultaneously.</p><p>Result: the same computation in NumPy is typically 100–300× faster than a Python loop. In deep learning, this is not a minor optimisation — it's the difference between training in hours vs. years.</p>",
-    example: "np.dot(w, x) vs a Python loop summing w[i]*x[i] for all i: identical output, but np.dot exploits CPU vectorisation hardware and is orders of magnitude faster.",
+    theory: "<p><b>Vectorisation</b> replaces explicit Python for-loops with matrix/vector operations that execute in parallel on CPU/GPU hardware.</p><p>A naive Python loop processes one element at a time sequentially. NumPy's vectorised operations leverage <b>SIMD (Single Instruction, Multiple Data)</b> hardware — applying one instruction to many values simultaneously.</p><p>Result: the same computation in NumPy is typically 100–300× faster than a Python loop. In deep learning, this is not a minor optimisation — it's the difference between training in hours vs. years.</p><p><b>Concrete example:</b> Computing w⃗ · x⃗ for 1,000 features:</p><ul><li>Python loop: 1,000 multiply operations, 999 additions, executed sequentially</li><li>np.dot(w, x): single BLAS call, all operations execute in parallel on hardware</li></ul><p>The key insight from the lecture: when you implement gradient descent with vectorisation, the update for all n parameters happens in a single matrix operation rather than a loop over n parameters. This is why modern ML libraries (PyTorch, TensorFlow, sklearn) are all vectorised under the hood.</p>",
+    example: "np.dot(w, x) vs a Python loop summing w[i]*x[i] for all i: identical output, but np.dot exploits CPU vectorisation hardware and is orders of magnitude faster. On a 1,000-feature model: Python loop ≈ 1ms, np.dot ≈ 0.001ms — 1,000× speedup.",
     animation: null,
     tool: null,
     interviewPrep: {
       questions: [
         "Why is vectorisation faster than a for-loop in Python?",
         "What does SIMD stand for and how does it apply to ML?",
+        "How does vectorisation change the gradient descent implementation for multiple linear regression?",
       ],
-      seniorTip: "SIMD = Single Instruction, Multiple Data. The CPU applies one instruction to a vector of values simultaneously. GPUs take this 1,000× further with thousands of cores all running in parallel. This is fundamentally why deep learning became practical — matrix multiply on a GPU is why we can train BERT in hours."
+      seniorTip: "SIMD = Single Instruction, Multiple Data. The CPU applies one instruction to a vector of values simultaneously. GPUs take this 1,000× further with thousands of cores all running in parallel. This is fundamentally why deep learning became practical — matrix multiply on a GPU is why we can train BERT in hours instead of years. In interviews, connect vectorisation to the hardware: SIMD on CPU → CUDA kernels on GPU → TPU matrix units. Each level is ~1,000× more parallel."
     },
+    flashCards: [
+      { q: "What is vectorisation in the context of ML?", a: "Replacing explicit Python for-loops with matrix/vector operations (np.dot, matrix multiply) that execute in parallel on CPU/GPU hardware using SIMD instructions." },
+      { q: "What does SIMD stand for and what does it mean?", a: "Single Instruction, Multiple Data. The CPU applies one instruction to a vector of values simultaneously, rather than processing each element sequentially." },
+      { q: "How much faster is np.dot() vs a Python loop for a 1,000-feature model?", a: "Approximately 100–1,000× faster. Python loops execute sequentially; np.dot() uses BLAS libraries that exploit CPU SIMD hardware to process all elements in parallel." },
+      { q: "Why is vectorisation critical for deep learning specifically?", a: "Deep learning involves matrix multiplications on millions of parameters. Without vectorisation (GPU parallelism), training a modern neural network would take years instead of hours." },
+    ],
   },
   {
     slug: "23-vectorisation-behind-scenes",
@@ -801,11 +828,23 @@ const mlNodes = [
     title: "Vectorisation — Under the Hood",
     order: 23,
     excerpt: "How NumPy, BLAS, and GPU kernels actually execute computations in parallel.",
-    theory: "<p>NumPy calls highly optimised BLAS/LAPACK libraries (OpenBLAS, Intel MKL) written in Fortran/C and hand-tuned for CPU cache architecture. These libraries achieve near-theoretical peak CPU performance.</p><p>On GPUs, operations like matrix multiply are CUDA kernels — the GPU's thousands of cores each compute a small portion of the result in parallel. A single matrix multiplication that takes seconds on CPU takes milliseconds on GPU.</p><p>This is why the core operation of deep learning — W·X + b — can train billion-parameter models in hours rather than years.</p>",
-    example: null,
+    theory: "<p>NumPy calls highly optimised <b>BLAS/LAPACK libraries</b> (OpenBLAS, Intel MKL) written in Fortran/C and hand-tuned for CPU cache architecture. These libraries achieve near-theoretical peak CPU performance.</p><p><b>Vectorised gradient descent for multiple linear regression:</b></p><ul><li>Model: ŷ = Xw + b (matrix form, X is m×n)</li><li>Predictions: ŷ = X · w + b (single matrix multiply)</li><li>Errors: e = ŷ − y (element-wise subtraction)</li><li>Gradient for w: ∇w = (1/m) Xᵀ · e (matrix-vector multiply)</li><li>Update: w := w − α · ∇w (element-wise)</li></ul><p>The entire gradient descent step for all n parameters reduces to two matrix operations. Compare this to a nested loop over m examples and n features — the vectorised version is n×m times faster.</p><p>On <b>GPUs</b>, operations like matrix multiply are CUDA kernels — the GPU's thousands of cores each compute a small portion of the result in parallel. A single matrix multiplication that takes seconds on CPU takes milliseconds on GPU.</p>",
+    example: "Gradient descent for 1,000 features, 100,000 training examples: Loop version = 10⁸ multiply-add operations executed sequentially ≈ 100 seconds per iteration. Vectorised NumPy ≈ 0.1 seconds. GPU ≈ 0.001 seconds. Same math, 100,000× speedup.",
     animation: null,
     tool: null,
-    interviewPrep: null,
+    interviewPrep: {
+      questions: [
+        "Write the vectorised form of gradient descent for multiple linear regression.",
+        "What is BLAS and why does NumPy use it?",
+        "Why is matrix multiplication the core operation of deep learning?",
+      ],
+      seniorTip: "The vectorised gradient descent formula (∇w = (1/m) Xᵀ(Xw − y)) is the same formula used in deep learning's backpropagation — just applied layer by layer. Understanding this derivation shows you understand the mathematical foundation that all modern ML frameworks implement. BLAS = Basic Linear Algebra Subprograms, a 1979 standard that all modern math libraries implement. NumPy, PyTorch, TensorFlow all call BLAS under the hood."
+    },
+    flashCards: [
+      { q: "What is the vectorised gradient descent update for multiple linear regression?", a: "Predictions: ŷ = Xw + b. Gradient: ∇w = (1/m) Xᵀ(ŷ − y). Update: w := w − α·∇w. This replaces nested loops over m examples and n features with two matrix operations." },
+      { q: "What is BLAS and why does NumPy use it?", a: "Basic Linear Algebra Subprograms — a standard for matrix/vector operations, implemented as hand-tuned C/Fortran code (OpenBLAS, Intel MKL). NumPy calls BLAS for operations like dot products to achieve near-theoretical peak CPU performance." },
+      { q: "Why is GPU acceleration so much faster than CPU for ML?", a: "A modern GPU has 10,000+ cores that execute in parallel. For matrix multiply, each core computes a small portion simultaneously. A CPU has 8–64 cores. For ML's core operation (matrix multiply), GPUs are 100–1,000× faster." },
+    ],
   },
   {
     slug: "24-feature-scaling",
@@ -813,18 +852,24 @@ const mlNodes = [
     title: "Feature Scaling",
     order: 24,
     excerpt: "Normalising features so gradient descent converges faster — a must-do step.",
-    theory: "<p>If features have very different scales (e.g., house size in sq ft = 1,500 vs bedrooms = 3), the cost function becomes a very elongated ellipse. Gradient descent zigzags inefficiently along the narrow direction.</p><p>Feature scaling makes all features comparable in magnitude, making the cost function more circular and allowing gradient descent to take more direct steps toward the minimum.</p><p>Two standard methods:</p><ul><li><b>Min-Max Normalisation</b>: x_scaled = (x − x_min) / (x_max − x_min) → range [0, 1]</li><li><b>Z-score Standardisation</b>: x_scaled = (x − μ) / σ → mean=0, std=1</li></ul>",
-    example: "After z-score scaling, 'house size (sq ft)' and 'number of bedrooms' both have mean ≈ 0 and std ≈ 1. Gradient descent now takes balanced steps in both dimensions instead of zigzagging.",
+    theory: "<p>If features have very different scales (e.g., house size in sq ft = 1,500 vs bedrooms = 3), the cost function becomes a very elongated ellipse. Gradient descent zigzags inefficiently along the narrow direction, taking many small steps to converge.</p><p>Feature scaling makes all features comparable in magnitude, making the cost function more circular and allowing gradient descent to take more direct steps toward the minimum.</p><p><b>Two standard methods:</b></p><ul><li><b>Min-Max Normalisation</b>: x_scaled = (x − x_min) / (x_max − x_min) → range [0, 1]</li><li><b>Z-score Standardisation</b>: x_scaled = (x − μ) / σ → mean=0, std=1</li></ul><p><b>When to use which:</b> Z-score (standardisation) is generally preferred for ML because it handles outliers better and doesn't constrain the range. Min-max is useful when you need values in a specific range (e.g., pixel values for image models).</p><p><b>The critical rule:</b> Fit the scaler on training data only. Apply the same μ and σ to validation, test, and production data. Never fit on test data — that's data leakage.</p><p>Andrew Ng's rule of thumb: aim for features in the range [-1, 1] or [-3, 3]. Features in range [−100, 100] or [0.001, 0.001] definitely need scaling.</p>",
+    example: "After z-score scaling, 'house size (sq ft)' and 'number of bedrooms' both have mean ≈ 0 and std ≈ 1. Gradient descent now takes balanced steps in both dimensions instead of zigzagging. Convergence that took 10,000 iterations without scaling now takes 100.",
     animation: null,
     tool: null,
     interviewPrep: {
       questions: [
-        "Why does feature scaling improve gradient descent?",
+        "Why does feature scaling improve gradient descent convergence?",
         "What is the difference between normalisation and standardisation?",
         "What is the most common data leakage mistake with feature scaling?",
       ],
-      seniorTip: "Always fit the scaler on training data only, then apply the same μ and σ to validation and test sets. Using the test set's statistics to scale training data is data leakage — a critical production mistake. sklearn's StandardScaler stores fitting parameters for exactly this reason."
+      seniorTip: "Always fit the scaler on training data only, then apply the same μ and σ to validation and test sets. Using the test set's statistics to scale training data is data leakage — a critical production mistake. sklearn's StandardScaler stores fitting parameters for exactly this reason: scaler.fit(X_train) then scaler.transform(X_test). In production, you save the fitted scaler as a model artifact alongside the model weights."
     },
+    flashCards: [
+      { q: "Why does feature scaling speed up gradient descent?", a: "Unscaled features create elongated cost function contours — gradient descent zigzags inefficiently. Scaled features create circular contours, allowing gradient descent to take direct steps toward the minimum." },
+      { q: "What is the difference between normalisation and standardisation?", a: "Normalisation (min-max): scales to [0,1] range. Standardisation (z-score): scales to mean=0, std=1. Standardisation is generally preferred for ML as it handles outliers better and doesn't constrain range." },
+      { q: "What is the data leakage mistake in feature scaling?", a: "Fitting the scaler on test data before scaling training data. Always: scaler.fit(X_train) → scaler.transform(X_train) → scaler.transform(X_test). The test set must be scaled using training set statistics only." },
+      { q: "What is Andrew Ng's rule of thumb for when features need scaling?", a: "If features are outside the range [-1, 1] or [-3, 3], they likely need scaling. Features in range [-100, 100] or [0.001, 0.001] definitely need it. Aim for all features in a comparable range." },
+    ],
   },
   {
     slug: "25-implement-feature-scaling",
@@ -832,11 +877,23 @@ const mlNodes = [
     title: "Implementing Feature Scaling",
     order: 25,
     excerpt: "Coding z-score normalisation from scratch; using sklearn's StandardScaler.",
-    theory: "<p>Manual implementation:</p><ol><li>Compute μ = mean of each feature column across training examples</li><li>Compute σ = standard deviation of each feature column</li><li>Transform: x_scaled = (x − μ) / σ for each feature</li><li>Store μ and σ — apply the same values to val/test/production data</li></ol><p>sklearn's StandardScaler encapsulates this: <code>scaler.fit(X_train)</code> stores μ/σ, then <code>scaler.transform(X)</code> applies it. The separation of fit and transform is the key design pattern.</p>",
-    example: null,
+    theory: "<p>Manual z-score implementation:</p><ol><li>Compute μ = mean of each feature column across training examples: <code>mu = np.mean(X_train, axis=0)</code></li><li>Compute σ = standard deviation: <code>sigma = np.std(X_train, axis=0)</code></li><li>Transform: <code>X_scaled = (X - mu) / sigma</code></li><li>Store μ and σ — apply the same values to val/test/production data</li></ol><p>sklearn's <code>StandardScaler</code> encapsulates this cleanly:</p><ul><li><code>scaler = StandardScaler()</code></li><li><code>scaler.fit(X_train)</code> — computes and stores μ and σ</li><li><code>X_train_scaled = scaler.transform(X_train)</code></li><li><code>X_test_scaled = scaler.transform(X_test)</code> — uses training μ/σ</li></ul><p>The separation of <code>fit</code> and <code>transform</code> is the key design pattern — it enforces the rule that test data is never used to compute scaling parameters.</p><p>In production, save the fitted scaler with <code>joblib.dump(scaler, 'scaler.pkl')</code> alongside your model. Load it at inference time to scale incoming requests with the same parameters.</p>",
+    example: "Without scaling: gradient descent on house price (sqft=1500, bedrooms=3) zigzags for 10,000 iterations. With z-score scaling (sqft_scaled≈0.5, bedrooms_scaled≈0.2), converges in 100 iterations. Same model, 100× fewer iterations.",
     animation: null,
     tool: null,
-    interviewPrep: null,
+    interviewPrep: {
+      questions: [
+        "Write the z-score normalisation formula and implement it in NumPy.",
+        "What is the difference between scaler.fit_transform(X_train) and scaler.transform(X_test)?",
+        "How do you save and load a fitted scaler for production use?",
+      ],
+      seniorTip: "In production ML pipelines, the scaler is a model artifact — it must be versioned, stored, and deployed alongside the model weights. If you retrain the model on new data, you must refit the scaler on the new training data and redeploy both. sklearn's Pipeline object handles this correctly: it fits the scaler and model together, preventing leakage and ensuring consistent preprocessing at inference time."
+    },
+    flashCards: [
+      { q: "How do you implement z-score normalisation in NumPy?", a: "mu = np.mean(X_train, axis=0); sigma = np.std(X_train, axis=0); X_scaled = (X - mu) / sigma. Store mu and sigma — apply the same values to test/production data." },
+      { q: "What is the difference between fit_transform() and transform()?", a: "fit_transform(X_train) computes μ/σ from X_train AND applies them. transform(X_test) applies previously computed μ/σ without recomputing. Always use fit_transform on training data, transform on test data." },
+      { q: "How do you save a fitted scaler for production?", a: "joblib.dump(scaler, 'scaler.pkl') to save. joblib.load('scaler.pkl') to load at inference time. The scaler must be deployed alongside the model and versioned together." },
+    ],
   },
   {
     slug: "26-gradient-descent-convergence",
@@ -844,11 +901,23 @@ const mlNodes = [
     title: "Gradient Descent Convergence",
     order: 26,
     excerpt: "The learning curve — how to tell when training is done and when it's broken.",
-    theory: "<p>Plot cost J on the y-axis against iteration number on the x-axis. This is the <b>learning curve</b>.</p><p>If gradient descent is working correctly: cost decreases monotonically every iteration and eventually flattens asymptotically.</p><ul><li>Cost goes <b>up</b> → learning rate α is too large or there's a bug in the gradient computation</li><li>Cost decreases but <b>very slowly</b> → α too small, or feature scaling needed</li><li>Cost decreases then <b>plateaus</b> → converged (or stuck in local minimum for non-convex problems)</li></ul><p>A common stopping criterion: stop when ΔJ < 10⁻³ between consecutive iterations.</p>",
-    example: null,
+    theory: "<p>Plot cost J on the y-axis against iteration number on the x-axis. This is the <b>learning curve</b> — the most important diagnostic tool in ML training.</p><p><b>What a healthy learning curve looks like:</b> Cost decreases monotonically every iteration and eventually flattens asymptotically. The curve looks like a ski slope that levels off.</p><p><b>Diagnosing problems from the learning curve:</b></p><ul><li>Cost goes <b>up</b> → learning rate α is too large (overshooting) or there's a bug in the gradient computation</li><li>Cost decreases but <b>very slowly</b> → α too small, or feature scaling needed</li><li>Cost decreases then <b>oscillates</b> → α slightly too large</li><li>Cost decreases then <b>plateaus</b> → converged (or stuck in local minimum for non-convex problems)</li></ul><p><b>Automatic convergence test:</b> Stop when ΔJ < ε between consecutive iterations, where ε = 10⁻³ is a common threshold. In practice, watching the curve visually is often more informative than a fixed threshold.</p><p>Andrew Ng's rule: if gradient descent is working, J should decrease after every single iteration. If it ever increases, something is wrong.</p>",
+    example: "Learning curve for house price model: iterations 0-100: cost drops from 500 to 50 (steep). Iterations 100-500: drops from 50 to 10 (moderate). Iterations 500+: barely changes (converged). Decision: stop at iteration 500, further training wastes compute.",
     animation: null,
     tool: null,
-    interviewPrep: null,
+    interviewPrep: {
+      questions: [
+        "What does a healthy gradient descent learning curve look like?",
+        "If the cost function increases during training, what are the two most likely causes?",
+        "How do you decide when gradient descent has converged?",
+      ],
+      seniorTip: "In production training, you plot the learning curve on validation loss, not training loss. Training loss always decreases — that's just the model memorising. Validation loss is the real signal: if it starts increasing while training loss decreases, you're overfitting. The point where validation loss starts rising is your early stopping point. This is the production-grade version of the convergence check."
+    },
+    flashCards: [
+      { q: "What is a learning curve in ML?", a: "A plot of cost J (y-axis) vs. training iteration number (x-axis). A healthy curve decreases monotonically and flattens asymptotically. It's the primary diagnostic for whether gradient descent is working." },
+      { q: "If the cost function increases during training, what should you check first?", a: "1) Learning rate α is too large (overshooting the minimum). 2) Bug in gradient computation. Try reducing α by 10× and see if the cost decreases consistently." },
+      { q: "What is the automatic convergence criterion for gradient descent?", a: "Stop when the change in cost ΔJ between consecutive iterations is less than ε (typically 10⁻³). In practice, visual inspection of the learning curve is often more informative." },
+    ],
   },
   {
     slug: "27-choosing-learning-rate",
@@ -856,11 +925,23 @@ const mlNodes = [
     title: "Choosing the Learning Rate",
     order: 27,
     excerpt: "The log-scale sweep strategy for finding a good α systematically.",
-    theory: "<p>No single α works universally. A systematic approach:</p><ol><li>Start with a very small α (e.g., 0.0001) to verify the cost decreases</li><li>Multiply by 3× for each trial: 0.0001 → 0.0003 → 0.001 → 0.003 → 0.01 → 0.03 → 0.1</li><li>Plot cost vs. iterations for each trial</li><li>Choose the largest α that still converges smoothly</li></ol><p>This log-scale sweep takes ~7 experiments and reliably finds a strong starting point. It's the same strategy used when tuning deep learning models.</p>",
-    example: null,
+    theory: "<p>No single α works universally. The learning rate is the most important hyperparameter to tune — too small and training is painfully slow, too large and it diverges.</p><p><b>Systematic approach (log-scale sweep):</b></p><ol><li>Start with a very small α (e.g., 0.0001) to verify the cost decreases</li><li>Multiply by 3× for each trial: 0.0001 → 0.0003 → 0.001 → 0.003 → 0.01 → 0.03 → 0.1</li><li>Plot cost vs. iterations for each trial on the same graph</li><li>Choose the largest α that still converges smoothly</li></ol><p>This log-scale sweep takes ~7 experiments and reliably finds a strong starting point. It's the same strategy used when tuning deep learning models.</p><p><b>Signs of a good α:</b> Cost decreases quickly and smoothly. <b>Signs of α too large:</b> Cost oscillates or increases. <b>Signs of α too small:</b> Cost decreases but extremely slowly — the curve is nearly flat.</p><p>Andrew Ng's practical tip: if you're unsure, start with α = 0.01 and adjust based on the learning curve. Feature scaling first makes the optimal α more predictable.</p>",
+    example: "Testing α = 0.001 (too slow, cost barely moves), α = 0.01 (good, smooth decrease), α = 0.1 (too large, cost oscillates). Choose α = 0.01. After feature scaling, α = 0.1 might work fine — scaling changes the optimal range.",
     animation: null,
     tool: null,
-    interviewPrep: null,
+    interviewPrep: {
+      questions: [
+        "How do you systematically choose a learning rate for gradient descent?",
+        "What does it mean if the cost oscillates during training?",
+        "Why does feature scaling affect the optimal learning rate?",
+      ],
+      seniorTip: "The log-scale sweep (0.0001, 0.0003, 0.001, 0.003, ...) is the same strategy used in deep learning — it's called a learning rate range test. Modern deep learning uses learning rate schedulers (cosine annealing, warm restarts, cyclical LR) that automatically vary α during training. But the initial α still needs to be set correctly, and the log-scale sweep is the reliable way to find it."
+    },
+    flashCards: [
+      { q: "What is the log-scale sweep strategy for choosing a learning rate?", a: "Start at 0.0001, multiply by 3× each trial: 0.0001 → 0.0003 → 0.001 → 0.003 → 0.01 → 0.03 → 0.1. Plot cost vs iterations for each. Choose the largest α that still converges smoothly." },
+      { q: "What does oscillating cost during training tell you about the learning rate?", a: "The learning rate is too large — gradient descent is overshooting the minimum and bouncing back and forth. Reduce α by 3–10× and retry." },
+      { q: "Why does feature scaling affect the optimal learning rate?", a: "Unscaled features create elongated cost contours where different dimensions need different step sizes. After scaling, the contours are more circular, and a single α works well for all dimensions." },
+    ],
   },
   {
     slug: "28-feature-engineering",
@@ -868,17 +949,23 @@ const mlNodes = [
     title: "Feature Engineering",
     order: 28,
     excerpt: "Creating better input features using domain knowledge — often the biggest performance lever.",
-    theory: "<p><b>Feature engineering</b> uses domain knowledge to create new input features that expose the underlying pattern more directly to the model.</p><p>The fundamental insight: raw data rarely has features in the ideal form for learning. A skilled ML engineer transforms raw inputs into features that make the pattern obvious.</p><p>Common techniques: combining features (multiplication, ratio), binning continuous features into categories, extracting components (year from date), creating indicator variables (is_weekend).</p>",
-    example: "House pricing: instead of 'frontage' and 'depth' separately, create 'area = frontage × depth'. Traffic: instead of hour and day_of_week, create binary 'is_rush_hour' = (weekday AND hour in 7–9am or 4–7pm). A single well-engineered feature often outperforms many raw ones.",
+    theory: "<p><b>Feature engineering</b> uses domain knowledge to create new input features that expose the underlying pattern more directly to the model.</p><p>The fundamental insight: raw data rarely has features in the ideal form for learning. A skilled ML engineer transforms raw inputs into features that make the pattern obvious to the algorithm.</p><p><b>Common techniques:</b></p><ul><li><b>Combining features</b>: multiply frontage × depth to get area (one feature that captures what matters)</li><li><b>Ratios</b>: price_per_sqft, revenue_per_user</li><li><b>Binning</b>: age → age_group (0-18, 18-35, 35-60, 60+)</li><li><b>Extracting components</b>: date → year, month, day_of_week, is_weekend</li><li><b>Indicator variables</b>: is_rush_hour, is_holiday, is_premium_user</li><li><b>Log transforms</b>: log(price) for right-skewed distributions</li></ul><p>Andrew Ng's insight: choosing the right features is often more impactful than choosing the right algorithm. A linear model with excellent features can outperform a complex model with raw features.</p>",
+    example: "House pricing: instead of 'frontage' and 'depth' separately, create 'area = frontage × depth'. The model now has a single feature that directly captures what buyers care about. Traffic prediction: 'is_rush_hour' = (weekday AND hour in 7–9am or 4–7pm) captures a complex pattern as a single binary feature.",
     animation: null,
     tool: null,
     interviewPrep: {
       questions: [
         "What is feature engineering? Give a concrete example.",
         "When is feature engineering most important — classical ML or deep learning?",
+        "What is the difference between feature engineering and feature selection?",
       ],
-      seniorTip: "In classical ML (XGBoost, linear models), feature engineering is the primary performance driver — the model can't discover interactions itself. In deep learning, the model learns features automatically from raw data (images, text). A senior answer shows you know where human expertise adds the most value."
+      seniorTip: "In classical ML (XGBoost, linear models), feature engineering is the primary performance driver — the model can't discover interactions itself. In deep learning, the model learns features automatically from raw data (images, text). A senior answer shows you know where human expertise adds the most value. Also: feature engineering is where domain expertise creates competitive moat — a data scientist who understands the business can create features a pure ML engineer would never think of."
     },
+    flashCards: [
+      { q: "What is feature engineering?", a: "Using domain knowledge to create new input features from raw data that expose the underlying pattern more directly to the model. Examples: area = frontage × depth, is_rush_hour = (weekday AND 7-9am or 4-7pm)." },
+      { q: "When is feature engineering most important?", a: "In classical ML (linear regression, XGBoost, SVM) — the model can't discover feature interactions itself. In deep learning, the model learns features automatically from raw data, reducing the need for manual engineering." },
+      { q: "What is the difference between feature engineering and feature selection?", a: "Feature engineering creates new features from existing ones. Feature selection chooses which existing features to keep and which to discard. Both improve model performance but through different mechanisms." },
+    ],
   },
   {
     slug: "29-polynomial-regression",
@@ -886,11 +973,23 @@ const mlNodes = [
     title: "Polynomial Regression",
     order: 29,
     excerpt: "Fitting curves not just lines — by engineering x², x³ as new features.",
-    theory: "<p><b>Polynomial regression</b> fits non-linear relationships by creating polynomial feature terms:</p><p><code>ŷ = w₁x + w₂x² + w₃x³ + b</code></p><p>This is still <i>linear regression</i> under the hood — the model is linear in its parameters (w₁, w₂, w₃). We just engineer x², x³ as new features and feed them to the standard linear regression algorithm.</p><p>The choice of polynomial degree is a hyperparameter — too high leads to overfitting. Feature scaling is critical here because x³ can reach enormous values.</p>",
-    example: "House price vs size: degree=1 (underfit — straight line misses the curve). Degree=15 (overfit — wiggles through every training point but fails on new data). Degree=3 (just right — captures the curve without memorising noise).",
+    theory: "<p><b>Polynomial regression</b> fits non-linear relationships by creating polynomial feature terms:</p><p><code>ŷ = w₁x + w₂x² + w₃x³ + b</code></p><p>This is still <i>linear regression</i> under the hood — the model is linear in its parameters (w₁, w₂, w₃). We just engineer x², x³ as new features and feed them to the standard linear regression algorithm. No new algorithm needed.</p><p><b>Feature scaling is critical here</b> because x³ can reach enormous values (e.g., x=1000 → x³=10⁹), making gradient descent extremely slow without scaling.</p><p><b>Alternative non-linear features:</b></p><ul><li>Square root: ŷ = w₁x + w₂√x + b (useful for diminishing returns)</li><li>Logarithm: ŷ = w₁·log(x) + b (useful for exponential-looking data)</li><li>Interaction terms: w₁·x₁·x₂ (captures feature interactions)</li></ul><p>The choice of which features to engineer is where domain knowledge matters most. Andrew Ng's insight: a square root feature might fit housing data better than a cubic — the engineer's job is to think about what shape makes physical sense.</p>",
+    example: "House price vs size: degree=1 underfit (straight line misses the curve). Degree=15 overfit (wiggles through every training point but fails on new data). Degree=3 just right (captures the curve without memorising noise). Alternative: √(size) feature captures diminishing returns as houses get larger.",
     animation: null,
     tool: null,
-    interviewPrep: null,
+    interviewPrep: {
+      questions: [
+        "Why is polynomial regression still considered 'linear regression'?",
+        "Why is feature scaling especially important for polynomial features?",
+        "What is the risk of using a very high polynomial degree?",
+      ],
+      seniorTip: "Polynomial regression is a gateway to understanding the bias-variance tradeoff: degree=1 is high bias (underfitting), degree=15 is high variance (overfitting), degree=3 is the sweet spot. This tradeoff is the same one you face when choosing neural network depth, regularisation strength, or tree depth in XGBoost. The underlying principle is universal: more model complexity → lower bias, higher variance."
+    },
+    flashCards: [
+      { q: "Why is polynomial regression still 'linear regression'?", a: "The model is linear in its parameters (w₁, w₂, w₃). We engineer x², x³ as new features and feed them to standard linear regression. The 'linear' refers to linearity in parameters, not in the input features." },
+      { q: "Why is feature scaling critical for polynomial features?", a: "x³ can reach enormous values (e.g., x=1000 → x³=10⁹). Without scaling, gradient descent would take tiny steps for the x³ feature and huge steps for x, making convergence extremely slow or impossible." },
+      { q: "What is the risk of using a very high polynomial degree?", a: "Overfitting — the model memorises training data including noise, passing through every point but failing on new data. The decision: use cross-validation to find the degree that minimises validation error." },
+    ],
   },
   // Week 3 — Classification
   {
@@ -899,11 +998,23 @@ const mlNodes = [
     title: "Classification — Deep Dive",
     order: 30,
     excerpt: "Why linear regression fails for classification and what to use instead.",
-    theory: "<p>If you naively apply linear regression to a classification problem (e.g., tumour malignancy), predicted values can go below 0 or above 1 — meaningless as probabilities.</p><p>Worse, the decision threshold shifts as you add more extreme data points. A single outlier with a very large feature value can pull the regression line, flipping the classification of all other examples.</p><p>This formally motivates logistic regression, which is specifically designed to output calibrated probabilities in [0, 1] regardless of input values.</p>",
-    example: null,
+    theory: "<p>If you naively apply linear regression to a classification problem (e.g., tumour malignancy), predicted values can go below 0 or above 1 — meaningless as probabilities.</p><p>Worse, the decision threshold shifts as you add more extreme data points. A single outlier with a very large feature value can pull the regression line, flipping the classification of all other examples.</p><p>This formally motivates logistic regression, which is specifically designed to output calibrated probabilities in [0, 1] regardless of input values.</p><p><b>Classification vs Regression:</b></p><ul><li>Regression: output y is a continuous number (house price, temperature)</li><li>Classification: output y is one of a small set of discrete categories (spam/not-spam, benign/malignant, cat/dog/bird)</li></ul><p>The most important classification type: <b>binary classification</b> (y = 0 or 1). The two classes are often called negative (0) and positive (1) — not value judgements, just labels.</p>",
+    example: "Tumour classification: if you use linear regression and add a patient with a very large tumour, the regression line tilts, causing previously-correct predictions to flip. Logistic regression is immune to this — the sigmoid function always outputs [0,1] regardless of extreme inputs.",
     animation: null,
     tool: null,
-    interviewPrep: null,
+    interviewPrep: {
+      questions: [
+        "Why does linear regression fail for classification problems?",
+        "What is the difference between binary and multi-class classification?",
+        "Give three real-world examples of binary classification problems.",
+      ],
+      seniorTip: "Linear regression fails for classification for two reasons: (1) outputs can be outside [0,1], making them uninterpretable as probabilities; (2) the decision boundary shifts with outliers, making the classifier unstable. In production, you'd never use linear regression for classification — but understanding why it fails is the foundation for understanding why logistic regression works."
+    },
+    flashCards: [
+      { q: "Why does linear regression fail for binary classification?", a: "It can output values outside [0,1] (meaningless as probabilities) and its decision boundary shifts with outliers. A single extreme data point can flip all other classifications." },
+      { q: "What is binary classification?", a: "A classification problem where the output y is one of exactly two values: 0 (negative class) or 1 (positive class). Examples: spam/not-spam, malignant/benign, fraud/legitimate." },
+      { q: "What is the key property that logistic regression has that linear regression lacks for classification?", a: "The sigmoid function guarantees outputs are always in (0,1), interpretable as probabilities. The output is stable — extreme input values push the output toward 0 or 1, not beyond." },
+    ],
   },
   {
     slug: "31-logistic-regression",
@@ -911,8 +1022,8 @@ const mlNodes = [
     title: "Logistic Regression",
     order: 31,
     excerpt: "The sigmoid function — squashing any real number into a probability [0, 1].",
-    theory: "<p><b>Logistic Regression</b> applies the sigmoid function to the output of a linear equation:</p><p><code>ŷ = σ(z) = 1 / (1 + e^−z)  where z = w⃗ · x⃗ + b</code></p><p>The sigmoid (σ) maps any real number to the range (0, 1):</p><ul><li>z → +∞ : σ → 1 (very confident class 1)</li><li>z = 0 : σ = 0.5 (maximum uncertainty)</li><li>z → −∞ : σ → 0 (very confident class 0)</li></ul><p>The output is interpreted as P(y=1 | x) — the probability the input belongs to the positive class. We typically classify as 1 if ŷ > 0.5.</p>",
-    example: "Spam filter: σ(wx+b) = 0.87 means '87% probability this is spam'. Decision rule: if ŷ > 0.5, classify as spam. The threshold 0.5 can be adjusted based on the cost of false positives vs false negatives.",
+    theory: "<p><b>Logistic Regression</b> applies the sigmoid function to the output of a linear equation:</p><p><code>ŷ = σ(z) = 1 / (1 + e^−z)  where z = w⃗ · x⃗ + b</code></p><p>The sigmoid (σ) maps any real number to the range (0, 1):</p><ul><li>z → +∞ : σ → 1 (very confident class 1)</li><li>z = 0 : σ = 0.5 (maximum uncertainty)</li><li>z → −∞ : σ → 0 (very confident class 0)</li></ul><p>The output is interpreted as P(y=1 | x) — the probability the input belongs to the positive class. We typically classify as 1 if ŷ > 0.5.</p><p><b>Why sigmoid?</b> It's the natural function that maps logits (log-odds) to probabilities. The logistic function has a beautiful property: it's differentiable everywhere, which makes gradient descent work smoothly.</p><p><b>The S-curve shape</b> is the key intuition: flat near 0 and 1 (confident predictions), steep in the middle (uncertain region). The model becomes more confident as inputs move further from the decision boundary.</p>",
+    example: "Spam filter: σ(wx+b) = 0.87 means '87% probability this is spam'. Decision rule: if ŷ > 0.5, classify as spam. The threshold 0.5 can be adjusted — in fraud detection you might use 0.3 to catch more fraud at the cost of more false positives.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -921,8 +1032,14 @@ const mlNodes = [
         "What does the output of a logistic regression model represent?",
         "How do you change the classification threshold and when would you do this?",
       ],
-      seniorTip: "The threshold 0.5 is the default but rarely optimal. In medical diagnosis, you'd lower the threshold (e.g., 0.2) to reduce false negatives even at the cost of more false positives — missing cancer is worse than unnecessary further testing. Always discuss threshold tuning in the context of business cost asymmetry."
+      seniorTip: "The threshold 0.5 is the default but rarely optimal. In medical diagnosis, you'd lower the threshold (e.g., 0.2) to reduce false negatives even at the cost of more false positives — missing cancer is worse than unnecessary further testing. Always discuss threshold tuning in the context of business cost asymmetry. The ROC curve and AUC metric exist precisely to evaluate performance across all possible thresholds."
     },
+    flashCards: [
+      { q: "What is the sigmoid function and what does it output?", a: "σ(z) = 1/(1+e^−z). It maps any real number z to the range (0,1). Output is interpreted as P(y=1|x) — the probability the input belongs to the positive class." },
+      { q: "What does the logistic regression model look like mathematically?", a: "ŷ = σ(w⃗·x⃗ + b) = 1/(1+e^−(w⃗·x⃗+b)). First compute the linear combination z = w⃗·x⃗+b, then apply sigmoid to get a probability in (0,1)." },
+      { q: "What is the default classification threshold and when would you change it?", a: "Default: 0.5 (classify as 1 if ŷ > 0.5). Lower it (e.g., 0.2) when false negatives are costly (medical diagnosis, fraud). Raise it when false positives are costly (spam filter for important emails)." },
+      { q: "What are the three key values of the sigmoid function?", a: "z→+∞: σ→1 (confident class 1). z=0: σ=0.5 (maximum uncertainty, decision boundary). z→−∞: σ→0 (confident class 0)." },
+    ],
   },
   {
     slug: "32-decision-boundary",
@@ -930,11 +1047,23 @@ const mlNodes = [
     title: "Decision Boundary",
     order: 32,
     excerpt: "Where the model draws the line between classes — linear and non-linear boundaries.",
-    theory: "<p>The <b>decision boundary</b> is the surface in feature space where the model's predicted probability = 0.5, i.e., where z = w⃗·x⃗ + b = 0.</p><p>Everything on one side: predicted class 1. Other side: class 0.</p><ul><li>With linear features: a straight line (2D), plane (3D), or hyperplane</li><li>With polynomial features: a curved boundary (circle, parabola, complex shapes)</li></ul><p>The model's learned parameters (w, b) fully define where this boundary sits. More expressive models (higher polynomial degree) can fit more complex boundaries — but risk overfitting.</p>",
-    example: null,
+    theory: "<p>The <b>decision boundary</b> is the surface in feature space where the model's predicted probability = 0.5, i.e., where z = w⃗·x⃗ + b = 0.</p><p>Everything on one side: predicted class 1. Other side: class 0.</p><ul><li>With linear features: a straight line (2D), plane (3D), or hyperplane (n-D)</li><li>With polynomial features: a curved boundary (circle, parabola, complex shapes)</li></ul><p><b>Key insight:</b> The decision boundary is a property of the <em>parameters</em> (w, b), not the data. The training process finds parameters that place the boundary optimally to separate the classes.</p><p><b>Linear decision boundary example:</b> If w₁=1, w₂=1, b=−3, then the boundary is x₁ + x₂ = 3 — a diagonal line. Points above: class 1. Points below: class 0.</p><p><b>Non-linear boundary:</b> With features x₁², x₂², the boundary can be a circle: x₁² + x₂² = 1. This is still logistic regression — just with engineered polynomial features.</p>",
+    example: "Email spam: decision boundary in 2D feature space (word count vs. link count). The line separates spam (high links, many words) from legitimate email. A curved boundary might separate better if spam has a non-linear pattern.",
     animation: null,
     tool: null,
-    interviewPrep: null,
+    interviewPrep: {
+      questions: [
+        "What is a decision boundary and what determines its position?",
+        "How can logistic regression produce a non-linear decision boundary?",
+        "What is the relationship between the decision boundary and the sigmoid function?",
+      ],
+      seniorTip: "The decision boundary is where z = 0, i.e., σ(z) = 0.5. This is a linear function of the features for standard logistic regression. Non-linear boundaries require feature engineering (polynomial features) or a different model (SVM with RBF kernel, neural network). In interviews, knowing that logistic regression is fundamentally a linear classifier — and that its non-linearity comes only from feature engineering — shows you understand the model's expressive limits."
+    },
+    flashCards: [
+      { q: "What is the decision boundary in logistic regression?", a: "The surface where z = w⃗·x⃗ + b = 0, giving σ(z) = 0.5. Points on one side are classified as class 1, the other as class 0. It's determined by the learned parameters (w, b)." },
+      { q: "How can logistic regression create a non-linear decision boundary?", a: "By engineering polynomial features (x₁², x₁·x₂, x₂²) and feeding them to logistic regression. The model is still linear in its parameters, but the boundary in the original feature space is curved." },
+      { q: "Is logistic regression a linear or non-linear classifier?", a: "Linear — the decision boundary is always a hyperplane in the feature space. Non-linear boundaries require polynomial feature engineering or a different model (neural network, SVM with RBF kernel)." },
+    ],
   },
   {
     slug: "33-logistic-cost-function",
@@ -942,8 +1071,8 @@ const mlNodes = [
     title: "Logistic Regression — Cost Function",
     order: 33,
     excerpt: "Why MSE creates non-convex surfaces for classification; introducing log loss.",
-    theory: "<p>Using MSE as the cost function for logistic regression creates a <b>non-convex</b> cost surface with many local minima that gradient descent can't reliably escape.</p><p>Instead, we use <b>Log Loss</b> (Binary Cross-Entropy), which is derived from maximum likelihood estimation and produces a convex surface:</p><ul><li>If y=1: loss = −log(ŷ) — large penalty when ŷ ≈ 0 (you were confident and wrong)</li><li>If y=0: loss = −log(1−ŷ) — large penalty when ŷ ≈ 1 (confident and wrong again)</li></ul><p>Average cost: J = (1/m) Σ [−y·log(ŷ) − (1−y)·log(1−ŷ)]</p>",
-    example: null,
+    theory: "<p>Using MSE as the cost function for logistic regression creates a <b>non-convex</b> cost surface with many local minima that gradient descent can't reliably escape.</p><p><b>Why MSE becomes non-convex for logistic regression:</b> MSE with a linear model is convex because the squared error is a quadratic function of the parameters. But MSE with a sigmoid model creates a complex, wavy surface — gradient descent gets stuck in local minima.</p><p>Instead, we use <b>Log Loss</b> (Binary Cross-Entropy), which is derived from maximum likelihood estimation and produces a convex surface:</p><ul><li>If y=1: loss = −log(ŷ) — large penalty when ŷ ≈ 0 (confident and wrong)</li><li>If y=0: loss = −log(1−ŷ) — large penalty when ŷ ≈ 1 (confident and wrong)</li></ul><p>Average cost: J = (1/m) Σ [−y·log(ŷ) − (1−y)·log(1−ŷ)]</p><p><b>Intuition:</b> −log(ŷ) → ∞ as ŷ → 0. So if the true label is y=1 and the model predicts ŷ ≈ 0 (confident wrong answer), the penalty is enormous. This forces the model to be calibrated — it can't be confidently wrong without paying a huge cost.</p>",
+    example: "If y=1 (tumour is malignant) and model predicts ŷ=0.01 (99% confident it's benign): loss = −log(0.01) ≈ 4.6 (very high penalty). If model predicts ŷ=0.99: loss = −log(0.99) ≈ 0.01 (tiny penalty). Log loss harshly penalises confident wrong predictions.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -952,8 +1081,14 @@ const mlNodes = [
         "What is log loss intuitively? What does it penalise most?",
         "Where does log loss come from mathematically?",
       ],
-      seniorTip: "Log loss (cross-entropy) is derived from maximum likelihood estimation — we're maximising the probability that the training labels were generated by our model. This gives it a solid probabilistic grounding. Knowing the MLE derivation separates senior answers from junior ones."
+      seniorTip: "Log loss (cross-entropy) is derived from maximum likelihood estimation — we're maximising the probability that the training labels were generated by our model. This gives it a solid probabilistic grounding. Knowing the MLE derivation separates senior answers from junior ones. Also: log loss is the standard for classification in every framework — PyTorch's BCELoss, sklearn's log_loss, TensorFlow's BinaryCrossentropy are all the same formula."
     },
+    flashCards: [
+      { q: "Why can't we use MSE for logistic regression?", a: "MSE with sigmoid creates a non-convex cost surface with many local minima. Gradient descent gets stuck. Log loss (binary cross-entropy) creates a convex surface with a single global minimum." },
+      { q: "What is the log loss formula for logistic regression?", a: "J = (1/m) Σ [−y·log(ŷ) − (1−y)·log(1−ŷ)]. When y=1: loss = −log(ŷ). When y=0: loss = −log(1−ŷ). Both terms penalise confident wrong predictions exponentially." },
+      { q: "What does log loss penalise most severely?", a: "Confident wrong predictions. If y=1 and ŷ≈0 (model is 99% confident it's class 0): loss = −log(0.01) ≈ 4.6. If y=1 and ŷ≈0.99: loss ≈ 0.01. The penalty grows to infinity as confidence in the wrong answer increases." },
+      { q: "Where does log loss come from mathematically?", a: "Maximum likelihood estimation (MLE). We're finding parameters that maximise the probability of observing the training labels. Maximising log-likelihood is equivalent to minimising log loss." },
+    ],
   },
   {
     slug: "34-simplified-logistic-loss",
@@ -961,11 +1096,23 @@ const mlNodes = [
     title: "Simplified Logistic Loss",
     order: 34,
     excerpt: "Combining the y=0 and y=1 cases into one elegant unified formula.",
-    theory: "<p>The two-case log loss can be unified into one expression:</p><p><code>loss(ŷ, y) = −y·log(ŷ) − (1−y)·log(1−ŷ)</code></p><p>When y=1: second term vanishes → loss = −log(ŷ)<br/>When y=0: first term vanishes → loss = −log(1−ŷ)</p><p>This single formula handles both cases cleanly. It's exactly what you'll find in every deep learning framework's <code>BCELoss</code> (binary cross-entropy loss) implementation.</p>",
-    example: null,
+    theory: "<p>The two-case log loss can be unified into one expression:</p><p><code>loss(ŷ, y) = −y·log(ŷ) − (1−y)·log(1−ŷ)</code></p><p>When y=1: second term vanishes (1−y=0) → loss = −log(ŷ)<br/>When y=0: first term vanishes (y=0) → loss = −log(1−ŷ)</p><p>This single formula handles both cases cleanly. It's exactly what you'll find in every deep learning framework's <code>BCELoss</code> (binary cross-entropy loss) implementation.</p><p><b>The cost function</b> averages this loss over all training examples:</p><p><code>J(w,b) = −(1/m) Σᵢ [yᵢ·log(ŷᵢ) + (1−yᵢ)·log(1−ŷᵢ)]</code></p><p>This is convex — gradient descent will always find the global minimum. The elegance of this formula is that it was derived from probability theory (MLE), not engineered by hand.</p>",
+    example: "Verify: y=1, ŷ=0.8: loss = −1·log(0.8) − 0·log(0.2) = −log(0.8) ≈ 0.22. y=0, ŷ=0.3: loss = −0·log(0.3) − 1·log(0.7) = −log(0.7) ≈ 0.36. Both cases handled by one formula.",
     animation: null,
     tool: null,
-    interviewPrep: null,
+    interviewPrep: {
+      questions: [
+        "Write the unified binary cross-entropy loss formula and verify it for y=1 and y=0.",
+        "Why is the unified formula preferred over the two-case version in code?",
+        "What is BCELoss in PyTorch?",
+      ],
+      seniorTip: "The unified formula is not just cleaner — it's numerically stable when implemented correctly. PyTorch's BCEWithLogitsLoss combines the sigmoid and log loss in a single numerically stable operation (avoids log(0) issues). Always use BCEWithLogitsLoss over BCELoss(sigmoid(output)) in production — the combined version is more numerically stable and slightly faster."
+    },
+    flashCards: [
+      { q: "What is the unified binary cross-entropy loss formula?", a: "loss(ŷ, y) = −y·log(ŷ) − (1−y)·log(1−ŷ). When y=1: reduces to −log(ŷ). When y=0: reduces to −log(1−ŷ). One formula handles both cases." },
+      { q: "What is BCELoss in PyTorch?", a: "Binary Cross-Entropy Loss — the same formula: −[y·log(ŷ) + (1−y)·log(1−ŷ)]. In practice, use BCEWithLogitsLoss (combines sigmoid + BCE) for numerical stability." },
+      { q: "Why is the unified formula preferred in code?", a: "It handles both y=0 and y=1 cases in one expression, enabling vectorised computation over all training examples simultaneously without branching logic." },
+    ],
   },
   {
     slug: "35-gradient-descent-logistic",
@@ -973,11 +1120,23 @@ const mlNodes = [
     title: "Gradient Descent for Logistic Regression",
     order: 35,
     excerpt: "Same update rule as linear regression — but with sigmoid applied underneath.",
-    theory: "<p>The gradient descent update equations for logistic regression look identical to linear regression:</p><p><code>w := w − α · (1/m) Σ (ŷᵢ − yᵢ) · xᵢ</code><br/><code>b := b − α · (1/m) Σ (ŷᵢ − yᵢ)</code></p><p>The critical difference is hidden inside ŷᵢ: for logistic regression, ŷᵢ = σ(w⃗·x⃗ᵢ + b) — the sigmoid is applied before computing the error. Same gradient descent algorithm shape, different model function.</p>",
-    example: null,
+    theory: "<p>The gradient descent update equations for logistic regression look identical to linear regression:</p><p><code>wⱼ := wⱼ − α · (1/m) Σ (ŷᵢ − yᵢ) · xᵢⱼ</code><br/><code>b := b − α · (1/m) Σ (ŷᵢ − yᵢ)</code></p><p>The critical difference is hidden inside ŷᵢ: for logistic regression, ŷᵢ = σ(w⃗·x⃗ᵢ + b) — the sigmoid is applied before computing the error. Same gradient descent algorithm shape, different model function.</p><p><b>Why the update rules look the same:</b> This is a beautiful mathematical coincidence that comes from the MLE derivation. The gradient of log loss with respect to w turns out to have the same form as the gradient of MSE — the error (ŷ − y) times the feature xᵢ. The sigmoid is absorbed into ŷ.</p><p><b>Practical implementation:</b> All the same techniques apply — vectorisation, feature scaling, learning rate tuning, monitoring the learning curve. The only code change when switching from linear to logistic regression is the model function (add sigmoid).</p>",
+    example: "Linear regression: ŷ = w⃗·x⃗ + b, gradient = (ŷ−y)·x. Logistic regression: ŷ = σ(w⃗·x⃗ + b), gradient = (ŷ−y)·x. Same formula, different ŷ computation. The gradient descent loop is identical.",
     animation: null,
     tool: null,
-    interviewPrep: null,
+    interviewPrep: {
+      questions: [
+        "Why do the gradient descent update rules for logistic and linear regression look the same?",
+        "What is the only code difference between implementing gradient descent for linear vs logistic regression?",
+        "Does feature scaling help gradient descent for logistic regression?",
+      ],
+      seniorTip: "The mathematical elegance here is profound: the MLE derivation of log loss produces gradient updates that are structurally identical to MSE gradient updates. This is not a coincidence — it's a consequence of the exponential family of distributions. Logistic regression is a generalised linear model (GLM), and all GLMs have this property. Understanding this connects logistic regression to the broader GLM framework used in statistics."
+    },
+    flashCards: [
+      { q: "What is the gradient descent update rule for logistic regression?", a: "wⱼ := wⱼ − α·(1/m)Σ(ŷᵢ−yᵢ)·xᵢⱼ and b := b − α·(1/m)Σ(ŷᵢ−yᵢ). Same form as linear regression, but ŷᵢ = σ(w⃗·x⃗ᵢ+b) uses sigmoid." },
+      { q: "What is the only code difference between gradient descent for linear vs logistic regression?", a: "The model function: linear uses ŷ = w⃗·x⃗+b, logistic uses ŷ = σ(w⃗·x⃗+b). The gradient update loop is identical." },
+      { q: "Does feature scaling help logistic regression?", a: "Yes — same reason as linear regression. Unscaled features create elongated cost contours, causing gradient descent to zigzag. Feature scaling makes convergence faster and more reliable." },
+    ],
   },
   {
     slug: "36-overfitting-underfitting",
@@ -985,8 +1144,8 @@ const mlNodes = [
     title: "Overfitting & Underfitting",
     order: 36,
     excerpt: "The bias-variance tradeoff — the single most important concept in applied ML.",
-    theory: "<p>Two failure modes:</p><p><b>Underfitting (High Bias)</b>: model is too simple to capture the true pattern. Performs poorly on both training and test data. Symptoms: training loss is high.</p><p><b>Overfitting (High Variance)</b>: model memorises the training data including noise. Performs perfectly on training, poorly on unseen test data. Symptoms: training loss low, test loss high.</p><p>Solutions to overfitting:</p><ul><li>Collect more training data (usually most effective)</li><li>Reduce model complexity (fewer features or lower polynomial degree)</li><li>Regularisation (add penalty for large weights)</li></ul>",
-    example: "Fitting a polynomial to 10 data points: degree=1 underfit (misses the S-curve). Degree=9 overfit (passes through every point but oscillates wildly between them). Degree=3 is just right.",
+    theory: "<p>Two failure modes:</p><p><b>Underfitting (High Bias)</b>: model is too simple to capture the true pattern. Performs poorly on both training and test data. Symptoms: training loss is high. The model has a strong wrong assumption (bias) about the data.</p><p><b>Overfitting (High Variance)</b>: model memorises the training data including noise. Performs perfectly on training, poorly on unseen test data. Symptoms: training loss low, test loss high. The model is too sensitive to the specific training examples (variance).</p><p><b>The bias-variance tradeoff:</b> As model complexity increases, bias decreases but variance increases. The optimal model minimises total error = bias² + variance + irreducible noise.</p><p><b>Solutions to overfitting:</b></p><ul><li>Collect more training data (usually most effective — more data reduces variance)</li><li>Reduce model complexity (fewer features or lower polynomial degree)</li><li>Regularisation (add penalty for large weights — the elegant mathematical solution)</li><li>Feature selection (remove irrelevant features)</li></ul><p><b>Solutions to underfitting:</b></p><ul><li>Add more features or polynomial features</li><li>Reduce regularisation strength</li><li>Use a more complex model</li></ul>",
+    example: "Fitting a polynomial to 10 data points: degree=1 underfit (misses the S-curve, high bias). Degree=9 overfit (passes through every point but oscillates wildly between them, high variance). Degree=3 is just right (captures the curve without memorising noise).",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -995,8 +1154,14 @@ const mlNodes = [
         "Explain the bias-variance tradeoff.",
         "How does collecting more data help with overfitting but not underfitting?",
       ],
-      seniorTip: "The most critical ML concept. A senior answer connects it to the evaluation pipeline: 'We use the validation set to tune hyperparameters and detect overfitting. We never touch the test set during development — any tuning based on test performance is data leakage that gives falsely optimistic estimates of generalisation.' Also mention cross-validation for small datasets."
+      seniorTip: "The most critical ML concept. A senior answer connects it to the evaluation pipeline: 'We use the validation set to tune hyperparameters and detect overfitting. We never touch the test set during development — any tuning based on test performance is data leakage that gives falsely optimistic estimates of generalisation.' Also mention cross-validation for small datasets. The bias-variance tradeoff is universal — it applies to every ML model, from linear regression to deep neural networks."
     },
+    flashCards: [
+      { q: "What is underfitting (high bias)?", a: "The model is too simple to capture the true pattern. High training AND test error. Caused by insufficient model complexity or too much regularisation. Fix: add features, reduce regularisation, use more complex model." },
+      { q: "What is overfitting (high variance)?", a: "The model memorises training data including noise. Low training error, high test error. Caused by too much model complexity relative to data size. Fix: more data, regularisation, feature selection, simpler model." },
+      { q: "What is the bias-variance tradeoff?", a: "As model complexity increases: bias decreases (model fits training data better) but variance increases (model is more sensitive to specific training examples). Optimal model minimises total error = bias² + variance." },
+      { q: "Why does more data help overfitting but not underfitting?", a: "More data reduces variance — the model can't memorise all examples and must find the true pattern. But underfitting is a bias problem — the model is fundamentally too simple regardless of data size." },
+    ],
   },
   {
     slug: "37-regularisation-concept",
@@ -1004,8 +1169,8 @@ const mlNodes = [
     title: "Regularisation — Concept",
     order: 37,
     excerpt: "Adding a penalty for large weights — the elegant way to prevent overfitting.",
-    theory: "<p><b>Regularisation</b> adds a penalty term to the cost function that discourages large parameter values.</p><p>Intuition: large weights mean the model is making sharp, confident decisions that may be specific to training noise. Penalising large weights forces the model toward simpler, smoother solutions that generalise better to unseen data.</p><p>Regularisation strength is controlled by λ (lambda):</p><ul><li>λ = 0: no regularisation (pure fit to training data)</li><li>λ → ∞: all weights forced to zero (model predicts the constant mean — severe underfitting)</li><li>λ just right: model generalises well</li></ul>",
-    example: null,
+    theory: "<p><b>Regularisation</b> adds a penalty term to the cost function that discourages large parameter values.</p><p><b>Intuition:</b> Large weights mean the model is making sharp, sensitive decisions that may be specific to training noise. Penalising large weights forces the model toward simpler, smoother solutions that generalise better to unseen data.</p><p>Regularisation strength is controlled by λ (lambda):</p><ul><li>λ = 0: no regularisation (pure fit to training data — risk of overfitting)</li><li>λ → ∞: all weights forced to zero (model predicts the constant mean — severe underfitting)</li><li>λ just right: model generalises well</li></ul><p><b>Two types of regularisation:</b></p><ul><li><b>L2 (Ridge)</b>: penalty = λ Σwⱼ² — shrinks all weights smoothly toward zero</li><li><b>L1 (Lasso)</b>: penalty = λ Σ|wⱼ| — drives some weights exactly to zero (automatic feature selection)</li></ul><p>λ is a hyperparameter tuned on the validation set. In deep learning, the equivalent is the <code>weight_decay</code> parameter in optimisers like Adam.</p>",
+    example: "Without regularisation: polynomial degree-9 model memorises all 10 training points perfectly. With λ=1: weights are penalised, the model smooths out, degree-9 behaves like degree-3. Regularisation effectively reduces the model's complexity without changing its architecture.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -1014,8 +1179,14 @@ const mlNodes = [
         "What is the difference between L1 (Lasso) and L2 (Ridge) regularisation?",
         "What does the regularisation parameter λ control?",
       ],
-      seniorTip: "L2 (Ridge) penalises w² → shrinks all weights smoothly toward zero. L1 (Lasso) penalises |w| → drives some weights exactly to zero, performing automatic feature selection. Use L1 when you believe many features are irrelevant. Elastic Net combines both. In deep learning, dropout is the dominant regularisation technique."
+      seniorTip: "L2 (Ridge) penalises w² → shrinks all weights smoothly toward zero. L1 (Lasso) penalises |w| → drives some weights exactly to zero, performing automatic feature selection. Use L1 when you believe many features are irrelevant. Elastic Net combines both. In deep learning, dropout is the dominant regularisation technique — it randomly zeros out neurons during training, which has a similar effect to L2 regularisation but works better for neural networks."
     },
+    flashCards: [
+      { q: "What is regularisation and how does it prevent overfitting?", a: "Adding a penalty term (λ Σwⱼ²) to the cost function that discourages large weights. Large weights = sharp, noise-sensitive decisions. Penalising them forces simpler, smoother solutions that generalise better." },
+      { q: "What is the difference between L1 and L2 regularisation?", a: "L2 (Ridge): penalty = λΣwⱼ² → shrinks all weights toward zero smoothly. L1 (Lasso): penalty = λΣ|wⱼ| → drives some weights exactly to zero (feature selection). L1 is sparse; L2 is smooth." },
+      { q: "What does λ (lambda) control in regularisation?", a: "The strength of the regularisation penalty. λ=0: no regularisation (overfit risk). λ→∞: all weights→0 (underfit). Tune λ on the validation set to find the sweet spot." },
+      { q: "What is the deep learning equivalent of L2 regularisation?", a: "weight_decay parameter in optimisers (Adam, SGD). It adds the same λΣwⱼ² penalty. Dropout is another common deep learning regularisation technique that randomly zeros neurons during training." },
+    ],
   },
   {
     slug: "38-regularisation-math-linear",
@@ -1023,11 +1194,23 @@ const mlNodes = [
     title: "Regularisation — Math for Linear Regression",
     order: 38,
     excerpt: "L2 penalty added to MSE; weight decay in the gradient update.",
-    theory: "<p>Regularised cost function (L2 / Ridge):</p><p><code>J(w,b) = (1/2m) Σ (ŷᵢ − yᵢ)² + (λ/2m) Σwⱼ²</code></p><p>Note: the bias term b is typically NOT regularised.</p><p>Updated gradient for w:</p><p><code>w := w · (1 − α·λ/m) − α · (1/m) Σ(ŷᵢ−yᵢ)·xᵢ</code></p><p>The factor (1 − α·λ/m) is slightly less than 1 — every update shrinks w by a small fraction before applying the gradient. This is called <b>weight decay</b>, the name used in deep learning optimisers.</p>",
-    example: null,
+    theory: "<p>Regularised cost function (L2 / Ridge):</p><p><code>J(w,b) = (1/2m) Σ (ŷᵢ − yᵢ)² + (λ/2m) Σwⱼ²</code></p><p><b>Key details:</b></p><ul><li>The bias term b is typically NOT regularised (convention across all frameworks)</li><li>The (λ/2m) normalisation makes λ scale-independent with respect to dataset size</li><li>The sum runs from j=1 to n (all weights, not the bias)</li></ul><p><b>Gradient update for w:</b></p><p><code>wⱼ := wⱼ · (1 − α·λ/m) − α · (1/m) Σ(ŷᵢ−yᵢ)·xᵢⱼ</code></p><p>The factor (1 − α·λ/m) is slightly less than 1 — every update shrinks w by a small fraction before applying the gradient. This is called <b>weight decay</b>, the name used in deep learning optimisers.</p><p><b>Intuition for weight decay:</b> On each step, the weight first decays slightly (multiplied by a number just below 1), then the gradient pushes it in the right direction. The decay prevents weights from growing large over many iterations.</p>",
+    example: "With α=0.01, λ=1, m=100: decay factor = 1 − (0.01·1/100) = 1 − 0.0001 = 0.9999. Each step, w shrinks by 0.01% before the gradient update. Over 10,000 steps, this prevents w from growing unboundedly.",
     animation: null,
     tool: null,
-    interviewPrep: null,
+    interviewPrep: {
+      questions: [
+        "Write the regularised cost function for linear regression.",
+        "What is weight decay and how does it appear in the gradient update?",
+        "Why is the bias term b typically not regularised?",
+      ],
+      seniorTip: "Weight decay = L2 regularisation, just written differently in the update rule. PyTorch's Adam optimiser has a weight_decay parameter that implements exactly this. The mathematical equivalence: adding λ/2m Σwⱼ² to the cost function produces the (1 − α·λ/m) factor in the gradient update. Understanding this equivalence shows you can connect the mathematical formulation to the framework API."
+    },
+    flashCards: [
+      { q: "What is the regularised cost function for linear regression (L2)?", a: "J(w,b) = (1/2m)Σ(ŷᵢ−yᵢ)² + (λ/2m)Σwⱼ². The first term is the MSE; the second is the L2 penalty. The bias b is not regularised." },
+      { q: "What is weight decay?", a: "The factor (1 − α·λ/m) in the gradient update that slightly shrinks each weight before applying the gradient. It's the result of adding L2 regularisation to the cost function." },
+      { q: "Why is the bias term b not regularised?", a: "Convention across all ML frameworks. Regularising b would shift the model's baseline prediction, which is usually not desirable. The bias controls the intercept, not the model's sensitivity to features." },
+    ],
   },
   {
     slug: "39-regularised-logistic-regression",
@@ -1035,8 +1218,8 @@ const mlNodes = [
     title: "Regularised Logistic Regression",
     order: 39,
     excerpt: "Applying L2 regularisation to logistic regression — the production standard.",
-    theory: "<p>The same L2 penalty applies to logistic regression:</p><p><code>J = (1/m) Σ [cross-entropy loss] + (λ/2m) Σwⱼ²</code></p><p>The w update picks up the same weight decay factor (1 − α·λ/m).</p><p>In practice: sklearn's <code>LogisticRegression</code> defaults to L2 regularisation. The parameter is <b>C = 1/λ</b> — smaller C = stronger regularisation (inverse convention!). PyTorch's Adam optimiser has a <code>weight_decay</code> parameter that is exactly this L2 penalty.</p>",
-    example: null,
+    theory: "<p>The same L2 penalty applies to logistic regression:</p><p><code>J(w,b) = (1/m) Σ [cross-entropy loss] + (λ/2m) Σwⱼ²</code></p><p>The w update picks up the same weight decay factor (1 − α·λ/m):</p><p><code>wⱼ := wⱼ · (1 − α·λ/m) − α · (1/m) Σ(ŷᵢ−yᵢ)·xᵢⱼ</code></p><p>In practice: sklearn's <code>LogisticRegression</code> defaults to L2 regularisation with C=1. The parameter is <b>C = 1/λ</b> — smaller C = stronger regularisation (inverse convention!). PyTorch's Adam optimiser has a <code>weight_decay</code> parameter that is exactly this L2 penalty.</p><p><b>This completes the core foundation of supervised learning:</b></p><ul><li>Linear regression → cost function (MSE) → gradient descent → regularisation</li><li>Logistic regression → cost function (log loss) → gradient descent → regularisation</li></ul><p>These two models, properly regularised, are the workhorses of classical ML. Everything else — neural networks, SVMs, gradient boosting — builds on these foundations.</p>",
+    example: "sklearn: LogisticRegression(C=0.1) means λ=10 (strong regularisation). LogisticRegression(C=10) means λ=0.1 (weak regularisation). Default C=1 means λ=1. Always tune C on the validation set.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -1045,8 +1228,14 @@ const mlNodes = [
         "In sklearn's LogisticRegression, what does the C parameter control?",
         "Why is it called 'weight decay' in deep learning?",
       ],
-      seniorTip: "In sklearn, C = 1/λ — so smaller C means stronger regularisation. This is the inverse of the usual convention. Knowing library-specific conventions is a production readiness signal. Weight decay = same math, different name — the weight shrinks a bit each step before the gradient update."
+      seniorTip: "In sklearn, C = 1/λ — so smaller C means stronger regularisation. This is the inverse of the usual convention. Knowing library-specific conventions is a production readiness signal. Weight decay = same math, different name — the weight shrinks a bit each step before the gradient update. In production, always tune C via cross-validation. A common approach: try C in [0.001, 0.01, 0.1, 1, 10, 100] on a log scale and pick the value that maximises validation AUC."
     },
+    flashCards: [
+      { q: "What does the C parameter in sklearn's LogisticRegression control?", a: "C = 1/λ (inverse of regularisation strength). Smaller C = stronger regularisation (more penalty on large weights). Default C=1. Tune on validation set using log-scale sweep: [0.001, 0.01, 0.1, 1, 10, 100]." },
+      { q: "Write the regularised logistic regression cost function.", a: "J(w,b) = (1/m)Σ[−yᵢlog(ŷᵢ) − (1−yᵢ)log(1−ŷᵢ)] + (λ/2m)Σwⱼ². Same L2 penalty as linear regression, added to the cross-entropy loss." },
+      { q: "What is the gradient update for regularised logistic regression?", a: "wⱼ := wⱼ·(1−α·λ/m) − α·(1/m)Σ(ŷᵢ−yᵢ)·xᵢⱼ. Same weight decay factor as regularised linear regression. b is updated without weight decay." },
+      { q: "What two supervised learning models form the foundation of classical ML?", a: "Linear regression (for continuous output) and logistic regression (for binary classification). Both use gradient descent, cost functions, and regularisation. All other classical ML models build on these foundations." },
+    ],
   },
 ];
 
@@ -1325,30 +1514,48 @@ const ragNodes = [
     title: "Multi-Modal RAG with Images and Documents",
     order: 12,
     excerpt: "Embedding and retrieving images alongside text using unified vector spaces.",
-    theory: "<p>Real business documents contain charts, diagrams, and screenshots. Multi-Modal RAG handles this via unified embedding models like CLIP that map both text and images to the same vector space.</p><p>This enables cross-modal retrieval: a text query can find a relevant image, and an image query can find related text. Retrieved images are then passed to a vision-capable LLM (GPT-4o, Claude) to generate a grounded answer.</p>",
-    example: "User: 'What does the Q3 revenue chart show?' → Text query embeds to a vector → Matches the Q3 chart's image embedding → Chart passed to vision LLM → 'Revenue grew 23% from Q2 to Q3, driven by...'",
+    theory: "<p>Real business documents contain charts, diagrams, screenshots, and tables. Standard RAG ignores all non-text content. <b>Multi-Modal RAG</b> handles this via unified embedding models like <b>CLIP</b> (Contrastive Language-Image Pre-training) that map both text and images to the same vector space.</p><p>This enables <em>cross-modal retrieval</em>: a text query can find a relevant image, and an image query can find related text. Retrieved images are then passed to a vision-capable LLM (GPT-4o, Claude 3.5, Gemini) to generate a grounded answer.</p><p><b>The production pipeline for multi-modal RAG:</b></p><ol><li>During injection: extract text chunks AND images from documents (using unstructured.io or PyMuPDF)</li><li>Embed both: text chunks → text embeddings, images → CLIP image embeddings</li><li>Store all in the same vector database with a 'type' metadata field (text/image)</li><li>At retrieval: embed the query → search across both text and image embeddings</li><li>Pass retrieved items (text chunks + images) to a vision LLM for answer generation</li></ol><p>The instructor's production system (OpenSlate.ai) uses this exact architecture for enterprise document RAG — financial reports with charts, medical records with scans, engineering docs with diagrams.</p>",
+    example: "User: 'What does the Q3 revenue chart show?' → Text query embeds to a vector → Cosine similarity matches the Q3 chart's CLIP image embedding → Chart image passed to GPT-4o → 'Revenue grew 23% from Q2 to Q3, driven by North America expansion...'",
     animation: null,
     tool: null,
-    interviewPrep: null,
+    interviewPrep: {
+      questions: [
+        "What is CLIP and how does it enable multi-modal RAG?",
+        "What are the two types of content you need to embed in a multi-modal RAG injection pipeline?",
+        "What type of LLM do you need for the generation step in multi-modal RAG?",
+      ],
+      seniorTip: "Multi-modal RAG is the frontier of enterprise AI. The key architectural insight: CLIP creates a shared embedding space where 'a bar chart showing revenue growth' (text) and an actual bar chart image have similar vectors. This is fundamentally different from OCR (which converts images to text) — it understands visual content semantically. For production, unstructured.io is the go-to library for extracting both text and images from complex PDFs."
+    },
+    flashCards: [
+      { q: "What is CLIP and why is it used in multi-modal RAG?", a: "Contrastive Language-Image Pre-training — a model that embeds both text and images into the same vector space. Similar text and images end up close together, enabling cross-modal semantic search." },
+      { q: "What is the difference between multi-modal RAG and OCR-based document processing?", a: "OCR converts images to text (losing visual information). Multi-modal RAG embeds images as vectors using CLIP, preserving visual semantics. A chart's visual pattern is captured directly, not just its extracted numbers." },
+      { q: "What type of LLM is required for the generation step in multi-modal RAG?", a: "A vision-capable LLM (GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro). These models accept both text and images as input and can reason about visual content alongside text context." },
+      { q: "What library does the instructor recommend for extracting images from complex PDFs?", a: "unstructured.io — it uses OCR, table transformers, and layout detection to extract text, tables, and images from complex PDFs, making them ready for multi-modal RAG pipelines." },
+    ],
   },
   {
     slug: "13-advanced-document-retrieval",
     sectionId: "rag",
     title: "Advanced Document Retrieval Techniques",
     order: 13,
-    excerpt: "Hybrid search (vector + BM25), Reciprocal Rank Fusion, and rerankers.",
-    theory: "<p>Pure vector search is great for semantic meaning but fails for exact keyword matching (product IDs, names, codes). <b>Hybrid Search</b> runs two parallel searches:</p><ul><li>Dense (vector) search: semantic understanding</li><li>Sparse (BM25 keyword) search: exact term matching</li></ul><p>Results are fused via <b>Reciprocal Rank Fusion (RRF)</b>: documents appearing high in both lists get boosted scores. A <b>Reranker</b> model (Cohere, cross-encoder) then scores the fused list to find the absolute best context.</p>",
-    example: null,
+    excerpt: "Three retrieval methods: similarity, MMR, and score threshold — when to use each.",
+    theory: "<p>LangChain's vector store retriever supports three distinct retrieval strategies, each suited to different use cases:</p><p><b>1. Similarity Search (default)</b>: Returns the top-K chunks by cosine similarity score. Simple, fast, effective for most use cases. Risk: if the top-K chunks are all very similar to each other (e.g., the same paragraph repeated), you get redundant context.</p><p><b>2. MMR (Maximal Marginal Relevance)</b>: Balances relevance AND diversity. For each new chunk to add, it picks the one that is most relevant to the query AND most different from already-selected chunks. Result: diverse, non-redundant context. Best for documents with repetitive content or when you want broad coverage.</p><p><b>3. Score Threshold</b>: Only returns chunks above a minimum similarity score. Prevents irrelevant chunks from being sent to the LLM when no good match exists. Critical for production — without it, the LLM will hallucinate answers from irrelevant context.</p><p>The instructor's rule: use similarity for most cases, MMR when you notice redundant retrieved chunks, and always set a score threshold in production to handle 'no relevant information' gracefully.</p>",
+    example: "Query: 'What is the return policy?' on a 500-page retail manual. Similarity: returns top-3 most similar chunks (may all be from the same section). MMR: returns 3 chunks from different sections (return policy, exceptions, process) — more comprehensive. Score threshold: if no chunk scores > 0.3, returns empty (LLM says 'I don't have that information' instead of hallucinating).",
     animation: null,
     tool: null,
     interviewPrep: {
       questions: [
-        "Why is pure vector search insufficient for all retrieval scenarios?",
-        "What is Reciprocal Rank Fusion and why is it preferred over score normalisation?",
-        "What does a reranker do and how is it different from the retriever?",
+        "What is the difference between similarity search and MMR retrieval?",
+        "Why is a score threshold important in production RAG systems?",
+        "When would you choose MMR over similarity search?",
       ],
-      seniorTip: "Hybrid search is the production standard in enterprise RAG. RRF is preferred over score normalisation because different retrieval systems produce incompatible score scales — RRF only uses rank positions, which are universally comparable. A reranker is a cross-encoder that jointly considers query + document, far more accurate than bi-encoder embeddings but ~10× slower, so it's applied to just the top-20 candidates."
+      seniorTip: "The score threshold is the most underused but most important retrieval parameter in production. Without it, your RAG system will always return K chunks — even if none are relevant — and the LLM will hallucinate an answer from irrelevant context. A well-designed RAG system should gracefully say 'I don't have information about that' when no relevant chunks are found. This requires both a score threshold AND a fallback response when the retriever returns empty."
     },
+    flashCards: [
+      { q: "What are the three retrieval strategies in LangChain's vector store?", a: "1) Similarity: top-K by cosine similarity (default). 2) MMR (Maximal Marginal Relevance): top-K balancing relevance AND diversity. 3) Score threshold: only return chunks above a minimum similarity score." },
+      { q: "What is MMR (Maximal Marginal Relevance) and when should you use it?", a: "A retrieval strategy that picks chunks maximising relevance to the query AND diversity from already-selected chunks. Use when retrieved chunks are redundant (same content repeated) or you need broad coverage." },
+      { q: "Why is a score threshold critical for production RAG?", a: "Without it, the retriever always returns K chunks even if none are relevant. The LLM then hallucinates an answer from irrelevant context. A threshold enables the system to say 'I don't have that information' gracefully." },
+    ],
   },
   {
     slug: "14-multi-query-rag",
@@ -1356,11 +1563,48 @@ const ragNodes = [
     title: "Multi-Query RAG for Better Search Results",
     order: 14,
     excerpt: "One user query → multiple LLM-generated reformulations → merged and reranked.",
-    theory: "<p>Users phrase questions poorly — ambiguous, incomplete, or using different vocabulary than the documents. Multi-Query RAG intercepts and expands:</p><ol><li>LLM generates 3–5 diverse reformulations of the original question</li><li>Each reformulation independently searches the vector DB</li><li>All retrieved chunks are pooled and de-duplicated</li><li>A reranker scores the combined pool to find the best context</li></ol><p>Net effect: dramatically higher recall — questions that would miss with one phrasing succeed with an alternative.</p>",
-    example: "User: 'side effects?' → LLM generates: ['List all adverse reactions', 'What are contraindications?', 'When should this medication not be taken?'] → 3× the retrieval coverage across different document sections.",
+    theory: "<p>Users phrase questions poorly — ambiguous, incomplete, or using different vocabulary than the documents. <b>Multi-Query RAG</b> intercepts and expands the query before retrieval:</p><ol><li>LLM generates 3–5 diverse reformulations of the original question</li><li>Each reformulation independently searches the vector DB</li><li>All retrieved chunks are pooled and de-duplicated (using a set to remove duplicates)</li><li>The combined pool is sent to the LLM for answer generation (or reranked first)</li></ol><p>Net effect: dramatically higher recall — questions that would miss with one phrasing succeed with an alternative.</p><p><b>Why this works:</b> Embedding models are sensitive to phrasing. 'What are the side effects?' and 'What are the adverse reactions?' may have different embeddings even though they mean the same thing. Multi-query generates both phrasings and retrieves from both.</p><p><b>Implementation:</b> LangChain's <code>MultiQueryRetriever</code> handles this automatically. It uses an LLM (configurable) to generate query variants, runs parallel retrievals, and de-duplicates results.</p><p>The instructor's result: multi-query retrieval improved answer accuracy by ~30% on a pharmaceutical document RAG system where users asked questions using different terminology than the documents used.</p>",
+    example: "User: 'side effects?' → LLM generates: ['List all adverse reactions of this drug', 'What are the contraindications?', 'When should this medication not be taken?', 'What are the warnings?'] → 4× the retrieval coverage → de-duplicated pool of 12 unique chunks instead of 3.",
     animation: null,
     tool: null,
-    interviewPrep: null,
+    interviewPrep: {
+      questions: [
+        "What problem does multi-query RAG solve that single-query RAG cannot?",
+        "How does LangChain's MultiQueryRetriever work under the hood?",
+        "What is the trade-off of using multi-query RAG vs single-query RAG?",
+      ],
+      seniorTip: "Multi-query RAG is a recall improvement technique — it increases the chance that at least one query variant retrieves the relevant chunk. The trade-off: it makes N×K LLM calls (N query variants × K chunks each) plus one LLM call to generate the variants. For a system with 5 query variants and K=3, that's 15 retrieval calls instead of 3. The latency and cost increase is worth it when retrieval recall is the bottleneck. Combine with RRF to merge the ranked lists intelligently."
+    },
+    flashCards: [
+      { q: "What problem does multi-query RAG solve?", a: "Embedding sensitivity to phrasing — 'side effects' and 'adverse reactions' may have different vectors. Multi-query generates multiple phrasings of the question and retrieves from all of them, dramatically improving recall." },
+      { q: "What is the trade-off of multi-query RAG?", a: "Higher recall at the cost of latency and cost. N query variants × K chunks = N×K retrieval calls plus one LLM call to generate variants. Worth it when retrieval recall is the bottleneck." },
+      { q: "How does LangChain's MultiQueryRetriever work?", a: "It uses an LLM to generate 3–5 diverse reformulations of the original query, runs each independently against the vector DB, pools all results, and de-duplicates using a set. The combined pool is returned as context." },
+    ],
+  },
+  {
+    slug: "15-rerankers",
+    sectionId: "rag",
+    title: "Rerankers — Precision After Retrieval",
+    order: 15,
+    excerpt: "A second-pass AI model that re-scores retrieved chunks for maximum precision.",
+    theory: "<p>A <b>reranker</b> is a second-pass AI model that takes the top-K retrieved chunks and re-scores them for relevance to the query — dramatically improving precision over the initial retrieval.</p><p><b>Why retrieval alone isn't enough:</b> Vector embeddings use <em>bi-encoders</em> — the query and each document are encoded independently, then compared by cosine similarity. This is fast (O(1) per document after indexing) but less accurate because the query and document are never compared jointly.</p><p><b>How rerankers work (cross-encoders):</b> A reranker takes the query AND a candidate chunk together as input and outputs a single relevance score. Because it sees both simultaneously, it can understand subtle semantic relationships that bi-encoders miss. The trade-off: it's 10–100× slower, so it's only applied to the top 20–50 candidates from the initial retrieval.</p><p><b>Popular rerankers:</b></p><ul><li><b>Cohere Rerank</b> — cloud API, state-of-the-art quality, pay-per-use</li><li><b>Cross-encoder models</b> (Hugging Face) — self-hosted, free, slightly lower quality</li><li><b>ColBERT</b> — token-level late interaction, balance of speed and quality</li></ul><p><b>The instructor's production recommendation:</b> Use rerankers when precision matters more than cost. For a pharmaceutical RAG system (where wrong information is dangerous), always rerank. For a general FAQ chatbot, the initial retrieval may be sufficient.</p>",
+    example: "Initial retrieval returns 20 chunks via vector search. Reranker scores all 20 jointly with the query and re-orders them. Chunk that was ranked #8 (similar embedding but different topic) drops to #18. Chunk ranked #3 (exact answer but different phrasing) rises to #1. Top-3 sent to LLM are now far more precise.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What is the difference between a bi-encoder (used for retrieval) and a cross-encoder (used for reranking)?",
+        "Why can't you use a reranker for the initial retrieval over millions of documents?",
+        "In what production scenarios would you always use a reranker?",
+      ],
+      seniorTip: "Bi-encoder vs cross-encoder is a fundamental trade-off: bi-encoders are O(1) per document at query time (embeddings pre-computed), enabling search over millions of documents. Cross-encoders are O(n) per document (must run inference for each candidate), limiting them to re-scoring the top 20–50. The two-stage pipeline (bi-encoder retrieval → cross-encoder reranking) gets the best of both: recall from the fast retriever, precision from the accurate reranker. This is the architecture used by Google, Bing, and enterprise search systems."
+    },
+    flashCards: [
+      { q: "What is a reranker and when is it used in a RAG pipeline?", a: "A cross-encoder model that re-scores the top-K retrieved chunks by jointly processing the query AND each chunk together. Applied after initial retrieval to improve precision. Too slow for full corpus retrieval." },
+      { q: "What is the difference between a bi-encoder and a cross-encoder?", a: "Bi-encoder: query and document encoded independently, compared by cosine similarity. Fast (O(1) per doc). Cross-encoder: query + document processed together, outputs a single relevance score. Slow but more accurate." },
+      { q: "Why is the two-stage retrieval pipeline (retrieve then rerank) the production standard?", a: "Bi-encoder retrieval handles millions of documents efficiently. Reranker provides high precision but only scales to 20–50 candidates. Combining them gets both scale and precision." },
+      { q: "Name three popular reranker options for production RAG.", a: "1) Cohere Rerank (cloud API, best quality). 2) Cross-encoder models on Hugging Face (self-hosted, free). 3) ColBERT (token-level late interaction, balance of speed and quality)." },
+    ],
   },
 ];
 
@@ -1680,14 +1924,26 @@ const langchainNodes = [
   {
     slug: "14-langchain-recap",
     sectionId: "langchain",
-    title: "LangChain Core — Recap",
+    title: "LangChain Core — Recap & What's Next",
     order: 14,
-    excerpt: "Everything connects through the Runnable interface — the unified architecture.",
-    theory: "<p>The key insight of LangChain: everything is a Runnable. ChatPromptTemplate is a Runnable. ChatOpenAI is a Runnable. Output parsers are Runnables. Tools are Runnables.</p><p>The | operator creates a RunnableSequence. This uniform interface means any component can be swapped, chained, or composed without changing the surrounding code. It's the same abstraction pattern as Unix pipes — powerful because of its simplicity.</p>",
-    example: null,
+    excerpt: "Everything connects through the Runnable interface — and why LangGraph is the natural next step.",
+    theory: "<p>The key insight of LangChain: <b>everything is a Runnable</b>. ChatPromptTemplate is a Runnable. ChatOpenAI is a Runnable. Output parsers are Runnables. Tools are Runnables. The <code>|</code> operator creates a <code>RunnableSequence</code>.</p><p>This uniform interface means any component can be swapped, chained, or composed without changing the surrounding code. It's the same abstraction pattern as Unix pipes — powerful because of its simplicity.</p><p><b>What you've learned in this course:</b></p><ul><li><b>Chat Models</b> — structured LLM interface with SystemMessage, HumanMessage, AIMessage; provider-agnostic; streaming support</li><li><b>Prompt Templates</b> — parameterised, testable, composable prompt construction</li><li><b>Chains (LCEL)</b> — composing steps with the pipe operator; lazy evaluation; parallel execution; output parsers</li><li><b>Memory</b> — in-memory and cloud-persisted chat history; session management</li></ul><p><b>What LangChain doesn't solve well:</b> Complex multi-step agentic workflows where the AI needs to make decisions, loop back, handle errors, or coordinate multiple agents. For those use cases, the natural next step is <b>LangGraph</b> — which builds on LangChain's components but adds graph-based state management, cycles, and human-in-the-loop capabilities.</p><p>The instructor's recommendation: master LangChain first (this course), then move to LangGraph for building production-grade AI agents.</p>",
+    example: "A complete LangChain pipeline: chain = ChatPromptTemplate.from_messages([...]) | ChatOpenAI(model='gpt-4o-mini') | StrOutputParser(). chain.invoke({'topic': 'Python decorators'}) returns a clean string. Every component is a Runnable, every | creates a RunnableSequence.",
     animation: null,
     tool: null,
-    interviewPrep: null,
+    interviewPrep: {
+      questions: [
+        "What is the Runnable interface in LangChain and why is it the key architectural concept?",
+        "What are the limitations of LangChain that LangGraph addresses?",
+        "Describe a use case that requires LangGraph instead of LangChain.",
+      ],
+      seniorTip: "The Runnable interface is LangChain's most important architectural decision. It enables: (1) Composability via | operator. (2) Streaming across all steps. (3) Parallel execution via RunnableParallel. (4) Observability via LangSmith tracing. (5) Fallbacks via .with_fallbacks(). In interviews, explain that LangChain is for linear pipelines, LangGraph is for cyclic/agentic workflows. The distinction maps to DAG vs. graph in computer science."
+    },
+    flashCards: [
+      { q: "What is the Runnable interface in LangChain?", a: "A common interface that all LangChain components implement (ChatModel, PromptTemplate, OutputParser, Tool, etc.). It enables composition via the | operator, streaming, parallel execution, and observability." },
+      { q: "What does the | operator create in LCEL?", a: "A RunnableSequence — a chain where each component's output becomes the next component's input. The chain is lazy: it doesn't execute until .invoke(), .stream(), or .batch() is called." },
+      { q: "What use cases require LangGraph instead of LangChain?", a: "Cyclic workflows (agent loops), multi-agent coordination, human-in-the-loop approval flows, conditional branching based on LLM decisions, state management across many steps. LangChain is for linear pipelines; LangGraph is for graph-based agentic workflows." },
+    ],
   },
   {
     slug: "15-reciprocal-rank-fusion",
@@ -1740,6 +1996,39 @@ const langchainNodes = [
 ];
 
 // ─────────────────────────────────────────────────────────
+// NODES — LangGraph (grows as course progresses)
+// ─────────────────────────────────────────────────────────
+const langGraphNodes = [
+  {
+    slug: "01-introduction",
+    sectionId: "langgraph",
+    title: "Introduction to LangGraph",
+    order: 1,
+    excerpt: "Why LangGraph exists — the leap from linear chains to stateful, cyclic AI agents.",
+    theory: "<p><b>LangGraph</b> is a framework for building stateful, multi-actor AI agents. It extends LangChain by adding graph-based state management — enabling agents that can loop, branch, pause for human approval, and coordinate with other agents.</p><p><b>The autonomy spectrum:</b> LLM applications exist on a spectrum from fully deterministic code (zero autonomy) to fully autonomous agents (maximum autonomy). LangGraph is designed for the high-autonomy end — building agents that can think, decide, and act with minimal human intervention.</p><p><b>What you'll build in this course:</b></p><ul><li>AI agents that search the web, answer questions, and route complex queries to humans for review</li><li>Agents that can go back in the chain and explore alternative paths (time-travel)</li><li>Multi-agent systems where multiple agents communicate to complete tasks</li><li>RAG-integrated agents: Corrective RAG (CRAG), Adaptive RAG, Self-RAG</li></ul><p><b>Why LangGraph over LangChain alone:</b> LangChain is excellent for linear pipelines (A → B → C). LangGraph adds cycles — the ability to loop back, retry, and make decisions dynamically. This is the fundamental difference between a pipeline and an agent.</p><p><b>Why LangGraph over CrewAI:</b> LangGraph is lower-level, giving you more control over the exact flow. CrewAI is higher-level and easier to start with but less flexible. For production systems where you need precise control over agent behaviour, LangGraph is the right choice.</p><p><b>Prerequisites:</b> Python 3.8+, understanding of LangChain (chat models, prompt templates, chains). LangGraph uses LangChain's classes under the hood.</p>",
+    example: "CrewAI: 'Create a research agent' → 5 lines of config. LangGraph: define the graph nodes, edges, state, and transitions explicitly. More code, but you control exactly what the agent does at each step, how it handles errors, and when it asks for human input.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What is the key architectural difference between LangChain and LangGraph?",
+        "What does 'stateful' mean in the context of LangGraph agents?",
+        "When would you choose LangGraph over CrewAI for building a multi-agent system?",
+        "What are the three types of RAG that LangGraph enables?",
+      ],
+      seniorTip: "The key insight: LangChain implements DAGs (Directed Acyclic Graphs) — no cycles, no loops. LangGraph implements full graphs with cycles. This is the mathematical foundation of the difference. Agents need cycles: 'Try → Evaluate → If wrong, retry with different approach → Evaluate again'. This loop is impossible in a DAG. LangGraph's state machine model maps directly to how production AI agents work in the real world."
+    },
+    flashCards: [
+      { q: "What is LangGraph and what problem does it solve that LangChain cannot?", a: "LangGraph is a framework for stateful, multi-actor AI agents. It adds cycles to LangChain's linear pipelines — enabling agents that can loop, branch, retry, and coordinate. LangChain is DAG-only; LangGraph supports full cyclic graphs." },
+      { q: "What is the autonomy spectrum in LLM applications?", a: "From fully deterministic code (zero autonomy — does exactly what programmed) to fully autonomous agents (maximum autonomy — thinks, decides, acts independently). LangGraph targets the high-autonomy end." },
+      { q: "What are the three RAG patterns that LangGraph enables?", a: "1) Corrective RAG (CRAG) — checks retrieved chunks for relevance, corrects if poor. 2) Adaptive RAG — routes queries to different retrieval strategies. 3) Self-RAG — model evaluates its own generation and retrieves more if needed." },
+      { q: "What are the key LangGraph concepts you need to understand?", a: "Graph (the workflow structure), State (shared data passed between nodes), Nodes (processing steps), Edges (connections between nodes), Breakpoints (pause for human approval), Checkpointing (save/restore state)." },
+      { q: "Why choose LangGraph over CrewAI for production agents?", a: "LangGraph is lower-level — you control exact flow, error handling, and human-in-the-loop points precisely. CrewAI is higher-level and easier to start but less flexible. Production systems needing precise control use LangGraph." },
+    ],
+  },
+];
+
+// ─────────────────────────────────────────────────────────
 // NODES — Advanced ML (grows over time)
 // ─────────────────────────────────────────────────────────
 const advancedNodes = [
@@ -1764,6 +2053,7 @@ export const nodes = [
   ...mlNodes,
   ...ragNodes,
   ...langchainNodes,
+  ...langGraphNodes,
   ...advancedNodes,
 ];
 

@@ -32,6 +32,9 @@ const ComponentMap = {
   // LangChain visualizations
   LangChainArchitectureMap: dynamic(() => import("@/components/LangChainArchitectureMap")),
   ChainRoutingPatternsViz:  dynamic(() => import("@/components/ChainRoutingPatternsViz")),
+  // ML visualizations
+  MLLearningSpectrumViz:    dynamic(() => import("@/components/MLLearningSpectrumViz")),
+  MLProblemFramingTool:     dynamic(() => import("@/components/MLProblemFramingTool")),
 };
 
 const FlashCardDeck = dynamic(() => import("@/components/FlashCardDeck"));

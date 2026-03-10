@@ -105,7 +105,7 @@ const mlNodes = [
     excerpt: "What ML is, where you already use it daily, and why this matters.",
     theory: "<p><b>Machine Learning</b> is the science of getting computers to learn from data, rather than following rules a human explicitly wrote.</p><p><b>The key insight:</b> Instead of a programmer writing 'if the email contains &quot;free money&quot; then mark it as spam', an ML model reads thousands of real spam emails, finds the patterns itself, and learns a far better filter than any human could write by hand.</p><p><b>Arthur Samuel's definition (1959):</b> 'The field of study that gives computers the ability to learn without being explicitly programmed.' Still the clearest definition 65 years later.</p><p><b>You use it daily without knowing:</b></p><ul><li>Google Search — ranking is learned from billions of clicks, not hand-tuned rules</li><li>Netflix — recommendations learned from what 260M subscribers watched next</li><li>Email spam filter — trained on millions of labelled spam/not-spam examples</li><li>Google Photos — recognises your face from a single example photo</li><li>Voice assistants — speech recognition improved from zero hand-written rules</li></ul><p><b>Why this matters:</b> ML systems improve automatically as more data arrives. Rule-based systems require manual updates for every new edge case. At scale, ML is the only approach that works.</p>",
     example: "When you search 'how to make sushi', Google surfaces the best pages not because a human manually ranked them — an ML model learned which pages satisfy users most from billions of past clicks, dwell time, and engagement signals. Change the rules by hand? Impossible. Let the model learn? It updates itself every day.",
-    animation: "LangChainArchitectureMap",
+    animation: "MLLearningSpectrumViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -177,15 +177,38 @@ const mlNodes = [
     title: "ML Definition & Types",
     order: 3,
     excerpt: "Supervised, unsupervised, and reinforcement learning — when to use each.",
-    theory: "<p>Three main paradigms:</p><ul><li><b>Supervised Learning</b> — learns from labelled examples (input → output pairs). Most commercially used. Covers Regression (continuous output) and Classification (discrete categories).</li><li><b>Unsupervised Learning</b> — finds hidden patterns in unlabelled data. Clustering, dimensionality reduction, anomaly detection. After supervised learning, the most widely used form.</li><li><b>Reinforcement Learning</b> — an agent learns by interacting with an environment and receiving rewards. Used in game AI and robotics.</li></ul>",
-    example: "Supervised: email spam detection (label = spam/not). Unsupervised: customer segmentation with no pre-defined groups. RL: AlphaGo learning to beat world champions at chess through millions of self-play games.",
-    animation: null,
-    tool: null,
+    theory: `<p><b>The most important early ML decision is problem framing.</b> Before selecting algorithms, you must decide which learning paradigm matches the available data and business objective.</p>
+<p><b>Three paradigms and when they apply:</b></p>
+<ul>
+<li><b>Supervised Learning</b>: you have labelled examples (<code>X -> Y</code>). Use when target is explicit and measurable. Subtypes:
+  regression (continuous output) and classification (discrete categories).</li>
+<li><b>Unsupervised Learning</b>: you only have inputs (<code>X</code>), no labels. Use for structure discovery:
+  clustering, anomaly detection, dimensionality reduction.</li>
+<li><b>Reinforcement Learning</b>: an agent takes actions over time and learns from reward signals. Use for sequential decision policies where outcomes depend on action history.</li>
+</ul>
+<p><b>Practical framing checklist:</b></p>
+<ol>
+<li>Do we have trustworthy labels at scale?</li>
+<li>Is output a number, class, cluster, anomaly flag, or long-horizon policy?</li>
+<li>Can success be measured immediately or only after delayed feedback?</li>
+</ol>
+<p><b>Common failure mode:</b> forcing a supervised model when labels are noisy or sparse, then blaming algorithm quality. In many projects, the real bottleneck is label quality and problem definition, not model complexity.</p>
+<p><b>Production guidance:</b> start with the simplest valid framing and establish evaluation baseline early. Paradigm changes later are expensive because data pipelines, metrics, and governance controls all shift.</p>`,
+    example: `Customer analytics framing:
+- Goal A: Predict next-month revenue per account -> supervised regression.
+- Goal B: Predict churn yes/no -> supervised classification.
+- Goal C: Discover unknown customer personas -> unsupervised clustering.
+- Goal D: Learn dynamic discount policy across repeated interactions -> reinforcement learning.
+
+Same dataset can support multiple valid ML framings depending on business question.`,
+    animation: "MLLearningSpectrumViz",
+    tool: "MLProblemFramingTool",
     interviewPrep: {
       questions: [
-        "What is the difference between supervised and unsupervised learning?",
-        "When would you choose unsupervised over supervised learning?",
-        "Name two real-world applications of each paradigm.",
+        "How do you decide which ML paradigm to use for a new business problem?",
+        "When does a supervised framing fail even with a strong model architecture?",
+        "What signals indicate that unsupervised learning is more appropriate than supervised?",
+        "How do reinforcement learning requirements differ from supervised datasets?",
       ],
       seniorTip: "A senior answer goes beyond definitions: 'Supervised is your first choice because you can measure performance with labelled test data. You fall back to unsupervised when labels are too expensive or unavailable, accepting that evaluation becomes qualitative.' Also mention semi-supervised learning — using a small labelled set with a large unlabelled set."
     },
@@ -209,6 +232,14 @@ const mlNodes = [
       {
         q: "What is semi-supervised learning and why does it matter in practice?",
         a: "Uses a small labelled set + a large unlabelled set together. Crucial in production because labelling data is expensive — many real ML systems get supervised-level performance with far fewer manual labels."
+      },
+      {
+        q: "What is the first technical step before model selection?",
+        a: "Frame the task correctly: define target type, label availability, feedback timing, and evaluation metric."
+      },
+      {
+        q: "Why can wrong paradigm choice be costly?",
+        a: "Because it causes misaligned data collection, wrong metrics, and expensive rework across the full ML pipeline."
       },
     ],
   },
@@ -255,15 +286,38 @@ const mlNodes = [
     title: "Supervised Learning — Classification",
     order: 5,
     excerpt: "Predicting discrete categories rather than continuous values.",
-    theory: "<p><b>Classification</b> predicts which of a finite set of categories an input belongs to. The output is a class label, not a number.</p><ul><li><b>Binary classification</b>: two classes — spam/not spam, malignant/benign, yes/no</li><li><b>Multi-class classification</b>: many classes — digit 0–9, dog breed, disease type A/B/C/D</li></ul><p>The key question: 'Which bucket does this input belong to?' The boundary the model learns between classes is called the <b>decision boundary</b>.</p>",
-    example: "Tumour classification: features = [size, texture, age]. Output = malignant (1) or benign (0). The model draws a boundary in feature space — tumours on one side are flagged as malignant.",
-    animation: null,
-    tool: null,
+    theory: `<p><b>Classification maps input features to a finite label set.</b> Unlike regression, which predicts any numeric value, classification predicts membership in predefined classes.</p>
+<p><b>Core types:</b></p>
+<ul>
+<li><b>Binary classification</b>: two labels (fraud/not fraud, malignant/benign).</li>
+<li><b>Multi-class classification</b>: one label among many (digit 0-9, disease type A/B/C).</li>
+<li><b>Multi-label classification</b>: multiple labels can be true at once (email tagged as both billing + urgent).</li>
+</ul>
+<p><b>Model output perspective:</b> most classifiers produce class probabilities, then apply a threshold or argmax to emit final class decisions. Threshold tuning is a business decision, not just a model detail.</p>
+<p><b>Evaluation must match risk profile:</b></p>
+<ul>
+<li>Accuracy for balanced low-risk tasks.</li>
+<li>Precision/Recall/F1 when false positives/negatives have different costs.</li>
+<li>ROC-AUC/PR-AUC for threshold sensitivity and imbalanced data.</li>
+</ul>
+<p><b>Common failure mode:</b> using accuracy alone on imbalanced datasets (e.g., 99% non-fraud), which can look strong while missing almost all positives.</p>`,
+    example: `Medical triage classifier:
+- Inputs: age, symptoms, blood markers, imaging summary.
+- Output: risk class {low, medium, high}.
+- Threshold policy:
+  - maximize recall for high-risk class to avoid missed critical cases.
+  - accept lower precision and route uncertain cases to human doctors.
+
+This is why classification design includes both model and operational escalation policy.`,
+    animation: "MLLearningSpectrumViz",
+    tool: "MLProblemFramingTool",
     interviewPrep: {
       questions: [
         "What is the key difference between regression and classification?",
         "What is a decision boundary? Give an example.",
         "Why can't you use linear regression for a classification problem?",
+        "Why can accuracy be misleading in production classification systems?",
+        "How do threshold choices change model behavior and business risk?",
       ],
       seniorTip: "The real answer isn't just 'regression = number, classification = category'. A senior frames it as: 'The choice determines your loss function (MSE for regression, cross-entropy for classification), your activation function, and how you evaluate the model. Getting this wrong means you're optimising for the wrong thing.' This shows you think end-to-end, not just in definitions."
     },
@@ -283,6 +337,14 @@ const mlNodes = [
       {
         q: "Why can't you use linear regression for classification?",
         a: "Linear regression outputs any real number. For classification you need probabilities in [0,1]. Linear regression can predict values like -2.3 or 1.8, which have no meaning as probabilities. Use logistic regression or a dedicated classifier instead."
+      },
+      {
+        q: "Why is class threshold selection important?",
+        a: "Threshold directly controls precision-recall tradeoff, which determines operational risk and escalation volume."
+      },
+      {
+        q: "What metric should dominate in high-risk medical screening?",
+        a: "Recall for positive class, because missing true positives is often more costly than raising extra false alarms."
       },
     ],
   },
@@ -362,14 +424,37 @@ const mlNodes = [
     title: "Jupyter Labs & Dev Environment",
     order: 8,
     excerpt: "The industry-standard ML environment — the exact same tool used at Google, Meta, and Amazon.",
-    theory: "<p>Andrew Ng made a key point: <b>'This is the exact same environments, the exact same tool, the Jupyter Notebook, that developers are using in many large countries right now.'</b> It's not a simplified educational environment — it's the actual tool professionals use daily.</p><p>Jupyter Notebooks let you mix <b>code, output, visualisations, and documentation</b> in one document. Each cell runs independently, so you can experiment step by step and see results immediately. This is how ML practitioners explore data, prototype models, and share results.</p><p>Two types of labs in this course:</p><ul><li><b>Optional Labs</b>: pre-written code you run top to bottom. No need to write anything — just run and observe how ML code looks and behaves.</li><li><b>Practice Labs</b>: you write the code yourself. The real learning happens here.</li></ul><p>In industry, Jupyter is where data science happens: EDA (Exploratory Data Analysis), feature engineering, model prototyping, and communicating results to stakeholders.</p>",
-    example: "A typical ML workflow in Jupyter: Cell 1 — import libraries → Cell 2 — load data and print shape → Cell 3 — plot data distribution → Cell 4 — define model → Cell 5 — train it → Cell 6 — plot the loss curve → Cell 7 — evaluate on test set. Each step is visible and independently runnable — perfect for iteration and debugging.",
+    theory: `<p><b>Jupyter is the default experimentation surface for ML teams.</b> It combines code, outputs, plots, and narrative explanation in a single executable artifact.</p>
+<p><b>Why notebooks are effective for learning and prototyping:</b></p>
+<ul>
+<li>Cell-level execution supports incremental debugging and hypothesis testing.</li>
+<li>Charts and intermediate outputs are visible inline.</li>
+<li>Markdown cells document reasoning and assumptions next to code.</li>
+</ul>
+<p><b>Professional workflow pattern:</b></p>
+<ol>
+<li>Explore raw data and quality issues (missingness, outliers, distributions).</li>
+<li>Prototype features and baseline models quickly.</li>
+<li>Validate assumptions and compare candidate approaches.</li>
+<li>Promote stable logic into production code modules.</li>
+</ol>
+<p><b>Critical caveat:</b> notebooks are great for exploration but weak for long-term operations if left unstructured. Hidden state, out-of-order execution, and poor testability can cause reproducibility failures.</p>
+<p><b>Production transition rule:</b> once a notebook step becomes stable and business-critical, refactor it into tested scripts/pipeline jobs, keeping notebook for exploration and reporting.</p>`,
+    example: `Notebook-to-production transition:
+1) In notebook, test 3 feature engineering ideas and compare validation scores.
+2) Select winning feature pipeline and export logic into reusable Python module.
+3) Add unit tests for feature transforms.
+4) Schedule training/inference with pipeline orchestration (not notebook cells).
+
+This preserves exploration speed while achieving production reliability.`,
     animation: null,
     tool: null,
     interviewPrep: {
       questions: [
         "What is Jupyter Notebook and why is it the standard tool for ML?",
         "What is the difference between a notebook and production Python code?",
+        "What are the most common reproducibility failures in notebook-based workflows?",
+        "When should notebook code be promoted to pipeline code?",
       ],
       seniorTip: "Interviewers at senior level know Jupyter is for exploration, not production. Show you know the distinction: 'I use notebooks for EDA, feature engineering, and model iteration. Once I have a working approach, I refactor the logic to modular Python scripts and ML pipelines (Airflow, Kubeflow, MLflow) for production. Notebooks in production are a maintenance nightmare — no version control, no unit tests, hidden state.'"
     },
@@ -381,6 +466,14 @@ const mlNodes = [
       {
         q: "When should you use Jupyter Notebook vs. Python scripts in production?",
         a: "Notebook: exploration, EDA, prototyping, visualisation, sharing results with stakeholders. Python script/module: production code, unit-testable functions, scheduled jobs, reproducible ML pipelines. Converting notebook logic to clean, modular, tested Python is a key senior engineering skill."
+      },
+      {
+        q: "What is hidden-state risk in Jupyter?",
+        a: "Cells can run out of order, so notebook state may not match code order; this can create non-reproducible results."
+      },
+      {
+        q: "What is the practical rule for notebook promotion?",
+        a: "If a notebook step is repeated or business-critical, refactor it into tested modules and pipeline jobs."
       },
     ],
   },

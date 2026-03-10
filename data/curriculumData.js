@@ -9,6 +9,7 @@
  *   1. Add to `sections`.
  *   2. Create a new node array and spread it into `nodes` at the bottom.
  */
+import { authoredInterviewAnswers } from "./authoredInterviewAnswers.js";
 
 // ─────────────────────────────────────────────────────────
 // SECTIONS
@@ -3502,148 +3503,45 @@ Result: better fraud capture without uncontrolled operational risk.`,
   },
 ];
 
-function stripHtml(text) {
-  return String(text || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
-}
-
-function firstSentence(text) {
-  const cleaned = stripHtml(text);
-  const match = cleaned.match(/^[^.!?]+[.!?]?/);
-  return match ? match[0].trim() : cleaned;
-}
-
-function firstMeaningfulLine(text) {
-  const lines = String(text || "")
-    .split("\n")
-    .map((line) => stripHtml(line).replace(/^[-*0-9.)\s]+/, "").trim())
-    .filter(Boolean);
-  return lines[0] || "";
-}
-
-const TEMPLATE_ANSWER_PATTERNS = [
-  /Define each side crisply/i,
-  /State the causal reason first/i,
-  /Give a step-by-step implementation path/i,
-  /Answer with conditions, not opinions/i,
-  /Start with a precise definition/i,
-  /Then relate your answer to/i,
-  /Don't just define it/i,
-  /Anchor the answer to what 'supervised'/i,
-  /anchor the definition to business value/i,
-];
-
-function isTemplateAnswer(answer) {
-  const text = String(answer || "");
-  return TEMPLATE_ANSWER_PATTERNS.some((pattern) => pattern.test(text));
-}
-
-function sectionPlaybook(sectionId) {
-  switch (sectionId) {
-    case "ml":
-      return {
-        core: "problem framing, feature/label quality, and bias-variance control",
-        failures: "label leakage, train-serving skew, and misleading aggregate metrics",
-        safeguards: "data contracts, sliced evaluation, drift/calibration monitoring, and rollback triggers",
-      };
-    case "rag":
-      return {
-        core: "query rewriting, chunking strategy, retrieval quality, and grounded generation",
-        failures: "missing evidence retrieval, stale indexes, and citation-free hallucinations",
-        safeguards: "hybrid retrieval, reranking, citation enforcement, and golden-set evaluation",
-      };
-    case "langchain":
-      return {
-        core: "LCEL composition, prompt contracts, structured output parsing, and tool schemas",
-        failures: "parser breaks, prompt-tool mismatch, and fragile chain coupling",
-        safeguards: "typed I/O boundaries, retries with fallback paths, and trace-level observability",
-      };
-    case "langgraph":
-      return {
-        core: "stateful graph design, conditional routing, and reason-act-observe loops",
-        failures: "unbounded loops, dead-end states, and incorrect tool routing",
-        safeguards: "explicit state schemas, max-step/retry budgets, and human-in-the-loop checkpoints",
-      };
-    default:
-      return {
-        core: "clear system contracts and measurable quality targets",
-        failures: "silent degradations and unobserved runtime drift",
-        safeguards: "instrumentation, tests, and rollback-safe deployment paths",
-      };
-  }
-}
-
-function buildDetailedInterviewAnswer(question, node, sectionId, seniorTip) {
-  const q = String(question || "").trim();
-  const qLower = q.toLowerCase();
-  const playbook = sectionPlaybook(sectionId);
-  const theoryAnchor = firstSentence(node.theory || node.excerpt || node.title);
-  const exampleAnchor = firstMeaningfulLine(node.example) || `In ${node.title}, validate on a small slice before full rollout.`;
-  const tipLead = firstSentence(seniorTip);
-  const safeTipLead = tipLead && !isTemplateAnswer(tipLead) ? tipLead : "";
-
-  if (qLower.includes("difference") || qLower.includes("compare") || qLower.includes(" vs ")) {
-    return `The right comparison is based on objective, data flow, and operating constraints rather than terminology. For ${node.title}, use ${playbook.core} as the evaluation lens, then compare latency, quality, and maintenance burden under realistic load. ${exampleAnchor}. In production, watch for ${playbook.failures}, and control risk with ${playbook.safeguards}.`;
-  }
-  if (qLower.startsWith("why")) {
-    return `The causal reason is that system behavior is constrained by data, model contracts, and runtime context, not just algorithm choice. ${theoryAnchor}. A practical check is to validate impact on quality, latency, and failure recovery before scaling. If ignored, teams usually hit ${playbook.failures}; prevention requires ${playbook.safeguards}.`;
-  }
-  if (qLower.startsWith("how") || qLower.includes("how would")) {
-    return `Implement this in a controlled sequence: frame the target outcome, define measurable success criteria, build the smallest correct baseline, and instrument traces/metrics before optimization. In this node, keep decisions grounded in ${playbook.core} and validate each change against real failure cases. ${exampleAnchor}. Production hardening means planning for ${playbook.failures} and enforcing ${playbook.safeguards}.`;
-  }
-  if (qLower.startsWith("when") || qLower.includes("when should")) {
-    return `Use explicit conditions: data profile, error cost, latency budget, and observability maturity should all be satisfied before committing to one approach. ${theoryAnchor}. Define trigger thresholds up front (quality floor, latency ceiling, failure-rate budget) and switch strategy when they are breached. ${exampleAnchor}.`;
-  }
-  if (qLower.startsWith("what")) {
-    return `It is best defined by the role it plays in the end-to-end system, not in isolation. ${theoryAnchor}. Operationally, its value appears only when integrated with ${playbook.core} and measured against real outcomes. ${exampleAnchor}. A common pitfall is ${playbook.failures}; mitigate with ${playbook.safeguards}.`;
-  }
-  if (qLower.startsWith("give") || qLower.startsWith("name") || qLower.startsWith("list")) {
-    return `A strong response should cover at least three contexts: a straightforward use case, a high-impact production use case, and one edge case where the same method can fail. For ${node.title}, start with ${exampleAnchor}, then add two cases with different data and risk profiles. Tie every example back to ${playbook.core} and include one operational guardrail each (${playbook.safeguards}).`;
-  }
-  if (safeTipLead) {
-    return `${safeTipLead} Tie your implementation to ${playbook.core}, stress-test it with realistic edge cases, and add production safeguards for ${playbook.failures}.`;
-  }
-  return `A strong answer should connect conceptual understanding to execution details. Anchor decisions in ${playbook.core}, validate with a concrete scenario like ${exampleAnchor.toLowerCase()}, and design controls for ${playbook.failures} using ${playbook.safeguards}.`;
-}
-
-function normalizeInterviewAnswers(sectionNodes, sectionId) {
+function applyAuthoredInterviewAnswers(sectionNodes, sectionId) {
   return sectionNodes.map((node) => {
     const ip = node.interviewPrep;
     if (!ip || !Array.isArray(ip.questions) || ip.questions.length === 0) {
       return node;
     }
+    const key = `${sectionId}/${node.slug}`;
+    const authoredAnswers = Array.isArray(authoredInterviewAnswers[key]) ? authoredInterviewAnswers[key] : [];
     const existingAnswers = Array.isArray(ip.answers) ? ip.answers : [];
-    const filledAnswers = ip.questions.map((question, index) => {
-      const existing = existingAnswers[index];
-      if (typeof existing === "string" && existing.trim() && !isTemplateAnswer(existing)) {
-        return existing;
-      }
-      return buildDetailedInterviewAnswer(question, node, sectionId, ip.seniorTip);
+    const finalAnswers = ip.questions.map((_, index) => {
+      const authored = authoredAnswers[index];
+      const fallback = existingAnswers[index];
+      return String(authored ?? fallback ?? "").trim();
     });
     return {
       ...node,
       interviewPrep: {
         ...ip,
-        answers: filledAnswers,
+        answers: finalAnswers,
       },
     };
   });
 }
 
-const normalizedMlNodes = normalizeInterviewAnswers(mlNodes, "ml");
-const normalizedRagNodes = normalizeInterviewAnswers(ragNodes, "rag");
-const normalizedLangchainNodes = normalizeInterviewAnswers(langchainNodes, "langchain");
-const normalizedLangGraphNodes = normalizeInterviewAnswers(langGraphNodes, "langgraph");
-const normalizedAdvancedNodes = normalizeInterviewAnswers(advancedNodes, "ml");
+const authoredMlNodes = applyAuthoredInterviewAnswers(mlNodes, "ml");
+const authoredRagNodes = applyAuthoredInterviewAnswers(ragNodes, "rag");
+const authoredLangchainNodes = applyAuthoredInterviewAnswers(langchainNodes, "langchain");
+const authoredLangGraphNodes = applyAuthoredInterviewAnswers(langGraphNodes, "langgraph");
+const authoredAdvancedNodes = applyAuthoredInterviewAnswers(advancedNodes, "ml");
 
 // ─────────────────────────────────────────────────────────
 // COMBINED EXPORTS
 // ─────────────────────────────────────────────────────────
 export const nodes = [
-  ...normalizedMlNodes,
-  ...normalizedRagNodes,
-  ...normalizedLangchainNodes,
-  ...normalizedLangGraphNodes,
-  ...normalizedAdvancedNodes,
+  ...authoredMlNodes,
+  ...authoredRagNodes,
+  ...authoredLangchainNodes,
+  ...authoredLangGraphNodes,
+  ...authoredAdvancedNodes,
 ];
 
 export function getSections() {

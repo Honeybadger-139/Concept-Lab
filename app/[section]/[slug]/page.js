@@ -29,6 +29,8 @@ const ComponentMap = {
   HistoryAwareQueryLab:   dynamic(() => import("@/components/HistoryAwareQueryLab")),
   ChunkingStrategyWorkbench: dynamic(() => import("@/components/ChunkingStrategyWorkbench")),
   MultimodalRAGFlowViz:   dynamic(() => import("@/components/MultimodalRAGFlowViz")),
+  AdvancedRetrievalLab:   dynamic(() => import("@/components/AdvancedRetrievalLab")),
+  HybridFusionLab:        dynamic(() => import("@/components/HybridFusionLab")),
   RerankerViz:            dynamic(() => import("@/components/RerankerViz")),
   // LangGraph visualizations
   LangGraphArchitectureViz: dynamic(() => import("@/components/LangGraphArchitectureViz")),

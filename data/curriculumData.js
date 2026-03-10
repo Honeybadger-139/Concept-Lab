@@ -1890,15 +1890,22 @@ const ragNodes = [
     title: "Advanced Document Retrieval Techniques",
     order: 13,
     excerpt: "Three retrieval methods: similarity, MMR, and score threshold — when to use each.",
-    theory: "<p>LangChain's vector store retriever supports three distinct retrieval strategies, each suited to different use cases:</p><p><b>1. Similarity Search (default)</b>: Returns the top-K chunks by cosine similarity score. Simple, fast, effective for most use cases. Risk: if the top-K chunks are all very similar to each other (e.g., the same paragraph repeated), you get redundant context.</p><p><b>2. MMR (Maximal Marginal Relevance)</b>: Balances relevance AND diversity. For each new chunk to add, it picks the one that is most relevant to the query AND most different from already-selected chunks. Result: diverse, non-redundant context. Best for documents with repetitive content or when you want broad coverage.</p><p><b>3. Score Threshold</b>: Only returns chunks above a minimum similarity score. Prevents irrelevant chunks from being sent to the LLM when no good match exists. Critical for production — without it, the LLM will hallucinate answers from irrelevant context.</p><p>The instructor's rule: use similarity for most cases, MMR when you notice redundant retrieved chunks, and always set a score threshold in production to handle 'no relevant information' gracefully.</p>",
+    theory: "<p>Advanced retrieval is about controlling three competing objectives: relevance, diversity, and safety. No single retrieval mode dominates all workloads, so strong systems choose mode per query class and corpus behavior.</p><p><strong>Mode 1: Similarity search</strong> returns top-K nearest chunks by cosine score. It is fast and reliable for many cases, but can return near-duplicate chunks that waste context budget.</p><p><strong>Mode 2: MMR (Maximal Marginal Relevance)</strong> balances relevance with novelty. Each selected chunk should both match the query and add non-redundant information. This is valuable in repetitive corpora (policy manuals, long reports, FAQs with overlap).</p><p><strong>Mode 3: Score-threshold retrieval</strong> applies a minimum similarity gate and can return fewer than K chunks. This is essential to avoid forced hallucinations when no meaningful evidence exists.</p><p><strong>Practical architecture guidance:</strong></p><ul><li>Use similarity as baseline, then compare against MMR on redundancy-heavy datasets.</li><li>Always define threshold + abstention behavior together.</li><li>Log retrieval diagnostics per request: mode, K, threshold, selected IDs, and dropped candidates.</li><li>Tune with evaluation sets, not intuition; optimize grounded answer quality, not just retrieval score.</li></ul><p><strong>Failure patterns:</strong> over-fetching noisy context, under-fetching key constraints, and missing no-answer fallback. Most production incidents in RAG QA trace back to one of these.</p>",
     example: "Query: 'What is the return policy?' on a 500-page retail manual. Similarity: returns top-3 most similar chunks (may all be from the same section). MMR: returns 3 chunks from different sections (return policy, exceptions, process) — more comprehensive. Score threshold: if no chunk scores > 0.3, returns empty (LLM says 'I don't have that information' instead of hallucinating).",
-    animation: null,
+    animation: "AdvancedRetrievalLab",
     tool: null,
     interviewPrep: {
       questions: [
         "What is the difference between similarity search and MMR retrieval?",
         "Why is a score threshold important in production RAG systems?",
         "When would you choose MMR over similarity search?",
+        "How would you tune retrieval mode for a corpus with heavy duplication?",
+      ],
+      answers: [
+        "Similarity optimizes pure query proximity; MMR optimizes query proximity plus diversity among selected chunks.",
+        "Without thresholding, retrievers can return weak evidence and force the generator to fabricate. Thresholding enables safe abstention when evidence is poor.",
+        "Use MMR when top-K similarity results are too repetitive or when broad coverage of subtopics is needed.",
+        "Start with similarity baseline, measure redundancy and groundedness, then test MMR with varied lambda/k plus threshold gates on a fixed eval set.",
       ],
       seniorTip: "The score threshold is the most underused but most important retrieval parameter in production. Without it, your RAG system will always return K chunks — even if none are relevant — and the LLM will hallucinate an answer from irrelevant context. A well-designed RAG system should gracefully say 'I don't have information about that' when no relevant chunks are found. This requires both a score threshold AND a fallback response when the retriever returns empty."
     },
@@ -1906,6 +1913,8 @@ const ragNodes = [
       { q: "What are the three retrieval strategies in LangChain's vector store?", a: "1) Similarity: top-K by cosine similarity (default). 2) MMR (Maximal Marginal Relevance): top-K balancing relevance AND diversity. 3) Score threshold: only return chunks above a minimum similarity score." },
       { q: "What is MMR (Maximal Marginal Relevance) and when should you use it?", a: "A retrieval strategy that picks chunks maximising relevance to the query AND diversity from already-selected chunks. Use when retrieved chunks are redundant (same content repeated) or you need broad coverage." },
       { q: "Why is a score threshold critical for production RAG?", a: "Without it, the retriever always returns K chunks even if none are relevant. The LLM then hallucinates an answer from irrelevant context. A threshold enables the system to say 'I don't have that information' gracefully." },
+      { q: "What does retrieval redundancy cost you?", a: "It burns token budget on repeated evidence and reduces room for complementary context, lowering final answer quality." },
+      { q: "What must pair with threshold retrieval in UX?", a: "A clear abstention/fallback behavior (for example ask clarifying question, escalate, or return 'insufficient evidence')." },
     ],
   },
   {
@@ -1914,7 +1923,7 @@ const ragNodes = [
     title: "Multi-Query RAG for Better Search Results",
     order: 14,
     excerpt: "One user query → multiple LLM-generated reformulations → merged and reranked.",
-    theory: "<p>Users phrase questions poorly — ambiguous, incomplete, or using different vocabulary than the documents. <b>Multi-Query RAG</b> intercepts and expands the query before retrieval:</p><ol><li>LLM generates 3–5 diverse reformulations of the original question</li><li>Each reformulation independently searches the vector DB</li><li>All retrieved chunks are pooled and de-duplicated (using a set to remove duplicates)</li><li>The combined pool is sent to the LLM for answer generation (or reranked first)</li></ol><p>Net effect: dramatically higher recall — questions that would miss with one phrasing succeed with an alternative.</p><p><b>Why this works:</b> Embedding models are sensitive to phrasing. 'What are the side effects?' and 'What are the adverse reactions?' may have different embeddings even though they mean the same thing. Multi-query generates both phrasings and retrieves from both.</p><p><b>Implementation:</b> LangChain's <code>MultiQueryRetriever</code> handles this automatically. It uses an LLM (configurable) to generate query variants, runs parallel retrievals, and de-duplicates results.</p><p>The instructor's result: multi-query retrieval improved answer accuracy by ~30% on a pharmaceutical document RAG system where users asked questions using different terminology than the documents used.</p>",
+    theory: "<p>Multi-query retrieval is a recall-expansion technique for semantic search. Instead of trusting one user phrasing, the system generates several semantically distinct reformulations and retrieves against each.</p><p><strong>Pipeline:</strong></p><ol><li>Generate N query variants from original question.</li><li>Retrieve top-K for each variant.</li><li>Pool and deduplicate candidates.</li><li>Optionally fuse/rerank candidates before generation.</li></ol><p><strong>Why this matters:</strong> embeddings are sensitive to phrasing and terminology. Variant queries reduce lexical blind spots and improve the chance of hitting relevant chunks.</p><p><strong>Operational trade-offs:</strong> higher recall but higher cost and latency. If N=5 and K=4, candidate fan-out is up to 20 chunks before deduplication/reranking. This can increase token cost unless filtered carefully.</p><p><strong>Production control knobs:</strong></p><ul><li>Limit N and K per route/use-case.</li><li>Constrain variant generator prompt to avoid off-topic drift.</li><li>Deduplicate by chunk ID and near-text similarity.</li><li>Apply RRF/reranking to stabilize final candidate order.</li></ul><p>Use multi-query when retrieval recall is the bottleneck; do not enable blindly on every query path.</p>",
     example: "User: 'side effects?' → LLM generates: ['List all adverse reactions of this drug', 'What are the contraindications?', 'When should this medication not be taken?', 'What are the warnings?'] → 4× the retrieval coverage → de-duplicated pool of 12 unique chunks instead of 3.",
     animation: "MultiQueryRAGViz",
     tool: null,
@@ -1923,6 +1932,13 @@ const ragNodes = [
         "What problem does multi-query RAG solve that single-query RAG cannot?",
         "How does LangChain's MultiQueryRetriever work under the hood?",
         "What is the trade-off of using multi-query RAG vs single-query RAG?",
+        "How would you prevent query-variant drift in production?",
+      ],
+      answers: [
+        "It improves recall under vocabulary mismatch by searching multiple semantically varied phrasings of the same intent.",
+        "It uses an LLM to generate query variants, executes retrieval for each, merges results, and deduplicates before returning candidate context.",
+        "You gain recall but pay in extra retrieval/LLM calls, larger candidate sets, and potential latency increase.",
+        "Constrain the rewriting prompt, cap number of variants, and apply lexical/semantic similarity checks to keep variants aligned to original intent.",
       ],
       seniorTip: "Multi-query RAG is a recall improvement technique — it increases the chance that at least one query variant retrieves the relevant chunk. The trade-off: it makes N×K LLM calls (N query variants × K chunks each) plus one LLM call to generate the variants. For a system with 5 query variants and K=3, that's 15 retrieval calls instead of 3. The latency and cost increase is worth it when retrieval recall is the bottleneck. Combine with RRF to merge the ranked lists intelligently."
     },
@@ -1930,6 +1946,8 @@ const ragNodes = [
       { q: "What problem does multi-query RAG solve?", a: "Embedding sensitivity to phrasing — 'side effects' and 'adverse reactions' may have different vectors. Multi-query generates multiple phrasings of the question and retrieves from all of them, dramatically improving recall." },
       { q: "What is the trade-off of multi-query RAG?", a: "Higher recall at the cost of latency and cost. N query variants × K chunks = N×K retrieval calls plus one LLM call to generate variants. Worth it when retrieval recall is the bottleneck." },
       { q: "How does LangChain's MultiQueryRetriever work?", a: "It uses an LLM to generate 3–5 diverse reformulations of the original query, runs each independently against the vector DB, pools all results, and de-duplicates using a set. The combined pool is returned as context." },
+      { q: "What is query-variant drift?", a: "When generated variants move away from original intent, retrieving irrelevant chunks and reducing precision." },
+      { q: "What should follow multi-query pooling for stable quality?", a: "Rank fusion and/or reranking, then thresholded final selection before generation." },
     ],
   },
   {
@@ -1938,21 +1956,30 @@ const ragNodes = [
     title: "Reciprocal Rank Fusion for Enhanced RAG Performance",
     order: 15,
     excerpt: "Fusing multiple ranked retrieval lists into one robust ranking.",
-    theory: "<p>Reciprocal Rank Fusion (RRF) combines multiple ranked retrieval lists into a single ranked output using rank positions (not raw similarity scores). This is especially useful in multi-query and hybrid retrieval where score scales are incompatible.</p><p><b>Core formula:</b> RRF_score = Σ 1 / (K + rank_position), with K typically set to 60.</p><p>Because RRF is rank-based, chunks that appear consistently across multiple lists are promoted even if raw scores differ across retrieval methods.</p>",
+    theory: "<p>Reciprocal Rank Fusion (RRF) merges multiple ranked lists without requiring score normalization. This is crucial when combining heterogeneous retrievers (vector, BM25, multi-query variants) whose raw scores are not directly comparable.</p><p><strong>Formula:</strong> <code>RRF(d) = Σ 1 / (K + rank_d_i)</code>, where <code>rank_d_i</code> is document d's rank in list i and K (often 60) smooths contribution magnitude.</p><p><strong>Why it works:</strong> documents that repeatedly appear near the top across different retrieval lists accumulate higher fused scores, while one-off noisy hits are naturally down-weighted.</p><p><strong>Design implications:</strong></p><ul><li>RRF is robust to score-scale mismatch across retrievers.</li><li>Lower K increases top-rank influence; higher K makes contributions flatter.</li><li>RRF improves stability in multi-query and hybrid pipelines before reranking.</li></ul><p><strong>Failure caveat:</strong> if all source lists are bad, fusion cannot invent relevance. RRF improves aggregation quality, not base-retriever quality.</p>",
     example: "When 5 query rewrites each return top chunks, RRF merges all lists and boosts chunks that repeatedly appear near the top. This yields a stronger final context set for answer generation.",
-    animation: null,
+    animation: "HybridFusionLab",
     tool: null,
     interviewPrep: {
       questions: [
         "What problem does RRF solve in multi-query and hybrid retrieval?",
         "Why is RRF rank-based instead of score-based?",
         "Why is K commonly set to 60 in RRF?",
+        "When should you still rerank after RRF?",
+      ],
+      answers: [
+        "It fuses multiple ranked lists reliably when raw scores are incompatible or poorly calibrated across retrieval methods.",
+        "Rank-based fusion avoids brittle score normalization assumptions; each list only needs ordering, not aligned score scales.",
+        "K=60 is a practical smoothing constant that rewards high ranks while keeping lower-rank contributions non-zero.",
+        "Rerank after RRF when precision requirements are high; RRF creates a stronger candidate set, and reranking refines final order against full query-context interaction.",
       ],
       seniorTip: "RRF matters because it avoids brittle score normalisation. In production systems combining vector and keyword retrieval, rank fusion is often the most stable merge strategy."
     },
     flashCards: [
       { q: "What does RRF do?", a: "It merges multiple ranked lists into one by summing reciprocal rank contributions for each chunk." },
       { q: "Why is RRF robust?", a: "It does not require score calibration between retrieval systems; it only needs ranks." },
+      { q: "What controls rank sensitivity in RRF?", a: "The constant K. Smaller K emphasizes top ranks more strongly; larger K smooths contributions." },
+      { q: "Can RRF fix a weak retriever?", a: "Not by itself. It improves list aggregation, but base retrieval quality still determines the ceiling." },
     ],
   },
   {
@@ -1961,21 +1988,30 @@ const ragNodes = [
     title: "Hybrid Search combining Vector and Keyword Search",
     order: 16,
     excerpt: "Combining dense semantic and sparse lexical retrieval in one pipeline.",
-    theory: "<p>In the transcript for this stage, the instructor recaps the full multi-query + hybrid retrieval flow: generate multiple query variations, run vector and keyword retrieval for each, then merge ranked lists using Reciprocal Rank Fusion (RRF).</p><p>The practical emphasis is that this 'wide-net first' strategy increases recall before precision steps. It is positioned as the setup for reranking, where the candidate set is narrowed to the most relevant chunks.</p>",
+    theory: "<p>Hybrid search combines dense semantic retrieval (vector similarity) with sparse lexical retrieval (BM25/keyword). This pairing handles both concept-level meaning and exact-term matching.</p><p><strong>Why hybrid beats single-mode retrieval:</strong></p><ul><li>Vector search finds semantically related text even with wording mismatch.</li><li>Keyword/BM25 catches exact entities, IDs, API names, product codes, and legal phrases.</li></ul><p><strong>Typical pipeline:</strong> generate query variants (optional) → run dense + sparse retrieval → fuse ranks (often RRF) → apply threshold/reranker → send final evidence to generation.</p><p><strong>Production design questions:</strong></p><ul><li>How many candidates from each branch (dense/sparse)?</li><li>How to fuse rankings (RRF vs weighted sum)?</li><li>Where to apply metadata filters (before branch retrieval vs after fusion)?</li><li>How to monitor branch contribution over time?</li></ul><p><strong>Failure modes:</strong> branch imbalance (one retriever dominates), stale lexical index updates, and over-reliance on vector retrieval for exact-match queries. Strong systems track per-branch hit rates and periodically recalibrate fusion strategy.</p>",
     example: "For technical documents, keyword retrieval catches exact API names while vector retrieval captures semantically related phrasing. Hybrid search merges both strengths.",
-    animation: null,
+    animation: "HybridFusionLab",
     tool: null,
     interviewPrep: {
       questions: [
         "Why is hybrid search usually better than only vector search?",
         "What role does BM25 play in hybrid retrieval?",
         "How are hybrid results commonly merged?",
+        "How would you diagnose whether dense or sparse branch is underperforming?",
+      ],
+      answers: [
+        "It covers both semantic and lexical relevance, reducing misses from either branch alone.",
+        "BM25 provides lexical precision for exact terms, acronyms, IDs, and rare tokens that embeddings may underweight.",
+        "Commonly via RRF or calibrated weighted fusion, followed by reranking for precision.",
+        "Track per-branch retrieval hit rates and contribution to final cited answers; compare branch-only ablations on evaluation sets to detect drift.",
       ],
       seniorTip: "In domain-heavy corpora, pure vector retrieval can miss critical exact terms. Hybrid search is often a high-impact upgrade with modest implementation complexity."
     },
     flashCards: [
       { q: "What is hybrid search?", a: "A retrieval strategy that combines vector and keyword retrieval before ranking final results." },
       { q: "How are hybrid results merged?", a: "Often using rank fusion methods like RRF." },
+      { q: "What does BM25 add to a hybrid pipeline?", a: "Strong exact-term matching for IDs, error codes, and domain-specific vocabulary that semantic embeddings may miss." },
+      { q: "What common anti-pattern hurts hybrid retrieval quality?", a: "Using fixed fusion settings forever without monitoring branch contribution or re-tuning after corpus/query distribution shifts." },
     ],
   },
   {
@@ -1984,7 +2020,7 @@ const ragNodes = [
     title: "RAG Reranking and Next Steps!",
     order: 17,
     excerpt: "Final precision layer and production next-step roadmap.",
-    theory: "<p>This transcript focuses on rerankers as a second-stage quality filter after retrieval. The instructor contrasts fast first-pass retrieval (vector + keyword + RRF) with a more precise reranker pass that reorders candidates against the user query.</p><p>Key takeaway: retrieve broadly first, then rerank a smaller candidate set for precision before final generation. The transcript also discusses trade-offs (higher cost/latency) and when reranking is worth it in production.</p>",
+    theory: "<p>Reranking is the precision stage after broad retrieval. First-pass retrievers optimize speed and recall; rerankers optimize final relevance quality by scoring query-document pairs jointly.</p><p><strong>Two-stage pattern:</strong></p><ol><li>Retrieve widely (vector/keyword/hybrid), usually top 20-100 candidates.</li><li>Apply reranker to reorder candidates and keep top N for generation.</li></ol><p><strong>Why reranking helps:</strong> cross-encoders evaluate query and candidate together, capturing fine-grained relevance signals that bi-encoder retrieval misses.</p><p><strong>Trade-offs:</strong></p><ul><li>Higher latency and compute per request.</li><li>Need to cap candidate count for predictable cost.</li><li>Requires evaluation to set optimal rerank depth (for example top-30 reranked to top-5).</li></ul><p><strong>When it becomes mandatory:</strong> high-stakes domains (legal, medical, compliance, finance) where evidence precision matters more than raw speed.</p><p><strong>Next-step production checklist:</strong> retrieval eval set, reranker ablation tests, latency SLO budget, confidence/abstention policy, and observability for citation correctness.</p>",
     example: "Retrieve top-30 quickly with vector/hybrid search, rerank top-30 with a stronger ranker, then pass top-5 to generation for better answer quality.",
     animation: "RerankerViz",
     tool: null,
@@ -1993,12 +2029,21 @@ const ragNodes = [
         "Why add reranking after retrieval?",
         "What is the latency trade-off of reranking?",
         "When is reranking mandatory in production systems?",
+        "How would you pick rerank depth for a new product?",
+      ],
+      answers: [
+        "Because first-pass retrieval is recall-oriented and may include loosely relevant items; reranking improves final precision before generation.",
+        "Reranking introduces additional model inference per candidate set, so latency grows with rerank depth and model complexity.",
+        "When incorrect evidence is costly or unsafe, such as regulated/high-risk domains that require highly precise grounding.",
+        "Benchmark several depths (for example 10/20/30/50) against answer quality and latency budgets, then choose the best quality-per-millisecond point.",
       ],
       seniorTip: "Use reranking when precision matters more than raw speed. For regulated or high-stakes domains, it is usually worth the added latency."
     },
     flashCards: [
       { q: "What does reranking improve?", a: "Precision of final context passed to the LLM." },
       { q: "Why not rerank everything in the corpus?", a: "Too expensive/slow. Reranking is applied to a narrowed candidate set." },
+      { q: "What is the standard retrieval+rereanking architecture?", a: "Wide first-pass retrieval for recall, then rerank top candidates for precision before generation." },
+      { q: "What should be monitored after enabling reranking?", a: "Latency, grounded answer quality, citation correctness, and failure/abstention behavior under low-confidence evidence." },
     ],
   },
 ];

@@ -2257,26 +2257,194 @@ const langGraphNodes = [
     sectionId: "langgraph",
     title: "Introduction to LangGraph",
     order: 1,
-    excerpt: "Why LangGraph exists — the leap from linear chains to stateful, cyclic AI agents.",
-    theory: "<p><b>LangGraph</b> is a framework for building stateful, multi-actor AI agents. It extends LangChain by adding graph-based state management — enabling agents that can loop, branch, pause for human approval, and coordinate with other agents.</p><p><b>The autonomy spectrum:</b> LLM applications exist on a spectrum from fully deterministic code (zero autonomy) to fully autonomous agents (maximum autonomy). LangGraph is designed for the high-autonomy end — building agents that can think, decide, and act with minimal human intervention.</p><p><b>What you'll build in this course:</b></p><ul><li>AI agents that search the web, answer questions, and route complex queries to humans for review</li><li>Agents that can go back in the chain and explore alternative paths (time-travel)</li><li>Multi-agent systems where multiple agents communicate to complete tasks</li><li>RAG-integrated agents: Corrective RAG (CRAG), Adaptive RAG, Self-RAG</li></ul><p><b>Why LangGraph over LangChain alone:</b> LangChain is excellent for linear pipelines (A → B → C). LangGraph adds cycles — the ability to loop back, retry, and make decisions dynamically. This is the fundamental difference between a pipeline and an agent.</p><p><b>Why LangGraph over CrewAI:</b> LangGraph is lower-level, giving you more control over the exact flow. CrewAI is higher-level and easier to start with but less flexible. For production systems where you need precise control over agent behaviour, LangGraph is the right choice.</p><p><b>Prerequisites:</b> Python 3.8+, understanding of LangChain (chat models, prompt templates, chains). LangGraph uses LangChain's classes under the hood.</p>",
-    example: "CrewAI: 'Create a research agent' → 5 lines of config. LangGraph: define the graph nodes, edges, state, and transitions explicitly. More code, but you control exactly what the agent does at each step, how it handles errors, and when it asks for human input.",
-    animation: null,
+    excerpt: "Foundational lesson: why LangGraph exists, what problem it solves, and how graph-based stateful control differs from linear LLM pipelines.",
+    theory: `<p><b>What this lesson is really doing:</b> it changes your mental model from <i>prompting</i> to <i>engineering agent systems</i>. In normal LLM apps, you ask a model once and get one answer. In LangGraph, you design a workflow where the model can reason, branch, retry, and carry state across steps.</p>
+<p><b>Core definition:</b> LangGraph is a state-machine framework for agent workflows. You explicitly model:</p>
+<ul>
+<li><b>State</b> - shared memory object passed between steps</li>
+<li><b>Nodes</b> - units of work (reasoning, retrieval, tool use, validation, response)</li>
+<li><b>Edges</b> - transitions that decide what runs next</li>
+<li><b>Cycles</b> - loops for retry, correction, and iterative improvement</li>
+</ul>
+<p><b>Why this matters:</b> most real tasks are not one-shot. A strong system needs to: detect low confidence, fetch more context, call tools, verify output quality, then decide whether to continue or finish. A linear chain cannot represent this cleanly. A graph can.</p>
+<p><b>From transcript context:</b> the course positions LangGraph as the path from low-autonomy assistants to production-grade agents. The goal is not just "get an answer" but "control behavior under uncertainty."</p>
+<p><b>Important architectural distinction:</b></p>
+<ul>
+<li>LangChain chains: excellent for deterministic or mostly-linear orchestration</li>
+<li>LangGraph: explicit control for dynamic flows, loops, and guarded autonomy</li>
+</ul>
+<p><b>What you should learn in this intro before moving on:</b></p>
+<ol>
+<li>How to represent a workflow as a graph, not as one giant prompt</li>
+<li>How state evolves after each node execution</li>
+<li>How conditional routing makes agent behavior transparent</li>
+<li>Why retries and quality gates are first-class production requirements</li>
+</ol>
+<p><b>Practical design pattern introduced here:</b> "plan -> act -> observe -> update state -> route next." This pattern appears in almost every serious LangGraph app, whether you build research agents, support assistants, code copilots, or RAG pipelines.</p>
+<p><b>Common beginner mistake:</b> trying to put all logic inside a single prompt. The correct approach is to move logic into node boundaries and let prompts do focused local reasoning.</p>
+<p><b>Another critical takeaway:</b> autonomy is not free. As autonomy increases, you must increase instrumentation: traces, state snapshots, retry limits, safe tool boundaries, and human-in-the-loop checkpoints for sensitive actions.</p>
+<p><b>End result of this lesson:</b> you should clearly understand that LangGraph is not just another LLM library - it is the control-plane for agent behavior.</p>`,
+    example: `Detailed scenario: customer-support triage agent.
+1) User asks a complex policy question.
+2) Router node classifies intent (billing, compliance, technical).
+3) Retrieval node pulls policy docs.
+4) Tool node checks account metadata.
+5) Validator node scores answer confidence.
+6) If confidence is low, graph loops to retrieval with refined query.
+7) If question is high-risk, graph routes to human approval node.
+8) Final answer is produced with evidence links.
+
+Additional architecture example:
+- Fraud-monitoring assistant routes "suspicious transaction" queries to a risk-scoring tool.
+- If score > threshold, graph auto-routes to analyst review node before customer response.
+- If score <= threshold, graph skips human review and closes with explainable rationale.
+
+This is difficult to implement cleanly as a single chain, but natural in LangGraph because each step is explicit and stateful.`,
+    animation: "LangGraphArchitectureViz",
     tool: null,
     interviewPrep: {
       questions: [
-        "What is the key architectural difference between LangChain and LangGraph?",
-        "What does 'stateful' mean in the context of LangGraph agents?",
-        "When would you choose LangGraph over CrewAI for building a multi-agent system?",
-        "What are the three types of RAG that LangGraph enables?",
+        "Why is a graph abstraction more suitable than a linear chain for agentic workflows?",
+        "What does 'stateful execution' mean in LangGraph, and why does it matter for reliability?",
+        "How do nodes, edges, and conditional routing map to real production requirements?",
+        "What class of bugs become easier to debug when orchestration is graph-explicit?",
+        "When should you keep a system as a simple chain instead of moving to LangGraph?",
+        "How would you introduce human-in-the-loop approval without rewriting the entire app?",
+        "What observability artifacts would you collect for a LangGraph workflow in production?",
+        "How do retry loops and exit conditions prevent infinite-agent behavior?",
       ],
-      seniorTip: "The key insight: LangChain implements DAGs (Directed Acyclic Graphs) — no cycles, no loops. LangGraph implements full graphs with cycles. This is the mathematical foundation of the difference. Agents need cycles: 'Try → Evaluate → If wrong, retry with different approach → Evaluate again'. This loop is impossible in a DAG. LangGraph's state machine model maps directly to how production AI agents work in the real world."
+      seniorTip: "A strong answer always links architecture to failure handling: 'We used graph nodes for retrieval, validation, and escalation. If confidence was below threshold, the graph looped with a reformulated query. If still low, it escalated to human review.' That shows engineering maturity, not just framework familiarity."
     },
     flashCards: [
-      { q: "What is LangGraph and what problem does it solve that LangChain cannot?", a: "LangGraph is a framework for stateful, multi-actor AI agents. It adds cycles to LangChain's linear pipelines — enabling agents that can loop, branch, retry, and coordinate. LangChain is DAG-only; LangGraph supports full cyclic graphs." },
-      { q: "What is the autonomy spectrum in LLM applications?", a: "From fully deterministic code (zero autonomy — does exactly what programmed) to fully autonomous agents (maximum autonomy — thinks, decides, acts independently). LangGraph targets the high-autonomy end." },
-      { q: "What are the three RAG patterns that LangGraph enables?", a: "1) Corrective RAG (CRAG) — checks retrieved chunks for relevance, corrects if poor. 2) Adaptive RAG — routes queries to different retrieval strategies. 3) Self-RAG — model evaluates its own generation and retrieves more if needed." },
-      { q: "What are the key LangGraph concepts you need to understand?", a: "Graph (the workflow structure), State (shared data passed between nodes), Nodes (processing steps), Edges (connections between nodes), Breakpoints (pause for human approval), Checkpointing (save/restore state)." },
-      { q: "Why choose LangGraph over CrewAI for production agents?", a: "LangGraph is lower-level — you control exact flow, error handling, and human-in-the-loop points precisely. CrewAI is higher-level and easier to start but less flexible. Production systems needing precise control use LangGraph." },
+      { q: "Why is LangGraph not just 'LangChain with extra syntax'?", a: "Because it introduces a different control model: explicit state transitions, conditional routing, and cycles. It is an orchestration and reliability layer for dynamic agent behavior, not only prompt composition." },
+      { q: "What does state carry between nodes?", a: "All critical context: user goal, retrieved docs, tool outputs, confidence scores, retry counters, and routing decisions. Without state, multi-step correction and accountability are weak." },
+      { q: "What is the minimum safe loop pattern in a graph agent?", a: "Attempt -> validate -> if low quality retry with bounded counter -> if still low escalate or fail safely -> finalize. Bounded loops are essential." },
+      { q: "When is a chain enough and graph unnecessary?", a: "When workflow is deterministic, one-pass, and does not need conditional routing, retries, or stateful branching." },
+      { q: "Why do production teams prefer explicit graph nodes?", a: "Each node is testable and observable. You can attribute failures to retrieval, tool call, validation, or generation instead of debugging one giant opaque prompt." },
+      { q: "How does LangGraph improve auditability?", a: "You can inspect route decisions and state snapshots at each step, making behavior traceable for debugging, compliance, and post-incident analysis." },
+      { q: "What is the relation between autonomy and control?", a: "Higher autonomy demands stronger control: strict tool contracts, route guards, retry limits, and optional human approval." },
+    ],
+  },
+  {
+    slug: "02-levels-of-autonomy-llm-applications",
+    sectionId: "langgraph",
+    title: "Levels of Autonomy in LLM applications",
+    order: 2,
+    excerpt: "Transcript-driven autonomy ladder: from deterministic code (zero autonomy) to fully agentic decision loops, with practical trade-offs at each level.",
+    theory: `<p><b>Direct lesson theme from transcript:</b> think of LLM systems on a continuous autonomy ladder, from <b>least (zero autonomy)</b> to <b>maximum autonomy</b>. This framing helps you choose architecture intentionally instead of blindly building an agent for every use case.</p>
+<p><b>Level 0 - Deterministic code:</b> no model decision rights. Every step is pre-programmed. Great for safety and predictability, weak for ambiguous tasks.</p>
+<p><b>Level 1 - Prompted single-call assistance:</b> model generates text from a prompt but does not control workflow. Good for drafting and extraction, limited adaptability.</p>
+<p><b>Level 2 - Structured LLM workflow:</b> multi-step chain with fixed order (retrieve -> format -> answer). Better quality than one-shot prompting but still rigid when unexpected cases appear.</p>
+<p><b>Level 3 - Tool-aware assistant:</b> model can choose among allowed tools (search, calculator, API) under constraints. This is where systems become practically useful for real-time tasks.</p>
+<p><b>Level 4 - Agentic loop:</b> model plans, acts, observes, and revises repeatedly. Handles uncertainty better, but demands stronger control for cost, latency, and safety.</p>
+<p><b>Level 5 - Multi-agent or high-autonomy systems:</b> multiple actors coordinate and delegate. Powerful for complex tasks, but highest operational complexity.</p>
+<p><b>Design rule:</b> pick the lowest autonomy level that meets business quality targets. Over-autonomizing early is a common engineering error.</p>
+<p><b>Trade-off matrix you should remember:</b></p>
+<ul>
+<li>Autonomy up -> flexibility up</li>
+<li>Autonomy up -> predictability down</li>
+<li>Autonomy up -> observability requirements up</li>
+<li>Autonomy up -> guardrails, eval, and failure-mode design become mandatory</li>
+</ul>
+<p><b>Why this topic exists before deep agent building:</b> it teaches architectural discipline. You should justify every increase in autonomy with measured gains, not with hype.</p>
+<p><b>LangGraph connection:</b> LangGraph is ideal once you cross into dynamic autonomy, because it gives explicit state transitions, conditional routing, and bounded loops instead of hidden behavior in prompts.</p>`,
+    example: `Autonomy selection case study:
+- Task: answer employee policy questions.
+- Option A (Level 1): one-shot prompt over raw policy text. Fast but brittle.
+- Option B (Level 2): fixed retrieval chain with templated answer. Better grounding.
+- Option C (Level 3/4): tool-calling agent that rewrites query, retrieves, validates confidence, and escalates low-confidence answers.
+
+Second example:
+- Task: classify incoming support tickets.
+- Level 0 deterministic regex/rules may already hit SLA for known categories.
+- Move to Level 2 only when long-tail categories and ambiguous language reduce accuracy.
+
+If Option B already hits target accuracy and latency, do not jump to Option C yet. Increase autonomy only when measured gaps justify it.`,
+    animation: "AutonomyLadderViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "How would you define autonomy in LLM systems in engineering terms, not buzzwords?",
+        "What practical signal tells you a chain should be upgraded to an agent loop?",
+        "How do cost, latency, and controllability change as autonomy increases?",
+        "What governance controls do you add when moving from tool-use to full agents?",
+        "How do you avoid accidental over-autonomy in early product stages?",
+        "How does autonomy choice affect QA and evaluation strategy?",
+      ],
+      seniorTip: "Interviewers value decision discipline. Answer with: requirement -> chosen autonomy level -> measured result -> why higher autonomy was or was not justified."
+    },
+    flashCards: [
+      { q: "What does zero autonomy mean?", a: "No model decision rights over workflow. All control flow is deterministic code." },
+      { q: "What is the main mistake teams make with autonomy?", a: "They jump straight to high-autonomy agents before establishing a deterministic baseline and evaluation harness." },
+      { q: "What is the safest migration path?", a: "Deterministic workflow -> fixed LLM chain -> constrained tool use -> bounded agent loop -> optional multi-agent orchestration." },
+      { q: "How should autonomy affect monitoring?", a: "Higher autonomy needs richer monitoring: route traces, state diffs, tool call logs, retry counts, and escalation events." },
+      { q: "What business-oriented question should drive autonomy choice?", a: "Does current level miss quality targets enough to justify extra complexity and risk?" },
+      { q: "Why is LangGraph useful at higher autonomy levels?", a: "It makes dynamic behavior explicit and testable through graph routing and state transitions." },
+    ],
+  },
+  {
+    slug: "03-agents-tools-intro",
+    sectionId: "langgraph",
+    title: "Agents & Tools - Intro",
+    order: 3,
+    excerpt: "Detailed foundation for agentic execution: agent as decision-maker, tools as bounded capabilities, and the action-observation loop.",
+    theory: `<p><b>Transcript framing:</b> agents are the problem-solvers; tools are how they interact with the outside world. This is the key conceptual split for beginners.</p>
+<p><b>Agent role:</b> interpret goal, decide next action, evaluate result, and continue until solved or safely stopped.</p>
+<p><b>Tool role:</b> perform concrete operations that plain model text cannot guarantee (current time lookup, search, API call, database query, calculator, code execution).</p>
+<p><b>Why this is necessary:</b> an LLM by itself can reason, but it cannot reliably access real-time external state without tool integration. Without tools, it often guesses or hallucinates in tasks that require fresh or verifiable data.</p>
+<p><b>Canonical loop introduced in this lesson:</b></p>
+<ol>
+<li>Reason about what information/action is needed</li>
+<li>Select the appropriate tool</li>
+<li>Call tool with structured input</li>
+<li>Observe tool output</li>
+<li>Decide whether to finalize or continue loop</li>
+</ol>
+<p><b>This loop is the bridge from chatbot to agent:</b> once the system can act and observe repeatedly, it can solve multi-step tasks instead of only producing one-shot text.</p>
+<p><b>Critical implementation principle:</b> tool contracts must be explicit and strict. Every tool should define allowed input schema, expected output schema, timeouts, and failure semantics.</p>
+<p><b>Beginner-friendly build order:</b></p>
+<ul>
+<li>Start with one tool (for example time lookup)</li>
+<li>Log every reason/action/observation step</li>
+<li>Add retry budget and stop conditions</li>
+<li>Then scale to multiple tools</li>
+</ul>
+<p><b>Common failure modes:</b> ambiguous tool descriptions, over-broad tool permissions, missing timeout/retry strategy, and no fallback route when tool calls fail.</p>
+<p><b>LangGraph connection:</b> each loop stage can be represented as nodes with controlled transitions, making agent behavior inspectable and stable under production constraints.</p>`,
+    example: `Practical walkthrough:
+User asks: "What is the current time in London if my system is in India?"
+1) Agent reasons it needs real-time reference from local system.
+2) Agent calls get_system_time tool.
+3) Tool returns structured current timestamp.
+4) Agent computes timezone conversion.
+5) Agent returns final answer and exits loop.
+
+Additional example:
+- User asks for reimbursement cap.
+- Agent selects policy_search tool, retrieves top chunk, validates confidence.
+- If confidence is low, loop retries with refined keywords; if still low, route to human review.
+
+If tool fails, graph can route to a retry node (with max attempts) and then fallback to a graceful error response.`,
+    animation: null,
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "In one sentence each, define agent and tool in a production architecture.",
+        "Why is tool schema design as important as prompting quality?",
+        "What is the reasoning-action-observation loop and where can it fail?",
+        "How do you prevent an agent from repeatedly calling the wrong tool?",
+        "What safety controls are mandatory before giving write-access tools?",
+        "How do you evaluate whether a tool truly improves agent quality?",
+      ],
+      seniorTip: "Strong system-design answers include failure handling: timeout, retry cap, circuit breaker, fallback response, and step-level tracing. Do not discuss agents without discussing controls."
+    },
+    flashCards: [
+      { q: "Agent vs tool in architecture terms?", a: "Agent is the decision policy; tool is a bounded execution primitive with explicit I/O contract." },
+      { q: "What does tool use fix compared to plain LLM calls?", a: "Grounding in external reality: current data, calculations, API results, and verifiable operations." },
+      { q: "What is the basic loop for tool-using agents?", a: "Reason -> choose tool -> execute -> observe -> decide next step -> finalize or iterate." },
+      { q: "Why are tool descriptions important?", a: "The model relies on descriptions to choose tools. Poor descriptions lead to wrong actions and unstable behavior." },
+      { q: "How do you keep agent loops safe?", a: "Use bounded retries, explicit stop conditions, permission-scoped tools, and fallback routes for failures." },
+      { q: "What should logs capture for agent debugging?", a: "Thought summary, selected tool, input payload, output payload, errors, and next-route decision." },
     ],
   },
 ];

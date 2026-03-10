@@ -25,6 +25,10 @@ const ComponentMap = {
   RetrievalQueryViz:      dynamic(() => import("@/components/RetrievalQueryViz")),
   MultiQueryRAGViz:       dynamic(() => import("@/components/MultiQueryRAGViz")),
   RerankerViz:            dynamic(() => import("@/components/RerankerViz")),
+  // LangGraph visualizations
+  LangGraphArchitectureViz: dynamic(() => import("@/components/LangGraphArchitectureViz")),
+  AutonomyLadderViz:        dynamic(() => import("@/components/AutonomyLadderViz")),
+  AgentToolLoopSimulator:   dynamic(() => import("@/components/AgentToolLoopSimulator")),
 };
 
 const FlashCardDeck = dynamic(() => import("@/components/FlashCardDeck"));

@@ -29,6 +29,9 @@ const ComponentMap = {
   LangGraphArchitectureViz: dynamic(() => import("@/components/LangGraphArchitectureViz")),
   AutonomyLadderViz:        dynamic(() => import("@/components/AutonomyLadderViz")),
   AgentToolLoopSimulator:   dynamic(() => import("@/components/AgentToolLoopSimulator")),
+  // LangChain visualizations
+  LangChainArchitectureMap: dynamic(() => import("@/components/LangChainArchitectureMap")),
+  ChainRoutingPatternsViz:  dynamic(() => import("@/components/ChainRoutingPatternsViz")),
 };
 
 const FlashCardDeck = dynamic(() => import("@/components/FlashCardDeck"));

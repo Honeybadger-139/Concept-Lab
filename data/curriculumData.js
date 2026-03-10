@@ -105,7 +105,7 @@ const mlNodes = [
     excerpt: "What ML is, where you already use it daily, and why this matters.",
     theory: "<p><b>Machine Learning</b> is the science of getting computers to learn from data, rather than following rules a human explicitly wrote.</p><p><b>The key insight:</b> Instead of a programmer writing 'if the email contains &quot;free money&quot; then mark it as spam', an ML model reads thousands of real spam emails, finds the patterns itself, and learns a far better filter than any human could write by hand.</p><p><b>Arthur Samuel's definition (1959):</b> 'The field of study that gives computers the ability to learn without being explicitly programmed.' Still the clearest definition 65 years later.</p><p><b>You use it daily without knowing:</b></p><ul><li>Google Search — ranking is learned from billions of clicks, not hand-tuned rules</li><li>Netflix — recommendations learned from what 260M subscribers watched next</li><li>Email spam filter — trained on millions of labelled spam/not-spam examples</li><li>Google Photos — recognises your face from a single example photo</li><li>Voice assistants — speech recognition improved from zero hand-written rules</li></ul><p><b>Why this matters:</b> ML systems improve automatically as more data arrives. Rule-based systems require manual updates for every new edge case. At scale, ML is the only approach that works.</p>",
     example: "When you search 'how to make sushi', Google surfaces the best pages not because a human manually ranked them — an ML model learned which pages satisfy users most from billions of past clicks, dwell time, and engagement signals. Change the rules by hand? Impossible. Let the model learn? It updates itself every day.",
-    animation: null,
+    animation: "LangChainArchitectureMap",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1729,7 +1729,7 @@ const langchainNodes = [
     excerpt: "Core components: models, prompts, chains, memory, agents, tools.",
     theory: "<p>The LangChain crash course covers four main learning areas, each building on the previous:</p><ol><li><b>What is LangChain</b> — the problem it solves, the abstraction it provides</li><li><b>Chat Models</b> — the first core component: how to interact with LLMs using structured message objects (SystemMessage, HumanMessage, AIMessage)</li><li><b>Prompt Templates</b> — the second core component: building reusable, parameterised prompt structures rather than hard-coded strings</li><li><b>Chains</b> — the third and most powerful component: composing models, prompts, and other tools into sequential pipelines with LCEL's pipe operator (<code>|</code>)</li></ol><p>Each component is introduced with a practical coding example. The course style is deliberately concise — theory is explained only as much as needed to understand the code, then you build immediately. This mirrors how effective engineers learn: by building and encountering problems, not by memorising concepts first.</p>",
     example: "The course builds four progressively complex LangChain apps: (1) a simple chat model call, (2) a prompt template chain, (3) a RAG retrieval chain, (4) a multi-model agentic flow. Each week adds one layer of abstraction to the same mental model.",
-    animation: null,
+    animation: "LangChainArchitectureMap",
     tool: null,
     interviewPrep: {
       questions: [
@@ -2013,20 +2013,50 @@ const langchainNodes = [
     title: "Chains - Basic",
     order: 14,
     excerpt: "Core single-chain construction from prompt to parsed output.",
-    theory: "<p>The transcript walks through the first runnable chain example step-by-step: prepare the model, define a prompt, and connect components into a simple chain.</p><p>The core message is that a basic chain should stay readable and deterministic. Build the smallest working flow first, verify output, and only then add complexity.</p>",
-    example: "Build a basic LCEL chain: prompt -> model -> output parser.",
-    animation: null,
+    theory: `<p><b>Basic chains are the foundation of reliable LangChain engineering.</b> Before routing, tools, or agents, you need one deterministic path that is easy to test and explain. A basic chain usually has three responsibilities: shape input, run generation, and normalize output.</p>
+<p><b>Canonical structure:</b> <code>prompt | model | parser</code></p>
+<ul>
+<li><b>Prompt stage</b>: turns raw application input into well-structured model instructions.</li>
+<li><b>Model stage</b>: generates an <code>AIMessage</code> from the prompt.</li>
+<li><b>Parser stage</b>: converts model response into the data type your app expects (string, JSON, typed object).</li>
+</ul>
+<p><b>Why this matters in production:</b> most instability appears when developers skip explicit parsing and pass raw model text downstream. A parser boundary makes output contracts explicit and keeps failures local.</p>
+<p><b>Minimal engineering checklist for a basic chain:</b></p>
+<ol>
+<li>Define prompt variables explicitly and validate required keys before invocation.</li>
+<li>Use a parser that matches downstream expectations (string vs structured).</li>
+<li>Log input prompt + output payload for debugging and evaluation.</li>
+<li>Keep first chain deterministic before introducing dynamic routing.</li>
+</ol>
+<p><b>Common beginner error:</b> adding too many instructions in one prompt and assuming the chain is “complete.” A strong basic chain keeps responsibilities narrow and composable.</p>`,
+    example: `Customer-support starter chain:
+1) Input: "How do I reset SSO for my workspace?"
+2) Prompt template injects role: "You are an enterprise support engineer. Reply with numbered steps."
+3) Model generates candidate answer.
+4) StrOutputParser normalizes to plain text.
+5) UI renders response.
+
+Then incrementally harden:
+- Add tone constraints.
+- Add output format checks.
+- Add retrieval only after deterministic baseline quality is measured.`,
+    animation: "LCELChainViz",
     tool: null,
     interviewPrep: {
       questions: [
-        "How do you construct a basic LangChain chain?",
-        "What are the minimum components for a runnable chain?",
+        "What is the minimum safe architecture for a first production LangChain chain?",
+        "Why should output parsing be treated as a separate stage instead of optional cleanup?",
+        "How do you decide whether to return string output or structured JSON from a basic chain?",
+        "What observability signals should be logged even for a simple chain?",
       ],
-      seniorTip: "Keep chain basics simple and deterministic before adding routing or tool use."
+      seniorTip: "Senior teams optimize for deterministic correctness first: prompt contract, parser contract, and measurable outputs. If those are weak, adding retrieval or tools only increases complexity without improving reliability."
     },
     flashCards: [
-      { q: "What is a basic chain?", a: "A linear composition of prompt, model, and parser." },
-      { q: "Why start with basic chains?", a: "They provide predictable behavior and are easy to debug." },
+      { q: "What is the default LCEL structure for a basic chain?", a: "Prompt -> Model -> Parser. Each stage has a single responsibility and clear boundary." },
+      { q: "Why is parser stage important?", a: "It enforces output shape and reduces downstream failures caused by inconsistent model text." },
+      { q: "What does deterministic baseline mean?", a: "A stable chain behavior you can repeatedly measure before adding routing, retrieval, or tools." },
+      { q: "When should you keep output as plain string?", a: "When downstream consumer is a human-facing UI and strict machine parsing is unnecessary." },
+      { q: "When should you parse to structured output?", a: "When outputs feed APIs, workflows, or UI components that require predictable keys and types." },
     ],
   },
   {
@@ -2035,20 +2065,49 @@ const langchainNodes = [
     title: "Chains - Inner Workings",
     order: 15,
     excerpt: "How data flows through LCEL components at runtime.",
-    theory: "<p>This section explains what happens internally when a chain runs: inputs are formatted, passed through runnables, and transformed at each boundary.</p><p>The transcript frames this as debugging leverage. Once you understand step transitions, it becomes easier to locate failures in prompts, model output shape, or parser expectations.</p>",
-    example: "Trace input formatting, model call, and parser output in one chain invocation.",
-    animation: null,
+    theory: `<p><b>Understanding inner workings is what turns LangChain usage into engineering.</b> A chain invocation is not magic; it is a sequence of typed transformations across runnables.</p>
+<p><b>Execution path:</b></p>
+<ol>
+<li><b>Input binding</b>: runtime variables are bound to prompt placeholders.</li>
+<li><b>Prompt rendering</b>: template becomes message list or string payload.</li>
+<li><b>Model invocation</b>: provider call executes with configured model and params.</li>
+<li><b>Model output object</b>: response arrives as message object with metadata.</li>
+<li><b>Parser transformation</b>: final stage returns application-ready output.</li>
+</ol>
+<p><b>Where bugs typically appear:</b></p>
+<ul>
+<li>Missing prompt keys or wrong variable names.</li>
+<li>Unexpected model output format (especially for JSON-like responses).</li>
+<li>Parser assumptions that do not match model output style.</li>
+<li>Silent prompt drift when system instructions are changed without evaluation.</li>
+</ul>
+<p><b>Debugging pattern:</b> isolate each stage, inspect intermediate artifacts, and confirm type expectations before the next boundary. This is faster than repeatedly tweaking the full chain.</p>
+<p><b>Operational value:</b> once you can inspect intermediate states, you can measure token usage, latency per stage, and failure concentration by boundary.</p>`,
+    example: `Trace-driven debugging flow:
+Query: "Summarize this policy in bullet points."
+- Stage 1 (Prompt render): confirms required keys are present.
+- Stage 2 (Model call): output includes prose paragraph instead of bullets.
+- Stage 3 (Parser): still succeeds as string parser, but policy requires bullet format.
+- Fix: tighten system prompt + add post-parse validation rule.
+
+Result: bug is attributed to prompt quality, not model reliability.`,
+    animation: "ChainRoutingPatternsViz",
     tool: null,
     interviewPrep: {
       questions: [
-        "What happens internally when a chain is invoked?",
-        "How do intermediate outputs move between chain steps?",
+        "Walk through the full runtime lifecycle of an LCEL chain invocation.",
+        "At which boundaries do production failures most commonly occur and why?",
+        "How would you instrument a chain to capture per-stage latency and error causes?",
+        "Why do teams misdiagnose parser failures as model quality failures?",
       ],
-      seniorTip: "Understanding chain internals helps when debugging prompt leakage or parser failures."
+      seniorTip: "Strong answers treat chains as dataflow systems: inspect each stage artifact, validate contract at boundaries, and collect stage-level metrics. That is the difference between prompt fiddling and robust LLM engineering."
     },
     flashCards: [
-      { q: "Why study chain internals?", a: "To diagnose errors and optimize behavior step-by-step." },
-      { q: "Where do most chain bugs occur?", a: "At component boundaries: prompt variables, model outputs, and parser expectations." },
+      { q: "What are the core runtime stages of a chain?", a: "Input binding -> prompt render -> model call -> response object -> parser transformation." },
+      { q: "Why inspect intermediate artifacts?", a: "They reveal exactly which stage broke contract instead of blaming the whole chain." },
+      { q: "Most common boundary bug?", a: "Prompt variable mismatch or parser expecting structure that model did not produce." },
+      { q: "What metadata is useful during debugging?", a: "Rendered prompt, token usage, response metadata, parser exceptions, stage latency." },
+      { q: "What does good chain observability look like?", a: "Trace of every runnable stage with input/output snapshots and timing." },
     ],
   },
   {
@@ -2057,20 +2116,41 @@ const langchainNodes = [
     title: "Chains - Sequential Chaining",
     order: 16,
     excerpt: "Building linear multi-step workflows where each step feeds the next.",
-    theory: "<p>The transcript extends earlier chain examples by continuously adding more runnables in sequence, showing how output from one stage becomes input to the next.</p><p>Sequential chaining is presented as the default for fixed workflows where order matters and each step has clear responsibility.</p>",
-    example: "Step A output becomes Step B input, then Step C finalizes the response.",
-    animation: null,
+    theory: `<p><b>Sequential chaining is the default architecture when the workflow order is fixed.</b> Each stage depends on prior output, so execution must proceed in a strict sequence.</p>
+<p><b>Design principles for sequential chains:</b></p>
+<ul>
+<li>Each stage should have one responsibility (classify, rewrite, retrieve, synthesize, validate).</li>
+<li>Each stage should receive well-defined input shape and emit predictable output shape.</li>
+<li>Validation should appear near the end to catch drift before response leaves the system.</li>
+</ul>
+<p><b>Why it works:</b> sequential pipelines are easy to reason about, test, and monitor. They are ideal when branching is unnecessary and consistency is more important than flexibility.</p>
+<p><b>Trade-off:</b> latency increases with every added stage. If two stages are independent, consider moving them to parallel execution later.</p>
+<p><b>Production guideline:</b> keep sequential chain depth minimal. Add a stage only when it contributes measurable quality improvement.</p>`,
+    example: `Enterprise FAQ workflow:
+1) Rewrite user query for retrieval clarity.
+2) Retrieve top 5 policy chunks.
+3) Generate grounded answer with citations.
+4) Validate answer against policy confidence threshold.
+5) Return answer or fallback.
+
+This remains sequential because every stage depends on outputs from the previous stage.`,
+    animation: "ChainRoutingPatternsViz",
     tool: null,
     interviewPrep: {
       questions: [
-        "When should you use sequential chains?",
-        "What are common failure points in linear chaining?",
+        "How do you decide if a workflow should stay sequential instead of branching?",
+        "What anti-patterns make sequential chains fragile over time?",
+        "Where should validation live in a sequential chain and why?",
+        "How do you control latency growth as stages increase?",
       ],
-      seniorTip: "Sequential chains are ideal when process order is fixed and deterministic."
+      seniorTip: "A senior design answer includes both reasoning and economics: sequential chains maximize clarity and reliability, but every stage adds cost and latency. Keep only stages with measurable utility."
     },
     flashCards: [
-      { q: "What is sequential chaining?", a: "A linear chain where each step executes in a fixed order." },
-      { q: "Why is it useful?", a: "It is simple to reason about and test." },
+      { q: "When is sequential chaining the right choice?", a: "When step order is fixed and each stage depends on previous outputs." },
+      { q: "Main strength of sequential chains?", a: "High debuggability and predictable behavior." },
+      { q: "Main limitation?", a: "Accumulated latency and limited flexibility for divergent tasks." },
+      { q: "How to keep sequential chains reliable?", a: "Clear stage contracts, explicit parsers, and terminal validation checks." },
+      { q: "What should trigger moving away from pure sequence?", a: "Independent sub-tasks or need for dynamic routing based on input class." },
     ],
   },
   {
@@ -2079,13 +2159,45 @@ const langchainNodes = [
     title: "Chains - Parallel Chaining",
     order: 17,
     excerpt: "Execute independent subchains concurrently to reduce latency.",
-    theory: "<p>This section introduces parallel chaining in LangChain: run independent branches at the same time and merge results afterward.</p><p>The transcript positions parallel flow as a latency optimization and an architectural choice when branches do not depend on each other.</p>",
-    example: "Run sentiment extraction and entity extraction at the same time, then merge outputs.",
-    animation: null,
+    theory: `<p><b>Parallel chaining optimizes latency by running independent branches concurrently.</b> If two tasks do not depend on each other, forcing sequential order wastes time.</p>
+<p><b>Typical structure:</b> one shared input fans out into parallel subchains, then a merge stage aggregates results into a final output.</p>
+<p><b>Best-fit scenarios:</b></p>
+<ul>
+<li>Multiple independent analyses on same query (intent, tone, entities).</li>
+<li>Dual retrieval strategies (semantic retriever + keyword retriever) before fusion.</li>
+<li>Cost-aware model mix (cheap classifier in one branch, richer synthesis in another).</li>
+</ul>
+<p><b>Engineering constraints:</b></p>
+<ul>
+<li>Branches must be independent or explicitly synchronized.</li>
+<li>Merge logic must resolve conflicts deterministically.</li>
+<li>Error handling must define whether one branch failure blocks final response.</li>
+</ul>
+<p><b>Common mistake:</b> parallelizing everything without considering merge complexity. If branch outputs are inconsistent, overall reliability can drop.</p>`,
+    example: `Support copilot parallel pattern:
+- Branch A: classify issue severity.
+- Branch B: extract affected product and version.
+- Branch C: retrieve known incident matches.
+Merge stage composes a triage summary and recommended next action.
+
+Latency drops because the three analyses run at the same time instead of serially.`,
+    animation: "ChainRoutingPatternsViz",
     tool: null,
-    interviewPrep: null,
+    interviewPrep: {
+      questions: [
+        "What technical condition must be true before parallelizing chain stages?",
+        "How do you design deterministic merge logic for parallel outputs?",
+        "What failure policy would you use when one parallel branch fails?",
+        "When does parallel chaining hurt more than it helps?",
+      ],
+      seniorTip: "Parallelism is valuable only when branch independence is real and merge contracts are strict. Senior engineers optimize total system behavior, not just isolated stage speed."
+    },
     flashCards: [
-      { q: "When is parallel chaining helpful?", a: "When chain branches are independent and can run concurrently." },
+      { q: "When should you use parallel chaining?", a: "When branches are independent and can execute concurrently without data dependency." },
+      { q: "Primary benefit of parallel chains?", a: "Reduced end-to-end latency by overlapping independent work." },
+      { q: "Key risk in parallel architecture?", a: "Inconsistent branch outputs that are hard to merge reliably." },
+      { q: "What is required after parallel branches?", a: "A deterministic merge stage with clear conflict-resolution logic." },
+      { q: "How do you handle branch failure?", a: "Define policy upfront: fail-fast, partial response, or fallback branch retry." },
     ],
   },
   {
@@ -2094,13 +2206,45 @@ const langchainNodes = [
     title: "Chains - Conditional Chaining",
     order: 18,
     excerpt: "Route requests to different subchains based on runtime conditions.",
-    theory: "<p>The transcript presents conditional chaining as a common production pattern: route requests differently based on runtime conditions or a classifier step.</p><p>Main idea: avoid one-size-fits-all chains; branch logic can improve both quality and cost by using the right path for each input.</p>",
-    example: "If question is factual, route to RAG chain; if creative, route to direct-generation chain.",
-    animation: null,
+    theory: `<p><b>Conditional chaining introduces runtime decision-making into an otherwise fixed workflow.</b> Instead of applying one universal chain to every request, a router determines the best path based on input features or classifier output.</p>
+<p><b>Typical conditional architecture:</b></p>
+<ol>
+<li>Router stage classifies input (factual, analytical, creative, policy-sensitive, etc.).</li>
+<li>Each class maps to a specialized subchain.</li>
+<li>Outputs are normalized into a shared response schema.</li>
+</ol>
+<p><b>Why this pattern is important:</b> it improves answer quality and cost efficiency simultaneously. Simple requests can run on lightweight routes; complex requests can invoke retrieval or richer models only when needed.</p>
+<p><b>Critical design points:</b></p>
+<ul>
+<li>Router confidence thresholds and fallback path for ambiguous classification.</li>
+<li>Branch contract parity (same output shape across all branches).</li>
+<li>Offline evaluation of router accuracy to prevent wrong-path degradation.</li>
+</ul>
+<p><b>Failure mode to watch:</b> unstable routing can create inconsistent user experience where similar queries get different treatment. Mitigate with stable routing rules and monitored confusion matrix.</p>`,
+    example: `Knowledge assistant router:
+- If query needs exact policy reference -> route to RAG branch with citations.
+- If query is brainstorming -> route to creative generation branch.
+- If query touches legal/compliance terms -> route to constrained compliance branch.
+
+All branches emit same response schema:
+{ answer, confidence, citations, escalation_required }`,
+    animation: "ChainRoutingPatternsViz",
     tool: null,
-    interviewPrep: null,
+    interviewPrep: {
+      questions: [
+        "What are the minimum components of a robust conditional chain?",
+        "How do you evaluate whether routing decisions are improving system quality?",
+        "What happens when router confidence is low and how should fallback be designed?",
+        "Why is output schema normalization mandatory across branches?",
+      ],
+      seniorTip: "Conditional chains succeed when routing is treated as a measurable ML component, not a prompt trick. Track route accuracy, downstream answer quality by route, and misroute impact."
+    },
     flashCards: [
-      { q: "What is conditional chaining?", a: "Dynamic routing to different chain paths based on input or classifier output." },
+      { q: "What is conditional chaining?", a: "Routing runtime input to different specialized subchains based on a decision stage." },
+      { q: "Why use conditional routing?", a: "To improve quality and cost by matching query type to the right chain path." },
+      { q: "Key risk in conditional systems?", a: "Misrouting queries to the wrong branch, causing unreliable outcomes." },
+      { q: "How to handle uncertain route decisions?", a: "Use confidence thresholds and a safe default/fallback path." },
+      { q: "Why normalize branch outputs?", a: "So downstream consumers can rely on a consistent response contract." },
     ],
   },
   {
@@ -2109,12 +2253,51 @@ const langchainNodes = [
     title: "RAGs Intro",
     order: 19,
     excerpt: "Introduction to retrieval-augmented generation in LangChain.",
-    theory: "<p>This transcript starts the RAG component and frames it as retrieval-augmented generation: fetch relevant context first, then generate with grounding.</p><p>The emphasis is conceptual foundation before code: why retrieval changes answer quality, and where RAG fits in practical LangChain systems.</p>",
-    example: "Retrieve relevant chunks first, then generate grounded answers from context.",
-    animation: null,
+    theory: `<p><b>RAG (Retrieval-Augmented Generation) solves a core LLM limitation:</b> model parameters are not a reliable source for domain-specific, time-sensitive, or citation-grade answers. RAG injects external context at inference time.</p>
+<p><b>Core flow:</b></p>
+<ol>
+<li>User asks question.</li>
+<li>Retriever fetches relevant chunks from indexed knowledge.</li>
+<li>LLM generates answer using retrieved context + question.</li>
+</ol>
+<p><b>What RAG improves:</b></p>
+<ul>
+<li>Grounded answers with traceable evidence.</li>
+<li>Reduced hallucination for domain Q&A.</li>
+<li>Faster knowledge updates without model retraining.</li>
+</ul>
+<p><b>What RAG does not automatically fix:</b></p>
+<ul>
+<li>Poor chunking and bad indexing strategy.</li>
+<li>Noisy retrieval candidates.</li>
+<li>Weak prompts that fail to enforce grounding behavior.</li>
+</ul>
+<p><b>System mindset:</b> RAG is not one component; it is a retrieval quality system. Document hygiene, chunking policy, embedding choice, retriever config, and answer prompt all co-determine final quality.</p>`,
+    example: `Internal policy assistant:
+- HR policy docs are indexed in vector DB.
+- User asks: "What is maternity leave policy for contractors?"
+- Retriever fetches relevant policy sections.
+- Generator answers only with retrieved sections and cites source IDs.
+
+When policy changes, only documents are re-indexed; model weights remain unchanged.`,
+    animation: "RAGPipelineSteps",
     tool: null,
-    interviewPrep: null,
-    flashCards: [],
+    interviewPrep: {
+      questions: [
+        "Why is RAG preferred over fine-tuning for frequently changing knowledge domains?",
+        "Which stage usually contributes most to poor RAG answers: retrieval or generation?",
+        "How do you design grounding constraints so model does not invent unsupported facts?",
+        "What metrics matter for evaluating a RAG baseline?",
+      ],
+      seniorTip: "Treat retrieval as first-class. In many systems, generation is blamed for hallucination when root cause is low-recall or low-precision retrieval."
+    },
+    flashCards: [
+      { q: "What problem does RAG solve?", a: "It grounds model outputs in external retrieved context, reducing reliance on stale internal model memory." },
+      { q: "Why can RAG update faster than fine-tuning?", a: "Knowledge updates happen by re-indexing documents, not retraining models." },
+      { q: "What must be true for RAG to work well?", a: "Retriever returns relevant chunks and prompt enforces context-grounded generation." },
+      { q: "Common RAG misconception?", a: "Adding a vector DB alone guarantees quality. It does not without strong retrieval configuration." },
+      { q: "What makes RAG auditable?", a: "Citations and source IDs attached to answers from retrieved context." },
+    ],
   },
   {
     slug: "20-rags-workflow-part-1",
@@ -2122,12 +2305,48 @@ const langchainNodes = [
     title: "RAGs - Workflow Part 1",
     order: 20,
     excerpt: "First part of practical RAG workflow implementation.",
-    theory: "<p>Part 1 breaks down the retrieval pipeline at a component level. The transcript focuses on understanding each stage and how they connect rather than jumping straight to black-box code.</p><p>It establishes the system map used in later coding sessions: document prep, chunking, indexing, and retrieval flow.</p>",
-    example: "Load docs, split into chunks, and prepare retrieval pipeline.",
-    animation: null,
+    theory: `<p><b>Workflow Part 1 focuses on offline pipeline design.</b> Before answering user queries, you need a robust ingestion path that turns raw documents into searchable context units.</p>
+<p><b>Offline pipeline stages:</b></p>
+<ol>
+<li>Load raw documents from source systems.</li>
+<li>Normalize formatting (remove artifacts, preserve semantic boundaries).</li>
+<li>Chunk documents into retrieval-friendly units.</li>
+<li>Generate embeddings for each chunk.</li>
+<li>Store vectors + metadata in index.</li>
+</ol>
+<p><b>Why this stage is critical:</b> query-time quality is capped by ingestion-time quality. Bad chunking, missing metadata, or noisy text directly degrade retrieval relevance.</p>
+<p><b>Design decision points:</b></p>
+<ul>
+<li>Chunk size and overlap policy by document type.</li>
+<li>Metadata schema (source, section, version, timestamp, access scope).</li>
+<li>Re-index strategy for document updates.</li>
+</ul>
+<p><b>Practical principle:</b> build ingestion pipeline as repeatable data engineering workflow, not ad hoc script.</p>`,
+    example: `Company handbook ingestion:
+1) Pull markdown and PDF handbooks.
+2) Clean headers/footers and normalize text.
+3) Chunk by headings with overlap for context continuity.
+4) Embed each chunk and attach metadata:
+   { doc_id, section, updated_at, visibility_scope }.
+5) Upsert into vector DB with version-aware IDs.`,
+    animation: "RAGPipelineSteps",
     tool: null,
-    interviewPrep: null,
-    flashCards: [],
+    interviewPrep: {
+      questions: [
+        "Why does ingestion design often matter more than model choice in early RAG quality?",
+        "How do chunking strategy and metadata schema affect retrieval precision?",
+        "What is your re-indexing strategy when source docs update frequently?",
+        "How would you prevent duplicate or stale chunks in production indexes?",
+      ],
+      seniorTip: "RAG teams that win treat ingestion as product-critical infrastructure. If ingestion is weak, no prompt will consistently rescue answer quality."
+    },
+    flashCards: [
+      { q: "What does workflow part 1 mostly cover?", a: "Offline ingestion: document loading, normalization, chunking, embedding, indexing." },
+      { q: "Why is chunking policy important?", a: "It controls retrieval granularity, context completeness, and noise level." },
+      { q: "Why attach metadata during ingestion?", a: "Metadata enables filtering, debugging, access control, and better route decisions later." },
+      { q: "What happens if ingestion is inconsistent?", a: "Query-time retrieval becomes unreliable and answer quality fluctuates." },
+      { q: "How should ingestion run in production?", a: "As repeatable, versioned, monitored pipeline with idempotent upserts." },
+    ],
   },
   {
     slug: "21-rags-embeddings-vector-dbs",
@@ -2135,12 +2354,45 @@ const langchainNodes = [
     title: "RAGs - Embeddings & Vector DBs",
     order: 21,
     excerpt: "Embedding generation and vector database indexing fundamentals.",
-    theory: "<p>This section explains embeddings and vector databases as a paired concept. Embeddings convert text into vector space; vector DBs store/search those vectors efficiently.</p><p>The transcript focuses on intuition: why semantically similar chunks cluster, and how that enables retrieval by meaning rather than exact keywords.</p>",
-    example: "Convert chunks to vectors, store in vector DB, and query by semantic similarity.",
-    animation: null,
-    tool: null,
-    interviewPrep: null,
-    flashCards: [],
+    theory: `<p><b>Embeddings and vector databases are the retrieval engine of RAG.</b> Embeddings map text into high-dimensional vectors such that semantic similarity corresponds to geometric proximity. Vector DBs index these vectors for fast nearest-neighbor search.</p>
+<p><b>Conceptual model:</b></p>
+<ul>
+<li>Each chunk -> embedding vector.</li>
+<li>User query -> embedding vector using same model family.</li>
+<li>Similarity search returns nearest chunks (top-k).</li>
+</ul>
+<p><b>Key engineering requirement:</b> use consistent embedding model for both document and query vectors. Mixing incompatible embedding spaces causes retrieval collapse.</p>
+<p><b>Vector DB responsibilities:</b></p>
+<ul>
+<li>Fast ANN (approximate nearest neighbor) retrieval at scale.</li>
+<li>Metadata filtering (tenant, doc type, date, permission).</li>
+<li>Upsert/delete/version management.</li>
+</ul>
+<p><b>Practical trade-offs:</b> higher-dimensional embeddings can improve semantic nuance but increase storage and latency; top-k too small hurts recall, too large introduces noise.</p>`,
+    example: `Product-support retrieval:
+- Documents embedded with model A and stored in vector DB.
+- User query embedded with same model A.
+- Retrieve top 8 chunks by cosine similarity.
+- Apply metadata filter for product="Billing API".
+- Pass filtered chunks to generation stage.`,
+    animation: "VectorSearchVisualizer",
+    tool: "TokenCounter",
+    interviewPrep: {
+      questions: [
+        "Why must query and document embeddings come from the same embedding space?",
+        "How do you choose top-k for retrieval and what signals guide tuning?",
+        "When would you prefer hybrid retrieval over pure vector similarity?",
+        "What metadata filters are mandatory in multi-tenant systems?",
+      ],
+      seniorTip: "Embedding quality and retrieval policy often dominate downstream answer quality. Tune retriever recall/precision before investing in bigger generation models."
+    },
+    flashCards: [
+      { q: "What does an embedding represent?", a: "A numeric vector encoding semantic meaning of text for similarity comparison." },
+      { q: "Why same embedding model for docs and queries?", a: "To keep both vectors in the same semantic space for meaningful distance calculations." },
+      { q: "What is top-k retrieval?", a: "Returning the k most similar chunks to a query embedding." },
+      { q: "What does metadata filtering add?", a: "Context constraints like tenant, source, or date for higher precision and safer retrieval." },
+      { q: "Common retrieval tuning issue?", a: "Choosing top-k too high adds noise; too low misses relevant context." },
+    ],
   },
   {
     slug: "22-rags-workflow-part-1-cont",
@@ -2148,12 +2400,47 @@ const langchainNodes = [
     title: "RAGs - Work-Flow Part 1 - (cont.)",
     order: 22,
     excerpt: "Continuation of workflow setup and retrieval wiring.",
-    theory: "<p>The continuation transcript resumes after embeddings/vector DB basics and returns to the full pipeline. It connects prior concepts back to concrete retrieval execution.</p><p>Practical takeaway: once chunks are indexed, retriever configuration and chunk quality become the biggest levers for answer quality.</p>",
-    example: "Refine retriever parameters and retrieval chain integration.",
-    animation: null,
+    theory: `<p><b>Workflow continuation moves from “index exists” to “retriever behaves correctly.”</b> Once embeddings are stored, the next engineering challenge is retrieval quality under real queries.</p>
+<p><b>Retriever wiring tasks:</b></p>
+<ol>
+<li>Instantiate retriever from vector store with explicit search parameters.</li>
+<li>Define top-k and optional score threshold.</li>
+<li>Apply metadata constraints for relevance and safety.</li>
+<li>Integrate retriever output into generation prompt contract.</li>
+</ol>
+<p><b>Quality levers in this stage:</b></p>
+<ul>
+<li>Query rewriting before retrieval (improves recall for vague user input).</li>
+<li>Chunk-level deduplication before passing to model.</li>
+<li>Evidence formatting (show source + section with each chunk).</li>
+</ul>
+<p><b>Important operational insight:</b> retrieval is iterative. Initial retriever settings are rarely optimal; quality improves via evaluation loops on real query sets.</p>`,
+    example: `Retriever tuning loop:
+- Start with top-k = 5.
+- Evaluate answer quality on 100 representative questions.
+- Observe frequent missing context for long policy queries.
+- Increase top-k to 8 + metadata filter by policy type.
+- Add query rewriting for abbreviations.
+
+Outcome: recall improves without large precision loss.`,
+    animation: "RetrievalQueryViz",
     tool: null,
-    interviewPrep: null,
-    flashCards: [],
+    interviewPrep: {
+      questions: [
+        "Which retriever parameters are most impactful in early RAG tuning?",
+        "How do you prevent retrieval noise from overwhelming the generator?",
+        "What role does query rewriting play in retrieval quality?",
+        "How would you structure an evaluation loop for retriever iteration?",
+      ],
+      seniorTip: "Treat retriever tuning as continuous optimization. Teams that measure retrieval quality weekly outperform teams that only tune prompts."
+    },
+    flashCards: [
+      { q: "Main focus of workflow continuation?", a: "Configuring and tuning retriever behavior after indexing is complete." },
+      { q: "Why can top-k alone be insufficient?", a: "Without filtering and deduplication, extra chunks may increase noise more than useful evidence." },
+      { q: "What improves vague query retrieval?", a: "Query rewriting and normalization before embedding search." },
+      { q: "Why format retrieved evidence clearly?", a: "It helps the generator stay grounded and makes downstream citations reliable." },
+      { q: "How should retriever quality be improved?", a: "Through iterative evaluation on representative query sets and controlled parameter changes." },
+    ],
   },
   {
     slug: "23-rags-workflow-part-2",
@@ -2161,12 +2448,47 @@ const langchainNodes = [
     title: "RAGs - Work-Flow Part 2",
     order: 23,
     excerpt: "Second part of end-to-end RAG workflow implementation.",
-    theory: "<p>Part 2 follows the query-time path: user question enters the system, relevant chunks are fetched, and those chunks are injected for final answer generation.</p><p>The transcript highlights the handoff from retrieval to generation and why context quality directly controls final response quality.</p>",
-    example: "Add answer synthesis and quality validation steps to the chain.",
-    animation: null,
+    theory: `<p><b>Workflow Part 2 is query-time orchestration.</b> This is where retrieval output and generation behavior combine into user-visible quality.</p>
+<p><b>Query-time stages:</b></p>
+<ol>
+<li>Receive user query and optional conversation context.</li>
+<li>Retrieve relevant chunks with configured retriever.</li>
+<li>Assemble context window for generation prompt.</li>
+<li>Generate grounded answer with citation discipline.</li>
+<li>Apply post-generation checks (confidence, citation presence, policy constraints).</li>
+</ol>
+<p><b>Critical handoff problem:</b> many systems retrieve good chunks but lose grounding because prompt does not explicitly require evidence-based answering. Prompt contract must force “answer from provided context; abstain when insufficient.”</p>
+<p><b>Production safeguards:</b></p>
+<ul>
+<li>Context truncation policy to stay within token budget.</li>
+<li>Fallback when retrieval confidence is low.</li>
+<li>Structured response schema including confidence and sources.</li>
+</ul>`,
+    example: `Query-time contract example:
+System instruction:
+"Answer only using retrieved context. If context is insufficient, explicitly say so."
+
+Post-check:
+- Ensure at least one source citation appears.
+- If no citation or low retrieval score, route to clarification or escalation response.`,
+    animation: "RAGPipelineSteps",
     tool: null,
-    interviewPrep: null,
-    flashCards: [],
+    interviewPrep: {
+      questions: [
+        "What is the most failure-prone boundary in query-time RAG flow?",
+        "How do you enforce grounding behavior at generation stage?",
+        "How should low-confidence retrieval be handled safely?",
+        "What information should final response schema include for observability?",
+      ],
+      seniorTip: "A production RAG answer is not just text. It should carry evidence metadata and confidence signals so downstream systems can make safe decisions."
+    },
+    flashCards: [
+      { q: "What does workflow part 2 cover?", a: "Query-time execution: retrieve, synthesize, validate, and return grounded response." },
+      { q: "Why can good retrieval still produce weak answers?", a: "If generation prompt does not enforce evidence use, model may ignore context." },
+      { q: "What should happen on low-confidence retrieval?", a: "Fallback: ask clarifying question, escalate, or respond with uncertainty explicitly." },
+      { q: "Why include citations in response?", a: "Citations improve trust, auditability, and debugging of grounding quality." },
+      { q: "Key token-budget concern?", a: "Too much context causes truncation or noisy generation; context assembly must be deliberate." },
+    ],
   },
   {
     slug: "24-rags-basic-example-1",
@@ -2174,12 +2496,39 @@ const langchainNodes = [
     title: "RAGs - Basic Example (1)",
     order: 24,
     excerpt: "First basic end-to-end RAG example.",
-    theory: "<p>This is the first end-to-end code example in the RAG module. The transcript demonstrates implementing the same conceptual diagram built in earlier lessons.</p><p>Focus is on getting a minimal working retrieval+generation path before optimization.</p>",
-    example: "Run a simple retrieve-then-generate flow on one document set.",
-    animation: null,
+    theory: `<p><b>Basic Example 1 is the first complete RAG implementation.</b> The goal is not perfection; it is to build a small, working baseline from ingestion to answer generation.</p>
+<p><b>What this baseline should demonstrate:</b></p>
+<ul>
+<li>End-to-end connectivity between retriever and model.</li>
+<li>Grounded answer generation from retrieved context.</li>
+<li>Minimal observability (input query, retrieved docs, final response).</li>
+</ul>
+<p><b>Why this step is essential:</b> without a baseline, tuning is guesswork. A simple pipeline provides a control condition for later improvements (chunking changes, reranking, metadata filtering, query rewriting).</p>
+<p><b>Success criterion:</b> system answers correctly for straightforward queries and fails gracefully for unsupported ones.</p>`,
+    example: `Minimal baseline test pack:
+1) Question directly answered in docs -> should return accurate answer with source.
+2) Question partially covered -> should return partial answer + caveat.
+3) Question absent from docs -> should abstain instead of hallucinating.
+
+Only after these pass should you optimize retrieval parameters.`,
+    animation: "ChunkingVisualizer",
     tool: null,
-    interviewPrep: null,
-    flashCards: [],
+    interviewPrep: {
+      questions: [
+        "Why is a minimal end-to-end baseline important before optimization?",
+        "What does a good baseline test set look like for first RAG example?",
+        "How do you define graceful failure behavior for unsupported queries?",
+        "Which metrics should be captured even in a minimal prototype?",
+      ],
+      seniorTip: "Prototype speed matters, but baseline rigor matters more. If failure behavior is undefined in Example 1, production incidents are guaranteed later."
+    },
+    flashCards: [
+      { q: "Primary objective of basic example 1?", a: "Establish a working end-to-end RAG baseline with predictable behavior." },
+      { q: "Why avoid heavy optimization at this stage?", a: "You need a control baseline first to measure impact of later changes." },
+      { q: "What is graceful failure in baseline RAG?", a: "Clear uncertainty/abstention when knowledge is missing, not fabricated answers." },
+      { q: "Which three query categories should baseline tests include?", a: "Answerable, partially answerable, and unanswerable queries." },
+      { q: "What should be logged from day one?", a: "Query, retrieved chunks, final answer, and citation presence." },
+    ],
   },
   {
     slug: "25-rags-basic-example-2",
@@ -2187,12 +2536,43 @@ const langchainNodes = [
     title: "RAGs - Basic Example (2)",
     order: 25,
     excerpt: "Second basic RAG example with incremental improvements.",
-    theory: "<p>The second example advances the first by focusing on retrieval of only relevant chunks from the vector database before generation.</p><p>The transcript emphasizes narrowing context to reduce noise and improve the quality of final answers.</p>",
-    example: "Compare results after tweaking chunking and retrieval parameters.",
-    animation: null,
+    theory: `<p><b>Basic Example 2 introduces targeted improvements over baseline.</b> After proving the pipeline works, this stage improves precision by tightening retrieval and context assembly.</p>
+<p><b>Typical upgrades from example 1:</b></p>
+<ul>
+<li>Retriever parameter tuning (top-k, score thresholds).</li>
+<li>Better chunk strategy for domain-specific documents.</li>
+<li>Deduplication of near-identical chunks.</li>
+<li>Prompt instructions that prioritize evidence hierarchy.</li>
+</ul>
+<p><b>Core lesson:</b> RAG quality grows through small controlled iterations, not one giant rewrite. Each change should be linked to measurable quality gain.</p>
+<p><b>Evaluation emphasis:</b> compare before/after on the same question set to avoid subjective conclusions.</p>`,
+    example: `Iteration comparison:
+Baseline:
+- top-k = 10, no deduplication, generic answer prompt.
+Iteration:
+- top-k = 6, deduplicate by source section, enforce citation-first response format.
+
+Measured effect:
+- Fewer irrelevant citations.
+- Better directness and reduced hallucination in long-tail queries.`,
+    animation: "MultiQueryRAGViz",
     tool: null,
-    interviewPrep: null,
-    flashCards: [],
+    interviewPrep: {
+      questions: [
+        "How do you choose which retrieval parameter to tune first?",
+        "Why is A/B comparison on a fixed eval set essential for RAG iteration?",
+        "What does deduplication improve in retrieval-to-generation handoff?",
+        "How do you avoid overfitting retriever settings to a tiny question sample?",
+      ],
+      seniorTip: "Iteration discipline beats intuition. Senior teams tie each tuning change to a hypothesis, metric delta, and rollback path."
+    },
+    flashCards: [
+      { q: "What is the purpose of basic example 2?", a: "Improve baseline RAG precision through controlled retrieval and prompt refinements." },
+      { q: "Why compare on same eval set?", a: "To attribute quality changes to system modifications rather than query variance." },
+      { q: "What does chunk deduplication help with?", a: "Reduces repetitive evidence and lowers generation noise." },
+      { q: "What risk appears with over-tuning top-k?", a: "Good results on narrow tests but degraded performance on broader real queries." },
+      { q: "Best practice for iterative RAG tuning?", a: "One change at a time with measurable before/after metrics." },
+    ],
   },
   {
     slug: "26-rags-with-metadata",
@@ -2200,12 +2580,46 @@ const langchainNodes = [
     title: "RAGs - With MetaData",
     order: 26,
     excerpt: "Using metadata filters to improve retrieval precision.",
-    theory: "<p>This transcript introduces metadata in chunk pipelines: attach source attributes to chunks and use them as retrieval filters.</p><p>Why it matters: when many documents are indexed, metadata helps constrain retrieval to the right source, time range, or category before generation.</p>",
-    example: "Filter results by source, date, or document type before generation.",
-    animation: null,
+    theory: `<p><b>Metadata transforms retrieval from broad semantic search into controlled context selection.</b> Without metadata, vector similarity may retrieve semantically related but operationally irrelevant chunks.</p>
+<p><b>Typical metadata fields:</b></p>
+<ul>
+<li>Document source, section, and version.</li>
+<li>Timestamp / effective date.</li>
+<li>Department or domain label.</li>
+<li>Access scope (tenant, team, permission class).</li>
+</ul>
+<p><b>Why metadata is critical in production:</b></p>
+<ul>
+<li>Improves precision by narrowing candidate set before ranking.</li>
+<li>Supports security boundaries (tenant isolation).</li>
+<li>Enables time-aware answers (latest policy only).</li>
+</ul>
+<p><b>Design caution:</b> poor metadata hygiene causes silent retrieval errors. Enforce schema at ingestion and validate required fields before index upsert.</p>`,
+    example: `Enterprise HR assistant with metadata filters:
+- Query: "What is leave carry-forward policy for India contractors?"
+- Retriever filter:
+  { region: "IN", employment_type: "contractor", policy_version: "active" }
+- Then semantic similarity search runs only inside filtered subset.
+
+Result: higher precision and lower risk of returning policy from wrong region.`,
+    animation: "RetrievalQueryViz",
     tool: null,
-    interviewPrep: null,
-    flashCards: [],
+    interviewPrep: {
+      questions: [
+        "Why is metadata filtering mandatory in multi-tenant RAG systems?",
+        "How do you design metadata schema for retrieval precision and security?",
+        "What failures occur when metadata is missing or inconsistent?",
+        "How would you version documents while preserving retrieval continuity?",
+      ],
+      seniorTip: "Metadata is both relevance control and governance control. Treat it as schema infrastructure, not optional tags."
+    },
+    flashCards: [
+      { q: "What does metadata add to RAG retrieval?", a: "Constraint-based filtering that improves precision and enforces governance boundaries." },
+      { q: "Why is metadata crucial for multi-tenant apps?", a: "It prevents cross-tenant retrieval leaks and keeps responses scoped correctly." },
+      { q: "Common metadata fields in RAG?", a: "Source, version, timestamp, domain label, access scope, document type." },
+      { q: "What happens with inconsistent metadata?", a: "Relevant chunks may be excluded or unsafe chunks may be retrieved." },
+      { q: "When should metadata be attached?", a: "During ingestion, before embedding upsert into vector store." },
+    ],
   },
   {
     slug: "27-rags-one-off-question",
@@ -2213,12 +2627,39 @@ const langchainNodes = [
     title: "RAGs - One-off Question",
     order: 27,
     excerpt: "Handling single-query retrieval scenarios efficiently.",
-    theory: "<p>This section adapts the previous RAG setup for one-off question handling. The transcript shows how to reuse core retrieval logic with lighter conversation-state requirements.</p><p>It is a practical pattern for ad hoc Q&A where persistent chat memory is unnecessary.</p>",
-    example: "Run retrieval for an isolated question without conversation history.",
-    animation: null,
+    theory: `<p><b>One-off RAG handles isolated questions without persistent conversational memory.</b> This pattern is ideal for search-style interactions, dashboards, and embedded Q&A widgets.</p>
+<p><b>Design characteristics:</b></p>
+<ul>
+<li>No long conversation history dependency.</li>
+<li>Lower token usage and reduced context complexity.</li>
+<li>Fast response path optimized for single-turn grounding.</li>
+</ul>
+<p><b>Benefits:</b> simpler architecture, easier caching, lower latency, easier observability because each request is independent.</p>
+<p><b>Trade-off:</b> no implicit continuity across turns. If follow-up context is needed, user input must restate context or system must explicitly support short-term context stitching.</p>`,
+    example: `Docs search widget:
+- User asks one isolated question.
+- System retrieves relevant chunks and returns grounded answer with citations.
+- Request completes with no memory state stored.
+
+If user asks a follow-up, system treats it as new query unless follow-up context is explicitly included.`,
+    animation: "RetrievalQueryViz",
     tool: null,
-    interviewPrep: null,
-    flashCards: [],
+    interviewPrep: {
+      questions: [
+        "When is one-off RAG preferable to conversational RAG?",
+        "What performance advantages come from stateless single-turn retrieval?",
+        "How do you handle follow-up ambiguity without chat memory?",
+        "What caching strategy works best for one-off question patterns?",
+      ],
+      seniorTip: "Choose one-off RAG unless conversation continuity is a hard requirement. Stateless systems are cheaper, faster, and easier to operate."
+    },
+    flashCards: [
+      { q: "What is one-off RAG?", a: "Single-turn retrieval-augmented answering without persistent conversation memory." },
+      { q: "Why is one-off RAG operationally simpler?", a: "No memory management, lower token overhead, cleaner per-request observability." },
+      { q: "Main limitation of one-off RAG?", a: "Weak handling of follow-up questions that rely on prior turn context." },
+      { q: "Best fit use cases?", a: "Search widgets, ad hoc internal docs Q&A, support portals with isolated queries." },
+      { q: "How to support follow-ups in one-off systems?", a: "Require explicit context restatement or add lightweight context-carry mechanism." },
+    ],
   },
   {
     slug: "28-agents-tools-intro",
@@ -2226,12 +2667,44 @@ const langchainNodes = [
     title: "Agents & Tools - Intro",
     order: 28,
     excerpt: "Introduction to tool-using agent workflows in LangChain.",
-    theory: "<p>The transcript opens the final LangChain component: agents and tools. It frames the topic as approachable and connects it back to prior chain concepts.</p><p>Main point: tools let an LLM move beyond pure text response and perform external actions through controlled interfaces.</p>",
-    example: "Agent decides when to call search or calculator tools based on query.",
-    animation: null,
-    tool: null,
-    interviewPrep: null,
-    flashCards: [],
+    theory: `<p><b>Agents and tools extend chains from fixed workflows to adaptive execution.</b> A chain follows predefined steps; an agent decides what to do next at runtime.</p>
+<p><b>Concept split:</b></p>
+<ul>
+<li><b>Agent</b> = decision policy (reason about next action).</li>
+<li><b>Tool</b> = bounded capability (API call, calculator, search, DB lookup).</li>
+</ul>
+<p><b>Core loop:</b> reason -> select tool -> execute -> observe -> decide whether to continue.</p>
+<p><b>Why this is useful:</b> real tasks often require dynamic action choice. A static chain cannot always decide upfront which external operation is needed.</p>
+<p><b>Safety requirements before production:</b></p>
+<ul>
+<li>Strict tool schemas and clear descriptions.</li>
+<li>Timeouts, retries, and failure fallbacks.</li>
+<li>Permission-scoped actions for write operations.</li>
+<li>Trace logging for each decision/action step.</li>
+</ul>`,
+    example: `Travel assistant example:
+- User asks: "Find me the cheapest evening flight and a nearby hotel."
+- Agent reasons that flight search and hotel search tools are required.
+- Calls tools in sequence, observes outputs, then composes final ranked options.
+- If one tool fails, agent falls back with partial answer + explicit limitation note.`,
+    animation: "LangChainArchitectureMap",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "What architectural difference separates a chain from an agent?",
+        "Why are tool descriptions and schemas central to agent reliability?",
+        "What minimum safety controls should exist before enabling tool execution?",
+        "How do you decide if a task should use agent loop or deterministic chain?",
+      ],
+      seniorTip: "Use agents only when runtime decision-making is necessary. If workflow can be deterministic, chains are more reliable and cheaper to operate."
+    },
+    flashCards: [
+      { q: "Agent vs chain?", a: "Chain is fixed execution order; agent dynamically decides next action at runtime." },
+      { q: "Why are tools needed?", a: "They let the agent access external capabilities unavailable to model-only generation." },
+      { q: "What is the canonical agent loop?", a: "Reason -> Tool action -> Observation -> Next decision (repeat until done)." },
+      { q: "Biggest agent reliability lever?", a: "Well-defined tool contracts with strict input/output schema and clear descriptions." },
+      { q: "When avoid agents?", a: "When deterministic chain already satisfies quality and latency goals." },
+    ],
   },
   {
     slug: "29-agents-tools-deep-dive",
@@ -2239,12 +2712,50 @@ const langchainNodes = [
     title: "Agents & Tools - Deep Dive",
     order: 29,
     excerpt: "Detailed agent execution flow, planning, and tool-calling behavior.",
-    theory: "<p>This deep-dive transcript focuses on building an agent from scratch in code. It walks through planning, tool calls, and response synthesis in an executable loop.</p><p>Expected outcome from the session is implementation clarity: how agent steps map to concrete code rather than only conceptual diagrams.</p>",
-    example: "Inspect planner -> tool call -> observation -> final answer loop.",
-    animation: null,
-    tool: null,
-    interviewPrep: null,
-    flashCards: [],
+    theory: `<p><b>Deep dive moves from concept to implementation mechanics.</b> The workflow shows how to construct a ReAct-style agent that can reason, call tools, process observations, and terminate with a final answer.</p>
+<p><b>Implementation sequence:</b></p>
+<ol>
+<li>Define task prompt format for thought/action/observation cycle.</li>
+<li>Register tools with strong descriptions and argument schemas.</li>
+<li>Create agent executor to orchestrate tool calls.</li>
+<li>Enable verbose traces to inspect each reasoning step.</li>
+<li>Add stop conditions and fallback behavior for unresolved tasks.</li>
+</ol>
+<p><b>Important behavior detail:</b> the LLM suggests actions; execution framework performs tool invocation. This separation keeps tool execution controlled and observable.</p>
+<p><b>Production hardening checklist:</b></p>
+<ul>
+<li>Retry budget and max-iteration cap to prevent runaway loops.</li>
+<li>Tool whitelist and permission boundaries.</li>
+<li>Input sanitization before action execution.</li>
+<li>Trace capture for every thought/action/observation step.</li>
+</ul>
+<p><b>Operational insight:</b> an agent is only as reliable as its tool contracts and exit conditions.</p>`,
+    example: `Current-time agent implementation pattern:
+1) User asks "What is current time in London if system is in India?"
+2) Agent reasons it needs a real-time tool call.
+3) Calls get_system_time tool.
+4) Observes returned timestamp.
+5) Performs timezone reasoning and responds.
+6) If tool fails, retries within budget and then returns graceful fallback.`,
+    animation: "ChainRoutingPatternsViz",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "How does ReAct prompt structure drive agent behavior in practice?",
+        "Why should tool invocation be handled by framework rather than direct model execution?",
+        "What are mandatory stop conditions for agent loops?",
+        "How would you debug repeated wrong-tool selection in production?",
+        "What logging fields are needed for post-incident analysis of agent errors?",
+      ],
+      seniorTip: "The strongest deep-dive answer combines architecture and operations: explicit loop policy, strict tool contracts, bounded retries, and full execution traces. Agent quality is as much systems engineering as prompt engineering."
+    },
+    flashCards: [
+      { q: "What is ReAct in agent design?", a: "A reasoning-action-observation loop where the model iteratively plans and executes tool-assisted steps." },
+      { q: "Who executes tools in a LangChain agent stack?", a: "The orchestration framework executes tools; model proposes which tool/action to take." },
+      { q: "Why set max iterations?", a: "To prevent infinite loops and uncontrolled latency/cost growth." },
+      { q: "What should a tool definition include?", a: "Clear purpose, input schema, output schema, timeout behavior, and failure semantics." },
+      { q: "How to improve agent debugging?", a: "Capture per-step trace: reasoning summary, selected tool, arguments, output, and route decision." },
+    ],
   },
 ];
 

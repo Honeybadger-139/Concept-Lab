@@ -37,7 +37,7 @@ export default function SectionProgress({ sectionId, nodes, groupedByConcept }) 
   const total = nodes.length;
   const pct = total === 0 ? 0 : Math.round((visitedCount / total) * 100);
 
-  const hasConceptFolders = groupedByConcept?.length > 1 && groupedByConcept[0].conceptTitle;
+  const hasConceptFolders = groupedByConcept?.length > 0 && groupedByConcept[0].conceptTitle;
 
   return (
     <div className={styles.wrapper}>
@@ -53,6 +53,7 @@ export default function SectionProgress({ sectionId, nodes, groupedByConcept }) 
 
       {hasConceptFolders ? (
         <div className={styles.conceptGroups}>
+          <h2 className={styles.conceptGroupsTitle}>Concepts Covered</h2>
           {groupedByConcept.map(({ conceptId, conceptTitle, nodes: groupNodes }) => (
             <div key={conceptId ?? "all"} className={styles.conceptGroup}>
               {conceptTitle && (

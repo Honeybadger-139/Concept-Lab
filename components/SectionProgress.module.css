@@ -39,6 +39,14 @@
   gap: 2rem;
 }
 
+.conceptGroupsTitle {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
 .conceptGroup {
   display: flex;
   flex-direction: column;

@@ -29,70 +29,68 @@ export const sections = [
     order: 2,
   },
   {
-    id: "langchain",
-    title: "LangChain",
-    description:
-      "Building LLM-powered applications with LangChain: chat models, prompt templates, chains, memory, and connecting to real data sources.",
-    order: 3,
-  },
-  {
     id: "langgraph",
     title: "LangGraph",
     description:
       "Building stateful, multi-actor AI agents with LangGraph: graphs, nodes, state, human-in-the-loop, multi-agent systems, corrective RAG, and production deployment.",
+    order: 3,
+  },
+  {
+    id: "langchain",
+    title: "LangChain",
+    description:
+      "Building LLM-powered applications with LangChain: chat models, prompt templates, chains, memory, and connecting to real data sources.",
     order: 4,
   },
 ];
 
 // ML concept folders (used when sectionId === "ml")
 export const mlConcepts = [
-  { id: "fundamentals", title: "Fundamentals", order: 1 },
-  { id: "supervised-learning", title: "Supervised Learning", order: 2 },
-  { id: "unsupervised-learning", title: "Unsupervised Learning", order: 3 },
-  { id: "advanced-ml", title: "Advanced ML", order: 4 },
+  { id: "supervised-learning-algorithms", title: "Supervised Learning Algorithms", order: 1 },
+  { id: "advanced-learning-algorithms", title: "Advanced Learning Algorithms", order: 2 },
 ];
 
 const ML_CONCEPT_BY_SLUG = {
-  "01-intro-to-ml": "fundamentals",
-  "02-why-ml-matters": "fundamentals",
-  "03-ml-definition-types": "fundamentals",
-  "08-jupyter-labs": "fundamentals",
-  "04-supervised-regression": "supervised-learning",
-  "05-classification": "supervised-learning",
-  "09-linear-regression-pipeline": "supervised-learning",
-  "10-supervised-pipeline-model": "supervised-learning",
-  "11-cost-function": "supervised-learning",
-  "12-cost-function-intuition": "supervised-learning",
-  "13-cost-visualisation-3d": "supervised-learning",
-  "14-parameters-model-cost": "supervised-learning",
-  "15-gradient-descent-concept": "supervised-learning",
-  "16-gradient-descent-update-rule": "supervised-learning",
-  "17-derivative-intuition": "supervised-learning",
-  "18-learning-rate": "supervised-learning",
-  "19-final-linear-regression": "supervised-learning",
-  "20-gradient-descent-demo": "supervised-learning",
-  "21-multiple-linear-regression": "supervised-learning",
-  "22-vectorisation": "supervised-learning",
-  "23-vectorisation-behind-scenes": "supervised-learning",
-  "24-feature-scaling": "supervised-learning",
-  "25-implement-feature-scaling": "supervised-learning",
-  "26-gradient-descent-convergence": "supervised-learning",
-  "27-choosing-learning-rate": "supervised-learning",
-  "28-feature-engineering": "supervised-learning",
-  "29-polynomial-regression": "supervised-learning",
-  "30-classification-week3": "supervised-learning",
-  "31-logistic-regression": "supervised-learning",
-  "32-decision-boundary": "supervised-learning",
-  "33-logistic-cost-function": "supervised-learning",
-  "34-simplified-logistic-loss": "supervised-learning",
-  "35-gradient-descent-logistic": "supervised-learning",
-  "36-overfitting-underfitting": "supervised-learning",
-  "37-regularisation-concept": "supervised-learning",
-  "38-regularisation-math-linear": "supervised-learning",
-  "39-regularised-logistic-regression": "supervised-learning",
-  "06-unsupervised-learning": "unsupervised-learning",
-  "07-unsupervised-anomaly": "unsupervised-learning",
-  "advanced-placeholder": "advanced-ml",
+  "01-intro-to-ml": "supervised-learning-algorithms",
+  "02-why-ml-matters": "supervised-learning-algorithms",
+  "03-ml-definition-types": "supervised-learning-algorithms",
+  "04-supervised-regression": "supervised-learning-algorithms",
+  "05-classification": "supervised-learning-algorithms",
+  "06-unsupervised-learning": "supervised-learning-algorithms",
+  "07-unsupervised-anomaly": "supervised-learning-algorithms",
+  "08-jupyter-labs": "supervised-learning-algorithms",
+  "09-linear-regression-pipeline": "supervised-learning-algorithms",
+  "10-supervised-pipeline-model": "supervised-learning-algorithms",
+  "11-cost-function": "supervised-learning-algorithms",
+  "12-cost-function-intuition": "supervised-learning-algorithms",
+  "13-cost-visualisation-3d": "supervised-learning-algorithms",
+  "14-parameters-model-cost": "supervised-learning-algorithms",
+  "15-gradient-descent-concept": "supervised-learning-algorithms",
+  "16-gradient-descent-update-rule": "supervised-learning-algorithms",
+  "17-derivative-intuition": "supervised-learning-algorithms",
+  "18-learning-rate": "supervised-learning-algorithms",
+  "19-final-linear-regression": "supervised-learning-algorithms",
+  "20-gradient-descent-demo": "supervised-learning-algorithms",
+  "21-multiple-linear-regression": "supervised-learning-algorithms",
+  "22-vectorisation": "supervised-learning-algorithms",
+  "23-vectorisation-behind-scenes": "supervised-learning-algorithms",
+  "24-feature-scaling": "supervised-learning-algorithms",
+  "25-implement-feature-scaling": "supervised-learning-algorithms",
+  "26-gradient-descent-convergence": "supervised-learning-algorithms",
+  "27-choosing-learning-rate": "supervised-learning-algorithms",
+  "28-feature-engineering": "supervised-learning-algorithms",
+  "29-polynomial-regression": "supervised-learning-algorithms",
+  "30-classification-week3": "supervised-learning-algorithms",
+  "31-logistic-regression": "supervised-learning-algorithms",
+  "32-decision-boundary": "supervised-learning-algorithms",
+  "33-logistic-cost-function": "supervised-learning-algorithms",
+  "34-simplified-logistic-loss": "supervised-learning-algorithms",
+  "35-gradient-descent-logistic": "supervised-learning-algorithms",
+  "36-overfitting-underfitting": "supervised-learning-algorithms",
+  "37-regularisation-concept": "supervised-learning-algorithms",
+  "38-regularisation-math-linear": "supervised-learning-algorithms",
+  "39-regularised-logistic-regression": "supervised-learning-algorithms",
+  "advanced-placeholder": "advanced-learning-algorithms",
 };
 
 // ─────────────────────────────────────────────────────────
@@ -2079,9 +2077,9 @@ const advancedNodes = [
   {
     slug: "advanced-placeholder",
     sectionId: "ml",
-    conceptId: "advanced-ml",
+    conceptId: "advanced-learning-algorithms",
     title: "Advanced ML — Coming Soon",
-    order: 0,
+    order: 999,
     excerpt: "Neural networks, decision trees, ensemble methods. Content added as you progress.",
     theory: null,
     example: null,
@@ -2131,14 +2129,22 @@ export function getNodesBySectionGroupedByConcept(sectionId) {
   if (sectionId !== "ml") {
     return [{ conceptId: null, conceptTitle: null, nodes: sectionNodes }];
   }
-  const conceptOrder = Object.fromEntries(mlConcepts.map((c) => [c.id, c.order]));
-  const byConcept = {};
+  const conceptTitleById = Object.fromEntries(mlConcepts.map((c) => [c.id, c.title]));
+  const groups = [];
+  let currentGroup = null;
+
   sectionNodes.forEach((node) => {
-    const cid = node.conceptId ?? ML_CONCEPT_BY_SLUG[node.slug] ?? "supervised-learning";
-    if (!byConcept[cid]) byConcept[cid] = [];
-    byConcept[cid].push(node);
+    const cid = node.conceptId ?? ML_CONCEPT_BY_SLUG[node.slug] ?? "supervised-learning-algorithms";
+    if (!currentGroup || currentGroup.conceptId !== cid) {
+      currentGroup = {
+        conceptId: cid,
+        conceptTitle: conceptTitleById[cid] ?? "Supervised Learning",
+        nodes: [],
+      };
+      groups.push(currentGroup);
+    }
+    currentGroup.nodes.push(node);
   });
-  return mlConcepts
-    .filter((c) => byConcept[c.id]?.length)
-    .map((c) => ({ conceptId: c.id, conceptTitle: c.title, nodes: byConcept[c.id] }));
+
+  return groups;
 }

@@ -168,8 +168,17 @@ export default async function NodePage({ params }) {
                 <ul className={styles.interviewList}>
                   {node.interviewPrep.questions.map((q, i) => (
                     <li key={i}>
-                      <span className={styles.qNum}>Q{i + 1}</span>
-                      {q}
+                      <details className={styles.interviewQA}>
+                        <summary className={styles.interviewQuestion}>
+                          <span className={styles.qNum}>Q{i + 1}</span>
+                          <span>{q}</span>
+                        </summary>
+                        <div className={styles.answerWrap}>
+                          <div className={styles.interviewAnswer}>
+                            {node.interviewPrep.answers?.[i] || node.interviewPrep.seniorTip || "Draft your answer in STAR format (Situation, Task, Action, Result), then refine it for clarity and business impact."}
+                          </div>
+                        </div>
+                      </details>
                     </li>
                   ))}
                 </ul>

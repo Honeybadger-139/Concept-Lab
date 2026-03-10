@@ -45,10 +45,14 @@ export function nodeKey(sectionId, slug) {
  *   clearAll     – () => void
  */
 export function useProgress() {
-  const [visited, setVisited] = useState(() => readFromStorage());
+  // Keep first render deterministic across server + client to avoid hydration mismatch.
+  const [visited, setVisited] = useState(() => new Set());
 
   // Keep state in sync if another tab changes localStorage
   useEffect(() => {
+    // Hydrate from localStorage only after mount.
+    setVisited(readFromStorage());
+
     function onStorage(e) {
       if (e.key === STORAGE_KEY) setVisited(readFromStorage());
     }

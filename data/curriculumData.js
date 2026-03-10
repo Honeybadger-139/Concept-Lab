@@ -1691,15 +1691,22 @@ const ragNodes = [
     title: "History-Aware Conversational RAG",
     order: 7,
     excerpt: "Multi-turn context and query reformation — making RAG work in chatbots.",
-    theory: "<p>Basic RAG has a critical flaw for real-world conversations: it treats every query as independent. When a user asks a follow-up question using pronouns or references (\"What does <em>it</em> do?\"), the vector database has no idea what 'it' refers to — and retrieval fails.</p><p><strong>History-Aware RAG</strong> adds one crucial extra step before retrieval: <em>query reformulation</em>. The system looks at the full conversation history and rewrites the vague follow-up into a clear, standalone, searchable question.</p><p><strong>Example from the lecture:</strong></p><ul><li>User: 'Tell me about Nvidia's latest GPU architecture.' → AI: 'Nvidia's Hopper...'</li><li>Follow-up: 'What is <em>their</em> revenue from <em>it</em>?'</li><li>Without history-aware: vector DB searches for 'their revenue from it' → no results</li><li>With history-aware: reformulated to 'What is Nvidia's revenue from the Hopper GPU architecture?' → relevant chunks retrieved</li></ul><p><strong>Implementation:</strong> Maintain a <code>chat_history</code> list of <code>HumanMessage</code> and <code>AIMessage</code> objects. Before each retrieval, pass the latest question + history to a 'question condenser' LLM chain that rewrites it. Then use the rewritten query for vector search.</p><p>LangChain provides <code>create_history_aware_retriever</code> and <code>create_retrieval_chain</code> to compose this cleanly.</p>",
-    example: "History: 'What is RAG?' → Answer explained. Follow-up: 'Give me a code example of that.' → Reformulated: 'Give me a Python code example of Retrieval-Augmented Generation.' → RAG retrieves relevant code chunks.",
+    theory: "<p>Single-turn retrieval assumes each question is complete on its own. Real conversations are not. Users ask follow-ups with references like 'that', 'it', 'the previous one', and retrieval fails because these references do not encode enough standalone meaning.</p><p><strong>History-aware conversational RAG</strong> inserts a query-rewrite step before retrieval:</p><ol><li>Read recent conversation state.</li><li>Resolve references (entities, dates, products, pronouns).</li><li>Rewrite the latest turn into a standalone retrieval query.</li><li>Retrieve against the rewritten query, then generate the answer.</li></ol><p><strong>Why this improves quality:</strong> vector search matches semantic intent in the rewritten query rather than ambiguous pronouns. This sharply improves recall on follow-up turns.</p><p><strong>Production architecture concerns:</strong></p><ul><li><b>Memory scope</b>: choose sliding-window memory, summary memory, or hybrid memory to control token cost.</li><li><b>Persistence</b>: store session history in Redis/DB for durability; in-memory lists fail across restarts.</li><li><b>PII policy</b>: redact/expire sensitive history fields before reuse in prompts.</li><li><b>Latency</b>: rewrite adds one extra LLM call; selectively skip rewrite for clearly standalone turns.</li></ul><p><strong>Failure modes to guard:</strong> wrong coreference resolution, stale context leakage from old turns, and rewriting that over-specifies assumptions not present in the conversation.</p><p>Practical LangChain composition is still straightforward: <code>create_history_aware_retriever</code> + <code>create_retrieval_chain</code>, with clear memory and retention policy around it.</p>",
+    example: "Conversation: User asks, 'Compare LangGraph and LangChain for orchestration.' Next turn: 'Which one supports cyclical workflows better?' Naive retrieval on the second question may miss context. Rewritten query: 'Between LangGraph and LangChain, which supports cyclical workflows better for agent orchestration?' This retrieves the right comparison chunks consistently.",
     animation: "RetrievalQueryViz",
-    tool: null,
+    tool: "HistoryAwareQueryLab",
     interviewPrep: {
       questions: [
         "What is query reformulation in history-aware RAG and why is it necessary?",
         "How do you store conversation history in a LangChain RAG chain?",
         "What happens to retrieval quality without history-awareness when users ask follow-up questions?",
+        "How would you keep conversational memory useful without unbounded token growth?",
+      ],
+      answers: [
+        "Query reformulation rewrites a context-dependent follow-up into a standalone query by using prior turns. It is needed because retrievers cannot reliably resolve pronouns or implied entities on their own.",
+        "Use structured message history (human/assistant turns) backed by persistent storage like Redis or SQL, with retention rules and optional summarization for older turns.",
+        "Recall drops sharply on follow-ups because ambiguous terms ('it', 'they', 'that') do not map to the intended document region, leading to irrelevant chunks or empty retrieval.",
+        "Use a sliding context window + periodic conversation summaries + TTL policies. Keep high-signal facts and entities, discard stale low-value turns, and apply explicit truncation limits.",
       ],
       seniorTip: "Query reformulation is essentially a small LLM call before the main LLM call — meaning history-aware RAG has 2x LLM invocations per turn. For latency-sensitive products, you can optimise: only reformulate when the current query contains pronouns or references (detectable with a simple classifier), skip reformulation for first questions. This halves latency for the majority of queries."
     },
@@ -1707,6 +1714,8 @@ const ragNodes = [
       { q: "What is query reformulation in history-aware RAG?", a: "Rewriting a follow-up question that uses pronouns or context references into a standalone, self-contained question that can be understood by the vector database without conversation history." },
       { q: "Why does basic RAG fail on follow-up questions like 'What does it do?'", a: "Vector databases match text semantically. Pronouns like 'it' or 'they' have no clear semantic meaning without context — so the embedding fails to find relevant chunks." },
       { q: "What data structure is used to track conversation history in LangChain?", a: "A list of HumanMessage and AIMessage objects. Each turn appends the user's input as HumanMessage and the AI's response as AIMessage, building up the conversation context." },
+      { q: "What is the main trade-off of history-aware RAG?", a: "Higher multi-turn retrieval quality at the cost of extra latency/token usage from the rewrite call and history management overhead." },
+      { q: "What is a common production risk in conversational memory?", a: "Stale or sensitive context leaking into future turns unless memory retention, redaction, and truncation are explicitly enforced." },
     ],
   },
   {
@@ -1715,15 +1724,22 @@ const ragNodes = [
     title: "Chunking Strategies Overview",
     order: 8,
     excerpt: "Why chunking is the most impactful RAG decision — fixed vs semantic vs agentic.",
-    theory: "<p>Chunking is the critical second step in the injection pipeline — it determines how content gets divided for retrieval. As the instructor puts it: <em>\"Bad chunking breaks everything downstream. Even perfect embeddings cannot fix poorly split content.\"</em></p><p><strong>Why basic (character) chunking fails:</strong> It cuts at fixed character counts regardless of meaning. Example from lecture — a Tesla financial document chunk ends at 'production cost rose by 12% due to supply chain' and the next chunk starts at 'Challenges and inflation' — same topic, split in two, context lost.</p><p><strong>Problems with bad chunking:</strong> splits mid-sentence, breaks related concepts, loses cross-chunk context, ruins retrieval quality even with good embeddings.</p><p><strong>The 5 chunking strategies (simple → sophisticated):</strong></p><ol><li><b>Character Text Splitter</b> — split at fixed character count with separator. Fast, simple, fine for uniform/short documents.</li><li><b>Recursive Character Text Splitter</b> — tries natural boundaries first (paragraphs → sentences → words). Smarter fallback, better context preservation.</li><li><b>Document-Specific Splitting</b> — respects document structure (PDF pages, Markdown headers, CSV rows). Each file type gets appropriate treatment.</li><li><b>Semantic Chunking</b> — uses embeddings to detect topic shifts and split where meaning changes. Smart but computationally expensive.</li><li><b>Agentic Chunking</b> — LLM analyzes content and decides optimal splits. Most accurate, slowest, most expensive. Best for complex unstructured documents.</li></ol>",
+    theory: "<p>Chunking defines the unit of retrieval. If chunks are poorly constructed, retrievers either miss relevant evidence or return noisy context, and downstream generation quality falls immediately.</p><p><strong>Five strategy families (from simple to advanced):</strong></p><ol><li><b>Character splitter</b>: fixed-size chunks; fast and cheap, but brittle on long mixed-topic text.</li><li><b>Recursive splitter</b>: tries paragraph/sentence/word boundaries in priority order; best default for most text corpora.</li><li><b>Document-structure-aware splitting</b>: uses native structure such as headings, sections, pages, rows, or code blocks.</li><li><b>Semantic chunking</b>: split where embedding similarity drops between adjacent sentences.</li><li><b>Agentic chunking</b>: LLM decides boundary placement from meaning and task intent.</li></ol><p><strong>Decision matrix in practice:</strong></p><ul><li>Choose <b>recursive</b> when you need strong baseline quality fast.</li><li>Choose <b>document-aware</b> when structure is explicit (legal headers, markdown docs, financial sections).</li><li>Choose <b>semantic/agentic</b> only when quality gains justify significantly higher ingestion cost and complexity.</li></ul><p><strong>Operational risks:</strong> over-chunking (context fragmentation), under-chunking (retrieval noise), duplicate-heavy overlap, and inconsistent policies across document types.</p><p>High-performing systems route by document type: FAQ text, policy PDFs, scanned documents, and tables often need different split strategies, not one global default.</p>",
     example: "A 50-page legal contract split by fixed 500-character chunks breaks mid-clause constantly. Using recursive splitting instead, the same document splits on paragraph breaks first, then sentence breaks — keeping legal obligations intact and boosting retrieval precision by ~30%.",
     animation: "ChunkingVisualizer",
-    tool: null,
+    tool: "ChunkingStrategyWorkbench",
     interviewPrep: {
       questions: [
         "Name the five chunking strategies from simple to sophisticated and explain when to use each.",
         "What are the consequences of chunk size being too small vs too large?",
         "Why can't you fix bad chunking with better embeddings?",
+        "How would you design chunking policy for a mixed corpus (FAQs, PDFs, scanned docs)?",
+      ],
+      answers: [
+        "Character (cheap baseline), recursive (default production baseline), document-aware (best when structure exists), semantic (better topical boundaries at higher cost), agentic (highest quality but expensive and slower).",
+        "Too small: context fractures and requires many chunks. Too large: noisy retrieval and token waste. Both reduce final answer quality in different ways.",
+        "Embeddings can only represent what each chunk contains. If the chunk itself is semantically broken, retrieval cannot reconstruct missing context reliably.",
+        "Route by document type: recursive for clean text, structure-aware for labeled docs, OCR/layout extraction first for scanned PDFs, then chunk with tuned overlap per type.",
       ],
       seniorTip: "In production, chunking strategy is rarely a one-size decision — it's a per-document-type decision. A real enterprise RAG system might use character splitting for clean FAQ text, recursive splitting for normal documents, and unstructured.io with layout detection for complex PDFs with tables and images. The pipeline needs to detect document type and route accordingly. This routing logic is often the most valuable engineering work in a production RAG system."
     },
@@ -1731,6 +1747,8 @@ const ragNodes = [
       { q: "What are the five chunking strategies in order of sophistication?", a: "1) Character Text Splitter, 2) Recursive Character Text Splitter, 3) Document-Specific Splitting, 4) Semantic Chunking, 5) Agentic Chunking." },
       { q: "What is the main problem with Character Text Splitting for complex documents?", a: "It cuts at fixed character counts regardless of meaning, often splitting mid-sentence or breaking related concepts across chunks, destroying the context the embedding needs to be useful." },
       { q: "Why is agentic chunking the most accurate but least practical for production?", a: "An LLM analyzes content and decides split points — highly accurate because it understands meaning. But it requires one LLM call per chunk decision, making it extremely slow and expensive at scale." },
+      { q: "What is the safest default chunking strategy for most production RAG systems?", a: "Recursive character splitting with tuned overlap, then document-type-specific refinements where needed." },
+      { q: "Why use document-type routing in chunking pipelines?", a: "Different formats carry meaning differently; applying one chunking policy to all formats usually sacrifices both recall and precision." },
     ],
   },
   {
@@ -1739,7 +1757,7 @@ const ragNodes = [
     title: "Character & Recursive Text Splitter",
     order: 9,
     excerpt: "The simplest chunking methods — when to use each and their trade-offs.",
-    theory: "<p><strong>Character Text Splitter</strong> follows a <em>split-first, merge-second</em> approach, not a simple character-count slice:</p><ol><li><b>Split</b>: Break the entire text at the separator (default: double newline <code>\\n\\n</code>) into pieces.</li><li><b>Merge</b>: Combine pieces sequentially until the chunk size limit is reached. When adding the next piece would exceed the limit, draw a boundary and start a new chunk.</li></ol><p><strong>Example from the lecture</strong>: <code>chunk_size=100</code>, separator = double newline. Pieces of sizes 18, 51, 19, 78, 21, 62 chars. Pieces 1+2+3 = 88 chars (under 100), merged. Adding piece 4 (78) would exceed 100, so boundary drawn. Piece 4+5 = 99, merged. And so on.</p><p><strong>Recursive Character Text Splitter</strong> is the smarter upgrade. Instead of a single separator, it has a <em>priority list of separators</em>: tries paragraph breaks (<code>\\n\\n</code>) first, then sentence breaks (<code>\\n</code>), then spaces, then single characters as a last resort. This preserves natural language boundaries much better.</p><p>The instructor notes: character splitter is fine for simple, uniform documents (FAQs, structured text). For anything more complex — mixed content, long paragraphs — switch to the recursive version as your baseline.</p>",
+    theory: "<p>Character and recursive splitters are foundational because they are deterministic, cheap, and easy to debug. Most production RAG systems begin here before testing costlier semantic methods.</p><p><strong>Character splitter algorithm (split-first, merge-second):</strong></p><ol><li>Split text by a separator (often <code>\\n\\n</code>).</li><li>Merge consecutive pieces until next piece would exceed <code>chunk_size</code>.</li><li>Create boundary; repeat.</li></ol><p>This is not random slicing. It is a deterministic batching process over separator-based pieces.</p><p><strong>Recursive splitter improvement:</strong> uses separator fallback order (paragraph → sentence → word → character) so natural language boundaries are preserved whenever possible.</p><p><strong>Key tunables:</strong></p><ul><li><code>chunk_size</code>: context budget per chunk.</li><li><code>chunk_overlap</code>: boundary continuity; typically 10-20% of chunk size.</li><li><code>separators</code>: domain-specific boundary list (headings, bullet markers, code delimiters).</li></ul><p><strong>Edge cases:</strong> very long unbroken paragraphs, tables serialized as plain text, and code snippets with weak punctuation. In these cases, recursive splitting still helps but may require format-specific preprocessing first.</p><p>For most systems, recursive splitter is the default baseline and should be benchmarked before introducing expensive chunking alternatives.</p>",
     example: "LangChain's RecursiveCharacterTextSplitter with chunk_size=1000, chunk_overlap=200: overlap ensures continuity between adjacent chunks — critical for questions that span chunk boundaries.",
     animation: "ChunkingVisualizer",
     tool: null,
@@ -1748,6 +1766,13 @@ const ragNodes = [
         "Explain the split-first, merge-second algorithm of CharacterTextSplitter.",
         "What is the key difference between CharacterTextSplitter and RecursiveCharacterTextSplitter?",
         "What separator does CharacterTextSplitter use by default and why?",
+        "How would you tune overlap and chunk size for policy documents vs code docs?",
+      ],
+      answers: [
+        "It first segments by separator, then merges adjacent segments until size limit is reached; if adding next segment exceeds limit, it starts a new chunk.",
+        "Character splitter uses one separator strategy; recursive splitter tries multiple separators in priority order to preserve natural boundaries.",
+        "Default is double newline because paragraph boundaries usually represent coherent semantic units in plain text.",
+        "Policy docs often benefit from larger chunks and moderate overlap for clause continuity; code docs usually need smaller chunks with delimiter-aware separators to avoid mixing unrelated functions.",
       ],
       seniorTip: "RecursiveCharacterTextSplitter is the correct default for 90% of RAG use cases — LangChain documentation recommends it as the starting point. In practice, you almost always want paragraph → sentence → word fallback rather than a hard character cut. The key tunable is chunk_overlap: set it to 10-15% of chunk_size (e.g. 100 overlap for 800 chunk_size) to maintain context across boundaries."
     },
@@ -1755,6 +1780,8 @@ const ragNodes = [
       { q: "What is the 'split-first, merge-second' algorithm in CharacterTextSplitter?", a: "First split the entire text at the separator into pieces. Then combine adjacent pieces until adding the next one would exceed chunk_size. When the limit is reached, draw a chunk boundary and start fresh." },
       { q: "What separators does RecursiveCharacterTextSplitter try, in order?", a: "Double newline (paragraphs) → single newline (sentences) → space (words) → single character. It tries the largest natural boundary first and falls back to smaller ones if needed." },
       { q: "What is the default separator for CharacterTextSplitter and what does it represent?", a: "Double newline (\\n\\n), which represents a blank line between paragraphs. This is the most common natural boundary in plain text documents." },
+      { q: "Why does overlap improve boundary robustness?", a: "It repeats a small token window across adjacent chunks so cross-boundary facts are still retrievable even if split occurs near important context." },
+      { q: "Why benchmark recursive splitter before semantic chunking?", a: "Recursive often gives strong quality-to-cost tradeoff and may solve retrieval issues without extra embedding/LLM cost." },
     ],
   },
   {
@@ -1763,7 +1790,7 @@ const ragNodes = [
     title: "Semantic Chunking",
     order: 10,
     excerpt: "Meaning-preserving chunks using embedding similarity between adjacent sentences.",
-    theory: "<p>Semantic chunking moves beyond character-count heuristics and uses <em>embeddings themselves</em> to decide where to split. The idea: split where the <em>meaning changes</em>, not where the character count runs out.</p><p><strong>Three-step process:</strong></p><ol><li><b>Sentence-level embedding</b>: Convert each individual sentence into a vector.</li><li><b>Pairwise similarity</b>: Calculate cosine similarity between consecutive sentences (sentence 1 vs 2, sentence 2 vs 3, etc.). This builds a similarity profile over the document.</li><li><b>Breakpoint detection</b>: Find where the similarity score drops <em>significantly</em> (not just slightly). That drop signals a topic change → draw a chunk boundary there.</li></ol><p><strong>The breakpoint threshold type</strong> controls sensitivity: 'percentile' (split at the bottom X% of similarity scores), 'standard_deviation', or 'interquartile'. 'Percentile' is the most common.</p><p><strong>Instructor's honest take:</strong> <em>\"Personally, I would never use this in production.\"</em> Why? It uses the embedding model during the injection step itself — meaning you pay embedding API costs twice (once for chunking, once for storing). For large corpora, this doubles your processing cost. Use it for learning and interviews, but in production prefer recursive splitting + good overlap.</p>",
+    theory: "<p>Semantic chunking chooses boundaries from meaning, not text length. It is useful when topic transitions inside paragraphs are frequent and fixed-size splitting consistently mixes unrelated ideas.</p><p><strong>Pipeline:</strong></p><ol><li>Split document into sentences.</li><li>Embed each sentence.</li><li>Compute adjacent sentence similarity.</li><li>Cut where similarity drops beyond configured threshold.</li></ol><p><strong>Thresholding choices:</strong> percentile thresholds cut the lowest-similarity transitions; standard deviation/interquartile methods use distribution-based outlier detection.</p><p><strong>Where it helps:</strong> dense long-form prose, research articles, and narrative documents where paragraph boundaries do not align with semantic boundaries.</p><p><strong>Where it hurts:</strong> high-ingestion-volume systems with strict cost/latency budgets. You pay sentence-level embedding cost during chunking before normal document embedding/indexing, which can multiply ingestion expense.</p><p><strong>Practical production rule:</strong> treat semantic chunking as an optional upgrade, not baseline. Run A/B eval against recursive splitter on a fixed benchmark set, then adopt only if grounded answer quality gain is meaningful enough to justify cost.</p>",
     example: "A Wikipedia article about Python mixes history, syntax, and ecosystem sections. Character splitting creates chunks spanning multiple topics. Semantic chunking detects when the embedding similarity drops between consecutive sentences and creates a split — each chunk stays on-topic.",
     animation: "ChunkingVisualizer",
     tool: null,
@@ -1772,6 +1799,13 @@ const ragNodes = [
         "How does semantic chunking decide where to split a document?",
         "What is the cost disadvantage of semantic chunking vs character-based methods?",
         "When would you choose semantic chunking over recursive character splitting?",
+        "How would you prove semantic chunking is worth deploying?",
+      ],
+      answers: [
+        "It embeds adjacent sentences and places boundaries where similarity drops indicate topic transition.",
+        "It requires additional embeddings during chunking itself, increasing ingestion compute/API cost significantly for large corpora.",
+        "Use it when recursive splitting repeatedly misses topical boundaries and evaluation shows meaningful quality improvement on target queries.",
+        "Run controlled A/B retrieval+answer evaluations on the same corpus and question set, compare groundedness/citation accuracy/cost/latency, and promote only if gains are robust.",
       ],
       seniorTip: "Semantic chunking is computationally expensive because it embeds every sentence. For a 1,000-page document corpus with average 20 sentences per page, that's 20,000 embedding calls just for chunking — before you even start the retrieval pipeline. A cost-conscious senior engineer would benchmark recursive splitting with good overlap vs semantic chunking and choose semantic only if the quality improvement is measurable and worth the cost."
     },
@@ -1779,6 +1813,8 @@ const ragNodes = [
       { q: "How does semantic chunking decide where to split?", a: "It embeds each sentence individually, computes cosine similarity between consecutive sentence pairs, and draws chunk boundaries where similarity drops significantly — indicating a topic change." },
       { q: "What is the breakpoint_threshold_type parameter in SemanticChunker?", a: "Controls how significant a similarity drop must be to trigger a split. Options: percentile (split at bottom X% drops), standard_deviation, interquartile. Percentile is most common." },
       { q: "Why would a production engineer avoid semantic chunking for large corpora?", a: "It uses the embedding model during chunking itself, effectively doubling embedding API costs. For millions of sentences, this becomes prohibitively expensive compared to pure text-based splitting." },
+      { q: "What is the right way to adopt semantic chunking?", a: "As an evidence-based optimization after benchmarking against recursive splitting, not as a default assumption." },
+      { q: "Why can semantic chunking still fail?", a: "Sentence similarity signals can be noisy in short or technical text, producing unstable boundaries without careful threshold tuning." },
     ],
   },
   {
@@ -1787,7 +1823,7 @@ const ragNodes = [
     title: "Agentic Chunking",
     order: 11,
     excerpt: "LLM-driven chunking with dynamic metadata — the highest-quality approach.",
-    theory: "<p>Agentic chunking is the most sophisticated approach: an LLM itself reads the document and decides where the natural chunk boundaries should be.</p><p><strong>How it works:</strong> You craft a prompt instructing the LLM to act as a \"text chunking expert.\" The prompt includes rules (max chunk size, split at natural topic boundaries, keep related information together) and a special <em>split keyword</em> (e.g. <code>SPLIT_HERE</code>). The LLM reads the text and inserts this keyword wherever it decides a chunk boundary should go. Your code then programmatically splits on that keyword.</p><p><strong>Example from the lecture:</strong> Tesla Q3 earnings text, with instruction to chunk to ~200 characters at natural topic boundaries. The LLM correctly grouped 'deliveries and production' in one chunk and 'Model Y performance' in another — because it understood the semantic relationships, not just the character count.</p><p><strong>The trade-off:</strong> The instructor explicitly says he would <em>not</em> use any of the four simpler strategies for <em>complex enterprise PDFs</em> (with images, tables, complex layouts). For those, he'd use <strong>unstructured.io</strong> — a library that uses OCR, table transformers, and layout detection models to extract and structure content before chunking. Agentic chunking is powerful but impractical at scale due to LLM costs.</p>",
+    theory: "<p>Agentic chunking delegates boundary decisions to an LLM. Instead of fixed heuristics, the model reasons about topic continuity and places chunk boundaries where meaning changes.</p><p><strong>Typical implementation:</strong></p><ol><li>Provide text plus chunking instructions (target size, boundary rules, preserve references).</li><li>Model emits boundary markers (for example <code>SPLIT_HERE</code>).</li><li>Pipeline converts markers into chunk objects and attaches metadata.</li></ol><p><strong>Why teams explore this:</strong> it can preserve concept integrity better than deterministic splitters on messy, cross-topic, narrative text.</p><p><strong>Risks and operational limits:</strong></p><ul><li><b>Cost</b>: additional LLM calls during ingestion.</li><li><b>Latency</b>: slower pipeline throughput for large corpora.</li><li><b>Consistency</b>: boundaries may vary across runs/model versions.</li><li><b>Control</b>: model may produce malformed markers or overfit to prompt phrasing.</li></ul><p><strong>Production pattern:</strong> use deterministic chunking by default and apply agentic chunking selectively to high-value documents where retrieval errors are expensive. Keep validator checks for marker format, chunk size bounds, and minimum semantic coverage.</p><p>For visually complex enterprise PDFs, a robust pre-processing stack (layout extraction + OCR + table parsing) is often a bigger quality lever than agentic chunking alone.</p>",
     example: "An LLM is given a research paper and asked: 'Identify distinct propositions and create a chunk for each.' It returns chunks like 'Claim: BERT outperforms RNNs on NLU tasks' — each as a standalone, searchable fact rather than a raw paragraph slice.",
     animation: null,
     tool: null,
@@ -1796,6 +1832,13 @@ const ragNodes = [
         "How does agentic chunking work and what makes it more accurate than character-based splitting?",
         "What is the key drawback that makes agentic chunking impractical for large document corpora?",
         "For complex enterprise PDFs with tables and images, what would you use instead of the four basic chunking strategies?",
+        "Where would you use agentic chunking safely in production?",
+      ],
+      answers: [
+        "It uses an LLM to infer natural semantic boundaries from content, so chunks align to conceptual units rather than rigid character limits.",
+        "It adds substantial ingestion cost and latency due to extra LLM calls and validation overhead at scale.",
+        "Use a document extraction stack such as unstructured.io (layout detection, OCR, table extraction), then apply appropriate chunking on normalized output.",
+        "Use it selectively for high-value, hard-to-split documents with strict eval monitoring, not as a blanket strategy for all corpora.",
       ],
       seniorTip: "The instructor's real production advice: for complex unstructured PDFs, use unstructured.io (open-source). It uses OCR for scanned pages, table transformers to extract tables as structured data, and layout detection to understand column layouts, headers, and figures. It converts visually complex PDFs into clean, structured text that standard chunking strategies can then handle effectively. This is what enterprise RAG teams actually use."
     },
@@ -1803,6 +1846,8 @@ const ragNodes = [
       { q: "How does agentic chunking work at a high level?", a: "An LLM reads the document with a prompt asking it to insert a SPLIT_HERE keyword at natural chunk boundaries. Your code then splits the LLM's output on that keyword to get semantically coherent chunks." },
       { q: "Why is agentic chunking the most accurate chunking method?", a: "An LLM understands the semantic content and relationships between paragraphs. It can group related information together and split at genuine topic changes — unlike character or even embedding-based methods." },
       { q: "What library does the instructor recommend for complex enterprise PDFs?", a: "unstructured.io — it uses OCR, table transformers, and layout detection models to extract and structure content from visually complex PDFs before any chunking strategy is applied." },
+      { q: "What is the biggest operational risk of agentic chunking?", a: "Non-deterministic boundary behavior across runs/model versions unless strict validation and version control are applied." },
+      { q: "Why is selective rollout important for agentic chunking?", a: "Because its quality benefits are workload-dependent, while cost and latency penalties are guaranteed." },
     ],
   },
   {
@@ -1811,15 +1856,22 @@ const ragNodes = [
     title: "Multi-Modal RAG with Images and Documents",
     order: 12,
     excerpt: "Embedding and retrieving images alongside text using unified vector spaces.",
-    theory: "<p>Real business documents contain charts, diagrams, screenshots, and tables. Standard RAG ignores all non-text content. <b>Multi-Modal RAG</b> handles this via unified embedding models like <b>CLIP</b> (Contrastive Language-Image Pre-training) that map both text and images to the same vector space.</p><p>This enables <em>cross-modal retrieval</em>: a text query can find a relevant image, and an image query can find related text. Retrieved images are then passed to a vision-capable LLM (GPT-4o, Claude 3.5, Gemini) to generate a grounded answer.</p><p><b>The production pipeline for multi-modal RAG:</b></p><ol><li>During injection: extract text chunks AND images from documents (using unstructured.io or PyMuPDF)</li><li>Embed both: text chunks → text embeddings, images → CLIP image embeddings</li><li>Store all in the same vector database with a 'type' metadata field (text/image)</li><li>At retrieval: embed the query → search across both text and image embeddings</li><li>Pass retrieved items (text chunks + images) to a vision LLM for answer generation</li></ol><p>The instructor's production system (OpenSlate.ai) uses this exact architecture for enterprise document RAG — financial reports with charts, medical records with scans, engineering docs with diagrams.</p>",
+    theory: "<p>Text-only RAG misses visual evidence present in charts, diagrams, screenshots, scanned forms, and tables. Multi-modal RAG extends retrieval and reasoning across text and image modalities.</p><p><strong>Core concept:</strong> use shared or aligned embedding spaces so text queries can retrieve image evidence and image queries can retrieve related text context.</p><p><strong>Reference architecture:</strong></p><ol><li><b>Extraction</b>: parse documents into text blocks, tables, and images (layout-aware extraction strongly preferred).</li><li><b>Embedding</b>: text embeddings for textual chunks, CLIP-like embeddings for image assets.</li><li><b>Indexing</b>: store vectors with modality tags and rich metadata (<code>type, page, region, source, tenant, timestamp</code>).</li><li><b>Retrieval</b>: run cross-modal search with modality-aware filtering and ranking.</li><li><b>Generation</b>: send selected text+images to a vision-capable LLM with citation constraints.</li></ol><p><strong>Design decisions that matter:</strong></p><ul><li><b>OCR vs visual embeddings</b>: OCR alone loses chart geometry and visual relationships; image embeddings preserve visual semantics.</li><li><b>Chunk-image alignment</b>: connect nearby text and image regions so answers can combine both reliably.</li><li><b>Storage pressure</b>: image vectors and thumbnails increase index size; lifecycle/retention policies are essential.</li></ul><p><strong>Failure modes:</strong> retrieving decorative images with high similarity, missing small chart text due to weak extraction, and answer generation that ignores modality citations. Production systems need modality-aware eval sets, not text-only eval.</p>",
     example: "User: 'What does the Q3 revenue chart show?' → Text query embeds to a vector → Cosine similarity matches the Q3 chart's CLIP image embedding → Chart image passed to GPT-4o → 'Revenue grew 23% from Q2 to Q3, driven by North America expansion...'",
-    animation: null,
+    animation: "MultimodalRAGFlowViz",
     tool: null,
     interviewPrep: {
       questions: [
         "What is CLIP and how does it enable multi-modal RAG?",
         "What are the two types of content you need to embed in a multi-modal RAG injection pipeline?",
         "What type of LLM do you need for the generation step in multi-modal RAG?",
+        "Why is OCR-only ingestion usually insufficient for multimodal document QA?",
+      ],
+      answers: [
+        "CLIP learns aligned text-image embedding spaces, allowing cross-modal similarity search between natural language queries and visual assets.",
+        "At minimum: textual chunks and extracted images/figures, each embedded with modality-appropriate models and linked by metadata.",
+        "A vision-capable LLM that can jointly reason over images and text context while following grounding and citation constraints.",
+        "OCR captures text tokens but often misses visual structure (chart shape, spatial relations, legends), which can be critical to correct interpretation.",
       ],
       seniorTip: "Multi-modal RAG is the frontier of enterprise AI. The key architectural insight: CLIP creates a shared embedding space where 'a bar chart showing revenue growth' (text) and an actual bar chart image have similar vectors. This is fundamentally different from OCR (which converts images to text) — it understands visual content semantically. For production, unstructured.io is the go-to library for extracting both text and images from complex PDFs."
     },
@@ -1828,6 +1880,8 @@ const ragNodes = [
       { q: "What is the difference between multi-modal RAG and OCR-based document processing?", a: "OCR converts images to text (losing visual information). Multi-modal RAG embeds images as vectors using CLIP, preserving visual semantics. A chart's visual pattern is captured directly, not just its extracted numbers." },
       { q: "What type of LLM is required for the generation step in multi-modal RAG?", a: "A vision-capable LLM (GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro). These models accept both text and images as input and can reason about visual content alongside text context." },
       { q: "What library does the instructor recommend for extracting images from complex PDFs?", a: "unstructured.io — it uses OCR, table transformers, and layout detection to extract text, tables, and images from complex PDFs, making them ready for multi-modal RAG pipelines." },
+      { q: "What metadata is especially important in multimodal indexing?", a: "Modality type, page/location coordinates, source document/version, and links between image regions and nearby text chunks." },
+      { q: "What evaluation mistake is common in multimodal RAG?", a: "Using only text-based benchmarks, which fails to measure whether the system correctly retrieves and reasons over visual evidence." },
     ],
   },
   {

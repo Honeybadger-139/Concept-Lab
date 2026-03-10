@@ -26,6 +26,9 @@ const ComponentMap = {
   RetrievalQueryViz:      dynamic(() => import("@/components/RetrievalQueryViz")),
   MultiQueryRAGViz:       dynamic(() => import("@/components/MultiQueryRAGViz")),
   RAGGuardrailsStudio:    dynamic(() => import("@/components/RAGGuardrailsStudio")),
+  HistoryAwareQueryLab:   dynamic(() => import("@/components/HistoryAwareQueryLab")),
+  ChunkingStrategyWorkbench: dynamic(() => import("@/components/ChunkingStrategyWorkbench")),
+  MultimodalRAGFlowViz:   dynamic(() => import("@/components/MultimodalRAGFlowViz")),
   RerankerViz:            dynamic(() => import("@/components/RerankerViz")),
   // LangGraph visualizations
   LangGraphArchitectureViz: dynamic(() => import("@/components/LangGraphArchitectureViz")),

@@ -3445,26 +3445,152 @@ const advancedNodes = [
     slug: "advanced-placeholder",
     sectionId: "ml",
     conceptId: "advanced-learning-algorithms",
-    title: "Advanced ML — Coming Soon",
+    title: "Advanced ML Systems Roadmap",
     order: 999,
-    excerpt: "Neural networks, decision trees, ensemble methods. Content added as you progress.",
-    theory: null,
-    example: null,
-    animation: null,
-    tool: null,
-    interviewPrep: null,
+    excerpt: "Bridge from classical models to production-grade advanced ML: trees, ensembles, deep learning, and MLOps reliability.",
+    theory: `<p><b>This node is the transition point from foundational ML to advanced model systems.</b> The goal is not to memorize model names, but to understand <i>when each model family is structurally appropriate</i> and how to operate it reliably in production.</p>
+<p><b>Core advanced model families:</b></p>
+<ul>
+<li><b>Tree-based models</b> (decision trees, random forests, gradient boosting): strong tabular performance, interpretable feature behavior (to a degree), robust baselines.</li>
+<li><b>Ensemble methods</b>: combine weak/strong learners to improve generalization and reduce variance.</li>
+<li><b>Neural networks</b>: best for unstructured/high-dimensional data (images, text, audio) and complex nonlinear relationships.</li>
+<li><b>Specialized architectures</b>: sequence models/transformers for language and time-series, vision backbones for imaging tasks.</li>
+</ul>
+<p><b>System design lens for advanced ML:</b></p>
+<ul>
+<li>Model selection must follow data shape + latency + risk constraints, not trend preference.</li>
+<li>Evaluation must include both offline metrics and online behavior (drift, calibration, false-positive cost).</li>
+<li>Retraining policy, feature versioning, and rollback pathways are first-class requirements.</li>
+</ul>
+<p><b>Production checklist:</b></p>
+<ol>
+<li>Establish baseline model and immutable evaluation set.</li>
+<li>Add model complexity only when baseline bottlenecks are measured.</li>
+<li>Instrument data quality, feature drift, and performance decay alerts.</li>
+<li>Gate deployments with reproducible training artifacts and canary checks.</li>
+</ol>
+<p><b>Common mistakes:</b> jumping to deep learning on small tabular data, optimizing only leaderboard metrics, and shipping models without monitoring or rollback plans.</p>`,
+    example: `Fraud detection roadmap:
+1) Baseline logistic regression shows high false negatives.
+2) Move to gradient boosting on engineered tabular features; recall improves.
+3) Add calibrated thresholding for business cost trade-offs.
+4) Introduce daily drift monitor on top features and weekly retrain policy.
+5) Add rollback trigger if precision drops below SLA after deployment.
+
+Result: better fraud capture without uncontrolled operational risk.`,
+    animation: "MLLearningSpectrumViz",
+    tool: "MLProblemFramingTool",
+    interviewPrep: {
+      questions: [
+        "How do you decide between tree-based models and neural networks for a new problem?",
+        "What signals tell you that model complexity should be increased?",
+        "How do you design an advanced ML deployment pipeline that can be safely rolled back?",
+      ],
+      answers: [
+        "Start from data modality and constraints: tabular data with limited scale usually favors tree-based models; unstructured high-dimensional data often favors neural networks. Final choice should be validated on latency, calibration, and operational cost targets.",
+        "Increase complexity only after baseline bottlenecks are measured on fixed evaluation sets and error slices. If the current model saturates and additional feature/process improvements no longer move key metrics, complexity may be justified.",
+        "Version datasets/features/models, deploy with canary traffic, monitor real-time metrics and drift, and define hard rollback thresholds before release. Safe rollback is a design requirement, not an incident response improvisation.",
+      ],
+      seniorTip: "Advanced ML maturity is measured by controlled iteration and operability: reproducibility, monitoring, rollback, and model-risk governance."
+    },
+    flashCards: [
+      { q: "What is the safest default for many tabular advanced ML tasks?", a: "Tree-based ensembles (for example gradient boosting) because they often provide strong performance with manageable operational complexity." },
+      { q: "When are neural networks usually justified?", a: "When data is unstructured/high-dimensional or when nonlinear representation learning provides measurable gains over classical baselines." },
+      { q: "What makes an advanced ML system production-ready?", a: "Reproducible training pipeline, drift monitoring, deployment guardrails, and explicit rollback criteria." },
+      { q: "Why is evaluation slicing important?", a: "Aggregate metrics can hide subgroup failures. Sliced analysis reveals where model behavior is unsafe or unreliable." },
+    ],
   },
 ];
+
+function sectionInterviewLens(sectionId) {
+  switch (sectionId) {
+    case "ml":
+      return "model behavior, bias-variance trade-offs, and validation metrics";
+    case "rag":
+      return "retrieval quality, grounding, and citation reliability";
+    case "langchain":
+      return "pipeline composition, runtime contracts, and output reliability";
+    case "langgraph":
+      return "state transitions, routing guards, and bounded loop behavior";
+    default:
+      return "system behavior, quality, and operational trade-offs";
+  }
+}
+
+function stripHtml(text) {
+  return String(text || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function firstSentence(text) {
+  const cleaned = stripHtml(text);
+  const match = cleaned.match(/^[^.!?]+[.!?]?/);
+  return match ? match[0].trim() : cleaned;
+}
+
+function autoInterviewAnswer(question, seniorTip, sectionId) {
+  const q = String(question || "").trim();
+  const qLower = q.toLowerCase();
+  const lens = sectionInterviewLens(sectionId);
+  const tipLead = firstSentence(seniorTip);
+
+  if (qLower.includes("difference") || qLower.includes("compare") || qLower.includes(" vs ")) {
+    return `Define each side crisply, then compare objective, data flow, and failure modes. In this topic, anchor the comparison to ${lens}, and finish with when each option is preferable in production.`;
+  }
+  if (qLower.startsWith("why")) {
+    return `State the causal reason first, then connect it to quality/cost/latency impact. A strong answer includes one concrete failure mode that appears when this principle is ignored.`;
+  }
+  if (qLower.startsWith("how") || qLower.includes("how would")) {
+    return `Give a step-by-step implementation path: define target metric, build minimal baseline, instrument evaluation, then iterate one controlled change at a time. Include guardrails and rollback criteria so the approach is production-safe.`;
+  }
+  if (qLower.startsWith("when") || qLower.includes("when should")) {
+    return `Answer with conditions, not opinions: tie the choice to data profile, latency budget, risk tolerance, and observability maturity. Then name the metric threshold that would trigger a strategy change.`;
+  }
+  if (qLower.startsWith("what")) {
+    return `Start with a precise definition, then explain upstream/downstream impact in the pipeline. Close with one practical example and one common implementation pitfall.`;
+  }
+  if (tipLead) {
+    return `${tipLead} Then relate your answer to ${lens} and the operational trade-offs that matter in production.`;
+  }
+  return `Give a direct answer, then connect it to ${lens} with one concrete implementation detail and one risk-control practice.`;
+}
+
+function normalizeInterviewAnswers(sectionNodes, sectionId) {
+  return sectionNodes.map((node) => {
+    const ip = node.interviewPrep;
+    if (!ip || !Array.isArray(ip.questions) || ip.questions.length === 0) {
+      return node;
+    }
+    const existingAnswers = Array.isArray(ip.answers) ? ip.answers : [];
+    const filledAnswers = ip.questions.map((question, index) => {
+      const existing = existingAnswers[index];
+      if (typeof existing === "string" && existing.trim()) return existing;
+      return autoInterviewAnswer(question, ip.seniorTip, sectionId);
+    });
+    return {
+      ...node,
+      interviewPrep: {
+        ...ip,
+        answers: filledAnswers,
+      },
+    };
+  });
+}
+
+const normalizedMlNodes = normalizeInterviewAnswers(mlNodes, "ml");
+const normalizedRagNodes = normalizeInterviewAnswers(ragNodes, "rag");
+const normalizedLangchainNodes = normalizeInterviewAnswers(langchainNodes, "langchain");
+const normalizedLangGraphNodes = normalizeInterviewAnswers(langGraphNodes, "langgraph");
+const normalizedAdvancedNodes = normalizeInterviewAnswers(advancedNodes, "ml");
 
 // ─────────────────────────────────────────────────────────
 // COMBINED EXPORTS
 // ─────────────────────────────────────────────────────────
 export const nodes = [
-  ...mlNodes,
-  ...ragNodes,
-  ...langchainNodes,
-  ...langGraphNodes,
-  ...advancedNodes,
+  ...normalizedMlNodes,
+  ...normalizedRagNodes,
+  ...normalizedLangchainNodes,
+  ...normalizedLangGraphNodes,
+  ...normalizedAdvancedNodes,
 ];
 
 export function getSections() {

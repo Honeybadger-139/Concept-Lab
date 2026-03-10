@@ -292,6 +292,60 @@ a:hover { text-decoration: underline; }
   border-color: rgba(15, 23, 42, 0.1);
 }
 
+/* ══════════════════════════════════════════
+   CHART / VIZ TOKENS — used by all interactive
+   visualization components via getComputedStyle
+   ══════════════════════════════════════════ */
+:root {
+  /* SVG / canvas chart surfaces */
+  --chart-bg:         rgba(255, 255, 255, 0.03);
+  --chart-border:     rgba(255, 255, 255, 0.08);
+  --chart-grid:       rgba(255, 255, 255, 0.06);
+  --chart-grid-mid:   rgba(255, 255, 255, 0.15);
+
+  /* Axis labels & tick text */
+  --chart-tick:       rgba(255, 255, 255, 0.30);
+  --chart-label:      rgba(255, 255, 255, 0.40);
+  --chart-label-mid:  rgba(255, 255, 255, 0.45);
+
+  /* UI chrome inside viz cards */
+  --chart-surface:    rgba(255, 255, 255, 0.04);
+  --chart-surface-2:  rgba(255, 255, 255, 0.06);
+  --chart-surface-3:  rgba(255, 255, 255, 0.08);
+  --chart-muted:      rgba(255, 255, 255, 0.40);
+  --chart-muted-2:    rgba(255, 255, 255, 0.55);
+  --chart-muted-3:    rgba(255, 255, 255, 0.60);
+  --chart-rule:       rgba(255, 255, 255, 0.15);
+
+  /* Button chrome */
+  --chart-btn-bg:     rgba(255, 255, 255, 0.08);
+  --chart-btn-border: rgba(255, 255, 255, 0.20);
+  --chart-btn-text:   #ffffff;
+}
+
+[data-theme="light"] {
+  --chart-bg:         rgba(0, 0, 0, 0.02);
+  --chart-border:     rgba(15, 23, 42, 0.12);
+  --chart-grid:       rgba(15, 23, 42, 0.07);
+  --chart-grid-mid:   rgba(15, 23, 42, 0.18);
+
+  --chart-tick:       rgba(15, 23, 42, 0.45);
+  --chart-label:      rgba(15, 23, 42, 0.55);
+  --chart-label-mid:  rgba(15, 23, 42, 0.60);
+
+  --chart-surface:    rgba(15, 23, 42, 0.04);
+  --chart-surface-2:  rgba(15, 23, 42, 0.06);
+  --chart-surface-3:  rgba(15, 23, 42, 0.08);
+  --chart-muted:      rgba(15, 23, 42, 0.45);
+  --chart-muted-2:    rgba(15, 23, 42, 0.60);
+  --chart-muted-3:    rgba(15, 23, 42, 0.65);
+  --chart-rule:       rgba(15, 23, 42, 0.18);
+
+  --chart-btn-bg:     rgba(15, 23, 42, 0.06);
+  --chart-btn-border: rgba(15, 23, 42, 0.20);
+  --chart-btn-text:   #0f172a;
+}
+
 /* ── Smooth theme transition ── */
 html {
   transition: background-color 0.25s ease, color 0.25s ease;

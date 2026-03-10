@@ -1704,21 +1704,42 @@ const langchainNodes = [
     title: "Introduction to LangChain",
     order: 1,
     excerpt: "What LangChain is and why it exists — the standard framework for LLM apps.",
-    theory: "<p>LangChain is an open-source framework for building AI-powered applications using Large Language Models. Whether you're a complete beginner or an experienced developer, the course takes you from zero — understanding what LangChain solves — all the way to building sophisticated, production-ready applications.</p><p>The framework's core value proposition: LLMs are powerful but raw. LangChain provides the scaffolding to connect models to real tools, memory, external data, and multi-step reasoning workflows — turning what would be a custom-coded mess into composable, reusable building blocks.</p><p>The course covers LangChain's three most important core components:</p><ul><li><b>Chat Models</b> — structured interface to LLMs (OpenAI, Anthropic, Gemini, Ollama)</li><li><b>Prompt Templates</b> — dynamic, reusable, testable prompt construction</li><li><b>Chains</b> — composing multiple steps into a single pipeline using LCEL (LangChain Expression Language)</li></ul><p>All source code is provided. The fastest way to get value: clone the repo, follow along, and build while watching.</p>",
-    example: "Instead of writing 50 lines of OpenAI API boilerplate every time you build a chatbot, LangChain gives you a 5-line chain. More importantly, swapping GPT-4 for Claude 3 becomes a one-line change — LangChain abstracts away the provider differences.",
-    animation: null,
+    theory: `<p><b>LangChain is an orchestration framework for LLM applications, not just an API wrapper.</b> It gives you a consistent way to compose prompts, models, retrieval, tools, memory, and runtime control into a maintainable system.</p>
+<p><b>Why this matters:</b> raw model calls are easy to start but hard to scale. As soon as an app needs chat history, structured outputs, retrieval grounding, or tool-calling, ad hoc code becomes brittle. LangChain provides standard interfaces so these pieces remain composable.</p>
+<p><b>Core building blocks introduced early:</b></p>
+<ul>
+<li><b>Chat Models</b> - provider-agnostic message interface for LLM calls.</li>
+<li><b>Prompt Templates</b> - parameterized, testable prompt construction.</li>
+<li><b>Chains (LCEL)</b> - deterministic composition across stages.</li>
+<li><b>Retrievers/Tools</b> - external knowledge and actions.</li>
+</ul>
+<p><b>Production perspective:</b> LangChain helps separate responsibilities. Prompt logic, provider selection, routing logic, and output parsing can evolve independently. This reduces regression risk and makes evaluation easier.</p>
+<p><b>Key architectural takeaway:</b> treat LLM systems as software pipelines with contracts, not as single prompts. That mindset is the foundation for everything that follows in advanced topics.</p>`,
+    example: `Enterprise support assistant architecture:
+1) Prompt template defines tone and response format.
+2) Retriever fetches policy chunks.
+3) Chat model generates grounded response.
+4) Output parser validates schema.
+5) Tool layer optionally creates support ticket.
+
+Without orchestration, these are scattered custom scripts; with LangChain, they are reusable components with explicit boundaries.`,
+    animation: "LangChainArchitectureMap",
     tool: null,
     interviewPrep: {
       questions: [
         "What problem does LangChain solve that you couldn't solve just by calling the OpenAI API directly?",
         "Name the three core components of LangChain covered in this course.",
         "Why would an enterprise use LangChain over custom API integration code?",
+        "How does component standardization reduce long-term maintenance cost?",
       ],
       seniorTip: "LangChain's real production value is not the chat model wrapper (which is a thin abstraction over direct API calls). It's the ecosystem: standardised interfaces mean you can swap GPT-4 for Claude for Gemini without changing your business logic. This vendor independence is critical in enterprise contracts where model choice may be dictated by security, cost, or compliance requirements."
     },
     flashCards: [
       { q: "What is LangChain?", a: "An open-source framework for building AI applications using LLMs. It provides standardised, composable building blocks for connecting models to tools, memory, data, and multi-step pipelines." },
       { q: "What are the three core LangChain components covered in this course?", a: "Chat Models (structured interface to LLMs), Prompt Templates (dynamic prompt construction), and Chains (composing steps into pipelines using LCEL)." },
+      { q: "Why is orchestration important in LLM systems?", a: "Because real applications require multiple coordinated stages: prompting, retrieval, tool use, parsing, and safety checks." },
+      { q: "What does provider-agnostic design enable?", a: "Model swap or fallback across vendors without rewriting business logic." },
+      { q: "What mindset should beginners adopt from day one?", a: "Treat LLM apps as engineered pipelines with clear contracts, not one giant prompt." },
     ],
   },
   {
@@ -1750,15 +1771,33 @@ const langchainNodes = [
     title: "What is LangChain?",
     order: 3,
     excerpt: "The Runnable interface, LCEL expression language, and composability philosophy.",
-    theory: "<p>The lecture uses a perfect analogy to explain LangChain's purpose: imagine asking ChatGPT to plan a vacation — 'I want to go to Paris this Saturday, book my flight, book a hotel, and suggest restaurants.' ChatGPT responds: <em>'I cannot make bookings directly, but I can help you plan.'</em></p><p>That limitation is the core problem LangChain solves. Raw LLMs are <em>stateless text processors</em> — they can think and write, but they cannot act. They can't call APIs, book flights, query databases, or remember previous conversations.</p><p><strong>LangChain's solution:</strong> It's an orchestration framework that connects LLMs to:</p><ul><li><b>Tools</b> — external APIs, databases, search engines, calculators</li><li><b>Memory</b> — conversation history, long-term user preferences</li><li><b>Chains</b> — multi-step workflows where the output of one step feeds the next</li><li><b>Agents</b> — LLMs that decide which tools to call and in what order</li></ul><p>The vacation example resolved with LangChain: an agent could call a flight search API, check hotel availability, query a restaurant recommendation database, and compose a complete travel plan — all from a single natural language request.</p>",
-    example: "LangChain is like LEGO for LLM apps. Individual bricks are: a prompt template, an LLM, an output parser. LCEL snaps them together with the | operator: chain = prompt | model | parser. You can swap any brick without rewiring the others.",
-    animation: null,
+    theory: `<p><b>LangChain answers one practical question:</b> how do we convert an LLM from a text generator into a reliable application component?</p>
+<p>By default, an LLM can generate language but cannot reliably execute business workflows, access live systems, or keep durable state. LangChain adds an orchestration layer that binds model reasoning to structured execution primitives.</p>
+<p><b>What this orchestration layer provides:</b></p>
+<ul>
+<li><b>Composable runnables</b> for deterministic flow construction.</li>
+<li><b>Tool interfaces</b> for controlled external actions.</li>
+<li><b>Memory abstractions</b> for conversation continuity.</li>
+<li><b>Retriever integration</b> for grounded answers.</li>
+<li><b>Output parsers</b> for contract-safe downstream handling.</li>
+</ul>
+<p><b>Architectural distinction:</b> LLM = reasoning engine; LangChain = execution coordinator. Keeping these responsibilities separate is essential for observability, testing, and safety.</p>
+<p><b>Failure-mode framing:</b> without orchestration, most issues are opaque (“model gave bad answer”). With orchestration, failures are attributable (retrieval miss, parser mismatch, tool timeout, route misclassification).</p>`,
+    example: `Vacation planning task:
+- Model reasons about needed actions.
+- Tool layer calls flight/hotel APIs.
+- Retriever checks policy constraints (budget, class).
+- Final parser enforces structured itinerary response.
+
+This converts a vague conversational prompt into a controlled multi-step application flow.`,
+    animation: "LangChainArchitectureMap",
     tool: null,
     interviewPrep: {
       questions: [
         "What fundamental limitation of raw LLMs does LangChain address?",
         "What is the difference between a Chain and an Agent in LangChain?",
         "Give a real-world example where an LLM alone would fail but LangChain with tools would succeed.",
+        "How does LangChain improve debuggability compared with direct model calls?",
       ],
       seniorTip: "The vacation planning analogy reveals LangChain's architectural role: it's not an LLM, it's an <em>orchestration layer</em>. In system design interviews, the key insight is that LangChain separates <em>reasoning</em> (LLM's job) from <em>action</em> (tools' job). This maps directly to the ReAct pattern (Reason + Act) which is the foundation of modern LLM agents. LangChain implements ReAct as a first-class abstraction."
     },
@@ -1766,6 +1805,8 @@ const langchainNodes = [
       { q: "What can raw LLMs NOT do that LangChain enables?", a: "LLMs are stateless text processors — they can reason and write but cannot call APIs, query databases, remember conversations, or take real-world actions. LangChain connects them to tools, memory, and multi-step workflows." },
       { q: "Using the vacation analogy: why does ChatGPT fail and how does LangChain fix it?", a: "ChatGPT says 'I cannot make bookings directly' because it has no tool access. LangChain enables an LLM agent to actually call flight search APIs, hotel booking APIs, and restaurant DBs — turning reasoning into action." },
       { q: "What is the difference between a LangChain Chain and an Agent?", a: "A Chain is a fixed sequence of steps (always executes the same steps in the same order). An Agent uses the LLM to dynamically decide which tools to call and in what order, based on the current situation." },
+      { q: "Why does orchestration improve reliability?", a: "Because each stage has explicit contracts and can be tested, logged, and tuned independently." },
+      { q: "What system-design split should you always explain?", a: "Reasoning policy belongs to model prompts; execution policy belongs to orchestration and tool constraints." },
     ],
   },
   {
@@ -1845,15 +1886,40 @@ const langchainNodes = [
     title: "Chat Models — Setup",
     order: 7,
     excerpt: "Instantiating ChatOpenAI and making your first LangChain API call.",
-    theory: "<p>Setting up a LangChain chat model with OpenAI takes just a few lines:</p><pre><code>from langchain_openai import ChatOpenAI\\nfrom langchain_core.messages import HumanMessage, SystemMessage\\nfrom dotenv import load_dotenv\\n\\nload_dotenv()  # loads OPENAI_API_KEY from .env\\n\\nmodel = ChatOpenAI(model='gpt-4o-mini')  # or 'gpt-4o', 'gpt-4-turbo'\\nmessages = [\\n    SystemMessage('You are a helpful Python tutor.'),\\n    HumanMessage('What is a decorator?')\\n]\\nresponse = model.invoke(messages)\\nprint(response.content)</code></pre><p>The <code>model</code> parameter selects which LLM to use. <code>gpt-4o-mini</code> is the cost-effective default; <code>gpt-4o</code> is higher capability. LangChain reads <code>OPENAI_API_KEY</code> automatically from environment variables — no need to pass it explicitly.</p><p>The <code>response</code> is an <code>AIMessage</code> object. Use <code>response.content</code> for the text, <code>response.response_metadata</code> for token usage and model info.</p>",
-    example: "In your .env file: OPENAI_API_KEY=sk-... Then in Python: from dotenv import load_dotenv; load_dotenv(). LangChain automatically reads the key — you never pass it explicitly to ChatOpenAI(). This pattern works identically for Anthropic, Ollama, and Google.",
-    animation: null,
+    theory: `<p><b>Chat model setup is small in code but high impact in system reliability.</b> A robust setup includes environment loading, model selection, consistent message schema, and error handling around invocation.</p>
+<p><b>Base pattern:</b></p>
+<pre><code>from langchain_openai import ChatOpenAI
+from langchain_core.messages import SystemMessage, HumanMessage
+from dotenv import load_dotenv
+
+load_dotenv()
+model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+</code></pre>
+<p><b>Operational recommendations:</b></p>
+<ul>
+<li>Set deterministic defaults (<code>temperature=0</code>) for factual flows.</li>
+<li>Use explicit timeout/retry policy at client layer.</li>
+<li>Separate model config by environment (dev/staging/prod).</li>
+<li>Log token usage metadata for cost tracking from day one.</li>
+</ul>
+<p><b>Common setup failures:</b> missing API key, incorrect model id, region/account restrictions, and hidden latency spikes due to no timeout limits.</p>
+<p><b>Design principle:</b> keep the model invocation wrapper thin but consistent so every future chain inherits the same safety and observability defaults.</p>`,
+    example: `Production-ready setup wrapper:
+- Load env and validate required keys at startup.
+- Construct model via factory:
+  get_model("default_chat") -> provider + model id + timeout + retries.
+- Standardize response logging:
+  prompt id, model id, latency, input/output tokens.
+
+This keeps every chain using consistent model behavior and metrics.`,
+    animation: "ChatModelDemo",
     tool: null,
     interviewPrep: {
       questions: [
         "What happens if you forget to call load_dotenv() before invoking a chat model?",
         "What is the difference between gpt-4o-mini and gpt-4o in terms of when to use each?",
         "How do you access the text content of a LangChain model response?",
+        "What setup defaults should be centralized before multiple chains are built?",
       ],
       seniorTip: "Model selection is a cost-performance trade-off. In production, use gpt-4o-mini (or equivalent) for high-volume, straightforward tasks (summarisation, classification, RAG answer generation). Reserve gpt-4o or claude-3-5-sonnet for complex reasoning tasks (code review, multi-step planning, nuanced analysis). A typical architecture routes requests to cheaper models by default and escalates to expensive models only when the cheaper model indicates low confidence."
     },
@@ -1861,6 +1927,7 @@ const langchainNodes = [
       { q: "What import do you use to set up a LangChain chat model with OpenAI?", a: "from langchain_openai import ChatOpenAI. Then model = ChatOpenAI(model='gpt-4o-mini'). LangChain reads OPENAI_API_KEY automatically from environment variables." },
       { q: "How do you get the text content from a LangChain model response?", a: "response = model.invoke(messages) returns an AIMessage object. Use response.content for the text string. response.response_metadata contains token counts and model info." },
       { q: "Why use gpt-4o-mini over gpt-4o for most production tasks?", a: "gpt-4o-mini is ~10x cheaper with 80% of the capability for standard tasks. Use gpt-4o only when complex reasoning, nuanced analysis, or maximum accuracy is required — otherwise optimise for cost." },
+      { q: "What should be part of a model setup wrapper?", a: "Model id, timeout, retry policy, temperature, and structured usage/latency logging." },
     ],
   },
   {
@@ -1917,8 +1984,23 @@ const langchainNodes = [
     title: "Chat Models — Real-time Streaming",
     order: 10,
     excerpt: "Token-by-token responses with .stream() — perceived latency drops dramatically.",
-    theory: "<p>The standard <code>.invoke()</code> method waits for the complete response before returning anything — on a long answer, this means 5-10 seconds of silence before anything appears in the UI. For a chatbot, that's terrible UX.</p><p><strong>Streaming</strong> solves this: the model sends tokens as they're generated, and you display them in real-time. The user sees words appearing word-by-word, exactly like ChatGPT's interface. This uses the <code>.stream()</code> method:</p><pre><code>for chunk in model.stream(messages):\\n    print(chunk.content, end='', flush=True)</code></pre><p>Each <code>chunk</code> is an <code>AIMessageChunk</code> with a small piece of text. The loop processes and displays each piece as it arrives. <code>end=''</code> prevents newlines between chunks; <code>flush=True</code> forces immediate terminal output.</p><p>Streaming does not change the total time to complete — it only reduces <em>perceived latency</em>. Users perceive streaming responses as faster because they start seeing output immediately rather than waiting.</p>",
-    example: "For a customer support chatbot, streaming is essential UX. Instead of a 4-second wait then a wall of text, model.stream() yields tokens as they're generated: for chunk in model.stream(messages): print(chunk.content, end='', flush=True). Users see text appearing immediately.",
+    theory: `<p><b>Streaming is a user-experience architecture decision, not just a UI trick.</b> Without streaming, users wait for full completion; with streaming, they get immediate progressive feedback.</p>
+<p><b>Mechanics:</b> <code>.stream()</code> yields chunks (usually token groups) as the model generates them. Frontends append chunks incrementally to render the response in real time.</p>
+<p><b>Operational details that matter:</b></p>
+<ul>
+<li>Transport: SSE or WebSocket for browser clients.</li>
+<li>Chunk handling: gracefully process empty/whitespace chunks.</li>
+<li>Cancellation: support user stop action to cut unnecessary token spend.</li>
+<li>Backpressure: throttle UI rendering if chunk frequency is high.</li>
+</ul>
+<p><b>Failure modes:</b> dropped network connection mid-stream, duplicated chunks due reconnect logic, and partial response persistence bugs. Production streaming should include reconnection policy and chunk-id aware append logic where possible.</p>`,
+    example: `Streaming flow in support chat:
+1) Backend calls model.stream(messages).
+2) Each chunk is emitted via SSE.
+3) Frontend appends chunk text to in-progress answer.
+4) User can cancel stream; backend closes stream and logs partial output.
+
+Result: lower perceived latency and tighter cost control on abandoned responses.`,
     animation: null,
     tool: null,
     interviewPrep: {
@@ -1926,6 +2008,7 @@ const langchainNodes = [
         "What is the difference between .invoke() and .stream() in LangChain?",
         "How does streaming improve user experience without reducing actual computation time?",
         "What is an AIMessageChunk?",
+        "What operational safeguards are needed for streaming in production?",
       ],
       seniorTip: "In web applications, streaming requires Server-Sent Events (SSE) or WebSockets — you can't stream over a standard HTTP request-response cycle. LangChain's streaming is designed to work with FastAPI's <code>StreamingResponse</code> or Next.js Route Handlers with <code>ReadableStream</code>. The pattern: backend streams chunks via SSE, frontend's JavaScript event listener appends each chunk to the DOM. This is exactly how ChatGPT and Claude.ai work."
     },
@@ -1933,6 +2016,7 @@ const langchainNodes = [
       { q: "What is the difference between model.invoke() and model.stream()?", a: "invoke() waits for the complete response before returning anything. stream() yields tokens as they're generated, enabling real-time display. stream() uses a for loop: for chunk in model.stream(messages)." },
       { q: "Does streaming reduce total response time?", a: "No — the model still takes the same time to generate the full response. Streaming reduces perceived latency by showing text immediately as it's generated, rather than making users wait for completion." },
       { q: "What is an AIMessageChunk?", a: "A small piece of the LLM's response yielded during streaming. Each chunk has a .content attribute with 1-5 tokens of text. The full response is built by concatenating all chunks." },
+      { q: "Why implement cancel support in streaming UIs?", a: "It improves UX and prevents paying for tokens users no longer want." },
     ],
   },
   {
@@ -1941,8 +2025,25 @@ const langchainNodes = [
     title: "Chat Models — Cloud-Persisted History",
     order: 11,
     excerpt: "Storing conversation history in Redis, DynamoDB, or Postgres for production.",
-    theory: "<p>In-memory chat history (a Python list) disappears when the process restarts. For production applications — web apps, APIs, multi-user systems — you need history that persists across restarts and is retrievable by session ID.</p><p><strong>LangChain's solution:</strong> <code>ChatMessageHistory</code> implementations backed by persistent stores. The most common in production: <code>RedisChatMessageHistory</code> for fast in-memory persistence with TTL, or <code>SQLChatMessageHistory</code> for durable relational storage.</p><p>The pattern uses a <em>session_id</em> — a unique identifier per conversation (typically a UUID). Each user/session has its own isolated history. The <code>RunnableWithMessageHistory</code> wrapper automatically loads and saves history around each LLM call:</p><pre><code>from langchain_community.chat_message_histories import RedisChatMessageHistory\\n\\nhistory = RedisChatMessageHistory(session_id='user-123', url='redis://localhost:6379')</code></pre><p>This is the foundation for any multi-user chatbot or persistent AI assistant.</p>",
-    example: "Use ChatMessageHistory with a Redis or Firestore backend: history = RedisChatMessageHistory(session_id='user-123', url='redis://...') — now conversation history survives server restarts and is shared across multiple backend instances in production.",
+    theory: `<p><b>Persistent history is required for any real multi-user chat product.</b> In-memory lists are useful for demos but fail in distributed deployments and restart scenarios.</p>
+<p><b>Cloud history architecture:</b></p>
+<ul>
+<li><b>Session identity</b>: stable conversation/user ID.</li>
+<li><b>Storage backend</b>: Redis (speed), SQL/NoSQL (durability), or hybrid.</li>
+<li><b>History wrapper</b>: automatic load/write around each invocation.</li>
+</ul>
+<p><b>Production decisions:</b></p>
+<ol>
+<li>Retention policy (TTL vs long-term archive).</li>
+<li>PII handling and encryption at rest/in transit.</li>
+<li>History truncation/summarization policy for token limits.</li>
+<li>Cross-region access latency tradeoffs.</li>
+</ol>
+<p><b>Common pitfalls:</b> session collisions, unbounded history growth, and compliance violations from storing sensitive text without governance controls.</p>`,
+    example: `Hybrid history strategy:
+- Redis stores active 7-day sessions for low-latency retrieval.
+- Postgres archives full conversation history for analytics/compliance.
+- On each request: load recent turns from Redis, append latest messages, asynchronously mirror to Postgres.`,
     animation: null,
     tool: null,
     interviewPrep: {
@@ -1950,6 +2051,7 @@ const langchainNodes = [
         "Why is in-memory chat history insufficient for production applications?",
         "What is a session_id and why is it important in multi-user chat applications?",
         "What are the trade-offs between Redis and PostgreSQL for storing chat history?",
+        "How would you enforce retention and PII controls in chat history storage?",
       ],
       seniorTip: "Chat history storage strategy depends on access patterns: Redis provides O(1) retrieval and automatic TTL (auto-expire old sessions to save space) but data is lost if Redis restarts without persistence. PostgreSQL provides durability and queryability (analytics on what users asked, compliance auditing) but higher latency. Production systems often use both: Redis as a hot cache for active sessions, Postgres as cold storage for historical data."
     },
@@ -1957,6 +2059,7 @@ const langchainNodes = [
       { q: "Why is in-memory chat history insufficient for production?", a: "Python list-based history is reset every time the process restarts (deploys, crashes, serverless cold starts). Users would lose their conversation history. Production needs persistent storage." },
       { q: "What is a session_id in chat history management?", a: "A unique identifier (typically UUID) for each conversation or user session. History is stored and retrieved by session_id, allowing multiple users to have isolated, independent conversation histories." },
       { q: "What is RunnableWithMessageHistory in LangChain?", a: "A wrapper that automatically loads conversation history from a store before each LLM call and saves the new messages after the call, so you don't need to manually manage history loading/saving." },
+      { q: "Why define history retention policy early?", a: "To control storage cost, reduce privacy risk, and prevent unbounded context growth." },
     ],
   },
   {
@@ -1965,15 +2068,34 @@ const langchainNodes = [
     title: "Prompt Templates",
     order: 12,
     excerpt: "Parameterised, reusable, testable prompt construction — the clean production approach.",
-    theory: "<p>Prompt Templates are LangChain's second core component. They solve a real engineering problem: hard-coded prompt strings are brittle, untestable, and hard to version.</p><p>Instead of: <code>f'Translate this text: {text}. Language: {language}'</code></p><p>You define a structured template: a <code>ChatPromptTemplate</code> with named placeholders (<code>{text}</code>, <code>{language}</code>) and a system/human message structure. Variables are filled at call time.</p><p>Two common template types:</p><ul><li><code>ChatPromptTemplate.from_messages()</code> — for chat models; defines System + Human messages as a template</li><li><code>PromptTemplate.from_template()</code> — for simple single-string prompts</li></ul><p>Templates enable composability: once defined, a template can be piped directly into a model using LCEL: <code>chain = prompt | model</code>. The template fills variables and passes formatted messages to the model automatically.</p><p>In production, templates are stored as config (YAML, JSON) and loaded at runtime — allowing prompt updates without code changes.</p>",
-    example: "Instead of f-string hell, use ChatPromptTemplate: template = ChatPromptTemplate.from_messages([('system', 'You are a {role}.'), ('human', '{question}')]). Call template.invoke({'role': 'chef', 'question': 'How do I julienne carrots?'}). The template handles formatting, escaping, and type safety.",
-    animation: null,
+    theory: `<p><b>Prompt templates are the contract layer between application inputs and model behavior.</b> They replace fragile ad hoc strings with structured, reusable, and testable prompt definitions.</p>
+<p><b>Why this matters:</b> most LLM regressions happen after silent prompt edits. Templates make prompt changes explicit and reviewable.</p>
+<p><b>Template strategy:</b></p>
+<ul>
+<li>Use <code>ChatPromptTemplate</code> for system/human role separation.</li>
+<li>Use named placeholders with strict variable validation.</li>
+<li>Version templates like code artifacts.</li>
+<li>Attach template IDs to logs for traceability.</li>
+</ul>
+<p><b>Production best practice:</b> pair templates with output parsers and guardrails. A strong prompt is not only “good wording”; it also enforces allowed scope, fallback behavior, and output format expectations.</p>
+<p><b>Failure modes:</b> variable mismatch, prompt injection susceptibility, overlong context stuffing, and unstable formatting requirements.</p>`,
+    example: `Template governance example:
+- Template v1.3:
+  System: "Answer only using provided policy context."
+  Human: "{question}\\n\\nContext:\\n{context}"
+- Parser requires JSON:
+  { answer, citations, confidence }
+- CI test verifies rendered prompt for representative inputs.
+
+This turns prompt engineering into controlled software change management.`,
+    animation: "LCELChainViz",
     tool: null,
     interviewPrep: {
       questions: [
         "What problem do prompt templates solve compared to f-string prompts?",
         "How do you compose a prompt template with a model using LCEL?",
         "Why would you store prompt templates as config files rather than hardcoding them?",
+        "How do you protect template-driven systems against prompt injection and format drift?",
       ],
       seniorTip: "Prompt templates are testable units. Because they're separate from business logic, you can write unit tests that verify the rendered prompt string is correct, fuzz-test with edge-case inputs, and do A/B testing of prompt variants in production. Hard-coded f-strings inside function calls are untestable. This distinction becomes critical at scale — prompt quality directly impacts user satisfaction, and you need a systematic way to measure and improve it."
     },
@@ -1981,6 +2103,7 @@ const langchainNodes = [
       { q: "What is a ChatPromptTemplate in LangChain?", a: "A reusable template that defines the structure of a chat prompt (SystemMessage + HumanMessage) with named placeholders. Variables are filled at call time: template.invoke({'topic': 'Python'})." },
       { q: "How do you chain a prompt template with a model in LCEL?", a: "Use the pipe operator: chain = prompt | model. Then chain.invoke({'variable': 'value'}). The prompt formats the messages, passes them to the model, which returns an AIMessage." },
       { q: "Why store prompt templates as config files in production?", a: "It enables prompt iteration without code deployments, A/B testing different prompt variants, audit trails of prompt changes, and separation of prompt engineering from software engineering responsibilities." },
+      { q: "What is template versioning useful for?", a: "Reproducibility, rollback safety, and correlating quality changes to exact prompt revisions." },
     ],
   },
   {

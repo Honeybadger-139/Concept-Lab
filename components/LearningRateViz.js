@@ -23,6 +23,23 @@ function runPath(alpha, n) {
   return path;
 }
 
+function detectTrend(path, iter) {
+  const upto = path.slice(0, Math.min(iter, path.length - 1) + 1);
+  if (upto.length < 4) return "Warming up";
+  const first = upto[0].j;
+  const last = upto[upto.length - 1].j;
+  let rises = 0;
+  let drops = 0;
+  for (let i = 1; i < upto.length; i++) {
+    if (upto[i].j > upto[i - 1].j) rises += 1;
+    if (upto[i].j < upto[i - 1].j) drops += 1;
+  }
+  if (last > first * 1.25) return "Diverging";
+  if (rises > drops * 0.75) return "Oscillating";
+  if (last < 1.05) return "Near optimum";
+  return "Converging";
+}
+
 const C_W = 260, C_H = 140;
 const PAD  = { l: 36, r: 10, t: 14, b: 34 };
 const PW   = C_W - PAD.l - PAD.r;
@@ -77,6 +94,8 @@ export default function LearningRateViz() {
           const path = paths[ci];
           const { pts, curX, curY, xi, yj, maxJ } = miniChart(path, cfg.color, iter);
           const last      = path[Math.min(iter, path.length - 1)];
+          const gradNow   = Math.abs(grad(last.w));
+          const trend     = detectTrend(path, iter);
           const converged = ci === 1 && Math.abs(grad(last.w)) < 0.05;
           const diverged  = ci === 2 && last.j > 30;
 
@@ -104,13 +123,17 @@ export default function LearningRateViz() {
                 </circle>
               </svg>
 
-              <div style={{ marginTop: 8, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4 }}>
-                {[{ l: "J(w)", v: Math.min(last.j, 99.99).toFixed(2) }, { l: "w", v: last.w.toFixed(3) }].map(s => (
+              <div style={{ marginTop: 8, display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 4 }}>
+                {[{ l: "J(w)", v: Math.min(last.j, 99.99).toFixed(2) }, { l: "w", v: last.w.toFixed(3) }, { l: "|grad|", v: gradNow.toFixed(3) }].map(s => (
                   <div key={s.l} style={{ background: t.surface2, borderRadius: 6, padding: "5px 8px", textAlign: "center" }}>
                     <div style={{ fontSize: 9, color: t.muted }}>{s.l}</div>
                     <div style={{ fontSize: 12, fontWeight: 700, color: cfg.color, fontFamily: "monospace" }}>{s.v}</div>
                   </div>
                 ))}
+              </div>
+
+              <div style={{ marginTop: 6, background: t.surface2, border: `1px solid ${cfg.color}55`, borderRadius: 6, padding: "5px 8px", fontSize: 11, color: t.muted3, textAlign: "center" }}>
+                Trend: <span style={{ color: cfg.color, fontWeight: 700 }}>{trend}</span>
               </div>
 
               {converged && (

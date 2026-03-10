@@ -558,6 +558,7 @@ This preserves exploration speed while achieving production reliability.`,
         "What is a cost function? Why do we square the errors?",
         "What is the difference between MSE and MAE (Mean Absolute Error)?",
         "Why does the cost function formula have a 1/2 factor?",
+        "What is the difference between per-example loss and dataset-level cost?",
       ],
       seniorTip: "Squaring errors does two things: makes negatives positive, and heavily penalises large errors more than small ones (a 10-unit error gives 100 vs 10 in MAE). The senior insight: 'This is why MSE is sensitive to outliers. If your data has extreme values, MAE or Huber loss are more robust alternatives.'"
     },
@@ -582,6 +583,10 @@ This preserves exploration speed while achieving production reliability.`,
         q: "What does 'minimising the cost function' actually mean?",
         a: "Finding the values of (w, b) that produce predictions ŷ as close as possible to the true labels y across the entire training set. The algorithm (gradient descent) searches this parameter space to find that minimum."
       },
+      {
+        q: "Loss vs. cost: are they the same thing?",
+        a: "Related but not identical. Loss is usually error for one example, while cost is aggregation of losses over the full dataset (often an average). Gradient descent minimises the dataset-level cost."
+      },
     ],
   },
   {
@@ -590,14 +595,16 @@ This preserves exploration speed while achieving production reliability.`,
     title: "Cost Function Intuition",
     order: 12,
     excerpt: "What the cost function looks like — and why the bowl shape matters.",
-    theory: "<p>This lecture built intuition for the cost function by simplifying to <b>one parameter (w only, b=0)</b>. This lets us plot J as a 2D curve instead of a 3D surface.</p><p>With just w, f(x) = w·x. For different values of w:</p><ul><li>w=1: predicts y=x — if data follows y≈x, cost J is low</li><li>w=0.5: predicts half of x — error is higher, J is higher</li><li>w=0: predicts 0 for everything — worst possible, J is very high</li></ul><p>Plot w on the x-axis and J on the y-axis: you get a <b>U-shaped (parabolic) curve</b>. The minimum of this U is the best value of w.</p><p>For linear regression with MSE, this curve is always <b>convex</b> — one global minimum, no local minima to get stuck in. Andrew Ng: 'The squared error cost function for linear regression always has this U-shaped bowl.' This is mathematically guaranteed and is a key advantage over other cost functions.</p>",
-    example: "From the lecture: set b=0. Try w=1 — line passes through the data points perfectly, J≈0. Try w=0.5 — the line is less steep, predictions miss many points, J is higher. Try w=0 — a flat horizontal line, terrible fit, J is highest. Plot these (w, J) pairs: you get the U-shape. Minimum is at w=1.",
+    theory: "<p>This lecture built intuition by temporarily simplifying the model to <b>one parameter</b>: set b=0 so f(x)=w·x. This is not because real models only have one parameter, but because reducing dimensionality lets you see the full optimisation landscape clearly.</p><p>Now sweep w across values:</p><ul><li><b>w near the best value</b> gives low error and low cost.</li><li><b>w too small</b> underestimates outputs, so many residuals are negative and large in magnitude.</li><li><b>w too large</b> overestimates outputs, so many residuals are positive and large in magnitude.</li></ul><p>When you plot w on the x-axis and J(w) on the y-axis, you get a <b>U-shaped parabola</b>. The bottom of this U is the parameter value that minimises training error.</p><p><b>Critical geometric insight:</b> left side of the bowl has negative slope, right side has positive slope, and exactly at the minimum the slope is zero. This single picture explains why gradient descent works: the derivative sign always tells you which direction to move.</p><p><b>Why this matters in production:</b> for linear regression with MSE, J is convex (single global minimum), so optimisation is predictable. If your training still struggles, the issue is usually not local minima; it is usually one of: bad learning rate, poor feature scaling, data quality issues, or model mismatch (linear model for nonlinear signal).</p>",
+    example: "Mini numeric walkthrough (b=0): suppose data roughly follows y=x for x in [1,2,3]. If w=1, predictions match closely and J is near zero. If w=0.5, predictions become [0.5,1,1.5] and residuals increase for every point, so J rises. If w=1.5, predictions overshoot [1.5,3,4.5], and J rises again. Cost is low only near w=1 and high on both sides, which creates the U-shape.",
     animation: "CostFunctionViz",
     tool: null,
     interviewPrep: {
       questions: [
         "What shape is the cost function surface for linear regression with MSE, and why does that matter?",
         "Why do we use MSE specifically for linear regression?",
+        "If the cost is convex but training is still slow, what are the first three things you inspect?",
+        "Why do we temporarily set b=0 when building intuition for J(w)?",
       ],
       seniorTip: "Convexity is the mathematical guarantee that gradient descent will always find the global minimum for linear regression — not just a local one. This is why linear regression is so reliable. Neural networks have non-convex cost functions with many local minima, which is why training them is harder and results can vary between runs."
     },
@@ -614,6 +621,14 @@ This preserves exploration speed while achieving production reliability.`,
         q: "What happens to the J(w) curve when you increase w far above the optimal value?",
         a: "J increases steeply. The parabolic curve rises sharply on both sides of the minimum. Far from the optimal w, the model's predictions are way off for every training example, so the sum of squared errors grows very large."
       },
+      {
+        q: "If linear regression has a convex loss, why can training still feel difficult in practice?",
+        a: "Because optimisation difficulty is often operational, not geometric: poor learning rate, unscaled features (zigzag descent), noisy/outlier-heavy data, or a linear model trying to fit nonlinear structure."
+      },
+      {
+        q: "Why is the one-parameter view (w only) still useful when real models use w and b (or more)?",
+        a: "It exposes the core mechanics of optimisation in the simplest possible setting. Once you understand slope sign, bowl geometry, and minimum behavior in 2D, the same logic extends to higher-dimensional parameter spaces."
+      },
     ],
   },
   {
@@ -622,14 +637,16 @@ This preserves exploration speed while achieving production reliability.`,
     title: "Cost Visualisation in 3D",
     order: 13,
     excerpt: "Contour plots and the 3D bowl — seeing the optimisation landscape with two parameters.",
-    theory: "<p>Once we restore the b parameter, J becomes J(w, b) — a function of two parameters. We can no longer draw a 2D curve. Instead, we get:</p><p><b>3D Surface Plot:</b> w on one horizontal axis, b on the other, J on the vertical axis. The result is a 3D bowl shape — like a soup bowl. The bottom of the bowl is the minimum J — the best (w, b).</p><p>Andrew Ng's example: w=0.06, b=50 creates a line that consistently underestimates house prices. On the 3D surface, this corresponds to a point far from the minimum — high up on the bowl's wall.</p><p><b>Contour Plot:</b> The same bowl viewed from directly above. Each oval/ellipse represents all (w, b) combinations that produce the <b>same cost J</b> — like altitude lines on a topographic map. The smallest inner oval = the minimum (best model). Moving from the outer ovals toward the centre = training (reducing cost).</p>",
-    example: "On the contour plot: a point at w=-0.15, b=800 is far from the minimum — on an outer oval. The line f(x) = -0.15x + 800 has a negative slope and high intercept, badly fitting the housing data. As gradient descent runs, the (w, b) point spirals inward on the contour plot toward the centre minimum.",
+    theory: "<p>When both parameters are active, cost becomes <b>J(w,b)</b>. That means each candidate model is a point in 2D parameter space, and cost is the height above that point. Visualising this gives a 3D bowl.</p><p><b>3D surface interpretation:</b></p><ul><li>w-axis: slope choices</li><li>b-axis: intercept choices</li><li>height: model error J</li></ul><p>Low height means good fit. High height means poor fit. So training is literally a downhill navigation problem.</p><p><b>Contour interpretation:</b> flatten the bowl from top view. Each ellipse is an iso-cost curve (all points with same J). Moving inward means lower cost. If points are far apart, slope is gentle; if contours are tightly packed, slope is steep.</p><p><b>Practical optimisation insight:</b> contour shape gives diagnostics. Circular contours mean gradients are balanced across parameters and descent is efficient. Highly stretched ellipses mean one direction has much larger curvature than the other, causing zigzag motion and slow convergence. In practice, this often indicates poor feature scaling or strong feature correlation.</p><p><b>Engineering takeaway:</b> visual geometry is not just academic. It directly informs which intervention to apply: scaling, regularisation, learning rate tuning, or feature redesign.</p>",
+    example: "Take two parameter settings: A=(w=-0.15, b=800) and B=(w=0.14, b=100). A produces a line with wrong direction and huge residuals, so it sits on outer high-cost contours. B aligns with data trend and sits near inner contours. During training, the parameter trajectory should move from A-like regions toward B-like regions, and total residual magnitude should drop each iteration.",
     animation: "CostFunctionViz",
     tool: null,
     interviewPrep: {
       questions: [
         "What does a contour plot of the cost function show?",
         "What does the centre of the innermost oval on a contour plot represent?",
+        "What does tight contour spacing imply about gradient magnitude?",
+        "How can contour geometry reveal feature scaling problems?",
       ],
       seniorTip: "Contour plots are used in debugging training. If the contour is very elongated (like a thin needle instead of a circle), it means features have different scales — gradient descent will zigzag inefficiently along the narrow dimension. The solution is feature scaling (normalisation or standardisation), which makes the contour more circular and lets gradient descent take more direct steps."
     },
@@ -646,6 +663,14 @@ This preserves exploration speed while achieving production reliability.`,
         q: "Why does a very elongated (needle-shaped) contour plot indicate a problem?",
         a: "Elongated contours mean features have very different scales. Gradient descent zigzags inefficiently along the narrow dimension. Solution: feature scaling (normalisation/standardisation) makes the contours more circular, allowing gradient descent to converge much faster."
       },
+      {
+        q: "What does it mean if contour lines are very close together in one region?",
+        a: "It indicates a steep change in cost in that region. A small parameter movement causes a large change in J, so large learning rates may overshoot there."
+      },
+      {
+        q: "What does one contour ellipse represent mathematically?",
+        a: "A level set of the cost function: all (w,b) pairs on that ellipse produce the same J value even though they correspond to different model lines."
+      },
     ],
   },
   {
@@ -654,14 +679,16 @@ This preserves exploration speed while achieving production reliability.`,
     title: "Parameters, Model & Cost — Together",
     order: 14,
     excerpt: "Connecting the model line, cost function, and contour plot into one unified picture.",
-    theory: "<p>This lecture connected all the pieces into one visual. The key insight: <b>every (w, b) point on the contour plot corresponds to one specific line on the house price graph.</b></p><p>Examples from the lecture:</p><ul><li>w=-0.15, b=800 → a negatively-sloped line (prices decrease as size increases) — obviously wrong. On the contour plot: far from the minimum, on an outer oval with high cost.</li><li>w=0, b=360 → a flat horizontal line predicting $360K for every house regardless of size — bad but less bad. On the contour plot: closer to the minimum.</li><li>w≈0.14, b≈100 → a line with a reasonable slope and intercept — roughly fits the data. On the contour plot: near the centre minimum.</li></ul><p>This connection is the core insight of supervised learning: <b>every point in parameter space (w, b) maps to one model (line) and one cost value. Training is navigating this space to find the point with the lowest cost.</b></p>",
-    example: "Andrew Ng walked through three specific (w, b) pairs. For each, he showed: (1) the corresponding line on the left plot, (2) its position on the contour plot on the right. The worse the line fits the data, the further from the minimum the point is on the contour. This is the visual proof that cost function is doing its job.",
+    theory: "<p>This is the unifying mental model for linear regression:</p><ul><li><b>Parameters</b> (w,b) define a candidate model line.</li><li>That line generates predictions for every training point.</li><li>Prediction errors (residuals) aggregate into cost J(w,b).</li><li>So each parameter pair maps to exactly one cost value.</li></ul><p>In other words, training is a repeated state transition in parameter space: choose (w,b) -> compute residuals -> compute J -> update parameters -> repeat.</p><p>Lecture examples make this concrete:</p><ul><li>w=-0.15, b=800: wrong slope and unrealistic intercept, very high cost, outer contour.</li><li>w=0, b=360: flat line, still poor but less wrong, mid contour.</li><li>w≈0.14, b≈100: realistic line and lower residuals, near minimum contour.</li></ul><p><b>Important production connection:</b> objective mismatch can happen. Low training J does not always imply business success. If business cares about relative error, tail behavior, or asymmetric mistakes, you may need a different loss, weighting scheme, or constrained model.</p><p><b>Edge case to remember:</b> in higher-dimensional regression, multiple parameter settings can produce similar training cost when features are highly correlated. Regularisation then helps choose stable parameters and improves generalisation.</p>",
+    example: "Debug workflow example: you inspect a poor model and find (w,b) is in a high-cost outer contour region. Overlaying the line on data shows systematic underestimation for large houses. After a few gradient steps, (w,b) moves inward and residuals shrink for that segment. This cross-check (line view + contour view + residual view) confirms optimisation is improving the right behavior, not just reducing a number blindly.",
     animation: "CostFunctionViz",
     tool: null,
     interviewPrep: {
       questions: [
         "In your own words, what does a single point on a contour plot represent?",
         "If the cost J is very high, what does that mean about the model's predictions?",
+        "Why can two models have similar training cost but different production behavior?",
+        "When does regularisation become necessary even if optimisation is converging?",
       ],
       seniorTip: "When debugging ML models in production, the contour plot intuition is invaluable. If training is oscillating, you're bouncing between high-cost regions. If training stalls, you're on a flat plateau. Understanding parameter space geometry helps you diagnose and fix problems without just blindly tuning hyperparameters."
     },
@@ -677,6 +704,14 @@ This preserves exploration speed while achieving production reliability.`,
       {
         q: "How does the model line on the left plot relate to the contour plot on the right?",
         a: "They're the same information in different views. Left: the line f(x) = wx + b over the data. Right: the point (w, b) with its cost J. Better-fitting lines = points closer to the minimum. This is the visual proof that the cost function captures model quality."
+      },
+      {
+        q: "Can low training cost still lead to a bad production model?",
+        a: "Yes. Training loss may not match business objectives or data distribution after deployment. Always pair optimisation metrics with validation metrics and domain KPIs."
+      },
+      {
+        q: "Why does feature correlation complicate parameter interpretation?",
+        a: "When features are correlated, many nearby parameter combinations can fit similarly well. Coefficients become unstable and sensitive to small data changes, so regularisation is used to stabilise estimates."
       },
     ],
   },
@@ -695,6 +730,7 @@ This preserves exploration speed while achieving production reliability.`,
         "Explain gradient descent in plain English.",
         "What are the three types of gradient descent? When would you use each?",
         "What is the difference between a local and global minimum?",
+        "Why is mini-batch gradient descent preferred in modern GPU training stacks?",
       ],
       seniorTip: "The three variants: Batch GD (full dataset each step — stable but slow for large datasets), Stochastic GD (one random sample — fast but noisy), Mini-batch GD (small batches of 32–512 — the industry standard that balances speed, stability, and GPU parallelism). Always mention mini-batch GD for production."
     },
@@ -723,6 +759,10 @@ This preserves exploration speed while achieving production reliability.`,
         q: "Why must you update all parameters simultaneously in gradient descent?",
         a: "You compute all derivatives using the current (w, b) values first, then update them all at once. If you update w first and use the new w to compute b's derivative, you're computing the wrong gradient — this is a common implementation mistake."
       },
+      {
+        q: "Why is mini-batch GD usually better than full-batch GD in production?",
+        a: "Mini-batches map well to GPU parallelism, reduce memory pressure, and provide faster wall-clock progress per unit time. Slight gradient noise is usually acceptable and can improve exploration."
+      },
     ],
   },
   {
@@ -740,6 +780,7 @@ This preserves exploration speed while achieving production reliability.`,
         "Why must w and b be updated simultaneously in gradient descent?",
         "What is the difference between := (assignment) and = (equality) in ML pseudocode?",
         "What is the partial derivative ∂J/∂w telling you?",
+        "How does vectorised implementation preserve simultaneous-update correctness?",
       ],
       seniorTip: "The simultaneous update rule is where beginners make implementation bugs. In NumPy/PyTorch, parameter updates are naturally simultaneous because you compute all gradients (via backward()) before any optimizer.step() call. The framework enforces correctness. But in a from-scratch implementation, you must store temp variables. This comes up in coding interviews."
     },
@@ -755,6 +796,10 @@ This preserves exploration speed while achieving production reliability.`,
       {
         q: "What does the ∂J/∂w term represent — intuition without calculus?",
         a: "It tells you: 'If I increase w by a tiny amount, does the cost J go up or down, and by how much?' If ∂J/∂w > 0, increasing w makes cost worse → decrease w. If ∂J/∂w < 0, increasing w makes cost better → increase w. The magnitude tells you the steepness."
+      },
+      {
+        q: "How does vectorisation help implement simultaneous updates safely?",
+        a: "You compute full gradient tensors first (from the same parameter state), then apply one optimizer step. This avoids accidental mixed-state updates and is the standard pattern in PyTorch/TensorFlow."
       },
     ],
   },
@@ -773,6 +818,7 @@ This preserves exploration speed while achieving production reliability.`,
         "If the derivative ∂J/∂w is positive at the current w, does gradient descent increase or decrease w?",
         "Why do gradient descent steps naturally get smaller as you approach the minimum?",
         "What is the derivative equal to at the minimum?",
+        "How is derivative sign used as a control signal during optimisation?",
       ],
       seniorTip: "The automatic step-size reduction is a key insight. Since the gradient gets smaller as you approach the minimum (flatter slope), gradient descent naturally slows down — even with fixed α. This is why fixed learning rate can work well for convex functions. For non-convex problems (neural nets), adaptive optimisers (Adam) additionally track gradient history to adjust α per parameter."
     },
@@ -793,6 +839,10 @@ This preserves exploration speed while achieving production reliability.`,
         q: "What is the derivative equal to at the minimum, and what does that mean for updates?",
         a: "Zero. At the minimum, the tangent line is flat (horizontal). ∂J/∂w = 0. Update: w := w − α × 0 = w (no change). Gradient descent stops naturally at the minimum — no separate stopping condition needed for a convex function."
       },
+      {
+        q: "What does derivative sign tell an optimiser at each step?",
+        a: "It gives directional control: positive derivative means move left/decrease parameter; negative derivative means move right/increase parameter. Magnitude determines urgency (step size after scaling by alpha)."
+      },
     ],
   },
   {
@@ -801,8 +851,8 @@ This preserves exploration speed while achieving production reliability.`,
     title: "Learning Rate",
     order: 18,
     excerpt: "The most critical hyperparameter — too large diverges, too small barely moves.",
-    theory: "<p>The <b>learning rate (α)</b> controls how large each gradient descent step is.</p><ul><li><b>Too large</b>: steps overshoot the minimum, cost oscillates and may diverge (keep going up)</li><li><b>Too small</b>: algorithm converges correctly but takes an extremely long time</li><li><b>Just right</b>: cost decreases smoothly and converges efficiently</li></ul><p>Practical search strategy: try values on a log scale — 0.0001, 0.001, 0.01, 0.1 — and plot the cost curve for each. Pick the largest value that still converges smoothly.</p>",
-    example: "Analogy: α is the size of your step going down a hill. Too large: you overshoot to the other side and end up higher. Too small: you'll get there eventually but it might take 10,000 steps instead of 100.",
+    theory: "<p>The <b>learning rate (alpha)</b> is the multiplier on every gradient step. In one dimension, update size is approximately <code>alpha * |dJ/dw|</code>. This means alpha controls how aggressively parameters move at every iteration.</p><p><b>Three regimes:</b></p><ul><li><b>Too large</b>: repeated overshoot across the valley. Cost oscillates or explodes.</li><li><b>Too small</b>: updates are numerically correct but painfully slow.</li><li><b>Well tuned</b>: cost decreases quickly at first, then smoothly flattens near convergence.</li></ul><p><b>Operational tuning workflow:</b></p><ol><li>Run a short learning-rate sweep on log scale (1e-4, 1e-3, 1e-2, 1e-1, 1).</li><li>Plot training loss vs. iteration for each candidate.</li><li>Select the largest value that is stable and mostly monotonic.</li><li>Re-check with validation loss to avoid overfitting-related misreads.</li></ol><p><b>Production nuance:</b> fixed alpha is often suboptimal across the full run. Common schedules include warm-up, step decay, cosine decay, and one-cycle policies. These allow larger early exploration and finer late-stage convergence.</p><p><b>Failure modes frequently confused with bad learning rate:</b></p><ul><li>Poor feature scaling causing zigzag updates.</li><li>Exploding gradients in deep models (needs clipping/normalisation).</li><li>Noisy mini-batches causing temporary non-monotonic curves.</li></ul><p>So when loss behaves badly, diagnose before changing alpha blindly.</p>",
+    example: "Numerical intuition: suppose current gradient magnitude is 12. With alpha=0.5, step size is 6 (often too aggressive). With alpha=0.05, step size is 0.6 (usually manageable). With alpha=0.005, step size is 0.06 (very slow). Same gradient, only alpha changed, but convergence behavior is completely different.",
     animation: "LearningRateViz",
     tool: null,
     interviewPrep: {
@@ -810,6 +860,8 @@ This preserves exploration speed while achieving production reliability.`,
         "What happens if the learning rate is too high? Too low?",
         "How do you choose a good learning rate in practice?",
         "What is a learning rate scheduler?",
+        "Why can loss increase temporarily even with a valid learning rate in mini-batch training?",
+        "How do warm-up schedules help large models during early training?",
       ],
       seniorTip: "In production we don't use fixed learning rates. We use schedulers (warm-up + cosine decay) or adaptive optimisers (Adam, AdaGrad, RMSProp) that auto-tune the learning rate per parameter. Adam is the default choice for deep learning because it adapts to each parameter's gradient history."
     },
@@ -830,6 +882,14 @@ This preserves exploration speed while achieving production reliability.`,
         q: "Can gradient descent get stuck even with a good learning rate for linear regression?",
         a: "No. Linear regression with MSE has a convex (bowl-shaped) cost function — only one minimum exists. With a good learning rate, gradient descent always finds it. For neural networks (non-convex), local minima and saddle points are real challenges."
       },
+      {
+        q: "What is a practical sign that alpha is too large even before full divergence?",
+        a: "Loss curve shows repeated sharp up/down jumps, parameter norms fluctuate heavily, and step-to-step updates do not settle. You may still see occasional decreases, but trend stability is poor."
+      },
+      {
+        q: "Why do teams use learning rate schedules instead of one fixed value?",
+        a: "Different training phases need different step sizes: larger steps early to move fast, smaller steps later to fine-tune near minima. Schedules automate this transition and usually improve both speed and final quality."
+      },
     ],
   },
   {
@@ -838,8 +898,8 @@ This preserves exploration speed while achieving production reliability.`,
     title: "Completing Linear Regression",
     order: 19,
     excerpt: "The complete training loop: model + cost + gradient derivation all in one.",
-    theory: "<p>This lecture pulled everything together. Andrew Ng derived the actual gradient formulas for linear regression — the exact derivatives you compute in gradient descent.</p><p><b>The complete gradient formulas:</b></p><ul><li>∂J/∂w = (1/m) × Σᵢ (f_wb(xᵢ) − yᵢ) × xᵢ</li><li>∂J/∂b = (1/m) × Σᵢ (f_wb(xᵢ) − yᵢ)</li></ul><p>Structure: the error for each example (prediction minus true value) × the feature (for ∂J/∂w) or just the error (for ∂J/∂b). Then average over all m examples.</p><p><b>The term 'Batch Gradient Descent'</b>: This specific version is called batch GD because each step uses the <b>entire training set</b> (all m examples) to compute the gradient. Andrew Ng: 'This gradient descent process is called batch gradient descent.' In deep learning, mini-batch GD is used instead for efficiency.</p><p><b>Guarantee for linear regression:</b> The squared error cost function for linear regression is always convex — so batch gradient descent always converges to the global minimum (with appropriate α). No local minima to worry about.</p>",
-    example: "Full training loop: 1) Start with w=0, b=0. 2) Predict ŷᵢ = 0×xᵢ + 0 = 0 for all houses. 3) Compute cost: J = (1/2m)Σ(0 - yᵢ)² = very high. 4) Compute gradients. 5) Update w and b. 6) New predictions are slightly better. Repeat 1000 times. By iteration 1000, w≈0.14, b≈100, and the line fits the Portland housing data well.",
+    theory: "<p>This is the full linear-regression training system assembled end-to-end.</p><p><b>Model:</b> <code>f_wb(x)=wx+b</code></p><p><b>Objective:</b> <code>J(w,b)=(1/2m) * sum((f_wb(x_i)-y_i)^2)</code></p><p><b>Gradients:</b></p><ul><li><code>dJ/dw = (1/m) * sum((f_wb(x_i)-y_i) * x_i)</code></li><li><code>dJ/db = (1/m) * sum(f_wb(x_i)-y_i)</code></li></ul><p><b>Update:</b></p><ul><li><code>w := w - alpha * dJ/dw</code></li><li><code>b := b - alpha * dJ/db</code></li></ul><p>This loop is the template for much of modern ML: define function, define loss, compute gradients, update parameters, repeat.</p><p><b>Batch gradient descent meaning:</b> each step uses all m examples. This gives a low-noise gradient estimate but can be expensive when datasets are large. Mini-batch methods trade gradient precision for compute efficiency and hardware throughput.</p><p><b>Convergence guarantee (linear + MSE):</b> convex objective, so with a stable alpha you converge to the global minimum. This makes linear regression an ideal sandbox for understanding optimisation behavior before moving to non-convex neural networks.</p><p><b>Production additions beyond lecture math:</b> stop when relative loss improvement is tiny, monitor validation metrics (not just train loss), and log parameter/update norms for debugging numerical instability.</p>",
+    example: "Concrete loop trace: iteration 0 starts at (w,b)=(0,0), predictions are far below true prices, so cost is high and gradients are strongly negative for w and b (updates push both upward). By iteration ~50, the line has the correct direction but still underfits. By iteration ~300, residuals are much smaller and updates shrink automatically. Near convergence, gradients approach zero and parameter motion becomes tiny.",
     animation: "GradientDescentViz",
     tool: null,
     interviewPrep: {
@@ -847,6 +907,8 @@ This preserves exploration speed while achieving production reliability.`,
         "Write out the gradient formulas for linear regression.",
         "What is 'batch' gradient descent and how does it differ from mini-batch?",
         "Why is linear regression's cost function guaranteed to converge?",
+        "What stopping criteria would you implement for a production training job?",
+        "Why can a model with excellent train loss still fail on unseen data?",
       ],
       seniorTip: "The key difference between batch and mini-batch: batch uses all m examples per gradient step (expensive per step, stable). Mini-batch uses B examples (e.g. B=32). In production, mini-batch is always used because: (1) faster per step, (2) GPU parallelism, (3) the noise can help escape local minima in neural networks."
     },
@@ -867,6 +929,14 @@ This preserves exploration speed while achieving production reliability.`,
         q: "Why is linear regression with MSE guaranteed to find the global minimum?",
         a: "Because the MSE cost function for linear regression is convex — it has exactly one global minimum and no local minima. Gradient descent on a convex function always reaches the global minimum given a sufficiently small learning rate. Neural networks are non-convex, so this guarantee doesn't apply."
       },
+      {
+        q: "What are sensible stopping criteria for gradient descent in real systems?",
+        a: "Stop when validation loss stops improving, gradient norm falls below threshold, maximum iterations/time is reached, or relative loss improvement over a window is below epsilon."
+      },
+      {
+        q: "Why monitor validation metrics in addition to training cost J?",
+        a: "Because low training cost only proves fit on seen data. Validation metrics estimate generalisation on unseen data and catch overfitting or leakage issues early."
+      },
     ],
   },
   {
@@ -875,8 +945,8 @@ This preserves exploration speed while achieving production reliability.`,
     title: "Gradient Descent — Live Demo",
     order: 20,
     excerpt: "Watching the algorithm actually run — the parameter trajectory toward the minimum.",
-    theory: "<p>This lecture showed gradient descent running live. Starting from w=-0.1, b=900 — a deliberately bad starting point (predicts price = -0.1×size + 900, a slightly negative slope with a high intercept).</p><p>Andrew Ng walked through each step:</p><ol><li>Step 1: (w, b) moves slightly toward the minimum on the contour plot. The line on the house data changes slightly.</li><li>Each step: cost decreases. The parameter path traces a trajectory on the contour plot.</li><li>Convergence: the path reaches the centre of the contour plot (minimum). The line now fits the data well.</li></ol><p><b>The final result:</b> the best-fit line. For a friend's 1,250 sq ft house, the model predicts approximately $250K. Andrew Ng: 'Isn't that cool. And so that's gradient descent and we're going to use this to fit a model to the holding data.'</p><p><b>Key observation:</b> Early steps are large (far from minimum, steep slope → large gradient → big step). Later steps are small (near minimum, flat slope → small gradient → tiny step). Fixed α, but step sizes vary naturally with the gradient magnitude.</p>",
-    example: "Starting: w=-0.1, b=900, f(x) = -0.1x + 900. After convergence: w≈0.14, b≈100, f(x) = 0.14x + 100. For x=1250 (sq ft): prediction = 0.14×1250 + 100 = 275K. On the contour plot, the parameter path spirals from the outer ovals toward the centre minimum — like water draining into a sink.",
+    theory: "<p>The live demo is where optimisation becomes tangible. Starting from a clearly bad point (w=-0.1, b=900), each iteration performs the same loop: predict, compute loss, compute gradients, update parameters, and re-evaluate.</p><p><b>What the visuals teach:</b></p><ol><li>On the data plot, the line rotates/translates toward a realistic trend.</li><li>On the contour plot, (w,b) follows a path from outer rings toward the centre.</li><li>On the loss curve, J drops quickly early, then flattens near convergence.</li></ol><p><b>Why early jumps are larger:</b> far from optimum, gradients are larger, so <code>alpha * gradient</code> gives bigger updates. Near optimum, gradients shrink, so steps become small automatically.</p><p><b>How to read failure from the same visuals:</b></p><ul><li>Path bouncing across valley with rising loss -> alpha too high.</li><li>Path crawling with almost flat progress -> alpha too low.</li><li>Path drifting to strange regions after initial improvement -> potential data scaling or gradient bug.</li></ul><p>This lecture should leave you with a debugging mindset: training is observable dynamics, not a black box call to <code>fit()</code>.</p>",
+    example: "Demo trace: start at w=-0.1, b=900 (nonsensical line). After a few iterations, slope becomes positive and intercept drops, reducing systematic error. Midway, the path still moves noticeably but cost decreases less aggressively than at the start. Near the end, gradient is tiny and parameters barely move, signaling convergence. For x=1250 sq ft, final prediction is close to the observed market trend.",
     animation: "GradientDescentViz",
     tool: null,
     interviewPrep: {
@@ -884,6 +954,8 @@ This preserves exploration speed while achieving production reliability.`,
         "Why do gradient descent steps naturally decrease in size as training progresses?",
         "What visual patterns tell you gradient descent is working vs. broken?",
         "What is the difference between batch GD and mini-batch GD?",
+        "If your contour path oscillates across the valley, what is your first intervention?",
+        "What logs would you keep in production to debug training stability?",
       ],
       seniorTip: "In a system design interview, when asked 'how does your model train', the right answer traces this pipeline: define model f → define cost J → compute gradients → simultaneous parameter update → repeat. That shows you understand training as optimisation, not just as 'call model.fit()'."
     },
@@ -903,6 +975,14 @@ This preserves exploration speed while achieving production reliability.`,
       {
         q: "What does Andrew Ng mean by 'batch gradient descent'?",
         a: "Each gradient update uses ALL m training examples. The cost J = (1/2m)Σ errors² averages over the entire dataset per step. 'Batch' = full dataset. Contrast with mini-batch GD (standard in deep learning) which uses B examples per step (B=32 to 512). Mini-batch is faster and fits GPU memory."
+      },
+      {
+        q: "What three plots together give the best debugging signal during training?",
+        a: "1) Loss vs. iteration, 2) parameter trajectory in contour/phase space, and 3) prediction-vs-target residual plot. Together they show speed, direction, and error structure."
+      },
+      {
+        q: "If loss is decreasing but business KPI is not improving, what is likely wrong?",
+        a: "The optimisation objective is misaligned with product objective. You may need different loss weighting, evaluation metric, constraints, or data sampling strategy."
       },
     ],
   },

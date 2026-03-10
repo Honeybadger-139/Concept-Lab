@@ -21,9 +21,11 @@ const ComponentMap = {
   OverfittingViz:         dynamic(() => import("@/components/OverfittingViz")),
   LearningRateViz:        dynamic(() => import("@/components/LearningRateViz")),
   FeatureScalingViz:      dynamic(() => import("@/components/FeatureScalingViz")),
+  PolynomialRegressionViz: dynamic(() => import("@/components/PolynomialRegressionViz")),
   // RAG visualizations
   RetrievalQueryViz:      dynamic(() => import("@/components/RetrievalQueryViz")),
   MultiQueryRAGViz:       dynamic(() => import("@/components/MultiQueryRAGViz")),
+  RAGGuardrailsStudio:    dynamic(() => import("@/components/RAGGuardrailsStudio")),
   RerankerViz:            dynamic(() => import("@/components/RerankerViz")),
   // LangGraph visualizations
   LangGraphArchitectureViz: dynamic(() => import("@/components/LangGraphArchitectureViz")),

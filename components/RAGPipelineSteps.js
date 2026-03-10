@@ -76,7 +76,7 @@ export default function RAGPipelineSteps() {
         Click any step to highlight it.
       </p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1.5rem" }}>
 
         {/* Injection */}
         <div>
@@ -178,6 +178,18 @@ export default function RAGPipelineSteps() {
         Both pipelines <em>must use the exact same embedding model</em>. If you embed
         documents with <code style={{ fontSize: "0.8em", background: "rgba(99,102,241,0.15)", padding: "0.1em 0.35em", borderRadius: "3px" }}>text-embedding-3-small</code> you must
         also embed queries with it. Mixing models corrupts the similarity scores entirely.
+      </div>
+      <div style={{
+        marginTop: "0.6rem",
+        padding: "0.65rem 0.9rem",
+        borderRadius: "var(--radius-sm)",
+        border: "1px solid rgba(239,68,68,0.25)",
+        background: "rgba(239,68,68,0.07)",
+        fontSize: "0.8rem",
+        color: "var(--text-secondary)",
+      }}>
+        <strong style={{ color: "#ef4444" }}>Failure triad to watch:</strong> poor chunking, weak thresholding, and missing abstention policy.
+        Most early RAG incidents come from these three interacting together.
       </div>
     </div>
   );

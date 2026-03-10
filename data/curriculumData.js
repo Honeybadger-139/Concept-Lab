@@ -42,14 +42,58 @@ export const sections = [
       "Building stateful, multi-actor AI agents with LangGraph: graphs, nodes, state, human-in-the-loop, multi-agent systems, corrective RAG, and production deployment.",
     order: 4,
   },
-  {
-    id: "advanced",
-    title: "Advanced ML",
-    description:
-      "Advanced algorithms and deeper dives — neural networks, decision trees, ensemble methods. Content grows as you learn.",
-    order: 5,
-  },
 ];
+
+// ML concept folders (used when sectionId === "ml")
+export const mlConcepts = [
+  { id: "fundamentals", title: "Fundamentals", order: 1 },
+  { id: "supervised-learning", title: "Supervised Learning", order: 2 },
+  { id: "unsupervised-learning", title: "Unsupervised Learning", order: 3 },
+  { id: "advanced-ml", title: "Advanced ML", order: 4 },
+];
+
+const ML_CONCEPT_BY_SLUG = {
+  "01-intro-to-ml": "fundamentals",
+  "02-why-ml-matters": "fundamentals",
+  "03-ml-definition-types": "fundamentals",
+  "08-jupyter-labs": "fundamentals",
+  "04-supervised-regression": "supervised-learning",
+  "05-classification": "supervised-learning",
+  "09-linear-regression-pipeline": "supervised-learning",
+  "10-supervised-pipeline-model": "supervised-learning",
+  "11-cost-function": "supervised-learning",
+  "12-cost-function-intuition": "supervised-learning",
+  "13-cost-visualisation-3d": "supervised-learning",
+  "14-parameters-model-cost": "supervised-learning",
+  "15-gradient-descent-concept": "supervised-learning",
+  "16-gradient-descent-update-rule": "supervised-learning",
+  "17-derivative-intuition": "supervised-learning",
+  "18-learning-rate": "supervised-learning",
+  "19-final-linear-regression": "supervised-learning",
+  "20-gradient-descent-demo": "supervised-learning",
+  "21-multiple-linear-regression": "supervised-learning",
+  "22-vectorisation": "supervised-learning",
+  "23-vectorisation-behind-scenes": "supervised-learning",
+  "24-feature-scaling": "supervised-learning",
+  "25-implement-feature-scaling": "supervised-learning",
+  "26-gradient-descent-convergence": "supervised-learning",
+  "27-choosing-learning-rate": "supervised-learning",
+  "28-feature-engineering": "supervised-learning",
+  "29-polynomial-regression": "supervised-learning",
+  "30-classification-week3": "supervised-learning",
+  "31-logistic-regression": "supervised-learning",
+  "32-decision-boundary": "supervised-learning",
+  "33-logistic-cost-function": "supervised-learning",
+  "34-simplified-logistic-loss": "supervised-learning",
+  "35-gradient-descent-logistic": "supervised-learning",
+  "36-overfitting-underfitting": "supervised-learning",
+  "37-regularisation-concept": "supervised-learning",
+  "38-regularisation-math-linear": "supervised-learning",
+  "39-regularised-logistic-regression": "supervised-learning",
+  "06-unsupervised-learning": "unsupervised-learning",
+  "07-unsupervised-anomaly": "unsupervised-learning",
+  "advanced-placeholder": "advanced-ml",
+};
 
 // ─────────────────────────────────────────────────────────
 // NODES — Machine Learning (39 sessions from Andrew Ng)
@@ -416,7 +460,7 @@ const mlNodes = [
     excerpt: "Measuring how wrong your model is — Mean Squared Error (MSE) explained.",
     theory: "<p>The <b>cost function</b> (also called loss function) answers the question: <em>'How wrong is my model right now?'</em></p><p>It distils the model's performance on all training examples into a single number. The goal of training is to find the parameters (w, b) that make this number as small as possible.</p><p><b>Mean Squared Error (MSE) for linear regression:</b></p><p><code>J(w,b) = (1/2m) × Σ (ŷᵢ − yᵢ)²</code></p><p>Breaking this down step by step:</p><ul><li><b>ŷᵢ − yᵢ</b>: the error for one training example (prediction minus true value)</li><li><b>(ŷᵢ − yᵢ)²</b>: squaring makes the error always positive and punishes large mistakes harder</li><li><b>Σ ...</b>: sum the squared errors for all m training examples</li><li><b>(1/2m)</b>: average over m examples; the ½ is a calculus convenience that cancels the 2 from the derivative</li></ul><p><b>Intuition:</b> If the model predicts house prices perfectly for every example, J = 0. The worse the predictions, the higher J climbs. Training is the process of making J as close to 0 as possible.</p><p><b>Why square errors?</b> Two reasons: (1) negative and positive errors don't cancel each other out, and (2) large errors get penalised much more heavily than small ones — a prediction that's off by 10 contributes 100 to the cost, while being off by 1 contributes only 1.</p>",
     example: "Model predicts house prices [300K, 400K, 500K]. True prices are [280K, 420K, 480K]. MSE = average of [(20K)², (20K)², (20K)²] / 2 = single 'wrongness' score to minimise.",
-    animation: null,
+    animation: "CostFunctionViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -457,7 +501,7 @@ const mlNodes = [
     excerpt: "What the cost function looks like — and why the bowl shape matters.",
     theory: "<p>This lecture built intuition for the cost function by simplifying to <b>one parameter (w only, b=0)</b>. This lets us plot J as a 2D curve instead of a 3D surface.</p><p>With just w, f(x) = w·x. For different values of w:</p><ul><li>w=1: predicts y=x — if data follows y≈x, cost J is low</li><li>w=0.5: predicts half of x — error is higher, J is higher</li><li>w=0: predicts 0 for everything — worst possible, J is very high</li></ul><p>Plot w on the x-axis and J on the y-axis: you get a <b>U-shaped (parabolic) curve</b>. The minimum of this U is the best value of w.</p><p>For linear regression with MSE, this curve is always <b>convex</b> — one global minimum, no local minima to get stuck in. Andrew Ng: 'The squared error cost function for linear regression always has this U-shaped bowl.' This is mathematically guaranteed and is a key advantage over other cost functions.</p>",
     example: "From the lecture: set b=0. Try w=1 — line passes through the data points perfectly, J≈0. Try w=0.5 — the line is less steep, predictions miss many points, J is higher. Try w=0 — a flat horizontal line, terrible fit, J is highest. Plot these (w, J) pairs: you get the U-shape. Minimum is at w=1.",
-    animation: null,
+    animation: "CostFunctionViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -489,7 +533,7 @@ const mlNodes = [
     excerpt: "Contour plots and the 3D bowl — seeing the optimisation landscape with two parameters.",
     theory: "<p>Once we restore the b parameter, J becomes J(w, b) — a function of two parameters. We can no longer draw a 2D curve. Instead, we get:</p><p><b>3D Surface Plot:</b> w on one horizontal axis, b on the other, J on the vertical axis. The result is a 3D bowl shape — like a soup bowl. The bottom of the bowl is the minimum J — the best (w, b).</p><p>Andrew Ng's example: w=0.06, b=50 creates a line that consistently underestimates house prices. On the 3D surface, this corresponds to a point far from the minimum — high up on the bowl's wall.</p><p><b>Contour Plot:</b> The same bowl viewed from directly above. Each oval/ellipse represents all (w, b) combinations that produce the <b>same cost J</b> — like altitude lines on a topographic map. The smallest inner oval = the minimum (best model). Moving from the outer ovals toward the centre = training (reducing cost).</p>",
     example: "On the contour plot: a point at w=-0.15, b=800 is far from the minimum — on an outer oval. The line f(x) = -0.15x + 800 has a negative slope and high intercept, badly fitting the housing data. As gradient descent runs, the (w, b) point spirals inward on the contour plot toward the centre minimum.",
-    animation: null,
+    animation: "CostFunctionViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -521,7 +565,7 @@ const mlNodes = [
     excerpt: "Connecting the model line, cost function, and contour plot into one unified picture.",
     theory: "<p>This lecture connected all the pieces into one visual. The key insight: <b>every (w, b) point on the contour plot corresponds to one specific line on the house price graph.</b></p><p>Examples from the lecture:</p><ul><li>w=-0.15, b=800 → a negatively-sloped line (prices decrease as size increases) — obviously wrong. On the contour plot: far from the minimum, on an outer oval with high cost.</li><li>w=0, b=360 → a flat horizontal line predicting $360K for every house regardless of size — bad but less bad. On the contour plot: closer to the minimum.</li><li>w≈0.14, b≈100 → a line with a reasonable slope and intercept — roughly fits the data. On the contour plot: near the centre minimum.</li></ul><p>This connection is the core insight of supervised learning: <b>every point in parameter space (w, b) maps to one model (line) and one cost value. Training is navigating this space to find the point with the lowest cost.</b></p>",
     example: "Andrew Ng walked through three specific (w, b) pairs. For each, he showed: (1) the corresponding line on the left plot, (2) its position on the contour plot on the right. The worse the line fits the data, the further from the minimum the point is on the contour. This is the visual proof that cost function is doing its job.",
-    animation: null,
+    animation: "CostFunctionViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -552,8 +596,8 @@ const mlNodes = [
     order: 15,
     excerpt: "The core optimisation algorithm that trains virtually every ML model.",
     theory: "<p><b>Gradient Descent</b> is the algorithm that trains virtually every ML model — from linear regression to GPT-4. Understanding it is non-negotiable for interviews.</p><p><b>The blind hiker analogy:</b> Imagine you're blindfolded on a hilly landscape. You can't see the whole terrain. You can only feel the slope under your feet. Your goal: reach the lowest valley. Your strategy: at every step, feel which direction is downhill and take one step that way. Repeat until you can't go any lower.</p><p>In ML: the 'landscape' is the cost function J(w,b). The 'valley floor' is the minimum cost (best model). The 'slope' is the gradient (mathematical derivative). Gradient descent is the algorithm that takes those downhill steps.</p><p><b>The update rule (memorise this):</b></p><ul><li>w := w − α × (∂J/∂w)</li><li>b := b − α × (∂J/∂b)</li></ul><p>Where α (alpha) = learning rate (step size). Both updates happen simultaneously using the same current values.</p><p><b>Critical rule:</b> Update ALL parameters simultaneously. Compute all derivatives first using current values, then update them all at once. Updating w first and using the new w to compute b's derivative is a bug — you'd be computing the wrong gradient.</p><p><b>Three variants you must know:</b></p><ul><li><b>Batch GD</b>: use all training data for each step — very stable but slow for large datasets</li><li><b>Stochastic GD (SGD)</b>: use one random sample per step — fast but very noisy (zigzags)</li><li><b>Mini-batch GD</b>: use batches of 32–512 samples — industry standard, balances speed + stability + GPU parallelism</li></ul>",
-    example: null,
-    animation: null,
+    example: "Think of gradient descent as hiking down a foggy mountain — you can't see the bottom, but you always step in the steepest downhill direction. In linear regression, each step updates the weights to reduce the prediction error a little, until you settle into the valley (minimum cost).",
+    animation: "GradientDescentViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -598,7 +642,7 @@ const mlNodes = [
     excerpt: "The actual update equations — the math behind every gradient step.",
     theory: "<p>This lecture gave the actual mathematical update rule. Andrew Ng's exact formulation:</p><p><b>On each step:</b></p><ul><li><code>w := w − α × (∂J(w,b)/∂w)</code></li><li><code>b := b − α × (∂J(w,b)/∂b)</code></li></ul><p>The <code>:=</code> symbol is the <b>assignment operator</b> (not a mathematical equality). It means 'compute the right side, then store it in the variable on the left'. Andrew Ng was careful to distinguish this from mathematical equality.</p><p><b>Breaking down the formula:</b></p><ul><li><b>α (alpha)</b>: the learning rate — controls how big each step is</li><li><b>∂J/∂w</b>: the partial derivative of the cost w.r.t. w — tells you the slope in the w direction</li><li><b>Subtract</b>: because we want to go downhill (reduce J), we move against the gradient</li></ul><p><b>Critical rule — simultaneous update:</b> You MUST compute both ∂J/∂w and ∂J/∂b using the CURRENT values of (w, b) first, then update both. Updating w first and using the new w to compute ∂J/∂b is a bug — you're computing the derivative at a different point.</p><p><b>Correct implementation:</b></p><ul><li>temp_w = w − α × ∂J/∂w  (computed with current w, b)</li><li>temp_b = b − α × ∂J/∂b  (computed with current w, b)</li><li>w = temp_w</li><li>b = temp_b</li></ul>",
     example: "Pseudocode implementing simultaneous update correctly:\n  dJ_dw = (1/m) × sum(f_wb(x[i]) - y[i]) × x[i] for all i\n  dJ_db = (1/m) × sum(f_wb(x[i]) - y[i]) for all i\n  w = w - alpha × dJ_dw   # Use dJ_dw computed BEFORE updating w\n  b = b - alpha × dJ_db   # Use dJ_db computed with ORIGINAL (w, b)",
-    animation: null,
+    animation: "GradientDescentViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -631,7 +675,7 @@ const mlNodes = [
     excerpt: "The tangent line trick — why the sign and magnitude of the gradient guide every step.",
     theory: "<p>This lecture built intuition for derivatives without heavy calculus. Key idea: the derivative at a point is the <b>slope of the tangent line</b> at that point.</p><p>Andrew Ng's example: take the J(w) curve (with b=0 for simplicity). Pick a point to the right of the minimum:</p><ul><li>Draw the tangent line at that point — it slopes upward (positive slope)</li><li>∂J/∂w = positive value</li><li>Update: w := w − α × (positive value) → <b>w decreases</b></li><li>On the graph: w moves left, toward the minimum</li></ul><p>Pick a point to the left of the minimum:</p><ul><li>Tangent line slopes downward (negative slope)</li><li>∂J/∂w = negative value</li><li>Update: w := w − α × (negative value) = w + positive → <b>w increases</b></li><li>On the graph: w moves right, toward the minimum</li></ul><p>Both cases converge toward the minimum automatically. <b>This is the elegance of gradient descent — the sign of the derivative always pushes you in the right direction.</b></p><p><b>Magnitude matters too:</b> Far from the minimum, the slope is steep (large derivative → large step). Near the minimum, the slope is flat (small derivative → small step). Gradient descent naturally takes bigger steps when far away and smaller steps as it approaches — even with a fixed learning rate.</p>",
     example: "You're at w=3 on the J(w) curve. The tangent at w=3 has slope +2 (positive). Update: w = 3 − 0.1 × 2 = 2.8. Move left. Next step at w=2.8 has slope +1.5 (less steep). Update: w = 2.8 − 0.1 × 1.5 = 2.65. Steps get smaller as you approach the minimum. No code changes needed — the math handles it automatically.",
-    animation: null,
+    animation: "GradientDescentViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -668,7 +712,7 @@ const mlNodes = [
     excerpt: "The most critical hyperparameter — too large diverges, too small barely moves.",
     theory: "<p>The <b>learning rate (α)</b> controls how large each gradient descent step is.</p><ul><li><b>Too large</b>: steps overshoot the minimum, cost oscillates and may diverge (keep going up)</li><li><b>Too small</b>: algorithm converges correctly but takes an extremely long time</li><li><b>Just right</b>: cost decreases smoothly and converges efficiently</li></ul><p>Practical search strategy: try values on a log scale — 0.0001, 0.001, 0.01, 0.1 — and plot the cost curve for each. Pick the largest value that still converges smoothly.</p>",
     example: "Analogy: α is the size of your step going down a hill. Too large: you overshoot to the other side and end up higher. Too small: you'll get there eventually but it might take 10,000 steps instead of 100.",
-    animation: null,
+    animation: "LearningRateViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -705,7 +749,7 @@ const mlNodes = [
     excerpt: "The complete training loop: model + cost + gradient derivation all in one.",
     theory: "<p>This lecture pulled everything together. Andrew Ng derived the actual gradient formulas for linear regression — the exact derivatives you compute in gradient descent.</p><p><b>The complete gradient formulas:</b></p><ul><li>∂J/∂w = (1/m) × Σᵢ (f_wb(xᵢ) − yᵢ) × xᵢ</li><li>∂J/∂b = (1/m) × Σᵢ (f_wb(xᵢ) − yᵢ)</li></ul><p>Structure: the error for each example (prediction minus true value) × the feature (for ∂J/∂w) or just the error (for ∂J/∂b). Then average over all m examples.</p><p><b>The term 'Batch Gradient Descent'</b>: This specific version is called batch GD because each step uses the <b>entire training set</b> (all m examples) to compute the gradient. Andrew Ng: 'This gradient descent process is called batch gradient descent.' In deep learning, mini-batch GD is used instead for efficiency.</p><p><b>Guarantee for linear regression:</b> The squared error cost function for linear regression is always convex — so batch gradient descent always converges to the global minimum (with appropriate α). No local minima to worry about.</p>",
     example: "Full training loop: 1) Start with w=0, b=0. 2) Predict ŷᵢ = 0×xᵢ + 0 = 0 for all houses. 3) Compute cost: J = (1/2m)Σ(0 - yᵢ)² = very high. 4) Compute gradients. 5) Update w and b. 6) New predictions are slightly better. Repeat 1000 times. By iteration 1000, w≈0.14, b≈100, and the line fits the Portland housing data well.",
-    animation: null,
+    animation: "GradientDescentViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -742,7 +786,7 @@ const mlNodes = [
     excerpt: "Watching the algorithm actually run — the parameter trajectory toward the minimum.",
     theory: "<p>This lecture showed gradient descent running live. Starting from w=-0.1, b=900 — a deliberately bad starting point (predicts price = -0.1×size + 900, a slightly negative slope with a high intercept).</p><p>Andrew Ng walked through each step:</p><ol><li>Step 1: (w, b) moves slightly toward the minimum on the contour plot. The line on the house data changes slightly.</li><li>Each step: cost decreases. The parameter path traces a trajectory on the contour plot.</li><li>Convergence: the path reaches the centre of the contour plot (minimum). The line now fits the data well.</li></ol><p><b>The final result:</b> the best-fit line. For a friend's 1,250 sq ft house, the model predicts approximately $250K. Andrew Ng: 'Isn't that cool. And so that's gradient descent and we're going to use this to fit a model to the holding data.'</p><p><b>Key observation:</b> Early steps are large (far from minimum, steep slope → large gradient → big step). Later steps are small (near minimum, flat slope → small gradient → tiny step). Fixed α, but step sizes vary naturally with the gradient magnitude.</p>",
     example: "Starting: w=-0.1, b=900, f(x) = -0.1x + 900. After convergence: w≈0.14, b≈100, f(x) = 0.14x + 100. For x=1250 (sq ft): prediction = 0.14×1250 + 100 = 275K. On the contour plot, the parameter path spirals from the outer ovals toward the centre minimum — like water draining into a sink.",
-    animation: null,
+    animation: "GradientDescentViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -854,7 +898,7 @@ const mlNodes = [
     excerpt: "Normalising features so gradient descent converges faster — a must-do step.",
     theory: "<p>If features have very different scales (e.g., house size in sq ft = 1,500 vs bedrooms = 3), the cost function becomes a very elongated ellipse. Gradient descent zigzags inefficiently along the narrow direction, taking many small steps to converge.</p><p>Feature scaling makes all features comparable in magnitude, making the cost function more circular and allowing gradient descent to take more direct steps toward the minimum.</p><p><b>Two standard methods:</b></p><ul><li><b>Min-Max Normalisation</b>: x_scaled = (x − x_min) / (x_max − x_min) → range [0, 1]</li><li><b>Z-score Standardisation</b>: x_scaled = (x − μ) / σ → mean=0, std=1</li></ul><p><b>When to use which:</b> Z-score (standardisation) is generally preferred for ML because it handles outliers better and doesn't constrain the range. Min-max is useful when you need values in a specific range (e.g., pixel values for image models).</p><p><b>The critical rule:</b> Fit the scaler on training data only. Apply the same μ and σ to validation, test, and production data. Never fit on test data — that's data leakage.</p><p>Andrew Ng's rule of thumb: aim for features in the range [-1, 1] or [-3, 3]. Features in range [−100, 100] or [0.001, 0.001] definitely need scaling.</p>",
     example: "After z-score scaling, 'house size (sq ft)' and 'number of bedrooms' both have mean ≈ 0 and std ≈ 1. Gradient descent now takes balanced steps in both dimensions instead of zigzagging. Convergence that took 10,000 iterations without scaling now takes 100.",
-    animation: null,
+    animation: "FeatureScalingViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -879,7 +923,7 @@ const mlNodes = [
     excerpt: "Coding z-score normalisation from scratch; using sklearn's StandardScaler.",
     theory: "<p>Manual z-score implementation:</p><ol><li>Compute μ = mean of each feature column across training examples: <code>mu = np.mean(X_train, axis=0)</code></li><li>Compute σ = standard deviation: <code>sigma = np.std(X_train, axis=0)</code></li><li>Transform: <code>X_scaled = (X - mu) / sigma</code></li><li>Store μ and σ — apply the same values to val/test/production data</li></ol><p>sklearn's <code>StandardScaler</code> encapsulates this cleanly:</p><ul><li><code>scaler = StandardScaler()</code></li><li><code>scaler.fit(X_train)</code> — computes and stores μ and σ</li><li><code>X_train_scaled = scaler.transform(X_train)</code></li><li><code>X_test_scaled = scaler.transform(X_test)</code> — uses training μ/σ</li></ul><p>The separation of <code>fit</code> and <code>transform</code> is the key design pattern — it enforces the rule that test data is never used to compute scaling parameters.</p><p>In production, save the fitted scaler with <code>joblib.dump(scaler, 'scaler.pkl')</code> alongside your model. Load it at inference time to scale incoming requests with the same parameters.</p>",
     example: "Without scaling: gradient descent on house price (sqft=1500, bedrooms=3) zigzags for 10,000 iterations. With z-score scaling (sqft_scaled≈0.5, bedrooms_scaled≈0.2), converges in 100 iterations. Same model, 100× fewer iterations.",
-    animation: null,
+    animation: "FeatureScalingViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -903,7 +947,7 @@ const mlNodes = [
     excerpt: "The learning curve — how to tell when training is done and when it's broken.",
     theory: "<p>Plot cost J on the y-axis against iteration number on the x-axis. This is the <b>learning curve</b> — the most important diagnostic tool in ML training.</p><p><b>What a healthy learning curve looks like:</b> Cost decreases monotonically every iteration and eventually flattens asymptotically. The curve looks like a ski slope that levels off.</p><p><b>Diagnosing problems from the learning curve:</b></p><ul><li>Cost goes <b>up</b> → learning rate α is too large (overshooting) or there's a bug in the gradient computation</li><li>Cost decreases but <b>very slowly</b> → α too small, or feature scaling needed</li><li>Cost decreases then <b>oscillates</b> → α slightly too large</li><li>Cost decreases then <b>plateaus</b> → converged (or stuck in local minimum for non-convex problems)</li></ul><p><b>Automatic convergence test:</b> Stop when ΔJ < ε between consecutive iterations, where ε = 10⁻³ is a common threshold. In practice, watching the curve visually is often more informative than a fixed threshold.</p><p>Andrew Ng's rule: if gradient descent is working, J should decrease after every single iteration. If it ever increases, something is wrong.</p>",
     example: "Learning curve for house price model: iterations 0-100: cost drops from 500 to 50 (steep). Iterations 100-500: drops from 50 to 10 (moderate). Iterations 500+: barely changes (converged). Decision: stop at iteration 500, further training wastes compute.",
-    animation: null,
+    animation: "LearningRateViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -927,7 +971,7 @@ const mlNodes = [
     excerpt: "The log-scale sweep strategy for finding a good α systematically.",
     theory: "<p>No single α works universally. The learning rate is the most important hyperparameter to tune — too small and training is painfully slow, too large and it diverges.</p><p><b>Systematic approach (log-scale sweep):</b></p><ol><li>Start with a very small α (e.g., 0.0001) to verify the cost decreases</li><li>Multiply by 3× for each trial: 0.0001 → 0.0003 → 0.001 → 0.003 → 0.01 → 0.03 → 0.1</li><li>Plot cost vs. iterations for each trial on the same graph</li><li>Choose the largest α that still converges smoothly</li></ol><p>This log-scale sweep takes ~7 experiments and reliably finds a strong starting point. It's the same strategy used when tuning deep learning models.</p><p><b>Signs of a good α:</b> Cost decreases quickly and smoothly. <b>Signs of α too large:</b> Cost oscillates or increases. <b>Signs of α too small:</b> Cost decreases but extremely slowly — the curve is nearly flat.</p><p>Andrew Ng's practical tip: if you're unsure, start with α = 0.01 and adjust based on the learning curve. Feature scaling first makes the optimal α more predictable.</p>",
     example: "Testing α = 0.001 (too slow, cost barely moves), α = 0.01 (good, smooth decrease), α = 0.1 (too large, cost oscillates). Choose α = 0.01. After feature scaling, α = 0.1 might work fine — scaling changes the optimal range.",
-    animation: null,
+    animation: "LearningRateViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1000,7 +1044,7 @@ const mlNodes = [
     excerpt: "Why linear regression fails for classification and what to use instead.",
     theory: "<p>If you naively apply linear regression to a classification problem (e.g., tumour malignancy), predicted values can go below 0 or above 1 — meaningless as probabilities.</p><p>Worse, the decision threshold shifts as you add more extreme data points. A single outlier with a very large feature value can pull the regression line, flipping the classification of all other examples.</p><p>This formally motivates logistic regression, which is specifically designed to output calibrated probabilities in [0, 1] regardless of input values.</p><p><b>Classification vs Regression:</b></p><ul><li>Regression: output y is a continuous number (house price, temperature)</li><li>Classification: output y is one of a small set of discrete categories (spam/not-spam, benign/malignant, cat/dog/bird)</li></ul><p>The most important classification type: <b>binary classification</b> (y = 0 or 1). The two classes are often called negative (0) and positive (1) — not value judgements, just labels.</p>",
     example: "Tumour classification: if you use linear regression and add a patient with a very large tumour, the regression line tilts, causing previously-correct predictions to flip. Logistic regression is immune to this — the sigmoid function always outputs [0,1] regardless of extreme inputs.",
-    animation: null,
+    animation: "LogisticSigmoidViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1024,7 +1068,7 @@ const mlNodes = [
     excerpt: "The sigmoid function — squashing any real number into a probability [0, 1].",
     theory: "<p><b>Logistic Regression</b> applies the sigmoid function to the output of a linear equation:</p><p><code>ŷ = σ(z) = 1 / (1 + e^−z)  where z = w⃗ · x⃗ + b</code></p><p>The sigmoid (σ) maps any real number to the range (0, 1):</p><ul><li>z → +∞ : σ → 1 (very confident class 1)</li><li>z = 0 : σ = 0.5 (maximum uncertainty)</li><li>z → −∞ : σ → 0 (very confident class 0)</li></ul><p>The output is interpreted as P(y=1 | x) — the probability the input belongs to the positive class. We typically classify as 1 if ŷ > 0.5.</p><p><b>Why sigmoid?</b> It's the natural function that maps logits (log-odds) to probabilities. The logistic function has a beautiful property: it's differentiable everywhere, which makes gradient descent work smoothly.</p><p><b>The S-curve shape</b> is the key intuition: flat near 0 and 1 (confident predictions), steep in the middle (uncertain region). The model becomes more confident as inputs move further from the decision boundary.</p>",
     example: "Spam filter: σ(wx+b) = 0.87 means '87% probability this is spam'. Decision rule: if ŷ > 0.5, classify as spam. The threshold 0.5 can be adjusted — in fraud detection you might use 0.3 to catch more fraud at the cost of more false positives.",
-    animation: null,
+    animation: "LogisticSigmoidViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1049,7 +1093,7 @@ const mlNodes = [
     excerpt: "Where the model draws the line between classes — linear and non-linear boundaries.",
     theory: "<p>The <b>decision boundary</b> is the surface in feature space where the model's predicted probability = 0.5, i.e., where z = w⃗·x⃗ + b = 0.</p><p>Everything on one side: predicted class 1. Other side: class 0.</p><ul><li>With linear features: a straight line (2D), plane (3D), or hyperplane (n-D)</li><li>With polynomial features: a curved boundary (circle, parabola, complex shapes)</li></ul><p><b>Key insight:</b> The decision boundary is a property of the <em>parameters</em> (w, b), not the data. The training process finds parameters that place the boundary optimally to separate the classes.</p><p><b>Linear decision boundary example:</b> If w₁=1, w₂=1, b=−3, then the boundary is x₁ + x₂ = 3 — a diagonal line. Points above: class 1. Points below: class 0.</p><p><b>Non-linear boundary:</b> With features x₁², x₂², the boundary can be a circle: x₁² + x₂² = 1. This is still logistic regression — just with engineered polynomial features.</p>",
     example: "Email spam: decision boundary in 2D feature space (word count vs. link count). The line separates spam (high links, many words) from legitimate email. A curved boundary might separate better if spam has a non-linear pattern.",
-    animation: null,
+    animation: "LogisticSigmoidViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1073,7 +1117,7 @@ const mlNodes = [
     excerpt: "Why MSE creates non-convex surfaces for classification; introducing log loss.",
     theory: "<p>Using MSE as the cost function for logistic regression creates a <b>non-convex</b> cost surface with many local minima that gradient descent can't reliably escape.</p><p><b>Why MSE becomes non-convex for logistic regression:</b> MSE with a linear model is convex because the squared error is a quadratic function of the parameters. But MSE with a sigmoid model creates a complex, wavy surface — gradient descent gets stuck in local minima.</p><p>Instead, we use <b>Log Loss</b> (Binary Cross-Entropy), which is derived from maximum likelihood estimation and produces a convex surface:</p><ul><li>If y=1: loss = −log(ŷ) — large penalty when ŷ ≈ 0 (confident and wrong)</li><li>If y=0: loss = −log(1−ŷ) — large penalty when ŷ ≈ 1 (confident and wrong)</li></ul><p>Average cost: J = (1/m) Σ [−y·log(ŷ) − (1−y)·log(1−ŷ)]</p><p><b>Intuition:</b> −log(ŷ) → ∞ as ŷ → 0. So if the true label is y=1 and the model predicts ŷ ≈ 0 (confident wrong answer), the penalty is enormous. This forces the model to be calibrated — it can't be confidently wrong without paying a huge cost.</p>",
     example: "If y=1 (tumour is malignant) and model predicts ŷ=0.01 (99% confident it's benign): loss = −log(0.01) ≈ 4.6 (very high penalty). If model predicts ŷ=0.99: loss = −log(0.99) ≈ 0.01 (tiny penalty). Log loss harshly penalises confident wrong predictions.",
-    animation: null,
+    animation: "LogisticSigmoidViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1098,7 +1142,7 @@ const mlNodes = [
     excerpt: "Combining the y=0 and y=1 cases into one elegant unified formula.",
     theory: "<p>The two-case log loss can be unified into one expression:</p><p><code>loss(ŷ, y) = −y·log(ŷ) − (1−y)·log(1−ŷ)</code></p><p>When y=1: second term vanishes (1−y=0) → loss = −log(ŷ)<br/>When y=0: first term vanishes (y=0) → loss = −log(1−ŷ)</p><p>This single formula handles both cases cleanly. It's exactly what you'll find in every deep learning framework's <code>BCELoss</code> (binary cross-entropy loss) implementation.</p><p><b>The cost function</b> averages this loss over all training examples:</p><p><code>J(w,b) = −(1/m) Σᵢ [yᵢ·log(ŷᵢ) + (1−yᵢ)·log(1−ŷᵢ)]</code></p><p>This is convex — gradient descent will always find the global minimum. The elegance of this formula is that it was derived from probability theory (MLE), not engineered by hand.</p>",
     example: "Verify: y=1, ŷ=0.8: loss = −1·log(0.8) − 0·log(0.2) = −log(0.8) ≈ 0.22. y=0, ŷ=0.3: loss = −0·log(0.3) − 1·log(0.7) = −log(0.7) ≈ 0.36. Both cases handled by one formula.",
-    animation: null,
+    animation: "LogisticSigmoidViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1122,7 +1166,7 @@ const mlNodes = [
     excerpt: "Same update rule as linear regression — but with sigmoid applied underneath.",
     theory: "<p>The gradient descent update equations for logistic regression look identical to linear regression:</p><p><code>wⱼ := wⱼ − α · (1/m) Σ (ŷᵢ − yᵢ) · xᵢⱼ</code><br/><code>b := b − α · (1/m) Σ (ŷᵢ − yᵢ)</code></p><p>The critical difference is hidden inside ŷᵢ: for logistic regression, ŷᵢ = σ(w⃗·x⃗ᵢ + b) — the sigmoid is applied before computing the error. Same gradient descent algorithm shape, different model function.</p><p><b>Why the update rules look the same:</b> This is a beautiful mathematical coincidence that comes from the MLE derivation. The gradient of log loss with respect to w turns out to have the same form as the gradient of MSE — the error (ŷ − y) times the feature xᵢ. The sigmoid is absorbed into ŷ.</p><p><b>Practical implementation:</b> All the same techniques apply — vectorisation, feature scaling, learning rate tuning, monitoring the learning curve. The only code change when switching from linear to logistic regression is the model function (add sigmoid).</p>",
     example: "Linear regression: ŷ = w⃗·x⃗ + b, gradient = (ŷ−y)·x. Logistic regression: ŷ = σ(w⃗·x⃗ + b), gradient = (ŷ−y)·x. Same formula, different ŷ computation. The gradient descent loop is identical.",
-    animation: null,
+    animation: "LogisticSigmoidViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1146,7 +1190,7 @@ const mlNodes = [
     excerpt: "The bias-variance tradeoff — the single most important concept in applied ML.",
     theory: "<p>Two failure modes:</p><p><b>Underfitting (High Bias)</b>: model is too simple to capture the true pattern. Performs poorly on both training and test data. Symptoms: training loss is high. The model has a strong wrong assumption (bias) about the data.</p><p><b>Overfitting (High Variance)</b>: model memorises the training data including noise. Performs perfectly on training, poorly on unseen test data. Symptoms: training loss low, test loss high. The model is too sensitive to the specific training examples (variance).</p><p><b>The bias-variance tradeoff:</b> As model complexity increases, bias decreases but variance increases. The optimal model minimises total error = bias² + variance + irreducible noise.</p><p><b>Solutions to overfitting:</b></p><ul><li>Collect more training data (usually most effective — more data reduces variance)</li><li>Reduce model complexity (fewer features or lower polynomial degree)</li><li>Regularisation (add penalty for large weights — the elegant mathematical solution)</li><li>Feature selection (remove irrelevant features)</li></ul><p><b>Solutions to underfitting:</b></p><ul><li>Add more features or polynomial features</li><li>Reduce regularisation strength</li><li>Use a more complex model</li></ul>",
     example: "Fitting a polynomial to 10 data points: degree=1 underfit (misses the S-curve, high bias). Degree=9 overfit (passes through every point but oscillates wildly between them, high variance). Degree=3 is just right (captures the curve without memorising noise).",
-    animation: null,
+    animation: "OverfittingViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1171,7 +1215,7 @@ const mlNodes = [
     excerpt: "Adding a penalty for large weights — the elegant way to prevent overfitting.",
     theory: "<p><b>Regularisation</b> adds a penalty term to the cost function that discourages large parameter values.</p><p><b>Intuition:</b> Large weights mean the model is making sharp, sensitive decisions that may be specific to training noise. Penalising large weights forces the model toward simpler, smoother solutions that generalise better to unseen data.</p><p>Regularisation strength is controlled by λ (lambda):</p><ul><li>λ = 0: no regularisation (pure fit to training data — risk of overfitting)</li><li>λ → ∞: all weights forced to zero (model predicts the constant mean — severe underfitting)</li><li>λ just right: model generalises well</li></ul><p><b>Two types of regularisation:</b></p><ul><li><b>L2 (Ridge)</b>: penalty = λ Σwⱼ² — shrinks all weights smoothly toward zero</li><li><b>L1 (Lasso)</b>: penalty = λ Σ|wⱼ| — drives some weights exactly to zero (automatic feature selection)</li></ul><p>λ is a hyperparameter tuned on the validation set. In deep learning, the equivalent is the <code>weight_decay</code> parameter in optimisers like Adam.</p>",
     example: "Without regularisation: polynomial degree-9 model memorises all 10 training points perfectly. With λ=1: weights are penalised, the model smooths out, degree-9 behaves like degree-3. Regularisation effectively reduces the model's complexity without changing its architecture.",
-    animation: null,
+    animation: "OverfittingViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1196,7 +1240,7 @@ const mlNodes = [
     excerpt: "L2 penalty added to MSE; weight decay in the gradient update.",
     theory: "<p>Regularised cost function (L2 / Ridge):</p><p><code>J(w,b) = (1/2m) Σ (ŷᵢ − yᵢ)² + (λ/2m) Σwⱼ²</code></p><p><b>Key details:</b></p><ul><li>The bias term b is typically NOT regularised (convention across all frameworks)</li><li>The (λ/2m) normalisation makes λ scale-independent with respect to dataset size</li><li>The sum runs from j=1 to n (all weights, not the bias)</li></ul><p><b>Gradient update for w:</b></p><p><code>wⱼ := wⱼ · (1 − α·λ/m) − α · (1/m) Σ(ŷᵢ−yᵢ)·xᵢⱼ</code></p><p>The factor (1 − α·λ/m) is slightly less than 1 — every update shrinks w by a small fraction before applying the gradient. This is called <b>weight decay</b>, the name used in deep learning optimisers.</p><p><b>Intuition for weight decay:</b> On each step, the weight first decays slightly (multiplied by a number just below 1), then the gradient pushes it in the right direction. The decay prevents weights from growing large over many iterations.</p>",
     example: "With α=0.01, λ=1, m=100: decay factor = 1 − (0.01·1/100) = 1 − 0.0001 = 0.9999. Each step, w shrinks by 0.01% before the gradient update. Over 10,000 steps, this prevents w from growing unboundedly.",
-    animation: null,
+    animation: "OverfittingViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1220,7 +1264,7 @@ const mlNodes = [
     excerpt: "Applying L2 regularisation to logistic regression — the production standard.",
     theory: "<p>The same L2 penalty applies to logistic regression:</p><p><code>J(w,b) = (1/m) Σ [cross-entropy loss] + (λ/2m) Σwⱼ²</code></p><p>The w update picks up the same weight decay factor (1 − α·λ/m):</p><p><code>wⱼ := wⱼ · (1 − α·λ/m) − α · (1/m) Σ(ŷᵢ−yᵢ)·xᵢⱼ</code></p><p>In practice: sklearn's <code>LogisticRegression</code> defaults to L2 regularisation with C=1. The parameter is <b>C = 1/λ</b> — smaller C = stronger regularisation (inverse convention!). PyTorch's Adam optimiser has a <code>weight_decay</code> parameter that is exactly this L2 penalty.</p><p><b>This completes the core foundation of supervised learning:</b></p><ul><li>Linear regression → cost function (MSE) → gradient descent → regularisation</li><li>Logistic regression → cost function (log loss) → gradient descent → regularisation</li></ul><p>These two models, properly regularised, are the workhorses of classical ML. Everything else — neural networks, SVMs, gradient boosting — builds on these foundations.</p>",
     example: "sklearn: LogisticRegression(C=0.1) means λ=10 (strong regularisation). LogisticRegression(C=10) means λ=0.1 (weak regularisation). Default C=1 means λ=1. Always tune C on the validation set.",
-    animation: null,
+    animation: "OverfittingViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1300,7 +1344,7 @@ const ragNodes = [
     excerpt: "Chunk → embed → store in a vector DB. Implementing from scratch.",
     theory: "<p>The injection pipeline is the <em>offline batch process</em> that prepares your knowledge base for retrieval. Once built, it runs infrequently — only when documents change.</p><p><strong>Four steps:</strong> (1) Load source documents from a directory (PDFs, DOCX, TXT), (2) Split into chunks using a text splitter, (3) Embed each chunk into a vector using an embedding model, (4) Store the vectors in a persistent vector database.</p><p><strong>Key LangChain classes used:</strong></p><ul><li><code>DirectoryLoader</code> / <code>PyPDFDirectoryLoader</code> — load all files from a folder</li><li><code>CharacterTextSplitter</code> — split text by character count (simple baseline)</li><li><code>OpenAIEmbeddings</code> — convert text chunks to 1,536-dimensional vectors</li><li><code>Chroma</code> — local vector database (persists to disk, easy to develop with)</li></ul><p>The instructor chose <strong>ChromaDB</strong> specifically because it can be hosted locally — no API key, no cost, no network latency during development. For production, you'd evaluate Pinecone, Weaviate, or pgvector depending on scale.</p><p>Environment variables (<code>python-dotenv</code>) keep API keys out of code. Always use <code>.env</code> files and add them to <code>.gitignore</code>.</p>",
     example: "A 100-page employee handbook becomes ~500 chunks. Each chunk gets a vector. At query time, 'What is the parental leave policy?' embeds to a vector that's closest to the HR policy chunk — retrieved instantly.",
-    animation: null,
+    animation: "RAGPipelineSteps",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1323,8 +1367,8 @@ const ragNodes = [
     order: 4,
     excerpt: "Query → embed → similarity search → top-k chunks → LLM prompt → answer.",
     theory: "<p>The retrieval pipeline is the <em>real-time component</em> of RAG — it runs on every user query. It takes the user's question, finds the most relevant chunks from the vector database, and returns them for answer generation.</p><p><strong>How it works:</strong> The user query is embedded using the same model used during injection. The resulting vector is compared against all stored chunk vectors using <em>cosine similarity</em>. The top-K chunks (by similarity score) are returned.</p><p><strong>The retriever object</strong> in LangChain abstracts this process. Key configuration parameters:</p><ul><li><code>k=3</code> — return the top 3 most similar chunks (tune this: more = more context but more noise)</li><li><code>score_threshold=0.3</code> — only return chunks with similarity ≥ 0.3; prevents irrelevant chunks from slipping through when no good match exists</li><li><code>search_type='similarity'</code> — use cosine similarity (always preferred for RAG)</li></ul><p>The instructor's rule: <strong>\"Always use cosine similarity for RAG.\"</strong> Euclidean distance is sensitive to vector magnitude; cosine is not — and embedding models produce unit-normalised vectors, making cosine the natural choice.</p><p>The score threshold (0.3 is a starting point) is arrived at through trial and error. Set it too high and you'll get no results; too low and you'll return irrelevant content.</p>",
-    example: null,
-    animation: null,
+    example: "A user asks 'What is our refund policy?' — the question is embedded into a vector, the top-3 closest chunks are fetched from ChromaDB, then passed to GPT-4 as context. The LLM answers grounded in the actual policy text, not hallucinated memory.",
+    animation: "RetrievalQueryViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1347,7 +1391,7 @@ const ragNodes = [
     order: 5,
     excerpt: "How vector similarity is measured — the angle between embeddings explained.",
     theory: "<p>Cosine similarity is the mathematical engine behind semantic search in RAG. Once you understand it, you'll realise every vector database is essentially just computing this one formula at scale.</p><p><strong>Definition:</strong> Cosine similarity measures the <em>angle between two vectors</em>, not their magnitude. Values range from 0 (completely different) to 1 (identical meaning). If you imagine plotting two words as arrows from the origin in high-dimensional space, cosine similarity is how close those arrows point in the same direction.</p><p><strong>Formula:</strong> <code>cos(θ) = (A · B) / (|A| × |B|)</code></p><p>Where A · B is the <em>dot product</em> (element-wise multiply then sum) and |A|, |B| are the vector magnitudes (lengths).</p><p><strong>The RAG simplification:</strong> Popular embedding models (OpenAI, Cohere, etc.) produce <em>unit-normalised</em> vectors — magnitude is always exactly 1. So the denominator <code>|A| × |B| = 1 × 1 = 1</code>, and the formula simplifies to just the dot product: <code>cos(θ) = A · B</code>. This makes it extremely fast to compute.</p><p><strong>Example from the lecture:</strong> Query = 'how to train a dog' vs chunk = 'dog training techniques'. Their embeddings might be [0.6, 0.3, 0.2] and [0.7, 0.4, 0.1]. Dot product = (0.6×0.7) + (0.3×0.4) + (0.2×0.1) = 0.42 + 0.12 + 0.02 = 0.56. High similarity — the chunk gets retrieved.</p>",
-    example: null,
+    example: "Two sentences: 'The cat sat on the mat' and 'A feline rested on the rug.' Though they share no words, their embedding vectors point in nearly the same direction — cosine similarity ≈ 0.94. A completely unrelated sentence like 'Stocks rose 2%' would score ≈ 0.1.",
     animation: "CosineSimilarityDemo",
     tool: null,
     interviewPrep: {
@@ -1396,7 +1440,7 @@ const ragNodes = [
     excerpt: "Multi-turn context and query reformation — making RAG work in chatbots.",
     theory: "<p>Basic RAG has a critical flaw for real-world conversations: it treats every query as independent. When a user asks a follow-up question using pronouns or references (\"What does <em>it</em> do?\"), the vector database has no idea what 'it' refers to — and retrieval fails.</p><p><strong>History-Aware RAG</strong> adds one crucial extra step before retrieval: <em>query reformulation</em>. The system looks at the full conversation history and rewrites the vague follow-up into a clear, standalone, searchable question.</p><p><strong>Example from the lecture:</strong></p><ul><li>User: 'Tell me about Nvidia's latest GPU architecture.' → AI: 'Nvidia's Hopper...'</li><li>Follow-up: 'What is <em>their</em> revenue from <em>it</em>?'</li><li>Without history-aware: vector DB searches for 'their revenue from it' → no results</li><li>With history-aware: reformulated to 'What is Nvidia's revenue from the Hopper GPU architecture?' → relevant chunks retrieved</li></ul><p><strong>Implementation:</strong> Maintain a <code>chat_history</code> list of <code>HumanMessage</code> and <code>AIMessage</code> objects. Before each retrieval, pass the latest question + history to a 'question condenser' LLM chain that rewrites it. Then use the rewritten query for vector search.</p><p>LangChain provides <code>create_history_aware_retriever</code> and <code>create_retrieval_chain</code> to compose this cleanly.</p>",
     example: "History: 'What is RAG?' → Answer explained. Follow-up: 'Give me a code example of that.' → Reformulated: 'Give me a Python code example of Retrieval-Augmented Generation.' → RAG retrieves relevant code chunks.",
-    animation: null,
+    animation: "RetrievalQueryViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1419,8 +1463,8 @@ const ragNodes = [
     order: 8,
     excerpt: "Why chunking is the most impactful RAG decision — fixed vs semantic vs agentic.",
     theory: "<p>Chunking is the critical second step in the injection pipeline — it determines how content gets divided for retrieval. As the instructor puts it: <em>\"Bad chunking breaks everything downstream. Even perfect embeddings cannot fix poorly split content.\"</em></p><p><strong>Why basic (character) chunking fails:</strong> It cuts at fixed character counts regardless of meaning. Example from lecture — a Tesla financial document chunk ends at 'production cost rose by 12% due to supply chain' and the next chunk starts at 'Challenges and inflation' — same topic, split in two, context lost.</p><p><strong>Problems with bad chunking:</strong> splits mid-sentence, breaks related concepts, loses cross-chunk context, ruins retrieval quality even with good embeddings.</p><p><strong>The 5 chunking strategies (simple → sophisticated):</strong></p><ol><li><b>Character Text Splitter</b> — split at fixed character count with separator. Fast, simple, fine for uniform/short documents.</li><li><b>Recursive Character Text Splitter</b> — tries natural boundaries first (paragraphs → sentences → words). Smarter fallback, better context preservation.</li><li><b>Document-Specific Splitting</b> — respects document structure (PDF pages, Markdown headers, CSV rows). Each file type gets appropriate treatment.</li><li><b>Semantic Chunking</b> — uses embeddings to detect topic shifts and split where meaning changes. Smart but computationally expensive.</li><li><b>Agentic Chunking</b> — LLM analyzes content and decides optimal splits. Most accurate, slowest, most expensive. Best for complex unstructured documents.</li></ol>",
-    example: null,
-    animation: null,
+    example: "A 50-page legal contract split by fixed 500-character chunks breaks mid-clause constantly. Using recursive splitting instead, the same document splits on paragraph breaks first, then sentence breaks — keeping legal obligations intact and boosting retrieval precision by ~30%.",
+    animation: "ChunkingVisualizer",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1444,7 +1488,7 @@ const ragNodes = [
     excerpt: "The simplest chunking methods — when to use each and their trade-offs.",
     theory: "<p><strong>Character Text Splitter</strong> follows a <em>split-first, merge-second</em> approach, not a simple character-count slice:</p><ol><li><b>Split</b>: Break the entire text at the separator (default: double newline <code>\\n\\n</code>) into pieces.</li><li><b>Merge</b>: Combine pieces sequentially until the chunk size limit is reached. When adding the next piece would exceed the limit, draw a boundary and start a new chunk.</li></ol><p><strong>Example from the lecture</strong>: <code>chunk_size=100</code>, separator = double newline. Pieces of sizes 18, 51, 19, 78, 21, 62 chars. Pieces 1+2+3 = 88 chars (under 100), merged. Adding piece 4 (78) would exceed 100, so boundary drawn. Piece 4+5 = 99, merged. And so on.</p><p><strong>Recursive Character Text Splitter</strong> is the smarter upgrade. Instead of a single separator, it has a <em>priority list of separators</em>: tries paragraph breaks (<code>\\n\\n</code>) first, then sentence breaks (<code>\\n</code>), then spaces, then single characters as a last resort. This preserves natural language boundaries much better.</p><p>The instructor notes: character splitter is fine for simple, uniform documents (FAQs, structured text). For anything more complex — mixed content, long paragraphs — switch to the recursive version as your baseline.</p>",
     example: "LangChain's RecursiveCharacterTextSplitter with chunk_size=1000, chunk_overlap=200: overlap ensures continuity between adjacent chunks — critical for questions that span chunk boundaries.",
-    animation: null,
+    animation: "ChunkingVisualizer",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1467,8 +1511,8 @@ const ragNodes = [
     order: 10,
     excerpt: "Meaning-preserving chunks using embedding similarity between adjacent sentences.",
     theory: "<p>Semantic chunking moves beyond character-count heuristics and uses <em>embeddings themselves</em> to decide where to split. The idea: split where the <em>meaning changes</em>, not where the character count runs out.</p><p><strong>Three-step process:</strong></p><ol><li><b>Sentence-level embedding</b>: Convert each individual sentence into a vector.</li><li><b>Pairwise similarity</b>: Calculate cosine similarity between consecutive sentences (sentence 1 vs 2, sentence 2 vs 3, etc.). This builds a similarity profile over the document.</li><li><b>Breakpoint detection</b>: Find where the similarity score drops <em>significantly</em> (not just slightly). That drop signals a topic change → draw a chunk boundary there.</li></ol><p><strong>The breakpoint threshold type</strong> controls sensitivity: 'percentile' (split at the bottom X% of similarity scores), 'standard_deviation', or 'interquartile'. 'Percentile' is the most common.</p><p><strong>Instructor's honest take:</strong> <em>\"Personally, I would never use this in production.\"</em> Why? It uses the embedding model during the injection step itself — meaning you pay embedding API costs twice (once for chunking, once for storing). For large corpora, this doubles your processing cost. Use it for learning and interviews, but in production prefer recursive splitting + good overlap.</p>",
-    example: null,
-    animation: null,
+    example: "A Wikipedia article about Python mixes history, syntax, and ecosystem sections. Character splitting creates chunks spanning multiple topics. Semantic chunking detects when the embedding similarity drops between consecutive sentences and creates a split — each chunk stays on-topic.",
+    animation: "ChunkingVisualizer",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1491,7 +1535,7 @@ const ragNodes = [
     order: 11,
     excerpt: "LLM-driven chunking with dynamic metadata — the highest-quality approach.",
     theory: "<p>Agentic chunking is the most sophisticated approach: an LLM itself reads the document and decides where the natural chunk boundaries should be.</p><p><strong>How it works:</strong> You craft a prompt instructing the LLM to act as a \"text chunking expert.\" The prompt includes rules (max chunk size, split at natural topic boundaries, keep related information together) and a special <em>split keyword</em> (e.g. <code>SPLIT_HERE</code>). The LLM reads the text and inserts this keyword wherever it decides a chunk boundary should go. Your code then programmatically splits on that keyword.</p><p><strong>Example from the lecture:</strong> Tesla Q3 earnings text, with instruction to chunk to ~200 characters at natural topic boundaries. The LLM correctly grouped 'deliveries and production' in one chunk and 'Model Y performance' in another — because it understood the semantic relationships, not just the character count.</p><p><strong>The trade-off:</strong> The instructor explicitly says he would <em>not</em> use any of the four simpler strategies for <em>complex enterprise PDFs</em> (with images, tables, complex layouts). For those, he'd use <strong>unstructured.io</strong> — a library that uses OCR, table transformers, and layout detection models to extract and structure content before chunking. Agentic chunking is powerful but impractical at scale due to LLM costs.</p>",
-    example: null,
+    example: "An LLM is given a research paper and asked: 'Identify distinct propositions and create a chunk for each.' It returns chunks like 'Claim: BERT outperforms RNNs on NLU tasks' — each as a standalone, searchable fact rather than a raw paragraph slice.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -1565,7 +1609,7 @@ const ragNodes = [
     excerpt: "One user query → multiple LLM-generated reformulations → merged and reranked.",
     theory: "<p>Users phrase questions poorly — ambiguous, incomplete, or using different vocabulary than the documents. <b>Multi-Query RAG</b> intercepts and expands the query before retrieval:</p><ol><li>LLM generates 3–5 diverse reformulations of the original question</li><li>Each reformulation independently searches the vector DB</li><li>All retrieved chunks are pooled and de-duplicated (using a set to remove duplicates)</li><li>The combined pool is sent to the LLM for answer generation (or reranked first)</li></ol><p>Net effect: dramatically higher recall — questions that would miss with one phrasing succeed with an alternative.</p><p><b>Why this works:</b> Embedding models are sensitive to phrasing. 'What are the side effects?' and 'What are the adverse reactions?' may have different embeddings even though they mean the same thing. Multi-query generates both phrasings and retrieves from both.</p><p><b>Implementation:</b> LangChain's <code>MultiQueryRetriever</code> handles this automatically. It uses an LLM (configurable) to generate query variants, runs parallel retrievals, and de-duplicates results.</p><p>The instructor's result: multi-query retrieval improved answer accuracy by ~30% on a pharmaceutical document RAG system where users asked questions using different terminology than the documents used.</p>",
     example: "User: 'side effects?' → LLM generates: ['List all adverse reactions of this drug', 'What are the contraindications?', 'When should this medication not be taken?', 'What are the warnings?'] → 4× the retrieval coverage → de-duplicated pool of 12 unique chunks instead of 3.",
-    animation: null,
+    animation: "MultiQueryRAGViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1589,7 +1633,7 @@ const ragNodes = [
     excerpt: "A second-pass AI model that re-scores retrieved chunks for maximum precision.",
     theory: "<p>A <b>reranker</b> is a second-pass AI model that takes the top-K retrieved chunks and re-scores them for relevance to the query — dramatically improving precision over the initial retrieval.</p><p><b>Why retrieval alone isn't enough:</b> Vector embeddings use <em>bi-encoders</em> — the query and each document are encoded independently, then compared by cosine similarity. This is fast (O(1) per document after indexing) but less accurate because the query and document are never compared jointly.</p><p><b>How rerankers work (cross-encoders):</b> A reranker takes the query AND a candidate chunk together as input and outputs a single relevance score. Because it sees both simultaneously, it can understand subtle semantic relationships that bi-encoders miss. The trade-off: it's 10–100× slower, so it's only applied to the top 20–50 candidates from the initial retrieval.</p><p><b>Popular rerankers:</b></p><ul><li><b>Cohere Rerank</b> — cloud API, state-of-the-art quality, pay-per-use</li><li><b>Cross-encoder models</b> (Hugging Face) — self-hosted, free, slightly lower quality</li><li><b>ColBERT</b> — token-level late interaction, balance of speed and quality</li></ul><p><b>The instructor's production recommendation:</b> Use rerankers when precision matters more than cost. For a pharmaceutical RAG system (where wrong information is dangerous), always rerank. For a general FAQ chatbot, the initial retrieval may be sufficient.</p>",
     example: "Initial retrieval returns 20 chunks via vector search. Reranker scores all 20 jointly with the query and re-orders them. Chunk that was ranked #8 (similar embedding but different topic) drops to #18. Chunk ranked #3 (exact answer but different phrasing) rises to #1. Top-3 sent to LLM are now far more precise.",
-    animation: null,
+    animation: "RerankerViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1619,7 +1663,7 @@ const langchainNodes = [
     order: 1,
     excerpt: "What LangChain is and why it exists — the standard framework for LLM apps.",
     theory: "<p>LangChain is an open-source framework for building AI-powered applications using Large Language Models. Whether you're a complete beginner or an experienced developer, the course takes you from zero — understanding what LangChain solves — all the way to building sophisticated, production-ready applications.</p><p>The framework's core value proposition: LLMs are powerful but raw. LangChain provides the scaffolding to connect models to real tools, memory, external data, and multi-step reasoning workflows — turning what would be a custom-coded mess into composable, reusable building blocks.</p><p>The course covers LangChain's three most important core components:</p><ul><li><b>Chat Models</b> — structured interface to LLMs (OpenAI, Anthropic, Gemini, Ollama)</li><li><b>Prompt Templates</b> — dynamic, reusable, testable prompt construction</li><li><b>Chains</b> — composing multiple steps into a single pipeline using LCEL (LangChain Expression Language)</li></ul><p>All source code is provided. The fastest way to get value: clone the repo, follow along, and build while watching.</p>",
-    example: null,
+    example: "Instead of writing 50 lines of OpenAI API boilerplate every time you build a chatbot, LangChain gives you a 5-line chain. More importantly, swapping GPT-4 for Claude 3 becomes a one-line change — LangChain abstracts away the provider differences.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -1642,7 +1686,7 @@ const langchainNodes = [
     order: 2,
     excerpt: "Core components: models, prompts, chains, memory, agents, tools.",
     theory: "<p>The LangChain crash course covers four main learning areas, each building on the previous:</p><ol><li><b>What is LangChain</b> — the problem it solves, the abstraction it provides</li><li><b>Chat Models</b> — the first core component: how to interact with LLMs using structured message objects (SystemMessage, HumanMessage, AIMessage)</li><li><b>Prompt Templates</b> — the second core component: building reusable, parameterised prompt structures rather than hard-coded strings</li><li><b>Chains</b> — the third and most powerful component: composing models, prompts, and other tools into sequential pipelines with LCEL's pipe operator (<code>|</code>)</li></ol><p>Each component is introduced with a practical coding example. The course style is deliberately concise — theory is explained only as much as needed to understand the code, then you build immediately. This mirrors how effective engineers learn: by building and encountering problems, not by memorising concepts first.</p>",
-    example: null,
+    example: "The course builds four progressively complex LangChain apps: (1) a simple chat model call, (2) a prompt template chain, (3) a RAG retrieval chain, (4) a multi-model agentic flow. Each week adds one layer of abstraction to the same mental model.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -1665,7 +1709,7 @@ const langchainNodes = [
     order: 3,
     excerpt: "The Runnable interface, LCEL expression language, and composability philosophy.",
     theory: "<p>The lecture uses a perfect analogy to explain LangChain's purpose: imagine asking ChatGPT to plan a vacation — 'I want to go to Paris this Saturday, book my flight, book a hotel, and suggest restaurants.' ChatGPT responds: <em>'I cannot make bookings directly, but I can help you plan.'</em></p><p>That limitation is the core problem LangChain solves. Raw LLMs are <em>stateless text processors</em> — they can think and write, but they cannot act. They can't call APIs, book flights, query databases, or remember previous conversations.</p><p><strong>LangChain's solution:</strong> It's an orchestration framework that connects LLMs to:</p><ul><li><b>Tools</b> — external APIs, databases, search engines, calculators</li><li><b>Memory</b> — conversation history, long-term user preferences</li><li><b>Chains</b> — multi-step workflows where the output of one step feeds the next</li><li><b>Agents</b> — LLMs that decide which tools to call and in what order</li></ul><p>The vacation example resolved with LangChain: an agent could call a flight search API, check hotel availability, query a restaurant recommendation database, and compose a complete travel plan — all from a single natural language request.</p>",
-    example: null,
+    example: "LangChain is like LEGO for LLM apps. Individual bricks are: a prompt template, an LLM, an output parser. LCEL snaps them together with the | operator: chain = prompt | model | parser. You can swap any brick without rewiring the others.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -1689,7 +1733,7 @@ const langchainNodes = [
     order: 4,
     excerpt: "Python basics, API keys, .env setup — everything before you write LangChain code.",
     theory: "<p>Before building with LangChain, you need a working foundation in three areas:</p><ul><li><b>Python 3.8+</b> — the course uses Python exclusively; any version 3.8 or higher works</li><li><b>pip</b> — Python's package manager for installing LangChain and its dependencies</li><li><b>API keys</b> — at minimum an OpenAI API key (for GPT models). Optional: Anthropic, Google Gemini, or Groq keys if you want to test alternative providers</li></ul><p>You do NOT need deep Python expertise — if you know functions, loops, and basic OOP you have enough to follow along. The course explains every new concept as it appears.</p><p>A code editor (VS Code recommended), basic terminal comfort, and willingness to install packages are the practical requirements. Everything else is learned during the course.</p>",
-    example: null,
+    example: "You'll need Python 3.11+, a virtual environment (venv or conda), and a .env file storing your OPENAI_API_KEY. The course also uses python-dotenv to load secrets automatically — never hardcode keys in source files.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -1712,7 +1756,7 @@ const langchainNodes = [
     order: 5,
     excerpt: "virtualenv, installing langchain-openai, and .env management best practices.",
     theory: "<p>The course uses a clean, minimal setup pattern that mirrors professional Python development:</p><ol><li><b>Create project folder</b>: <code>mkdir langchain-crash-course && cd langchain-crash-course</code></li><li><b>Virtual environment</b>: <code>python -m venv venv</code> then activate it. This isolates your project dependencies from global Python packages.</li><li><b>Install packages</b>: <code>pip install langchain langchain-openai python-dotenv</code></li><li><b>Create .env file</b>: Store <code>OPENAI_API_KEY=sk-...</code> here. Never commit this file — add it to <code>.gitignore</code>.</li><li><b>Load env vars in code</b>: <code>from dotenv import load_dotenv; load_dotenv()</code></li></ol><p>The activation command differs by OS: Mac/Linux uses <code>source venv/bin/activate</code>, Windows uses <code>venv\\Scripts\\activate</code>. Once activated, your terminal prompt shows <code>(venv)</code> — all pip installs go into the isolated environment.</p><p>VS Code tip: the instructor opens the project folder directly in VS Code (<code>code .</code>) and uses the integrated terminal. Keeps everything in one place.</p>",
-    example: null,
+    example: "Create a virtual env: python -m venv venv && source venv/bin/activate. Install dependencies: pip install langchain langchain-openai python-dotenv. Add your OpenAI key to .env. Import and run a ChatOpenAI call — if it returns a response, setup is confirmed.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -1736,8 +1780,8 @@ const langchainNodes = [
     order: 6,
     excerpt: "The structured message format — SystemMessage, HumanMessage, AIMessage.",
     theory: "<p>Chat Models are LangChain's first core component — the standardised interface to Large Language Models. Instead of passing raw strings, LangChain uses structured <em>message objects</em> that map to how modern chat LLMs actually work:</p><ul><li><code>SystemMessage</code> — sets the AI's persona, constraints, tone ('You are a helpful assistant')</li><li><code>HumanMessage</code> — the user's input</li><li><code>AIMessage</code> — the model's response (used for storing history)</li></ul><p>The official definition: a <em>Chat Model</em> is a type of language model that uses a sequence of messages as inputs and returns a message as output. This is different from older completion-style LLMs that took a single string.</p><p>LangChain's key value here: all these message types work identically across OpenAI, Anthropic, Google Gemini, Ollama (local), and any other provider. You write your code once and swap providers by changing one import.</p><p>The <code>.invoke()</code> method takes a list of messages and returns an <code>AIMessage</code> with a <code>.content</code> attribute containing the response text.</p>",
-    example: null,
-    animation: null,
+    example: "Calling ChatOpenAI directly: model = ChatOpenAI(model='gpt-4o-mini'); response = model.invoke([HumanMessage(content='What is RAG?')]). The response object contains .content (the answer string) and .response_metadata (token counts, finish reason, model name).",
+    animation: "ChatModelDemo",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1760,7 +1804,7 @@ const langchainNodes = [
     order: 7,
     excerpt: "Instantiating ChatOpenAI and making your first LangChain API call.",
     theory: "<p>Setting up a LangChain chat model with OpenAI takes just a few lines:</p><pre><code>from langchain_openai import ChatOpenAI\\nfrom langchain_core.messages import HumanMessage, SystemMessage\\nfrom dotenv import load_dotenv\\n\\nload_dotenv()  # loads OPENAI_API_KEY from .env\\n\\nmodel = ChatOpenAI(model='gpt-4o-mini')  # or 'gpt-4o', 'gpt-4-turbo'\\nmessages = [\\n    SystemMessage('You are a helpful Python tutor.'),\\n    HumanMessage('What is a decorator?')\\n]\\nresponse = model.invoke(messages)\\nprint(response.content)</code></pre><p>The <code>model</code> parameter selects which LLM to use. <code>gpt-4o-mini</code> is the cost-effective default; <code>gpt-4o</code> is higher capability. LangChain reads <code>OPENAI_API_KEY</code> automatically from environment variables — no need to pass it explicitly.</p><p>The <code>response</code> is an <code>AIMessage</code> object. Use <code>response.content</code> for the text, <code>response.response_metadata</code> for token usage and model info.</p>",
-    example: null,
+    example: "In your .env file: OPENAI_API_KEY=sk-... Then in Python: from dotenv import load_dotenv; load_dotenv(). LangChain automatically reads the key — you never pass it explicitly to ChatOpenAI(). This pattern works identically for Anthropic, Ollama, and Google.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -1784,7 +1828,7 @@ const langchainNodes = [
     order: 8,
     excerpt: "How LLMs simulate memory — passing the full conversation list each call.",
     theory: "<p>LLMs are <em>stateless APIs</em> — each call is completely independent. The model has no memory of previous exchanges. To create a conversational experience, you must explicitly pass the entire conversation history in every call.</p><p><strong>Pattern:</strong> Maintain a <code>chat_history</code> list. After each turn, append the user's <code>HumanMessage</code> and the AI's <code>AIMessage</code>. On the next call, prepend history to the messages list.</p><pre><code>chat_history = []\\n\\ndef chat(user_input):\\n    messages = [SystemMessage('You are a helpful assistant.')] + chat_history + [HumanMessage(user_input)]\\n    response = model.invoke(messages)\\n    chat_history.append(HumanMessage(user_input))\\n    chat_history.append(AIMessage(response.content))\\n    return response.content</code></pre><p>This is why LLM conversation UIs like ChatGPT send the full history on every request — they're building this list and passing it each time. The context window limit is the practical ceiling: long enough conversations hit the token limit and older messages must be truncated or summarised.</p>",
-    example: null,
+    example: "Multi-turn memory with InMemoryChatMessageHistory: history stores all previous HumanMessages and AIMessages. On turn 3, when the user asks 'Can you elaborate?', the model receives turns 1+2 as context and knows what to elaborate on — without you manually managing the list.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -1808,7 +1852,7 @@ const langchainNodes = [
     order: 9,
     excerpt: "Swapping providers with one line — Anthropic, Cohere, local Ollama.",
     theory: "<p>One of LangChain's most powerful features: switching between LLM providers requires changing only one import. The rest of your code — message types, chains, prompt templates — stays identical.</p><p><strong>Provider examples:</strong></p><ul><li><code>ChatOpenAI</code> (<code>langchain-openai</code>) — GPT-4o, GPT-4o-mini</li><li><code>ChatAnthropic</code> (<code>langchain-anthropic</code>) — Claude 3.5, Claude 3 Haiku</li><li><code>ChatGoogleGenerativeAI</code> (<code>langchain-google-genai</code>) — Gemini 1.5 Pro/Flash</li><li><code>ChatOllama</code> (<code>langchain-ollama</code>) — local models (Llama 3, Mistral, etc.)</li><li><code>ChatGroq</code> (<code>langchain-groq</code>) — fast inference (Llama, Mixtral on Groq)</li></ul><p>The pattern is always the same: install the provider-specific package, import the Chat class, initialise with model name, then call <code>.invoke(messages)</code> identically.</p><p><strong>Ollama (local models):</strong> No API key needed. Runs entirely on your machine. Great for privacy-sensitive development, offline use, or cost-free experimentation with open-source models like Llama 3.</p>",
-    example: null,
+    example: "The same chain runs on three providers: ChatOpenAI(model='gpt-4o-mini'), ChatAnthropic(model='claude-3-5-haiku-20241022'), ChatOllama(model='llama3.2'). Only the import and model constructor changes — the rest of your chain code is identical. This is LangChain's core value proposition.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -1832,7 +1876,7 @@ const langchainNodes = [
     order: 10,
     excerpt: "Token-by-token responses with .stream() — perceived latency drops dramatically.",
     theory: "<p>The standard <code>.invoke()</code> method waits for the complete response before returning anything — on a long answer, this means 5-10 seconds of silence before anything appears in the UI. For a chatbot, that's terrible UX.</p><p><strong>Streaming</strong> solves this: the model sends tokens as they're generated, and you display them in real-time. The user sees words appearing word-by-word, exactly like ChatGPT's interface. This uses the <code>.stream()</code> method:</p><pre><code>for chunk in model.stream(messages):\\n    print(chunk.content, end='', flush=True)</code></pre><p>Each <code>chunk</code> is an <code>AIMessageChunk</code> with a small piece of text. The loop processes and displays each piece as it arrives. <code>end=''</code> prevents newlines between chunks; <code>flush=True</code> forces immediate terminal output.</p><p>Streaming does not change the total time to complete — it only reduces <em>perceived latency</em>. Users perceive streaming responses as faster because they start seeing output immediately rather than waiting.</p>",
-    example: null,
+    example: "For a customer support chatbot, streaming is essential UX. Instead of a 4-second wait then a wall of text, model.stream() yields tokens as they're generated: for chunk in model.stream(messages): print(chunk.content, end='', flush=True). Users see text appearing immediately.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -1856,7 +1900,7 @@ const langchainNodes = [
     order: 11,
     excerpt: "Storing conversation history in Redis, DynamoDB, or Postgres for production.",
     theory: "<p>In-memory chat history (a Python list) disappears when the process restarts. For production applications — web apps, APIs, multi-user systems — you need history that persists across restarts and is retrievable by session ID.</p><p><strong>LangChain's solution:</strong> <code>ChatMessageHistory</code> implementations backed by persistent stores. The most common in production: <code>RedisChatMessageHistory</code> for fast in-memory persistence with TTL, or <code>SQLChatMessageHistory</code> for durable relational storage.</p><p>The pattern uses a <em>session_id</em> — a unique identifier per conversation (typically a UUID). Each user/session has its own isolated history. The <code>RunnableWithMessageHistory</code> wrapper automatically loads and saves history around each LLM call:</p><pre><code>from langchain_community.chat_message_histories import RedisChatMessageHistory\\n\\nhistory = RedisChatMessageHistory(session_id='user-123', url='redis://localhost:6379')</code></pre><p>This is the foundation for any multi-user chatbot or persistent AI assistant.</p>",
-    example: null,
+    example: "Use ChatMessageHistory with a Redis or Firestore backend: history = RedisChatMessageHistory(session_id='user-123', url='redis://...') — now conversation history survives server restarts and is shared across multiple backend instances in production.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -1880,7 +1924,7 @@ const langchainNodes = [
     order: 12,
     excerpt: "Parameterised, reusable, testable prompt construction — the clean production approach.",
     theory: "<p>Prompt Templates are LangChain's second core component. They solve a real engineering problem: hard-coded prompt strings are brittle, untestable, and hard to version.</p><p>Instead of: <code>f'Translate this text: {text}. Language: {language}'</code></p><p>You define a structured template: a <code>ChatPromptTemplate</code> with named placeholders (<code>{text}</code>, <code>{language}</code>) and a system/human message structure. Variables are filled at call time.</p><p>Two common template types:</p><ul><li><code>ChatPromptTemplate.from_messages()</code> — for chat models; defines System + Human messages as a template</li><li><code>PromptTemplate.from_template()</code> — for simple single-string prompts</li></ul><p>Templates enable composability: once defined, a template can be piped directly into a model using LCEL: <code>chain = prompt | model</code>. The template fills variables and passes formatted messages to the model automatically.</p><p>In production, templates are stored as config (YAML, JSON) and loaded at runtime — allowing prompt updates without code changes.</p>",
-    example: null,
+    example: "Instead of f-string hell, use ChatPromptTemplate: template = ChatPromptTemplate.from_messages([('system', 'You are a {role}.'), ('human', '{question}')]). Call template.invoke({'role': 'chef', 'question': 'How do I julienne carrots?'}). The template handles formatting, escaping, and type safety.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -1904,8 +1948,8 @@ const langchainNodes = [
     order: 13,
     excerpt: "Composing prompts, models, and parsers into end-to-end LCEL pipelines.",
     theory: "<p>Chains are LangChain's most powerful component — the ability to compose multiple steps into a sequential pipeline. The instructor calls them his personal favourite because they're where the framework earns its name.</p><p><strong>LCEL (LangChain Expression Language)</strong> uses the pipe operator (<code>|</code>) to compose any Runnable component into a chain:</p><pre><code>chain = prompt | model | output_parser\\nresult = chain.invoke({'topic': 'Python decorators'})</code></pre><p>Each component receives the output of the previous one as input. The final output is the result of the last component in the chain.</p><p><strong>Output Parsers</strong> are commonly the last step — they transform the raw <code>AIMessage</code> into a more useful format:</p><ul><li><code>StrOutputParser</code> — extracts just the text string</li><li><code>JsonOutputParser</code> — parses the response as JSON</li><li><code>PydanticOutputParser</code> — validates and types the response</li></ul><p>Chains are <em>lazy</em> — they don't execute until <code>.invoke()</code>, <code>.stream()</code>, or <code>.batch()</code> is called. This enables building complex workflows declaratively before triggering execution.</p>",
-    example: null,
-    animation: null,
+    example: "A three-step LCEL chain: chain = prompt | model | StrOutputParser(). One call chain.invoke({'topic': 'RAG'}) runs all three steps in sequence. Add a RunnableParallel to split into two branches simultaneously, or .with_retry() for automatic error handling — composability is the entire design philosophy.",
+    animation: "LCELChainViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1952,7 +1996,7 @@ const langchainNodes = [
     order: 15,
     excerpt: "Fusing multiple ranked retrieval lists without incompatible score normalisation.",
     theory: "<p>Reciprocal Rank Fusion (RRF) solves a specific problem in advanced RAG: when you have multiple ranked lists of retrieved chunks (from different queries or retrieval methods), how do you combine them into one definitive list without duplicates?</p><p><strong>The formula:</strong> <code>RRF_score(chunk) = Σ 1 / (K + rank_position)</code></p><p>Where:</p><ul><li><code>K = 60</code> — a constant used across the industry (empirically determined to work well)</li><li><code>rank_position</code> — the position of this chunk in one retrieval result (1st = best)</li><li>The sum is across all retrieval results that contain this chunk</li></ul><p><strong>Worked example from the lecture:</strong> Query A = 'What are Tesla's revenue streams?' and Query B = 'How does Tesla generate income?' each retrieve 5 chunks. Chunks that appear in BOTH lists (X, Y, Z) get scores from both retrievals added together — giving them a higher RRF score. Chunks only in one list (W, V, A, B) score lower.</p><p>After computing RRF scores for all unique chunks, the final leaderboard is sorted by score. Top-K from this leaderboard go to the LLM — no duplicates, de-duplicated by importance across all query variants.</p><p>RRF is used in <em>multi-query RAG</em> (multiple rephrasings of one query) and in <em>hybrid search</em> (vector results + keyword results merged via RRF).</p>",
-    example: null,
+    example: "Query: 'best Python ORM'. Keyword search ranks SQLAlchemy #1 (exact match), vector search ranks Tortoise ORM #1 (semantic similarity). RRF with k=60: SQLAlchemy gets 1/(60+1) + 1/(60+2) ≈ 0.033, Tortoise gets 1/(60+2) + 1/(60+1). Final ranking: SQLAlchemy wins because it ranked well in both lists.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -1976,7 +2020,7 @@ const langchainNodes = [
     order: 16,
     excerpt: "Combining dense semantic and sparse keyword retrieval — the production RAG standard.",
     theory: "<p>Hybrid search is the de facto standard in production RAG systems — used by Microsoft Copilot (across SharePoint), and most enterprise AI search products. It combines two fundamentally different retrieval strategies:</p><ol><li><b>Vector Search</b> — semantic similarity using embeddings. Great at understanding meaning and context. Finds conceptually related content even with different words.</li><li><b>Keyword Search (BM25)</b> — exact word match. Great for specific terms, names, model numbers, technical jargon, drug names. Classic Google-style search from the early 2000s.</li></ol><p><strong>The problem with pure vector search:</strong> A user searching for 'API key authentication' might get chunks about 'user login security' — semantically similar but not exactly what they want. Vector embeddings can't always distinguish between semantically-close-but-different topics.</p><p><strong>BM25 (Best Matching 25)</strong> scores chunks based on two factors:</p><ul><li><em>Term Frequency (TF)</em>: how often does the search term appear in this chunk?</li><li><em>Inverse Document Frequency (IDF)</em>: how rare is this term across all chunks? Rare terms get higher weight.</li></ul><p>The instructor's real-world result: adding hybrid search to a pharmaceutical document RAG system (complex drug names as jargon) improved accuracy by <em>at least 70%</em>. The keyword component handles exact technical terms that embeddings blur together.</p><p>The two result lists are merged via RRF to produce the final ranked chunk list.</p>",
-    example: null,
+    example: "A job posting search: keyword search finds 'Python developer' exact matches (good for technical skills). Vector search finds semantically similar postings ('software engineer with scripting experience'). Hybrid search with 0.5/0.5 weighting returns both exact matches and relevant near-misses — better recall than either alone.",
     animation: null,
     tool: null,
     interviewPrep: {
@@ -2034,7 +2078,8 @@ const langGraphNodes = [
 const advancedNodes = [
   {
     slug: "advanced-placeholder",
-    sectionId: "advanced",
+    sectionId: "ml",
+    conceptId: "advanced-ml",
     title: "Advanced ML — Coming Soon",
     order: 0,
     excerpt: "Neural networks, decision trees, ensemble methods. Content added as you progress.",
@@ -2073,4 +2118,27 @@ export function getSection(sectionId) {
 
 export function getNode(sectionId, slug) {
   return nodes.find((n) => n.sectionId === sectionId && n.slug === slug) ?? null;
+}
+
+export function getConceptsForSection(sectionId) {
+  if (sectionId !== "ml") return [];
+  return [...mlConcepts].sort((a, b) => a.order - b.order);
+}
+
+/** For ML: returns nodes grouped by concept. For other sections: one group with all nodes. */
+export function getNodesBySectionGroupedByConcept(sectionId) {
+  const sectionNodes = getNodesBySection(sectionId);
+  if (sectionId !== "ml") {
+    return [{ conceptId: null, conceptTitle: null, nodes: sectionNodes }];
+  }
+  const conceptOrder = Object.fromEntries(mlConcepts.map((c) => [c.id, c.order]));
+  const byConcept = {};
+  sectionNodes.forEach((node) => {
+    const cid = node.conceptId ?? ML_CONCEPT_BY_SLUG[node.slug] ?? "supervised-learning";
+    if (!byConcept[cid]) byConcept[cid] = [];
+    byConcept[cid].push(node);
+  });
+  return mlConcepts
+    .filter((c) => byConcept[c.id]?.length)
+    .map((c) => ({ conceptId: c.id, conceptTitle: c.title, nodes: byConcept[c.id] }));
 }

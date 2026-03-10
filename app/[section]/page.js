@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getSection, getNodesBySection, sections } from "@/data/curriculumData";
+import { getSection, getNodesBySection, getNodesBySectionGroupedByConcept, sections } from "@/data/curriculumData";
 import SectionProgress from "@/components/SectionProgress";
 import styles from "./section.module.css";
 
@@ -22,6 +22,7 @@ export default async function SectionPage({ params }) {
   if (!sec) notFound();
 
   const nodes = getNodesBySection(section);
+  const grouped = getNodesBySectionGroupedByConcept(section);
 
   return (
     <main className={styles.main}>
@@ -35,8 +36,7 @@ export default async function SectionPage({ params }) {
           <p className={styles.description}>{sec.description}</p>
         </header>
 
-        {/* Client component handles progress badges + bar */}
-        <SectionProgress sectionId={section} nodes={nodes} />
+        <SectionProgress sectionId={section} nodes={nodes} groupedByConcept={grouped} />
       </section>
     </main>
   );

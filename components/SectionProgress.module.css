@@ -32,6 +32,28 @@
   transition: width 0.5s ease;
 }
 
+/* ── Concept groups (ML) ── */
+.conceptGroups {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.conceptGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.conceptHeading {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+
 /* ── Node grid ── */
 .grid {
   display: grid;

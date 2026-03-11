@@ -3847,6 +3847,259 @@ Result after patch: 7.4s median with same answer quality.`,
       { q: "Why store final + intermediate state snapshots?", a: "They enable replay, RCA, and deterministic regression comparison." },
     ],
   },
+  {
+    slug: "12-drawbacks-of-react-agents",
+    sectionId: "langgraph",
+    title: "Drawbacks of ReAct Agents",
+    order: 12,
+    excerpt: "Where plain ReAct breaks in production and how graph-level controls reduce reliability, latency, and cost failures.",
+    theory: `<p><b>ReAct is powerful but fragile when shipped without control-plane engineering.</b> The loop can plan and act, but raw autonomy introduces predictable failure classes.</p>
+<p><b>Primary drawbacks in production:</b></p>
+<ul>
+<li><b>Unbounded loops</b>: repeated action selection with no convergence signal.</li>
+<li><b>Wrong-tool recursion</b>: same unsuitable tool called multiple times.</li>
+<li><b>Latency spikes</b>: each extra reason/action turn adds user-visible delay.</li>
+<li><b>Cost explosion</b>: token and tool costs scale with loop depth.</li>
+<li><b>Opaque reasoning</b>: difficult to explain why a route was chosen.</li>
+<li><b>Safety drift</b>: model may try actions beyond intended policy scope.</li>
+</ul>
+<p><b>System design takeaway:</b> ReAct alone is a behavior pattern, not a complete production architecture. You need explicit state, deterministic routing, loop budgets, and escalation paths.</p>
+<p><b>Mitigation stack:</b></p>
+<ol>
+<li>Hard ceilings: max iterations, max tool calls, max runtime.</li>
+<li>Deterministic route predicates from typed state, not free-form text.</li>
+<li>Tool policy layer: allowlist + argument schema + timeout + retry policy.</li>
+<li>Confidence/risk gates for fallback and human review.</li>
+<li>Trace-level observability for route and tool diagnostics.</li>
+</ol>
+<p><b>Decision rule:</b> use simple chains when tasks are deterministic; use ReAct only when dynamic action selection is necessary and measurable benefit exceeds operational cost.</p>`,
+    example: `Support chatbot regression:
+- Initial ReAct deployment improved answer quality on long-tail queries.
+- Under load, p95 latency doubled and tool timeouts triggered repeated retries.
+- Wrong-tool rate rose for ambiguous billing intents.
+
+Fix:
+1) Add max_iterations=4 and max_tool_calls=3.
+2) Add route guard that blocks duplicate tool call unless new evidence exists.
+3) Add escalation route for low-confidence loops.
+
+Outcome: near-original quality with stable latency and bounded cost.`,
+    animation: "ReActGraphInspector",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "What are the biggest production risks of naive ReAct deployments?",
+        "Why is ReAct pattern alone insufficient for reliability?",
+        "How do you bound latency and cost in iterative tool loops?",
+        "When should you avoid ReAct and keep a deterministic chain?",
+        "Which observability metrics best reveal ReAct degradation early?",
+      ],
+      seniorTip: "Senior answers always connect drawbacks to controls: explicit budgets, deterministic routing, policy-constrained tools, and measurable SLOs."
+    },
+    flashCards: [
+      { q: "Most common ReAct failure?", a: "Unbounded loops with repeated actions and rising latency/cost." },
+      { q: "What converts ReAct into production-safe behavior?", a: "Graph controls: state contracts, route guards, budgets, and escalation." },
+      { q: "Why can quality look good while system is unhealthy?", a: "Final answers may pass, but process metrics (loop depth, retries, cost) degrade." },
+      { q: "One anti-pattern in tool usage?", a: "Calling the same failing tool repeatedly without new evidence." },
+      { q: "Fastest signal for loop instability?", a: "Rising p95 iteration count and timeout-driven retries." },
+    ],
+  },
+  {
+    slug: "13-reflection-agent-introduction",
+    sectionId: "langgraph",
+    title: "Reflection Agent - Introduction",
+    order: 13,
+    excerpt: "Reflection agents add a critique stage so outputs can be improved before finalization.",
+    theory: `<p><b>A reflection agent introduces self-critique into the graph loop.</b> Instead of returning the first draft, the system generates output, critiques it, and revises if needed.</p>
+<p><b>Minimal reflection architecture:</b></p>
+<ul>
+<li><b>Generator node</b>: produce draft response.</li>
+<li><b>Reflector node</b>: evaluate quality against rubric (factuality, completeness, policy, tone).</li>
+<li><b>Router</b>: if quality below threshold, route back for revision; otherwise finalize.</li>
+</ul>
+<p><b>Why this matters:</b> many LLM errors are fixable in one additional pass. Reflection catches omission, weak structure, and policy violations before user exposure.</p>
+<p><b>Operational constraints:</b> reflection increases latency and token usage, so it should be conditional (risk-based or confidence-based), not always-on for every request.</p>
+<p><b>Failure modes:</b></p>
+<ul>
+<li>Over-criticizing and looping without convergence.</li>
+<li>Reflector hallucinating issues that are not real.</li>
+<li>Generator and reflector objectives misaligned.</li>
+</ul>
+<p><b>Production guidance:</b> enforce max reflection rounds, explicit scoring rubric, and final fallback route when improvement plateaus.</p>`,
+    example: `Knowledge-base assistant:
+1) Generator drafts answer with citations.
+2) Reflector scores citation relevance and missing constraints.
+3) Score is low because one policy clause is absent.
+4) Router triggers one revision pass.
+5) Revised answer includes missing clause and passes threshold.
+
+Without reflection, first response would have looked fluent but incomplete.`,
+    animation: "LangGraphArchitectureViz",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "What does a reflection agent add that a normal ReAct loop does not?",
+        "How do you decide whether to run reflection for a request?",
+        "What controls prevent endless reflection loops?",
+        "How do you measure if reflection is worth its extra latency?",
+      ],
+      seniorTip: "Treat reflection as a quality-control subsystem with explicit ROI: quality lift vs added latency and token cost."
+    },
+    flashCards: [
+      { q: "Core idea of reflection agents?", a: "Generate -> critique -> revise before finalizing." },
+      { q: "Primary tradeoff?", a: "Higher quality potential vs higher latency/cost." },
+      { q: "What should reflection use?", a: "A deterministic rubric or scoring schema, not vague critique prompts." },
+      { q: "How many reflection rounds in production?", a: "Usually 1-2 with strict cap and fallback path." },
+      { q: "When is reflection most useful?", a: "High-stakes or structure-sensitive responses where first-pass errors are costly." },
+    ],
+  },
+  {
+    slug: "14-reflection-agent-creating-chains",
+    sectionId: "langgraph",
+    title: "Reflection Agent - Creating Chains",
+    order: 14,
+    excerpt: "Compose generator and reflector chains with explicit contracts so reflection remains testable and stable.",
+    theory: `<p><b>Before building the full graph, you define two reusable chains:</b> one for generation and one for reflection. Clean chain boundaries make reflection logic debuggable.</p>
+<p><b>Generation chain contract:</b></p>
+<ul>
+<li>Input: user objective + context + constraints.</li>
+<li>Output: structured draft object (answer, rationale, citations).</li>
+</ul>
+<p><b>Reflection chain contract:</b></p>
+<ul>
+<li>Input: draft + rubric + optional source evidence.</li>
+<li>Output: structured critique (score, issues, actionable revision hints).</li>
+</ul>
+<p><b>Why separate chains first:</b> you can unit-test each chain independently before graph orchestration. This reduces debugging surface once loops are introduced.</p>
+<p><b>Key implementation detail:</b> keep outputs strongly typed. Graph routing should read numeric score/flags, not parse narrative critique text.</p>
+<p><b>Failure modes:</b> incompatible schemas between chains, reflector feedback too vague to drive revision, or generator ignoring critique instructions.</p>
+<p><b>Mitigation:</b> enforce schema validation and add revision-specific prompt slots (for example list of failing rubric checks).</p>`,
+    example: `Draft-review chain setup:
+- <code>draft_chain</code> returns: answer, bullet rationale, citation list.
+- <code>review_chain</code> returns: score=0.62, issues=[\"missing edge-case handling\"], revision_prompt=\"address failure-mode section\".
+- Router sees score < 0.8 and passes revision_prompt back to draft_chain.
+
+The explicit schema allows deterministic route behavior and easier tests.`,
+    animation: "ReActGraphInspector",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Why build generator and reflector as separate chains before graph assembly?",
+        "What output schema is required for reliable reflection routing?",
+        "How do you ensure reflector feedback is actionable for revision?",
+        "What unit tests should exist before wiring these chains into a loop?",
+      ],
+      seniorTip: "High-quality design keeps contracts explicit: typed outputs, schema validation, and revision hooks that the generator can directly consume."
+    },
+    flashCards: [
+      { q: "Why separate draft and review chains?", a: "Independent testing and clearer ownership boundaries." },
+      { q: "What should review chain return?", a: "Structured score plus actionable issue list." },
+      { q: "Why avoid text-only critique for routing?", a: "Typed scores/flags are deterministic and machine-safe." },
+      { q: "What breaks reflection loops most often?", a: "Schema mismatch between generator output and reviewer input." },
+      { q: "Best pre-graph test?", a: "Known bad draft should produce expected critique flags and score." },
+    ],
+  },
+  {
+    slug: "15-reflection-agent-building-graph",
+    sectionId: "langgraph",
+    title: "Reflection Agent - Building The Graph",
+    order: 15,
+    excerpt: "Wire generator and reflector into a controlled graph loop with quality thresholds and deterministic termination.",
+    theory: `<p><b>This step operationalizes reflection into graph control flow.</b> You connect draft and critique nodes with threshold-based routing.</p>
+<p><b>Typical graph structure:</b></p>
+<ol>
+<li>START -> draft node</li>
+<li>draft -> reflect node</li>
+<li>reflect -> conditional route:\n<ul><li>score >= target -> END</li><li>score < target and attempts < cap -> draft (revision loop)</li><li>attempts exhausted -> fallback END</li></ul></li>
+</ol>
+<p><b>State fields to include:</b> draft payload, critique score, issue list, revision count, final status, and optional escalation flag.</p>
+<p><b>Critical invariants:</b></p>
+<ul>
+<li>Revision count increments exactly once per loop.</li>
+<li>Threshold logic is deterministic and unit-tested.</li>
+<li>Fallback path always exists when cap reached.</li>
+</ul>
+<p><b>Production strategy:</b> apply reflection graph selectively by request risk/complexity. Low-risk/simple requests can bypass reflection to preserve latency.</p>
+<p><b>Common failure:</b> quality score improves marginally but never reaches target; without plateau detection you waste loops for tiny gains.</p>`,
+    example: `Enterprise response drafting graph:
+- Target score: 0.85, max revisions: 2.
+- Round 1 score: 0.58 -> revision.
+- Round 2 score: 0.79 -> revision.
+- Round 3 score: 0.81 but cap reached -> fallback finalize with \"needs manual review\" tag.
+
+System exits safely instead of endless optimization.`,
+    animation: "StateGraphFlowViz",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "How do you design conditional routing for reflection score thresholds?",
+        "What state fields are mandatory in a reflection graph loop?",
+        "How do you handle improvement plateau before max-iteration cap?",
+        "When should reflection graph be bypassed entirely?",
+      ],
+      seniorTip: "Strong answers include deterministic threshold policy, plateau detection, and hard-stop fallback behavior."
+    },
+    flashCards: [
+      { q: "Core reflection graph loop?", a: "Draft -> Reflect -> route to revise or finalize." },
+      { q: "Why track revision count in state?", a: "To enforce loop caps and prevent runaway revisions." },
+      { q: "What if score never meets threshold?", a: "Finalize via fallback or escalate after cap/plateau rule." },
+      { q: "Why use deterministic thresholds?", a: "They make routing testable and explainable." },
+      { q: "Latency optimization pattern?", a: "Bypass reflection for low-risk requests using gating rules." },
+    ],
+  },
+  {
+    slug: "16-reflection-agent-langsmith-tracing",
+    sectionId: "langgraph",
+    title: "Reflection Agent - LangSmith Tracing",
+    order: 16,
+    excerpt: "Trace reflection loops to measure quality lift, loop efficiency, and revision cost before scaling to production.",
+    theory: `<p><b>Tracing is mandatory for reflection systems</b> because quality is produced by multi-step interaction, not a single response. You need to measure process efficiency and output quality together.</p>
+<p><b>Trace fields to monitor:</b></p>
+<ul>
+<li>Draft and revised outputs per round.</li>
+<li>Critique score trajectory across rounds.</li>
+<li>Issue categories raised by reflector.</li>
+<li>Latency and token cost per revision round.</li>
+<li>Termination reason (threshold met, cap reached, fallback).</li>
+</ul>
+<p><b>Core KPI set:</b></p>
+<ul>
+<li>Quality lift after reflection (delta vs first draft).</li>
+<li>Average rounds per successful improvement.</li>
+<li>Cost per quality point gained.</li>
+<li>Cap-reached rate (signal of weak rubric or generator mismatch).</li>
+</ul>
+<p><b>Debugging signals:</b> flat score trajectory indicates unhelpful critique; frequent cap exits indicate threshold mismatch; high token spend with small quality gain indicates poor ROI.</p>
+<p><b>Production rollout pattern:</b> run tracing on sampled traffic first, calibrate thresholds and cap, then scale reflection only where quality gain justifies added cost.</p>`,
+    example: `Tracing review on 1,000 requests:
+- Reflection improved quality on 37% of high-risk queries.
+- For low-risk queries, median improvement was negligible but cost rose 24%.
+
+Rollout decision:
+1) Enable reflection only for high-risk intents.
+2) Set max revisions=1 for medium-risk.
+3) Disable reflection for low-risk requests.
+
+Result: preserved quality gains with controlled budget impact.`,
+    animation: "ReActGraphInspector",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "How do you quantify whether reflection is delivering enough quality lift?",
+        "Which trace patterns indicate reflector/generator misalignment?",
+        "How do you tune thresholds and revision caps from trace data?",
+        "What rollout strategy minimizes risk when introducing reflection in production?",
+      ],
+      seniorTip: "Interview-quality answers use evidence: quality delta, rounds-to-improve, and cost-per-gain metrics to justify policy decisions."
+    },
+    flashCards: [
+      { q: "Primary reflection KPI?", a: "Quality lift relative to first draft." },
+      { q: "What does high cap-reached rate suggest?", a: "Threshold or critique policy is mismatched to generator behavior." },
+      { q: "Why monitor score trajectory?", a: "It reveals whether revisions are converging or stalling." },
+      { q: "Best cost-control rollout?", a: "Risk-gated reflection instead of always-on reflection." },
+      { q: "What should termination reason be logged?", a: "Threshold met, cap reached, or fallback route." },
+    ],
+  },
 ];
 
 // ─────────────────────────────────────────────────────────

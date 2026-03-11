@@ -576,6 +576,37 @@ export const authoredInterviewAnswers = {
     "Mandatory audit fields: run_id, node sequence, route labels, tool inputs/outputs (or redacted forms), error metadata, state snapshots, and final decision payload.",
     "Build regression harnesses by replaying representative trace scenarios and asserting route decisions, loop depth bounds, and completion outcomes across code/model versions."
   ],
+  "langgraph/12-drawbacks-of-react-agents": [
+    "Naive ReAct systems usually fail through unbounded loops, wrong-tool recursion, cost spikes, and weak safety control. The pattern is useful, but without explicit budgets and deterministic routing it behaves unpredictably under real workload variance.",
+    "ReAct defines behavior, not governance. Reliability requires external control layers: typed state, hard iteration ceilings, tool policy enforcement, fallback routes, and human escalation for unresolved or risky flows.",
+    "Bound latency/cost with max iterations, max tool calls, max runtime, per-tool timeouts, and retry budgets. Add duplicate-tool guards so repeated calls require new evidence before re-execution.",
+    "Avoid ReAct when the task is deterministic and one-pass. If fixed chains hit SLA and quality targets, introducing dynamic loops often adds complexity without measurable value.",
+    "Track wrong-tool rate, p95 loop depth, timeout-driven retries, and escalation frequency. These metrics expose process degradation before user-visible quality drops."
+  ],
+  "langgraph/13-reflection-agent-introduction": [
+    "Reflection adds a critique-and-revise stage that a basic ReAct loop may not include. It is optimized for answer quality control, not just action selection.",
+    "Run reflection conditionally using risk level, confidence, or compliance sensitivity. Always-on reflection is expensive and unnecessary for low-risk/simple intents.",
+    "Prevent endless reflection with hard round caps, minimum-improvement thresholds, and explicit fallback/escalation routes when quality plateaus.",
+    "Evaluate reflection ROI by comparing quality lift against added latency and token cost on representative traffic slices."
+  ],
+  "langgraph/14-reflection-agent-creating-chains": [
+    "Separate draft and review chains so each can be tested independently before introducing loop complexity. This isolates contract bugs early and reduces integration debugging.",
+    "Routing-safe reviewer output should include typed fields like score, issue list, and revision hints. Avoid route logic that parses narrative text.",
+    "Make feedback actionable by requiring issue categories and concrete revision instructions aligned to the generator prompt slots.",
+    "Pre-graph tests should validate schema compatibility, expected scoring behavior on known bad drafts, and deterministic issue extraction."
+  ],
+  "langgraph/15-reflection-agent-building-graph": [
+    "Route by deterministic score policy: if score >= threshold finalize; otherwise revise if attempts remain; else fallback/escalate. Keep threshold logic side-effect free and unit-tested.",
+    "Mandatory state fields include draft payload, score, issue list, revision_count, and termination_reason; without these fields loop behavior becomes opaque.",
+    "Handle plateaus with minimum-improvement rules (for example required score delta per round). If improvement stalls, terminate via fallback instead of consuming extra rounds.",
+    "Bypass reflection for low-risk requests and reserve it for high-value/high-risk scenarios where quality gains justify latency."
+  ],
+  "langgraph/16-reflection-agent-langsmith-tracing": [
+    "Quantify reflection value with quality delta from first draft, average rounds to improvement, and cost per quality point gained. These metrics determine whether reflection should scale.",
+    "Misalignment appears as flat score trajectories, repeated issue categories across rounds, and frequent cap exits with little quality change.",
+    "Tune thresholds/caps by replaying traces: lower threshold if quality is already strong, lower cap when marginal gains are tiny, and tighten rubric when critiques are noisy.",
+    "Roll out safely with staged traffic: trace-only shadow phase, then risk-gated enablement, then broader rollout only if quality lift and cost envelope remain acceptable."
+  ],
   "ml/advanced-placeholder": [
     "Start from data modality and constraints: tabular data with limited scale usually favors tree-based models; unstructured high-dimensional data often favors neural networks. Final choice should be validated on latency, calibration, and operational cost targets.",
     "Increase complexity only after baseline bottlenecks are measured on fixed evaluation sets and error slices. If the current model saturates and additional feature/process improvements no longer move key metrics, complexity may be justified.",

@@ -34,6 +34,8 @@ const ComponentMap = {
   RerankerViz:            dynamic(() => import("@/components/RerankerViz")),
   // LangGraph visualizations
   LangGraphArchitectureViz: dynamic(() => import("@/components/LangGraphArchitectureViz")),
+  StateGraphFlowViz:        dynamic(() => import("@/components/StateGraphFlowViz")),
+  ReActGraphInspector:      dynamic(() => import("@/components/ReActGraphInspector")),
   AutonomyLadderViz:        dynamic(() => import("@/components/AutonomyLadderViz")),
   AgentToolLoopSimulator:   dynamic(() => import("@/components/AgentToolLoopSimulator")),
   // LangChain visualizations

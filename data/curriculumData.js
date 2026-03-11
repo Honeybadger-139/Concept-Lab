@@ -3256,7 +3256,7 @@ const langGraphNodes = [
 <li><b>Cycles</b> - loops for retry, correction, and iterative improvement</li>
 </ul>
 <p><b>Why this matters:</b> most real tasks are not one-shot. A strong system needs to: detect low confidence, fetch more context, call tools, verify output quality, then decide whether to continue or finish. A linear chain cannot represent this cleanly. A graph can.</p>
-<p><b>From transcript context:</b> the course positions LangGraph as the path from low-autonomy assistants to production-grade agents. The goal is not just "get an answer" but "control behavior under uncertainty."</p>
+<p><b>Core framing:</b> LangGraph is the bridge from low-autonomy assistants to production-grade agents. The goal is not just "get an answer" but "control behavior under uncertainty."</p>
 <p><b>Important architectural distinction:</b></p>
 <ul>
 <li>LangChain chains: excellent for deterministic or mostly-linear orchestration</li>
@@ -3319,8 +3319,8 @@ This is difficult to implement cleanly as a single chain, but natural in LangGra
     sectionId: "langgraph",
     title: "Levels of Autonomy in LLM applications",
     order: 2,
-    excerpt: "Transcript-driven autonomy ladder: from deterministic code (zero autonomy) to fully agentic decision loops, with practical trade-offs at each level.",
-    theory: `<p><b>Direct lesson theme from transcript:</b> think of LLM systems on a continuous autonomy ladder, from <b>least (zero autonomy)</b> to <b>maximum autonomy</b>. This framing helps you choose architecture intentionally instead of blindly building an agent for every use case.</p>
+    excerpt: "Autonomy ladder: from deterministic code (zero autonomy) to fully agentic decision loops, with practical trade-offs at each level.",
+    theory: `<p><b>Lesson theme:</b> think of LLM systems on a continuous autonomy ladder, from <b>least (zero autonomy)</b> to <b>maximum autonomy</b>. This framing helps you choose architecture intentionally instead of blindly building an agent for every use case.</p>
 <p><b>Level 0 - Deterministic code:</b> no model decision rights. Every step is pre-programmed. Great for safety and predictability, weak for ambiguous tasks.</p>
 <p><b>Level 1 - Prompted single-call assistance:</b> model generates text from a prompt but does not control workflow. Good for drafting and extraction, limited adaptability.</p>
 <p><b>Level 2 - Structured LLM workflow:</b> multi-step chain with fixed order (retrieve -> format -> answer). Better quality than one-shot prompting but still rigid when unexpected cases appear.</p>
@@ -3377,7 +3377,7 @@ If Option B already hits target accuracy and latency, do not jump to Option C ye
     title: "Agents & Tools - Intro",
     order: 3,
     excerpt: "Detailed foundation for agentic execution: agent as decision-maker, tools as bounded capabilities, and the action-observation loop.",
-    theory: `<p><b>Transcript framing:</b> agents are the problem-solvers; tools are how they interact with the outside world. This is the key conceptual split for beginners.</p>
+    theory: `<p><b>Core framing:</b> agents are the problem-solvers; tools are how they interact with the outside world. This is the key conceptual split for beginners.</p>
 <p><b>Agent role:</b> interpret goal, decide next action, evaluate result, and continue until solved or safely stopped.</p>
 <p><b>Tool role:</b> perform concrete operations that plain model text cannot guarantee (current time lookup, search, API call, database query, calculator, code execution).</p>
 <p><b>Why this is necessary:</b> an LLM by itself can reason, but it cannot reliably access real-time external state without tool integration. Without tools, it often guesses or hallucinates in tasks that require fresh or verifiable data.</p>
@@ -3434,6 +3434,417 @@ If tool fails, graph can route to a retry node (with max attempts) and then fall
       { q: "Why are tool descriptions important?", a: "The model relies on descriptions to choose tools. Poor descriptions lead to wrong actions and unstable behavior." },
       { q: "How do you keep agent loops safe?", a: "Use bounded retries, explicit stop conditions, permission-scoped tools, and fallback routes for failures." },
       { q: "What should logs capture for agent debugging?", a: "Thought summary, selected tool, input payload, output payload, errors, and next-route decision." },
+    ],
+  },
+  {
+    slug: "04-what-is-stategraph",
+    sectionId: "langgraph",
+    title: "What is StateGraph?",
+    order: 4,
+    excerpt: "StateGraph is the execution backbone in LangGraph: explicit state schema, node transitions, and controlled cycles.",
+    theory: `<p><b>StateGraph is a typed state machine for agent orchestration.</b> Instead of hiding control flow inside prompts, you define how state moves through nodes and how each transition is chosen.</p>
+<p><b>Core model:</b></p>
+<ul>
+<li><b>State schema</b>: canonical shared data contract (input, intermediate_steps, routing flags, retries, confidence, output).</li>
+<li><b>Nodes</b>: deterministic units that read state and return partial updates.</li>
+<li><b>Edges</b>: explicit transitions between nodes.</li>
+<li><b>Conditional edges</b>: route chosen from state-derived predicates.</li>
+<li><b>START/END</b>: lifecycle boundaries for each run.</li>
+</ul>
+<p><b>Why this design matters in production:</b> explicit state and routes make systems debuggable and testable. When failures occur, you can answer: which node ran, what state changed, and why route X was chosen over route Y.</p>
+<p><b>State design guidelines:</b></p>
+<ul>
+<li>Use small, purpose-driven fields. Avoid storing entire prompt histories in one giant blob.</li>
+<li>Separate <b>decision state</b> (confidence, retry_count, risk_level) from <b>payload state</b> (docs, tool outputs, user input).</li>
+<li>Treat state mutations as contracts: each node should only update fields it owns.</li>
+<li>Track lineage metadata (node_id, timestamp, attempt_id) for observability.</li>
+</ul>
+<p><b>Common failure modes:</b> ambiguous state fields, conflicting node writes, missing exit conditions, and conditional predicates that rely on loosely formatted text.</p>
+<p><b>Hardening pattern:</b> keep route predicates deterministic (thresholds, enums, booleans), cap retries, and enforce END routes for irrecoverable cases.</p>`,
+    example: `Claims assistant state graph:
+1) START -> intake node parses user claim + attachments.
+2) retrieval node fetches policy clauses.
+3) validator node computes confidence and policy match score.
+4) Conditional edge:
+   - confidence >= 0.85 -> response node
+   - 0.5 to 0.85 -> clarification node
+   - < 0.5 or high-risk flag -> human review node
+5) END with final decision + audit trail snapshot.
+
+This structure gives deterministic governance while preserving adaptive behavior.`,
+    animation: "StateGraphFlowViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What problem does StateGraph solve that a linear chain cannot?",
+        "How do you design a state schema that stays stable as the workflow grows?",
+        "What should conditional edges depend on in production systems?",
+        "How do you prevent inconsistent state updates across nodes?",
+        "How do you make StateGraph runs auditable for incident review?",
+      ],
+      seniorTip: "Strong answers tie state architecture to operations: explicit schema ownership, deterministic route predicates, bounded retries, and replayable state snapshots."
+    },
+    flashCards: [
+      { q: "What is StateGraph in one line?", a: "A state-machine runtime where nodes update shared state and edges control explicit routing." },
+      { q: "What belongs in decision state?", a: "Route-driving fields like confidence, risk flag, retry_count, and completion status." },
+      { q: "Why avoid text-only route predicates?", a: "Free-form text is brittle; typed thresholds/enums are reliable and testable." },
+      { q: "What is the minimum loop safeguard?", a: "A hard retry/iteration cap plus a deterministic fallback route." },
+      { q: "How do you improve post-incident debugging?", a: "Persist node-level state diffs with timestamps and route decisions." },
+    ],
+  },
+  {
+    slug: "05-react-using-langgraph-overview",
+    sectionId: "langgraph",
+    title: "ReAct using LangGraph - Overview",
+    order: 5,
+    excerpt: "Why ReAct agents benefit from graph orchestration: explicit reason/act cycles, policy guards, and predictable termination.",
+    theory: `<p><b>ReAct</b> combines reasoning and acting in a loop: reason about next step, invoke a tool, observe output, and decide whether to continue. LangGraph makes this loop explicit and controllable.</p>
+<p><b>Standard node decomposition:</b></p>
+<ol>
+<li><b>Reason node</b>: model chooses next action or decides to finish.</li>
+<li><b>Act node</b>: framework executes selected tool with schema validation and timeout controls.</li>
+<li><b>Route function</b>: checks whether state holds an action (continue) or a finish signal (terminate).</li>
+</ol>
+<p><b>Why this beats hidden prompt loops:</b> you can enforce retry budgets, stop conditions, and safety policy at graph level instead of hoping the prompt behaves.</p>
+<p><b>Latency/cost reality:</b> each loop can add one LLM call and one tool call. Always define max_iterations and termination criteria before deploying.</p>
+<p><b>Guardrail stack:</b></p>
+<ul>
+<li>Tool allowlist with strict argument schemas.</li>
+<li>Per-tool timeout + retry policy.</li>
+<li>Loop budget (max steps, max tool calls, max spend).</li>
+<li>Confidence/risk gates that route to human review when needed.</li>
+</ul>
+<p><b>Evaluation approach:</b> benchmark final-answer quality <i>and</i> process quality (wrong-tool rate, loop depth, timeout rate, escalation frequency).</p>`,
+    example: `Incident triage agent:
+- Reason node decides to query logs first.
+- Act node calls log_search tool.
+- Observation indicates incomplete evidence.
+- Route sends flow back to reason node.
+- Next action calls metrics tool.
+- Once confidence threshold is met, reason node returns finish and route goes to END.
+
+Without explicit graph control, this loop is hard to bound and audit.`,
+    animation: "ReActGraphInspector",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "What is the minimum safe ReAct architecture in LangGraph?",
+        "How do you separate model decision-making from tool execution responsibilities?",
+        "Which metrics reveal a failing ReAct loop even when final answers look acceptable?",
+        "How do you cap cost/latency explosion in iterative tool-use flows?",
+      ],
+      seniorTip: "High-quality answers include both architecture and SLOs: max loop depth, timeout budget, wrong-tool rate, and escalation threshold."
+    },
+    flashCards: [
+      { q: "ReAct loop stages?", a: "Reason -> select action -> execute tool -> observe -> decide to continue or finish." },
+      { q: "Who should execute tools?", a: "The orchestration framework, not raw model text." },
+      { q: "Primary ReAct production risk?", a: "Unbounded loops and incorrect tool selection." },
+      { q: "Core mitigation?", a: "Bounded iterations, strict tool contracts, and deterministic route checks." },
+      { q: "What should END imply?", a: "No further action needed and a finalized state snapshot persisted." },
+    ],
+  },
+  {
+    slug: "06-react-using-langgraph-reasoning-runnable",
+    sectionId: "langgraph",
+    title: "ReAct using LangGraph - Reasoning Runnable",
+    order: 6,
+    excerpt: "Build the reasoning runnable that converts state into either AgentAction or AgentFinish with strict output contracts.",
+    theory: `<p><b>The reasoning runnable is the policy brain.</b> It consumes current graph state and emits one of two structured outcomes:</p>
+<ul>
+<li><b>AgentAction</b>: tool name + validated tool input</li>
+<li><b>AgentFinish</b>: final answer payload and finish metadata</li>
+</ul>
+<p><b>Contract-first design:</b> do not parse free-form prose to infer actions. Use structured output parsing and strict type checks before writing to <code>agent_outcome</code>.</p>
+<p><b>Prompt inputs typically include:</b> user objective, prior intermediate_steps, tool descriptions, and policy constraints. Keep these fields normalized so route behavior remains stable.</p>
+<p><b>Failure modes:</b></p>
+<ul>
+<li>Runnable emits malformed tool args.</li>
+<li>Runnable keeps emitting actions when evidence is already sufficient.</li>
+<li>Runnable hallucinates unavailable tools.</li>
+</ul>
+<p><b>Mitigations:</b> parser retry on malformed outputs, fallback model for parser failures, hard tool-name validation against registry, and confidence-driven finish policy.</p>
+<p><b>Production guidance:</b> version prompts and parser schemas together; changes to either can alter route behavior and must be regression-tested.</p>`,
+    example: `Customer refund assistant:
+- Input state contains user query, prior tool observations, and allowed tools.
+- Runnable emits AgentAction(tool="fetch_order", input={"order_id":"..."}).
+- After tool observation is appended, runnable emits AgentFinish with decision + rationale.
+
+If runnable emits unknown tool "chargeback_api", validation rejects it and routes to safe fallback.`,
+    animation: "ReActGraphInspector",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "Why should a reasoning runnable output typed actions instead of plain text instructions?",
+        "How do you validate AgentAction payloads before execution?",
+        "What is your fallback strategy when parsing fails repeatedly?",
+        "How would you detect runnable prompt drift after a model upgrade?",
+      ],
+      seniorTip: "Frame it as contract engineering: typed outputs, validator gates, schema versioning, and regression evals on route decisions."
+    },
+    flashCards: [
+      { q: "Two valid ReAct reasoning outputs?", a: "AgentAction or AgentFinish." },
+      { q: "Why validate tool names?", a: "To prevent hallucinated or unauthorized tool execution." },
+      { q: "What should parser retries be bounded by?", a: "A finite retry budget with a deterministic fallback path." },
+      { q: "What causes route drift most often?", a: "Unversioned prompt/parser changes or model behavior shifts." },
+      { q: "Why include intermediate_steps in reasoning input?", a: "So the runnable can avoid repeated actions and decide if evidence is sufficient." },
+    ],
+  },
+  {
+    slug: "07-react-using-langgraph-state",
+    sectionId: "langgraph",
+    title: "ReAct using LangGraph - State",
+    order: 7,
+    excerpt: "Design the ReAct state object: input, agent outcome, and intermediate steps that accumulate execution history.",
+    theory: `<p><b>ReAct state design determines reliability.</b> The graph loop is simple only when state is precise.</p>
+<p><b>Essential fields for this pattern:</b></p>
+<ul>
+<li><code>input</code>: current user objective.</li>
+<li><code>agent_outcome</code>: latest AgentAction or AgentFinish.</li>
+<li><code>intermediate_steps</code>: ordered list of (action, observation) tuples.</li>
+</ul>
+<p><b>Why <code>intermediate_steps</code> matters:</b> it gives the reasoning node memory of what was already tried, preventing repeated tool calls and enabling corrective reasoning.</p>
+<p><b>Merge behavior is critical:</b> appending steps incorrectly (replace vs add) can erase trace history and break loop decisions. Use additive merge semantics intentionally.</p>
+<p><b>Operational recommendations:</b></p>
+<ul>
+<li>Persist state snapshots for long-running workflows.</li>
+<li>Attach attempt counters and wall-clock budget.</li>
+<li>Store tool latency/error codes in step metadata.</li>
+<li>Redact sensitive tool payloads before persistence.</li>
+</ul>
+<p><b>Failure patterns:</b> oversized state (token blowup), duplicate step entries, or stale outcomes not cleared between runs.</p>`,
+    example: `Security triage run:
+1) input = "Investigate suspicious login spike."
+2) agent_outcome -> AgentAction(search_logs).
+3) intermediate_steps append action+result.
+4) next reasoning sees prior result and calls geoip_enrichment.
+5) second append captures enrichment output.
+6) reasoning returns AgentFinish with final incident summary.
+
+Because the full action/observation chain is in state, incident review is straightforward.`,
+    animation: "StateGraphFlowViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What minimum state fields are required for a ReAct graph and why?",
+        "How does intermediate step history improve decision quality?",
+        "What bugs appear if step history is overwritten instead of appended?",
+        "How do you keep state useful without causing token and storage bloat?",
+      ],
+      seniorTip: "Best answers connect state shape to runtime behavior: route correctness, retry logic, observability, and cost control."
+    },
+    flashCards: [
+      { q: "What does `agent_outcome` hold?", a: "The latest AgentAction or AgentFinish emitted by reasoning." },
+      { q: "Why append `intermediate_steps`?", a: "To preserve full action/observation history across loop iterations." },
+      { q: "One token-cost mitigation for state?", a: "Store compact structured summaries instead of raw verbose payloads." },
+      { q: "Why persist step metadata?", a: "It enables latency/error analysis and post-incident debugging." },
+      { q: "What should happen before a new run starts?", a: "Reset or initialize mutable state fields to avoid stale carryover." },
+    ],
+  },
+  {
+    slug: "08-react-using-langgraph-building-nodes",
+    sectionId: "langgraph",
+    title: "ReAct using LangGraph - Building Nodes",
+    order: 8,
+    excerpt: "Implement reason and act nodes with strict contracts, deterministic state updates, and safe tool invocation.",
+    theory: `<p><b>Node implementation is where architecture becomes executable behavior.</b> In this step you implement two concrete nodes:</p>
+<ul>
+<li><b>reason node</b>: invoke reasoning runnable and write <code>agent_outcome</code>.</li>
+<li><b>act node</b>: execute tool based on <code>agent_outcome</code> and append <code>(action, observation)</code> to <code>intermediate_steps</code>.</li>
+</ul>
+<p><b>Reason node requirements:</b> pass exact expected state keys, validate runnable output type, and never write tool outputs directly.</p>
+<p><b>Act node requirements:</b> resolve tool from registry, validate input schema, enforce timeout, catch tool errors, and convert output into stable string/JSON representation for state.</p>
+<p><b>Critical invariant:</b> act node should only run when current outcome is <code>AgentAction</code>; finish outcomes must bypass action execution.</p>
+<p><b>Failure handling strategy:</b></p>
+<ul>
+<li>Tool not found -> append structured error observation and route to reason for fallback decision.</li>
+<li>Tool timeout -> append timeout marker + increment retry counter.</li>
+<li>Serialization error -> safe-stringify observation and attach parse status.</li>
+</ul>
+<p><b>Testing priority:</b> node-level tests for state updates and error branches, then integration tests for full loop routing.</p>`,
+    example: `Order support node flow:
+- reason node emits AgentAction("fetch_order_status", {"order_id":"A123"}).
+- act node executes tool, receives status=delayed and eta=2026-03-15.
+- act node appends tuple to intermediate_steps.
+- next reason node sees delay and emits AgentFinish with apology + ETA.
+
+If tool raises timeout, act node appends timeout observation and the next reason step decides retry vs escalation.`,
+    animation: "ReActGraphInspector",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "What exact state mutation should each ReAct node be responsible for?",
+        "How do you enforce the invariant that act node only runs on AgentAction?",
+        "How should act node represent tool failures in state?",
+        "What test cases are mandatory before shipping these nodes?",
+      ],
+      seniorTip: "Interviewers look for ownership boundaries: reason writes decisions, act writes observations, route function decides control flow."
+    },
+    flashCards: [
+      { q: "Reason node writes which field?", a: "`agent_outcome`." },
+      { q: "Act node writes which field?", a: "Appends to `intermediate_steps`." },
+      { q: "When should act node be skipped?", a: "When outcome is AgentFinish." },
+      { q: "How should tool errors appear in state?", a: "As structured observations that preserve error type and context." },
+      { q: "Why test node-level invariants?", a: "They prevent subtle state corruption in looped execution." },
+    ],
+  },
+  {
+    slug: "09-tool-executor-deprecated",
+    sectionId: "langgraph",
+    title: "ToolExecutor (Deprecated)",
+    order: 9,
+    excerpt: "Adapting to API evolution: replacing deprecated ToolExecutor usage with explicit tool dispatch for stability.",
+    theory: `<p><b>Framework APIs evolve; orchestration code must stay resilient.</b> This topic shows how to replace deprecated helper classes with explicit, readable tool dispatch logic.</p>
+<p><b>Legacy pattern:</b> central ToolExecutor abstraction handled invocation implicitly.</p>
+<p><b>Updated pattern:</b> resolve tool by name from registry, invoke with validated input, and normalize output manually. This increases transparency and reduces dependency on unstable internals.</p>
+<p><b>Migration checklist:</b></p>
+<ul>
+<li>Extract tool_name and tool_input from AgentAction.</li>
+<li>Lookup matching tool in your registered tool list.</li>
+<li>Handle argument shape differences per tool interface.</li>
+<li>Invoke tool with timeout/retry wrapper.</li>
+<li>Append normalized observation to state.</li>
+</ul>
+<p><b>Tradeoff:</b> slightly more boilerplate, but much better long-term control and upgrade safety.</p>
+<p><b>Production recommendation:</b> wrap dispatch in your own thin adapter layer so future framework upgrades only require one localized change.</p>`,
+    example: `Before:
+- Act node delegates invocation to ToolExecutor class.
+
+After:
+1) Read agent_action.tool + agent_action.tool_input.
+2) Find matching tool in registry.
+3) Invoke selected tool function directly.
+4) Store output/error in intermediate_steps.
+
+Outcome: fewer hidden abstractions and clearer failure diagnostics during upgrades.`,
+    animation: "ReActGraphInspector",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Why can explicit tool dispatch be safer than framework helper abstractions?",
+        "How do you structure a tool registry for maintainability?",
+        "What compatibility risks appear during orchestration library upgrades?",
+        "How do you keep upgrade-related regressions contained?",
+      ],
+      seniorTip: "Mature answers emphasize isolation: keep framework-specific logic behind a narrow adapter boundary and test it independently."
+    },
+    flashCards: [
+      { q: "Why remove deprecated ToolExecutor dependencies quickly?", a: "Deprecated internals break unexpectedly and can disrupt production agents." },
+      { q: "What is explicit tool dispatch?", a: "Resolving and invoking a named tool directly from your own registry." },
+      { q: "Main migration benefit?", a: "Better control, debuggability, and upgrade resilience." },
+      { q: "Where should compatibility logic live?", a: "In a thin adapter layer, not scattered across node code." },
+      { q: "What must be preserved during migration?", a: "State contract and action/observation semantics." },
+    ],
+  },
+  {
+    slug: "10-react-using-langgraph-final-graph",
+    sectionId: "langgraph",
+    title: "ReAct using LangGraph - Final Graph",
+    order: 10,
+    excerpt: "Assemble the full ReAct graph: node registration, conditional routing, loop edge, entrypoint, and compile/invoke flow.",
+    theory: `<p><b>The final graph ties policy, execution, and routing into one deterministic runtime.</b></p>
+<p><b>Assembly sequence:</b></p>
+<ol>
+<li>Create graph with explicit state schema.</li>
+<li>Register reason and act nodes.</li>
+<li>Set entrypoint to reason node.</li>
+<li>Add conditional edge from reason using route function.</li>
+<li>Add edge from act back to reason to form loop.</li>
+<li>Compile and invoke with initial state.</li>
+</ol>
+<p><b>Route function contract:</b> inspect current outcome and return only known route labels (for example <code>continue</code> or <code>end</code>). Keep this function deterministic and side-effect free.</p>
+<p><b>Initial state contract:</b> include every required key (<code>input</code>, <code>agent_outcome</code>, <code>intermediate_steps</code>, counters) so first execution is predictable.</p>
+<p><b>Termination controls:</b> define both semantic stop conditions (finish outcome) and hard operational ceilings (max_iterations, max_runtime_ms, max_tool_calls).</p>
+<p><b>Production architecture guidance:</b></p>
+<ul>
+<li>Wrap invoke in request-scoped tracing context.</li>
+<li>Emit per-node latency and token metrics.</li>
+<li>Persist final state and critical intermediate checkpoints.</li>
+<li>Attach run_id/session_id for replay and audit.</li>
+</ul>
+<p><b>Failure modes to test:</b> unknown route labels, missing state keys, infinite loop due bad route logic, and finish payload that violates output schema.</p>`,
+    example: `Subscription cancellation assistant:
+1) Graph starts at reason node with user input.
+2) Reason emits AgentAction(check_subscription_status).
+3) Act runs tool and appends observation.
+4) Reason emits AgentAction(calculate_refund) based on policy.
+5) Act appends result.
+6) Reason emits AgentFinish with final refund + caveats.
+7) Route sends flow to END and stores final state.
+
+A deterministic route function ensures this cannot loop forever without hitting budget limits.`,
+    animation: "ReActGraphInspector",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "What are the mandatory graph edges in a ReAct LangGraph implementation?",
+        "How should `should_continue` be designed to avoid route ambiguity?",
+        "What operational limits must be enforced before production launch?",
+        "Which integration tests prove the final graph is safe and complete?",
+      ],
+      seniorTip: "Treat final assembly as systems engineering: deterministic routing, strict state initialization, hard loop ceilings, and traceability by default."
+    },
+    flashCards: [
+      { q: "Why set reason node as entrypoint?", a: "The loop starts with decision-making before any tool execution." },
+      { q: "What does the act->reason edge enable?", a: "Iterative correction after each tool observation." },
+      { q: "What must route function never do?", a: "Perform side effects or depend on nondeterministic text parsing." },
+      { q: "What is the minimum run budget set?", a: "Max iterations plus max runtime and max tool calls." },
+      { q: "What should invocation return for debugging?", a: "Final state including intermediate action/observation history." },
+    ],
+  },
+  {
+    slug: "11-react-using-langgraph-langsmith-tracing",
+    sectionId: "langgraph",
+    title: "ReAct using LangGraph - LangSmith Tracing",
+    order: 11,
+    excerpt: "Use trace-level observability to inspect node execution, tool calls, route decisions, and end-to-end latency in ReAct graphs.",
+    theory: `<p><b>Tracing turns agent behavior from opaque to inspectable.</b> For ReAct graphs, process quality is as important as answer quality; traces let you inspect both.</p>
+<p><b>What to inspect in a run trace:</b></p>
+<ul>
+<li>Initial state and final state deltas.</li>
+<li>Each reason node output (action vs finish).</li>
+<li>Each tool invocation input/output, latency, and errors.</li>
+<li>Conditional route decisions and loop counts.</li>
+<li>Total runtime, token usage, and cost envelope.</li>
+</ul>
+<p><b>Debugging workflow:</b></p>
+<ol>
+<li>Find the first wrong decision point (usually wrong tool selection or premature finish).</li>
+<li>Compare expected vs actual state at that step.</li>
+<li>Map cause to one layer: prompt policy, parser contract, tool reliability, or route predicate.</li>
+<li>Patch one layer, rerun eval set, compare traces.</li>
+</ol>
+<p><b>Observability KPIs for production:</b> median/p95 loop depth, wrong-tool rate, timeout rate, escalation rate, and final-answer-with-citations rate.</p>
+<p><b>Governance benefit:</b> trace artifacts provide auditable evidence for compliance and incident postmortems, especially in regulated workflows.</p>
+<p><b>Cost control insight:</b> trace-level token and latency hotspots show which node/tool pair should be optimized first.</p>`,
+    example: `A 13-second run is flagged as slow.
+Trace analysis shows:
+- reason node #2 consumed 4.2s due oversized intermediate context
+- first tool call timed out and triggered retry
+- second reason step still queried redundant tool
+
+Fix:
+- compress intermediate context
+- tighten timeout + fallback policy
+- add dedupe guard before repeated tool selection
+
+Result after patch: 7.4s median with same answer quality.`,
+    animation: "ReActGraphInspector",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What specific signals in traces indicate route-policy problems vs tool reliability problems?",
+        "How do you use traces to reduce latency/cost without hurting quality?",
+        "Which trace fields are mandatory for compliance-grade auditability?",
+        "How would you build a regression harness using historical traces?",
+      ],
+      seniorTip: "The strongest answer connects tracing to engineering loops: diagnose, patch one layer, re-evaluate, and confirm with before/after trace metrics."
+    },
+    flashCards: [
+      { q: "Why is traceability non-negotiable for agents?", a: "Dynamic routing and tool calls require step-level evidence for debugging and governance." },
+      { q: "One key loop-health metric?", a: "p95 loop depth (or iteration count) per route type." },
+      { q: "How to detect wrong-tool behavior quickly?", a: "Track wrong-tool rate by intent class and inspect corresponding reason-node traces." },
+      { q: "What cost signal should be monitored per node?", a: "Token usage and latency contribution by node/tool pair." },
+      { q: "Why store final + intermediate state snapshots?", a: "They enable replay, RCA, and deterministic regression comparison." },
     ],
   },
 ];

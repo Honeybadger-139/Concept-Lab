@@ -607,6 +607,25 @@ export const authoredInterviewAnswers = {
     "Tune thresholds/caps by replaying traces: lower threshold if quality is already strong, lower cap when marginal gains are tiny, and tighten rubric when critiques are noisy.",
     "Roll out safely with staged traffic: trace-only shadow phase, then risk-gated enablement, then broader rollout only if quality lift and cost envelope remain acceptable."
   ],
+  "langgraph/24-langgraph-persistence-memory-fundamentals": [
+    "Process-local memory fails whenever workers restart or sessions move across instances. Durable memory is required for continuity, replayability, and support-quality stability.",
+    "Keep a clean split between hot execution state and durable session state. Hot state serves fast node transitions; durable state preserves audit and recovery context across failures.",
+    "Concurrency controls are mandatory: use versioned writes, optimistic locking, or transactional boundaries to avoid stale updates during parallel traffic.",
+    "Production governance requires retention windows, redaction rules, and encryption for persisted conversation artifacts.",
+    "Measure persistence health with resume success rate, stale-read incidents, and memory growth per tenant/session."
+  ],
+  "langgraph/25-langgraph-checkpointing-and-resume": [
+    "Checkpointing reduces failure blast radius by letting runs resume from safe boundaries instead of replaying entire workflows.",
+    "A usable checkpoint must store node identity, route label, attempt counters, and the minimum payload needed for deterministic continuation.",
+    "Always pair resume logic with idempotency keys for side effects; otherwise retries can duplicate charges, notifications, or ticket mutations.",
+    "Checkpoint frequency is an optimization problem: too frequent raises storage/latency overhead, too sparse increases replay cost and recovery time."
+  ],
+  "langgraph/26-langgraph-multi-agent-actor-responder-pattern": [
+    "Actor/responder patterns are justified when generation and validation objectives are materially different and specialization improves policy or quality outcomes.",
+    "Prevent ping-pong loops by enforcing round caps, deterministic acceptance criteria, and explicit arbitration when disagreement persists.",
+    "Arbitration policies should be rule-driven (priority rubric, confidence thresholds, or domain-owner override), not ad hoc prompt behavior.",
+    "Track disagreement frequency, convergence rounds, and quality lift versus single-agent baselines to prove multi-agent ROI."
+  ],
   "ml/advanced-placeholder": [
     "Start from data modality and constraints: tabular data with limited scale usually favors tree-based models; unstructured high-dimensional data often favors neural networks. Final choice should be validated on latency, calibration, and operational cost targets.",
     "Increase complexity only after baseline bottlenecks are measured on fixed evaluation sets and error slices. If the current model saturates and additional feature/process improvements no longer move key metrics, complexity may be justified.",

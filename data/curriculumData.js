@@ -3245,7 +3245,7 @@ const langGraphNodes = [
     slug: "01-introduction",
     sectionId: "langgraph",
     title: "Introduction to LangGraph",
-    order: 1,
+    order: 12,
     excerpt: "Foundational lesson: why LangGraph exists, what problem it solves, and how graph-based stateful control differs from linear LLM pipelines.",
     theory: `<p><b>What this lesson is really doing:</b> it changes your mental model from <i>prompting</i> to <i>engineering agent systems</i>. In normal LLM apps, you ask a model once and get one answer. In LangGraph, you design a workflow where the model can reason, branch, retry, and carry state across steps.</p>
 <p><b>Core definition:</b> LangGraph is a state-machine framework for agent workflows. You explicitly model:</p>
@@ -3318,7 +3318,7 @@ This is difficult to implement cleanly as a single chain, but natural in LangGra
     slug: "02-levels-of-autonomy-llm-applications",
     sectionId: "langgraph",
     title: "Levels of Autonomy in LLM applications",
-    order: 2,
+    order: 13,
     excerpt: "Autonomy ladder: from deterministic code (zero autonomy) to fully agentic decision loops, with practical trade-offs at each level.",
     theory: `<p><b>Lesson theme:</b> think of LLM systems on a continuous autonomy ladder, from <b>least (zero autonomy)</b> to <b>maximum autonomy</b>. This framing helps you choose architecture intentionally instead of blindly building an agent for every use case.</p>
 <p><b>Level 0 - Deterministic code:</b> no model decision rights. Every step is pre-programmed. Great for safety and predictability, weak for ambiguous tasks.</p>
@@ -3375,7 +3375,7 @@ If Option B already hits target accuracy and latency, do not jump to Option C ye
     slug: "03-agents-tools-intro",
     sectionId: "langgraph",
     title: "Agents & Tools - Intro",
-    order: 3,
+    order: 14,
     excerpt: "Detailed foundation for agentic execution: agent as decision-maker, tools as bounded capabilities, and the action-observation loop.",
     theory: `<p><b>Core framing:</b> agents are the problem-solvers; tools are how they interact with the outside world. This is the key conceptual split for beginners.</p>
 <p><b>Agent role:</b> interpret goal, decide next action, evaluate result, and continue until solved or safely stopped.</p>
@@ -3440,7 +3440,7 @@ If tool fails, graph can route to a retry node (with max attempts) and then fall
     slug: "04-what-is-stategraph",
     sectionId: "langgraph",
     title: "What is StateGraph?",
-    order: 4,
+    order: 15,
     excerpt: "StateGraph is the execution backbone in LangGraph: explicit state schema, node transitions, and controlled cycles.",
     theory: `<p><b>StateGraph is a typed state machine for agent orchestration.</b> Instead of hiding control flow inside prompts, you define how state moves through nodes and how each transition is chosen.</p>
 <p><b>Core model:</b></p>
@@ -3496,7 +3496,7 @@ This structure gives deterministic governance while preserving adaptive behavior
     slug: "05-react-using-langgraph-overview",
     sectionId: "langgraph",
     title: "ReAct using LangGraph - Overview",
-    order: 5,
+    order: 18,
     excerpt: "Why ReAct agents benefit from graph orchestration: explicit reason/act cycles, policy guards, and predictable termination.",
     theory: `<p><b>ReAct</b> combines reasoning and acting in a loop: reason about next step, invoke a tool, observe output, and decide whether to continue. LangGraph makes this loop explicit and controllable.</p>
 <p><b>Standard node decomposition:</b></p>
@@ -3547,7 +3547,7 @@ Without explicit graph control, this loop is hard to bound and audit.`,
     slug: "06-react-using-langgraph-reasoning-runnable",
     sectionId: "langgraph",
     title: "ReAct using LangGraph - Reasoning Runnable",
-    order: 6,
+    order: 19,
     excerpt: "Build the reasoning runnable that converts state into either AgentAction or AgentFinish with strict output contracts.",
     theory: `<p><b>The reasoning runnable is the policy brain.</b> It consumes current graph state and emits one of two structured outcomes:</p>
 <ul>
@@ -3593,7 +3593,7 @@ If runnable emits unknown tool "chargeback_api", validation rejects it and route
     slug: "07-react-using-langgraph-state",
     sectionId: "langgraph",
     title: "ReAct using LangGraph - State",
-    order: 7,
+    order: 20,
     excerpt: "Design the ReAct state object: input, agent outcome, and intermediate steps that accumulate execution history.",
     theory: `<p><b>ReAct state design determines reliability.</b> The graph loop is simple only when state is precise.</p>
 <p><b>Essential fields for this pattern:</b></p>
@@ -3644,7 +3644,7 @@ Because the full action/observation chain is in state, incident review is straig
     slug: "08-react-using-langgraph-building-nodes",
     sectionId: "langgraph",
     title: "ReAct using LangGraph - Building Nodes",
-    order: 8,
+    order: 21,
     excerpt: "Implement reason and act nodes with strict contracts, deterministic state updates, and safe tool invocation.",
     theory: `<p><b>Node implementation is where architecture becomes executable behavior.</b> In this step you implement two concrete nodes:</p>
 <ul>
@@ -3691,7 +3691,7 @@ If tool raises timeout, act node appends timeout observation and the next reason
     slug: "09-tool-executor-deprecated",
     sectionId: "langgraph",
     title: "ToolExecutor (Deprecated)",
-    order: 9,
+    order: 21.5,
     excerpt: "Adapting to API evolution: replacing deprecated ToolExecutor usage with explicit tool dispatch for stability.",
     theory: `<p><b>Framework APIs evolve; orchestration code must stay resilient.</b> This topic shows how to replace deprecated helper classes with explicit, readable tool dispatch logic.</p>
 <p><b>Legacy pattern:</b> central ToolExecutor abstraction handled invocation implicitly.</p>
@@ -3739,7 +3739,7 @@ Outcome: fewer hidden abstractions and clearer failure diagnostics during upgrad
     slug: "10-react-using-langgraph-final-graph",
     sectionId: "langgraph",
     title: "ReAct using LangGraph - Final Graph",
-    order: 10,
+    order: 22,
     excerpt: "Assemble the full ReAct graph: node registration, conditional routing, loop edge, entrypoint, and compile/invoke flow.",
     theory: `<p><b>The final graph ties policy, execution, and routing into one deterministic runtime.</b></p>
 <p><b>Assembly sequence:</b></p>
@@ -3795,7 +3795,7 @@ A deterministic route function ensures this cannot loop forever without hitting 
     slug: "11-react-using-langgraph-langsmith-tracing",
     sectionId: "langgraph",
     title: "ReAct using LangGraph - LangSmith Tracing",
-    order: 11,
+    order: 23,
     excerpt: "Use trace-level observability to inspect node execution, tool calls, route decisions, and end-to-end latency in ReAct graphs.",
     theory: `<p><b>Tracing turns agent behavior from opaque to inspectable.</b> For ReAct graphs, process quality is as important as answer quality; traces let you inspect both.</p>
 <p><b>What to inspect in a run trace:</b></p>
@@ -3851,7 +3851,7 @@ Result after patch: 7.4s median with same answer quality.`,
     slug: "12-drawbacks-of-react-agents",
     sectionId: "langgraph",
     title: "Drawbacks of ReAct Agents",
-    order: 12,
+    order: 5,
     excerpt: "Where plain ReAct breaks in production and how graph-level controls reduce reliability, latency, and cost failures.",
     theory: `<p><b>ReAct is powerful but fragile when shipped without control-plane engineering.</b> The loop can plan and act, but raw autonomy introduces predictable failure classes.</p>
 <p><b>Primary drawbacks in production:</b></p>
@@ -3908,7 +3908,7 @@ Outcome: near-original quality with stable latency and bounded cost.`,
     slug: "13-reflection-agent-introduction",
     sectionId: "langgraph",
     title: "Reflection Agent - Introduction",
-    order: 13,
+    order: 6,
     excerpt: "Reflection agents add a critique stage so outputs can be improved before finalization.",
     theory: `<p><b>A reflection agent introduces self-critique into the graph loop.</b> Instead of returning the first draft, the system generates output, critiques it, and revises if needed.</p>
 <p><b>Minimal reflection architecture:</b></p>
@@ -3957,7 +3957,7 @@ Without reflection, first response would have looked fluent but incomplete.`,
     slug: "14-reflection-agent-creating-chains",
     sectionId: "langgraph",
     title: "Reflection Agent - Creating Chains",
-    order: 14,
+    order: 7,
     excerpt: "Compose generator and reflector chains with explicit contracts so reflection remains testable and stable.",
     theory: `<p><b>Before building the full graph, you define two reusable chains:</b> one for generation and one for reflection. Clean chain boundaries make reflection logic debuggable.</p>
 <p><b>Generation chain contract:</b></p>
@@ -4003,7 +4003,7 @@ The explicit schema allows deterministic route behavior and easier tests.`,
     slug: "15-reflection-agent-building-graph",
     sectionId: "langgraph",
     title: "Reflection Agent - Building The Graph",
-    order: 15,
+    order: 8,
     excerpt: "Wire generator and reflector into a controlled graph loop with quality thresholds and deterministic termination.",
     theory: `<p><b>This step operationalizes reflection into graph control flow.</b> You connect draft and critique nodes with threshold-based routing.</p>
 <p><b>Typical graph structure:</b></p>
@@ -4051,7 +4051,7 @@ System exits safely instead of endless optimization.`,
     slug: "16-reflection-agent-langsmith-tracing",
     sectionId: "langgraph",
     title: "Reflection Agent - LangSmith Tracing",
-    order: 16,
+    order: 9,
     excerpt: "Trace reflection loops to measure quality lift, loop efficiency, and revision cost before scaling to production.",
     theory: `<p><b>Tracing is mandatory for reflection systems</b> because quality is produced by multi-step interaction, not a single response. You need to measure process efficiency and output quality together.</p>
 <p><b>Trace fields to monitor:</b></p>
@@ -4098,6 +4098,161 @@ Result: preserved quality gains with controlled budget impact.`,
       { q: "Why monitor score trajectory?", a: "It reveals whether revisions are converging or stalling." },
       { q: "Best cost-control rollout?", a: "Risk-gated reflection instead of always-on reflection." },
       { q: "What should termination reason be logged?", a: "Threshold met, cap reached, or fallback route." },
+    ],
+  },
+  {
+    slug: "24-langgraph-persistence-memory-fundamentals",
+    sectionId: "langgraph",
+    title: "LangGraph Persistence & Memory Fundamentals",
+    order: 24,
+    excerpt: "Why in-memory conversation state breaks in production and how durable memory changes reliability guarantees.",
+    theory: `<p><b>In-memory state works for demos and fails for production.</b> If your graph state lives only inside process memory, any restart, deployment, crash, or autoscaling event drops user context.</p>
+<p><b>Production requirement:</b> separate execution logic from state durability. LangGraph workflows should treat memory as infrastructure, not as a local variable.</p>
+<p><b>Core persistence goals:</b></p>
+<ul>
+<li><b>Durability:</b> state survives process restarts.</li>
+<li><b>Continuity:</b> the same session can continue across workers.</li>
+<li><b>Recoverability:</b> failures can resume from a known checkpoint.</li>
+<li><b>Auditability:</b> critical transitions are inspectable after incidents.</li>
+</ul>
+<p><b>State model split:</b></p>
+<ul>
+<li><b>Hot state</b> for current step execution (fast mutable fields).</li>
+<li><b>Durable state</b> for session timeline (messages, tool outputs, route decisions, termination reason).</li>
+</ul>
+<p><b>Tradeoff:</b> persistence improves reliability and HITL workflows, but adds storage latency, schema evolution complexity, and data governance obligations.</p>
+<p><b>Failure modes to design for:</b> stale session reads, race conditions from concurrent updates, unbounded memory growth, and PII retention drift.</p>
+<p><b>Guardrails:</b> optimistic concurrency or version checks, TTL/retention policies, encryption at rest, and explicit redaction for sensitive fields.</p>`,
+    example: `Customer support agent with persistent memory:
+1) User asks for refund policy and receives partial answer.
+2) App restarts during deployment.
+3) User asks follow-up: "What about the exception for annual plans?"
+4) With in-memory history, context is lost and answer quality collapses.
+5) With durable session memory, prior policy clauses and route history are restored and follow-up remains grounded.
+
+Production result: fewer context-loss incidents and lower human-escalation rate.`,
+    animation: "StateGraphFlowViz",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "Why is process-local memory insufficient for production LangGraph systems?",
+        "How do you separate hot execution state from durable session state?",
+        "What concurrency and consistency controls are needed for persistent graph state?",
+        "What governance controls are mandatory for persisted conversation memory?",
+      ],
+      seniorTip: "Strong answers tie persistence to operational guarantees: resume safety, cross-worker continuity, retention control, and post-incident replay."
+    },
+    flashCards: [
+      { q: "Why does in-memory graph state fail in production?", a: "It is lost on restarts, crashes, and worker changes." },
+      { q: "What does persistence buy first?", a: "Session continuity and recoverability." },
+      { q: "One major persistence risk?", a: "Race conditions and stale writes across concurrent workers." },
+      { q: "Key governance requirement?", a: "Retention, redaction, and encryption policies for stored state." },
+      { q: "What enables reliable follow-up questions?", a: "Durable recovery of prior turns and route history." },
+    ],
+  },
+  {
+    slug: "25-langgraph-checkpointing-and-resume",
+    sectionId: "langgraph",
+    title: "LangGraph Checkpointing, Resume, and Durable Session State",
+    order: 25,
+    excerpt: "Checkpoint graph progress so failures and human approvals can resume from safe boundaries instead of restarting whole runs.",
+    theory: `<p><b>Checkpointing captures graph state at controlled boundaries.</b> Instead of replaying entire workflows after failure, you resume from last valid checkpoint.</p>
+<p><b>When checkpoints are critical:</b></p>
+<ul>
+<li>Long-running agent loops with expensive tool calls.</li>
+<li>Human-in-the-loop approvals where execution pauses by design.</li>
+<li>External API dependencies with intermittent failure windows.</li>
+<li>Multi-step workflows with strict SLAs and retry budgets.</li>
+</ul>
+<p><b>Checkpoint design principles:</b></p>
+<ol>
+<li>Define checkpoint boundaries at deterministic state transitions.</li>
+<li>Store route label, node id, attempt counters, and required payload.</li>
+<li>Use idempotency keys for external side-effecting actions.</li>
+<li>Resume only when schema/version compatibility checks pass.</li>
+</ol>
+<p><b>Recovery policy:</b> classify failures as retryable, resumable, or terminal. Do not blindly resume corrupted or partially written state.</p>
+<p><b>Common mistakes:</b> checkpointing too often (cost/latency overhead), too rarely (large replay blast radius), and forgetting side-effect dedupe (double charges/emails/tickets).</p>
+<p><b>Production observability:</b> checkpoint resume rate, replay depth, resume success ratio, and side-effect duplication incidents.</p>`,
+    example: `Order-cancellation workflow:
+- Step 1: validate request
+- Step 2: fetch order ledger
+- Step 3: compute refund
+- Step 4: request human approval for exceptions
+- Step 5: execute refund API
+
+During approval wait, worker restarts.
+Without checkpoints: run restarts from step 1 and may recompute inconsistently.
+With checkpoints: run resumes at step 4 with approved payload, then executes step 5 once using idempotency key.`,
+    animation: "ReActGraphInspector",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "How do checkpoints reduce replay cost and incident blast radius in LangGraph?",
+        "What metadata must be persisted to safely resume a graph run?",
+        "How do idempotency keys protect checkpoint-based recovery paths?",
+        "How do you choose checkpoint frequency without hurting latency?",
+      ],
+      seniorTip: "Interview-grade checkpoint design always includes resume safety, idempotent side effects, and compatibility checks across versioned state schemas."
+    },
+    flashCards: [
+      { q: "What is checkpointing?", a: "Persisting run state at controlled boundaries for safe resume." },
+      { q: "Why idempotency matters on resume?", a: "It prevents duplicate side effects when steps re-run." },
+      { q: "Checkpoint too often vs too rarely?", a: "Too often adds overhead; too rarely increases replay cost." },
+      { q: "What is a resumable failure?", a: "A failure where state integrity is intact and replay boundary is known." },
+      { q: "Key resume safety check?", a: "State schema/version compatibility before execution continues." },
+    ],
+  },
+  {
+    slug: "26-langgraph-multi-agent-actor-responder-pattern",
+    sectionId: "langgraph",
+    title: "LangGraph Multi-Agent Actor/Responder Pattern",
+    order: 26,
+    excerpt: "Design actor-responder agent collaboration with explicit routing, role boundaries, and conflict-resolution policies.",
+    theory: `<p><b>Multi-agent actor/responder setup separates responsibilities.</b> One agent plans or acts (actor), another critiques, refines, or formats final output (responder/reviewer).</p>
+<p><b>Why this pattern exists:</b> complex tasks often mix execution and quality-control objectives that are easier to optimize with role-specialized agents.</p>
+<p><b>Graph architecture:</b></p>
+<ul>
+<li>Actor node proposes action or draft output.</li>
+<li>Responder node validates quality/policy/completeness.</li>
+<li>Router decides: accept, revise, escalate, or terminate.</li>
+<li>Shared state tracks agent outputs, rationale, and arbitration signals.</li>
+</ul>
+<p><b>Failure modes:</b> role overlap, contradictory instructions, ping-pong loops, and arbitration deadlocks.</p>
+<p><b>Control strategies:</b></p>
+<ol>
+<li>Clear role contracts and input/output schemas.</li>
+<li>Revision cap and convergence policy.</li>
+<li>Arbitration node or deterministic tie-break rules.</li>
+<li>Escalation to HITL for unresolved conflicts.</li>
+</ol>
+<p><b>Observability metrics:</b> disagreement rate, rounds-to-convergence, arbitration frequency, and quality lift vs single-agent baseline.</p>
+<p><b>Cost/latency tradeoff:</b> multi-agent can improve robustness but increases call count. Use for high-value/high-risk workflows, not for trivial intents.</p>`,
+    example: `Compliance response assistant:
+1) Actor drafts answer with cited policy excerpts.
+2) Responder checks policy conformance and missing constraints.
+3) If compliant -> finalize.
+4) If conflict (e.g., missing exception clause) -> route back with revision instruction.
+5) After max 2 rounds, unresolved conflict goes to compliance analyst.
+
+Outcome: fewer policy-violating replies and deterministic escalation path.`,
+    animation: "LangGraphArchitectureViz",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "When is actor/responder multi-agent architecture justified over a single-agent loop?",
+        "How do you prevent ping-pong loops between collaborating agents?",
+        "What arbitration rules do you implement when agents disagree persistently?",
+        "Which metrics prove multi-agent adds value rather than cost-only overhead?",
+      ],
+      seniorTip: "Strong multi-agent design answers include role boundaries, arbitration policy, convergence controls, and measured ROI against single-agent baselines."
+    },
+    flashCards: [
+      { q: "Actor vs responder?", a: "Actor executes/proposes; responder validates/refines before finalization." },
+      { q: "Main multi-agent risk?", a: "Unbounded disagreement loops without convergence controls." },
+      { q: "How to end deadlocks?", a: "Arbitration rules + max rounds + HITL escalation." },
+      { q: "When to use multi-agent?", a: "High-risk tasks where specialization improves quality and safety." },
+      { q: "Best ROI metric?", a: "Quality lift and policy-pass rate per unit latency/cost increase." },
     ],
   },
 ];

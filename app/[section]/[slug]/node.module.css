@@ -157,6 +157,19 @@
   line-height: 1.55;
 }
 
+.codeOpenLink {
+  display: inline-block;
+  margin-top: 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+.codeOpenLink:hover {
+  text-decoration: underline;
+}
+
 .codeChecklist {
   margin: 0.95rem 0 0;
   padding-left: 1.1rem;

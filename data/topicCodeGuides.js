@@ -1,5 +1,10 @@
 const guide = (summary, files, checkpoints = []) => ({ summary, files, checkpoints });
-const fileRef = (path, focus) => ({ path, focus });
+const fileRef = (sourcePath, focus, highlightTerms = []) => ({
+  sourcePath,
+  path: sourcePath.replace(/^scratch_pad\/github_code\//, "content/github_code/"),
+  focus,
+  highlightTerms,
+});
 
 const RAG_BASE = "scratch_pad/github_code/rag-for-beginners";
 const LANGCHAIN_BASE = "scratch_pad/github_code/langchain-course";

@@ -65,6 +65,56 @@ function readingTime(html) {
   return `${mins} min read`;
 }
 
+function deriveHighlightTerms(entry) {
+  if (Array.isArray(entry?.highlightTerms) && entry.highlightTerms.length > 0) {
+    return entry.highlightTerms;
+  }
+
+  const focus = String(entry?.focus ?? "").toLowerCase();
+  const terms = new Set();
+
+  if (focus.includes("state")) {
+    terms.add("state");
+    terms.add("TypedDict");
+  }
+  if (focus.includes("graph") || focus.includes("routing")) {
+    terms.add("StateGraph");
+    terms.add("MessageGraph");
+    terms.add("add_node");
+  }
+  if (focus.includes("tool")) {
+    terms.add("tool");
+    terms.add("ToolNode");
+    terms.add("bind_tools");
+  }
+  if (focus.includes("prompt") || focus.includes("chain")) {
+    terms.add("prompt");
+    terms.add("ChatPromptTemplate");
+    terms.add("chain");
+  }
+  if (focus.includes("memory") || focus.includes("checkpointer")) {
+    terms.add("MemorySaver");
+    terms.add("SqliteSaver");
+    terms.add("thread_id");
+  }
+  if (focus.includes("retriever") || focus.includes("retrieval")) {
+    terms.add("retriever");
+    terms.add("invoke");
+  }
+
+  return Array.from(terms).slice(0, 8);
+}
+
+function buildCodeViewerHref(entry, fromPath) {
+  const params = new URLSearchParams();
+  params.set("file", entry.path);
+  if (entry.focus) params.set("focus", entry.focus);
+  if (fromPath) params.set("from", fromPath);
+  const terms = deriveHighlightTerms(entry);
+  if (terms.length > 0) params.set("terms", terms.join(","));
+  return `/code?${params.toString()}`;
+}
+
 export async function generateStaticParams() {
   return nodes.map((node) => ({ section: node.sectionId, slug: node.slug }));
 }
@@ -191,6 +241,9 @@ export default async function NodePage({ params }) {
                           <code>{entry.path}</code>
                         </p>
                         {entry.focus && <p className={styles.codeFocus}>{entry.focus}</p>}
+                        <Link href={buildCodeViewerHref(entry, `/${section}/${slug}`)} className={styles.codeOpenLink}>
+                          Open highlighted code →
+                        </Link>
                       </article>
                     ))}
                   </div>

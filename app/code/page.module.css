@@ -53,12 +53,20 @@
   font-size: 0.82rem;
 }
 
-.codeFrame {
+.viewerGrid {
   margin-top: 0.9rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.codeFrame {
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   overflow: auto;
   background: #020617;
+  max-height: 78vh;
 }
 
 .lineRow {
@@ -93,7 +101,72 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 }
 
+.notesPanel {
+  border: 1px solid rgba(14, 165, 233, 0.22);
+  border-radius: var(--radius-md);
+  background: rgba(14, 165, 233, 0.05);
+  padding: 0.85rem;
+  position: sticky;
+  top: 0.75rem;
+}
+
+.notesTitle {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.notesIntro {
+  margin: 0.35rem 0 0.7rem;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.noteList {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.noteCard {
+  border: 1px solid rgba(14, 165, 233, 0.22);
+  border-radius: 10px;
+  padding: 0.7rem;
+  background: rgba(15, 23, 42, 0.42);
+}
+
+.noteAnchor {
+  display: inline-block;
+  font-size: 0.75rem;
+  text-decoration: none;
+  color: #38bdf8;
+  margin-bottom: 0.2rem;
+}
+
+.noteAnchor:hover {
+  text-decoration: underline;
+}
+
+.noteCard h3 {
+  margin: 0.05rem 0 0.35rem;
+  font-size: 0.88rem;
+}
+
+.noteCard p {
+  margin: 0.3rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
 @media (max-width: 760px) {
+  .viewerGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .notesPanel {
+    position: static;
+  }
+
   .lineRow {
     grid-template-columns: 44px 1fr;
     gap: 0.6rem;

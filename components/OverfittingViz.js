@@ -47,7 +47,9 @@ const LABELS = {
   3: { text: "Just Right ✓",       sub: "Captures the trend",               color: "#22d3ee" },
   4: { text: "Good Fit",            sub: "Slight over-complexity",           color: "#22d3ee" },
   5: { text: "Starting to Overfit", sub: "Wiggles through noise",            color: "#facc15" },
+  6: { text: "Overfitting",         sub: "Variance increasing",               color: "#f43f5e" },
   7: { text: "Overfitting",         sub: "Memorises training noise",         color: "#f43f5e" },
+  8: { text: "Severe Overfit",      sub: "Highly unstable outside train set", color: "#f43f5e" },
   9: { text: "Severe Overfit",      sub: "Useless on new data",              color: "#f43f5e" },
 };
 
@@ -73,7 +75,7 @@ export default function OverfittingViz() {
     return pts.filter(p => p !== "M").join(" ");
   }, [coef]);
 
-  const label    = LABELS[degree] || LABELS[Math.min(9, Math.max(1, degree))];
+  const label    = LABELS[degree] || LABELS[Math.min(9, Math.max(1, degree))] || LABELS[3];
   const fitColor = label.color;
 
   if (!t) return <div style={{ height: 250 }} />;

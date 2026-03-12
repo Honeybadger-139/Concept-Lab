@@ -5019,7 +5019,7 @@ Result: same assistant, but only domain-relevant queries consume retrieval + LLM
 <p><b>Tradeoff versus classification-driven retrieval:</b> tool-calling is flexible and compact, but gives less deterministic control over routing and formatting. Classification pipelines are more explicit for strict compliance contexts.</p>`,
     example: `Two-query behavior from one agent:
 1) User asks off-topic question: "What is Apple's latest product?"
-2) Model selects `off_topic_tool`; tool message returns "forbidden/do not respond" style guardrail.
+2) Model selects 'off_topic_tool'; tool message returns "forbidden/do not respond" style guardrail.
 3) Agent uses tool result to produce constrained final response.
 
 On-topic case:
@@ -5074,7 +5074,7 @@ On-topic case:
 Failure-path scenario:
 1) User asks on-topic but unsupported question (for example cancellation policy not in docs).
 2) System retries with refined wording up to configured cap.
-3) Still no relevant chunks -> `cannot_answer` node returns safe fallback instead of hallucinating.`,
+3) Still no relevant chunks -> 'cannot_answer' node returns safe fallback instead of hallucinating.`,
     animation: "LangGraphArchitectureViz",
     tool: "AgentToolLoopSimulator",
     interviewPrep: {

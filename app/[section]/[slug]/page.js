@@ -75,6 +75,37 @@ function readingTime(html) {
   return `${mins} min read`;
 }
 
+const THEORY_POLISH_NOTES = {
+  rag: {
+    beginner:
+      "Master one stage at a time: ingestion, retrieval, then grounded generation. Validate each stage with small test questions before tuning everything together.",
+    production:
+      "Treat quality as measurable system behavior. Track retrieval relevance, groundedness, and abstention quality with repeatable eval sets.",
+  },
+  langchain: {
+    beginner:
+      "Build deterministic baseline chains first (prompt -> model -> parser), then add retrieval, memory, or tools only when the baseline is stable.",
+    production:
+      "Keep contracts explicit at each boundary: input variables, output schema, retries, and logs. This is what keeps orchestration reliable at scale.",
+  },
+  langgraph: {
+    beginner:
+      "Think in state transitions, not giant prompts. Keep node responsibilities small and route logic deterministic so each step is easy to reason about.",
+    production:
+      "Bound autonomy with loop limits, tool policies, and checkpoints. Capture route decisions and state snapshots for replay and incident analysis.",
+  },
+};
+
+function getPolishedTheory(sectionId, theoryHtml) {
+  if (!theoryHtml) return theoryHtml;
+  if (theoryHtml.includes("data-theory-polish")) return theoryHtml;
+
+  const notes = THEORY_POLISH_NOTES[sectionId];
+  if (!notes) return theoryHtml;
+
+  return `${theoryHtml}<p data-theory-polish="beginner"><b>First-time learner note:</b> ${notes.beginner}</p><p data-theory-polish="production"><b>Production note:</b> ${notes.production}</p>`;
+}
+
 function deriveHighlightTerms(entry) {
   if (Array.isArray(entry?.highlightTerms) && entry.highlightTerms.length > 0) {
     return entry.highlightTerms;
@@ -147,7 +178,8 @@ export default async function NodePage({ params }) {
   const prevNode       = currentIndex > 0 ? sectionNodes[currentIndex - 1] : null;
   const nextNode       = currentIndex < sectionNodes.length - 1 ? sectionNodes[currentIndex + 1] : null;
   const meta           = SECTION_META[section] || { color: "#6366f1", emoji: "📚" };
-  const rt             = readingTime(node.theory);
+  const polishedTheory = getPolishedTheory(section, node.theory);
+  const rt             = readingTime(polishedTheory);
 
   const AnimComponent  = node.animation && ComponentMap[node.animation] ? ComponentMap[node.animation] : null;
   const ToolComponent  = node.tool      && ComponentMap[node.tool]      ? ComponentMap[node.tool]      : null;
@@ -211,7 +243,7 @@ export default async function NodePage({ params }) {
               {node.theory ? (
                 <div
                   className="theoryContent"
-                  dangerouslySetInnerHTML={{ __html: node.theory }}
+                  dangerouslySetInnerHTML={{ __html: polishedTheory }}
                 />
               ) : (
                 <p className="placeholder">Theory content will be added from transcript.</p>

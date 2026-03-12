@@ -10,6 +10,7 @@
  *   2. Create a new node array and spread it into `nodes` at the bottom.
  */
 import { authoredInterviewAnswers } from "./authoredInterviewAnswers.js";
+import { getMlTranscriptDeepeningByOrder } from "./mlTranscriptDeepening.js";
 import { topicCodeGuides } from "./topicCodeGuides.js";
 
 // ─────────────────────────────────────────────────────────
@@ -2071,14 +2072,15 @@ const langchainNodes = [
 </ul>
 <p><b>Production perspective:</b> LangChain helps separate responsibilities. Prompt logic, provider selection, routing logic, and output parsing can evolve independently. This reduces regression risk and makes evaluation easier.</p>
 <p><b>Key architectural takeaway:</b> treat LLM systems as software pipelines with contracts, not as single prompts. That mindset is the foundation for everything that follows in advanced topics.</p>`,
-    example: `Enterprise support assistant architecture:
-1) Prompt template defines tone and response format.
-2) Retriever fetches policy chunks.
-3) Chat model generates grounded response.
-4) Output parser validates schema.
-5) Tool layer optionally creates support ticket.
+    example:`Beginner app flow:
+1) User asks a support question.
+2) Prompt template frames response policy.
+3) Retriever pulls policy context.
+4) Model generates answer from context.
+5) Parser normalizes output for UI.
+6) Optional tool node files a ticket if unresolved.
 
-Without orchestration, these are scattered custom scripts; with LangChain, they are reusable components with explicit boundaries.`,
+This shows why LangChain is orchestration, not just one model call.`,
     animation: "LangChainArchitectureMap",
     tool: null,
     interviewPrep: {
@@ -2105,14 +2107,14 @@ Without orchestration, these are scattered custom scripts; with LangChain, they 
     order: 2,
     excerpt: "Core components: models, prompts, chains, memory, agents, tools.",
     theory: "<p>The LangChain crash course covers four main learning areas, each building on the previous:</p><ol><li><b>What is LangChain</b> — the problem it solves, the abstraction it provides</li><li><b>Chat Models</b> — the first core component: how to interact with LLMs using structured message objects (SystemMessage, HumanMessage, AIMessage)</li><li><b>Prompt Templates</b> — the second core component: building reusable, parameterised prompt structures rather than hard-coded strings</li><li><b>Chains</b> — the third and most powerful component: composing models, prompts, and other tools into sequential pipelines with LCEL's pipe operator (<code>|</code>)</li></ol><p>Each component is introduced with a practical coding example. The course style is deliberately concise — theory is explained only as much as needed to understand the code, then you build immediately. This mirrors how effective engineers learn: by building and encountering problems, not by memorising concepts first.</p>",
-    example: `Progressive build path:
-1) Start with one direct chat-model call to understand message I/O.
-2) Add prompt templates so instructions become reusable and testable.
-3) Add chains so prompt -> model -> parser is one reliable pipeline.
-4) Add retrieval (RAG) to ground answers in external documents.
-5) Add agents/tools only when runtime decision-making is actually needed.
+    example:`Course progression in practice:
+1) Build one direct chat-model call.
+2) Add templates for reusable instructions.
+3) Compose prompt -> model -> parser chain.
+4) Add retrieval for grounding.
+5) Add tool-driven agent behavior only when needed.
 
-This staged progression helps first-time learners isolate one concept at a time and avoid mixing too many moving parts in one build.`,
+Each step adds one capability so debugging stays simple for first-time learners.`,
     animation: "LangChainArchitectureMap",
     tool: null,
     interviewPrep: {
@@ -2146,13 +2148,14 @@ This staged progression helps first-time learners isolate one concept at a time 
 </ul>
 <p><b>Architectural distinction:</b> LLM = reasoning engine; LangChain = execution coordinator. Keeping these responsibilities separate is essential for observability, testing, and safety.</p>
 <p><b>Failure-mode framing:</b> without orchestration, most issues are opaque (“model gave bad answer”). With orchestration, failures are attributable (retrieval miss, parser mismatch, tool timeout, route misclassification).</p>`,
-    example: `Vacation planning task:
-- Model reasons about needed actions.
-- Tool layer calls flight/hotel APIs.
-- Retriever checks policy constraints (budget, class).
-- Final parser enforces structured itinerary response.
+    example:`Vacation-assistant workflow:
+1) User asks for an itinerary under a budget.
+2) Model decides what data is needed.
+3) Tools fetch flights/hotels.
+4) Retriever checks policy constraints.
+5) Parser enforces structured final output.
 
-This converts a vague conversational prompt into a controlled multi-step application flow.`,
+Without orchestration this becomes fragile glue code; with LangChain each stage is explicit.`,
     animation: "LangChainArchitectureMap",
     tool: null,
     interviewPrep: {
@@ -2179,14 +2182,14 @@ This converts a vague conversational prompt into a controlled multi-step applica
     order: 4,
     excerpt: "Python basics, API keys, .env setup — everything before you write LangChain code.",
     theory: "<p>Before building with LangChain, you need a working foundation in three areas:</p><ul><li><b>Python 3.8+</b> — the course uses Python exclusively; any version 3.8 or higher works</li><li><b>pip</b> — Python's package manager for installing LangChain and its dependencies</li><li><b>API keys</b> — at minimum an OpenAI API key (for GPT models). Optional: Anthropic, Google Gemini, or Groq keys if you want to test alternative providers</li></ul><p>You do NOT need deep Python expertise — if you know functions, loops, and basic OOP you have enough to follow along. The course explains every new concept as it appears.</p><p>A code editor (VS Code recommended), basic terminal comfort, and willingness to install packages are the practical requirements. Everything else is learned during the course.</p>",
-    example: `Beginner setup checklist:
-1) Install Python 3.11+ and verify with \`python --version\`.
-2) Create/activate virtual environment (\`python -m venv venv\`, then activate).
-3) Install required packages with pip.
-4) Create .env file and add \`OPENAI_API_KEY=...\`.
-5) Load env vars with \`load_dotenv()\` and run one simple model call.
+    example:`First-time setup checklist:
+1) Install Python 3.11+ and verify version.
+2) Create and activate virtual environment.
+3) Install LangChain packages with pip.
+4) Add provider key to .env.
+5) Run one model smoke test.
 
-If step 5 fails, fix environment before continuing to chains and RAG.`,
+Only proceed to chains once this baseline works.`,
     animation: null,
     tool: null,
     interviewPrep: {
@@ -2209,14 +2212,14 @@ If step 5 fails, fix environment before continuing to chains and RAG.`,
     order: 5,
     excerpt: "virtualenv, installing langchain-openai, and .env management best practices.",
     theory: "<p>The course uses a clean, minimal setup pattern that mirrors professional Python development:</p><ol><li><b>Create project folder</b>: <code>mkdir langchain-crash-course && cd langchain-crash-course</code></li><li><b>Virtual environment</b>: <code>python -m venv venv</code> then activate it. This isolates your project dependencies from global Python packages.</li><li><b>Install packages</b>: <code>pip install langchain langchain-openai python-dotenv</code></li><li><b>Create .env file</b>: Store <code>OPENAI_API_KEY=sk-...</code> here. Never commit this file — add it to <code>.gitignore</code>.</li><li><b>Load env vars in code</b>: <code>from dotenv import load_dotenv; load_dotenv()</code></li></ol><p>The activation command differs by OS: Mac/Linux uses <code>source venv/bin/activate</code>, Windows uses <code>venv\\Scripts\\activate</code>. Once activated, your terminal prompt shows <code>(venv)</code> — all pip installs go into the isolated environment.</p><p>VS Code tip: the instructor opens the project folder directly in VS Code (<code>code .</code>) and uses the integrated terminal. Keeps everything in one place.</p>",
-    example: `Concrete environment bring-up:
-1) \`python -m venv venv\`
-2) \`source venv/bin/activate\` (Mac/Linux) or \`venv\\Scripts\\activate\` (Windows)
-3) \`pip install langchain langchain-openai python-dotenv\`
-4) Add API key to \`.env\`
-5) Run a smoke test script that imports ChatOpenAI and prints one response.
+    example:`Environment bring-up sequence:
+1) python -m venv venv
+2) activate venv
+3) pip install langchain langchain-openai python-dotenv
+4) create .env with OPENAI_API_KEY
+5) run a minimal script and print model output
 
-Treat this as your "green check" gate before building any workflow.`,
+Treat this as your green-check gate before any workflow coding.`,
     animation: null,
     tool: null,
     interviewPrep: {
@@ -2240,13 +2243,14 @@ Treat this as your "green check" gate before building any workflow.`,
     order: 6,
     excerpt: "The structured message format — SystemMessage, HumanMessage, AIMessage.",
     theory: "<p>Chat Models are LangChain's first core component — the standardised interface to Large Language Models. Instead of passing raw strings, LangChain uses structured <em>message objects</em> that map to how modern chat LLMs actually work:</p><ul><li><code>SystemMessage</code> — sets the AI's persona, constraints, tone ('You are a helpful assistant')</li><li><code>HumanMessage</code> — the user's input</li><li><code>AIMessage</code> — the model's response (used for storing history)</li></ul><p>The official definition: a <em>Chat Model</em> is a type of language model that uses a sequence of messages as inputs and returns a message as output. This is different from older completion-style LLMs that took a single string.</p><p>LangChain's key value here: all these message types work identically across OpenAI, Anthropic, Google Gemini, Ollama (local), and any other provider. You write your code once and swap providers by changing one import.</p><p>The <code>.invoke()</code> method takes a list of messages and returns an <code>AIMessage</code> with a <code>.content</code> attribute containing the response text.</p>",
-    example: `Chat-model I/O walkthrough:
-1) Build message list with explicit roles (SystemMessage + HumanMessage).
-2) Invoke model once.
-3) Read \`response.content\` for user-facing text.
-4) Read \`response.response_metadata\` for token/cost diagnostics.
+    example:`Chat model I/O pattern:
+1) Add a SystemMessage with role/constraints.
+2) Add HumanMessage with user request.
+3) Call model.invoke(messages).
+4) Read response.content for answer.
+5) Read response metadata for token usage.
 
-This pattern is the core primitive every later chain, retriever, and agent builds on.`,
+This message contract is reused across all providers and chains.`,
     animation: "ChatModelDemo",
     tool: null,
     interviewPrep: {
@@ -2287,14 +2291,14 @@ model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 </ul>
 <p><b>Common setup failures:</b> missing API key, incorrect model id, region/account restrictions, and hidden latency spikes due to no timeout limits.</p>
 <p><b>Design principle:</b> keep the model invocation wrapper thin but consistent so every future chain inherits the same safety and observability defaults.</p>`,
-    example: `Production-ready setup wrapper:
-- Load env and validate required keys at startup.
-- Construct model via factory:
-  get_model("default_chat") -> provider + model id + timeout + retries.
-- Standardize response logging:
-  prompt id, model id, latency, input/output tokens.
+    example:`Production-ready setup pattern:
+1) Load env vars once at startup.
+2) Build model via config factory (model id, timeout, retries).
+3) Invoke with explicit message schema.
+4) Log latency and token usage per call.
+5) Handle missing-key/model-id errors with clear fail-fast messages.
 
-This keeps every chain using consistent model behavior and metrics.`,
+This keeps every later chain consistent and observable.`,
     animation: "ChatModelDemo",
     tool: null,
     interviewPrep: {
@@ -2320,13 +2324,13 @@ This keeps every chain using consistent model behavior and metrics.`,
     order: 8,
     excerpt: "How LLMs simulate memory — passing the full conversation list each call.",
     theory: "<p>LLMs are <em>stateless APIs</em> — each call is completely independent. The model has no memory of previous exchanges. To create a conversational experience, you must explicitly pass the entire conversation history in every call.</p><p><strong>Pattern:</strong> Maintain a <code>chat_history</code> list. After each turn, append the user's <code>HumanMessage</code> and the AI's <code>AIMessage</code>. On the next call, prepend history to the messages list.</p><pre><code>chat_history = []\\n\\ndef chat(user_input):\\n    messages = [SystemMessage('You are a helpful assistant.')] + chat_history + [HumanMessage(user_input)]\\n    response = model.invoke(messages)\\n    chat_history.append(HumanMessage(user_input))\\n    chat_history.append(AIMessage(response.content))\\n    return response.content</code></pre><p>This is why LLM conversation UIs like ChatGPT send the full history on every request — they're building this list and passing it each time. The context window limit is the practical ceiling: long enough conversations hit the token limit and older messages must be truncated or summarised.</p>",
-    example: `Multi-turn context flow:
-1) Turn 1 user asks a question; model responds.
-2) Both messages are appended to chat history.
-3) Turn 2 includes prior history + new user message.
-4) Turn 3 follow-up ("can you elaborate?") works because earlier turns are part of input.
+    example:`Multi-turn memory simulation:
+1) Turn 1 question and answer are appended to history.
+2) Turn 2 includes full prior history plus new question.
+3) Turn 3 follow-up uses context from turns 1 and 2.
+4) If history is omitted, follow-up quality drops immediately.
 
-Without this explicit history pass, follow-up questions lose context and quality drops.`,
+LLMs are stateless; history passing creates conversational continuity.`,
     animation: null,
     tool: null,
     interviewPrep: {
@@ -2350,15 +2354,13 @@ Without this explicit history pass, follow-up questions lose context and quality
     order: 9,
     excerpt: "Swapping providers with one line — Anthropic, Cohere, local Ollama.",
     theory: "<p>One of LangChain's most powerful features: switching between LLM providers requires changing only one import. The rest of your code — message types, chains, prompt templates — stays identical.</p><p><strong>Provider examples:</strong></p><ul><li><code>ChatOpenAI</code> (<code>langchain-openai</code>) — GPT-4o, GPT-4o-mini</li><li><code>ChatAnthropic</code> (<code>langchain-anthropic</code>) — Claude 3.5, Claude 3 Haiku</li><li><code>ChatGoogleGenerativeAI</code> (<code>langchain-google-genai</code>) — Gemini 1.5 Pro/Flash</li><li><code>ChatOllama</code> (<code>langchain-ollama</code>) — local models (Llama 3, Mistral, etc.)</li><li><code>ChatGroq</code> (<code>langchain-groq</code>) — fast inference (Llama, Mixtral on Groq)</li></ul><p>The pattern is always the same: install the provider-specific package, import the Chat class, initialise with model name, then call <code>.invoke(messages)</code> identically.</p><p><strong>Ollama (local models):</strong> No API key needed. Runs entirely on your machine. Great for privacy-sensitive development, offline use, or cost-free experimentation with open-source models like Llama 3.</p>",
-    example: `Provider swap pattern:
-1) Keep chain logic identical: prompt | model | parser.
-2) Replace only model constructor:
-   - ChatOpenAI(...)
-   - ChatAnthropic(...)
-   - ChatOllama(...)
-3) Re-run same eval queries and compare quality/cost/latency.
+    example:`Provider-swap workflow:
+1) Keep prompt and chain logic unchanged.
+2) Replace only chat model class and model id.
+3) Re-run same eval prompts across providers.
+4) Compare quality, latency, and cost before choosing default.
 
-This lets teams choose models by business constraints without rewriting orchestration code.`,
+This is vendor portability in practice.`,
     animation: null,
     tool: null,
     interviewPrep: {
@@ -2391,13 +2393,14 @@ This lets teams choose models by business constraints without rewriting orchestr
 <li>Backpressure: throttle UI rendering if chunk frequency is high.</li>
 </ul>
 <p><b>Failure modes:</b> dropped network connection mid-stream, duplicated chunks due reconnect logic, and partial response persistence bugs. Production streaming should include reconnection policy and chunk-id aware append logic where possible.</p>`,
-    example: `Streaming flow in support chat:
+    example:`Streaming UX flow:
 1) Backend calls model.stream(messages).
-2) Each chunk is emitted via SSE.
-3) Frontend appends chunk text to in-progress answer.
-4) User can cancel stream; backend closes stream and logs partial output.
+2) Chunks are sent to frontend over SSE.
+3) UI appends text progressively.
+4) User may cancel mid-stream to save tokens.
+5) Backend closes stream and logs partial completion.
 
-Result: lower perceived latency and tighter cost control on abandoned responses.`,
+Perceived latency drops even if total compute time stays similar.`,
     animation: null,
     tool: null,
     interviewPrep: {
@@ -2437,10 +2440,14 @@ Result: lower perceived latency and tighter cost control on abandoned responses.
 <li>Cross-region access latency tradeoffs.</li>
 </ol>
 <p><b>Common pitfalls:</b> session collisions, unbounded history growth, and compliance violations from storing sensitive text without governance controls.</p>`,
-    example: `Hybrid history strategy:
-- Redis stores active 7-day sessions for low-latency retrieval.
-- Postgres archives full conversation history for analytics/compliance.
-- On each request: load recent turns from Redis, append latest messages, asynchronously mirror to Postgres.`,
+    example:`Persistent history architecture:
+1) User request arrives with session_id.
+2) History store loads prior messages for that session.
+3) Model responds with context-aware output.
+4) New turn is written back to storage.
+5) Next request repeats with same session key.
+
+This survives restarts unlike in-memory lists.`,
     animation: null,
     tool: null,
     interviewPrep: {
@@ -2476,15 +2483,14 @@ Result: lower perceived latency and tighter cost control on abandoned responses.
 </ul>
 <p><b>Production best practice:</b> pair templates with output parsers and guardrails. A strong prompt is not only “good wording”; it also enforces allowed scope, fallback behavior, and output format expectations.</p>
 <p><b>Failure modes:</b> variable mismatch, prompt injection susceptibility, overlong context stuffing, and unstable formatting requirements.</p>`,
-    example: `Template governance example:
-- Template v1.3:
-  System: "Answer only using provided policy context."
-  Human: "{question}\\n\\nContext:\\n{context}"
-- Parser requires JSON:
-  { answer, citations, confidence }
-- CI test verifies rendered prompt for representative inputs.
+    example:`Template-governed prompting:
+1) Define system and user template with named placeholders.
+2) Render prompt with runtime variables.
+3) Invoke model.
+4) Parse into required schema.
+5) Log template version id for traceability.
 
-This turns prompt engineering into controlled software change management.`,
+Prompt changes become auditable software changes, not hidden string edits.`,
     animation: "LCELChainViz",
     tool: null,
     interviewPrep: {
@@ -2510,17 +2516,15 @@ This turns prompt engineering into controlled software change management.`,
     order: 13,
     excerpt: "Composing prompts, models, and parsers into end-to-end LCEL pipelines.",
     theory: "<p>Chains are LangChain's most powerful component — the ability to compose multiple steps into a sequential pipeline. The instructor calls them his personal favourite because they're where the framework earns its name.</p><p><strong>LCEL (LangChain Expression Language)</strong> uses the pipe operator (<code>|</code>) to compose any Runnable component into a chain:</p><pre><code>chain = prompt | model | output_parser\\nresult = chain.invoke({'topic': 'Python decorators'})</code></pre><p>Each component receives the output of the previous one as input. The final output is the result of the last component in the chain.</p><p><strong>Output Parsers</strong> are commonly the last step — they transform the raw <code>AIMessage</code> into a more useful format:</p><ul><li><code>StrOutputParser</code> — extracts just the text string</li><li><code>JsonOutputParser</code> — parses the response as JSON</li><li><code>PydanticOutputParser</code> — validates and types the response</li></ul><p>Chains are <em>lazy</em> — they don't execute until <code>.invoke()</code>, <code>.stream()</code>, or <code>.batch()</code> is called. This enables building complex workflows declaratively before triggering execution.</p>",
-    example: `LCEL execution example:
-1) Define \`chain = prompt | model | StrOutputParser()\`.
-2) Call \`chain.invoke({ topic: "RAG" })\`.
-3) Prompt stage formats instructions.
-4) Model stage generates AIMessage.
-5) Parser stage returns clean text for downstream code.
+    example:`LCEL chain run:
+1) Define prompt | model | parser.
+2) Invoke with one input payload.
+3) Prompt formats instruction.
+4) Model returns AIMessage.
+5) Parser returns app-ready output.
+6) Add retries/parallel branches only after baseline is stable.
 
-Then extend safely:
-- add \`RunnableParallel\` for independent subtasks
-- add \`.with_retry()\` for transient failures
-- add tracing so each stage is observable.`,
+This is the core LangChain execution model.`,
     animation: "LCELChainViz",
     tool: null,
     interviewPrep: {
@@ -2559,17 +2563,14 @@ Then extend safely:
 <li>Keep first chain deterministic before introducing dynamic routing.</li>
 </ol>
 <p><b>Common beginner error:</b> adding too many instructions in one prompt and assuming the chain is “complete.” A strong basic chain keeps responsibilities narrow and composable.</p>`,
-    example: `Customer-support starter chain:
-1) Input: "How do I reset SSO for my workspace?"
-2) Prompt template injects role: "You are an enterprise support engineer. Reply with numbered steps."
-3) Model generates candidate answer.
-4) StrOutputParser normalizes to plain text.
-5) UI renders response.
+    example:`Starter chain walkthrough:
+1) Input question enters prompt template.
+2) Model generates response draft.
+3) Parser normalizes output type.
+4) UI renders deterministic structure.
+5) Logs capture prompt id and response.
 
-Then incrementally harden:
-- Add tone constraints.
-- Add output format checks.
-- Add retrieval only after deterministic baseline quality is measured.`,
+A simple deterministic chain should be production-stable before adding routing.`,
     animation: "LCELChainViz",
     tool: null,
     interviewPrep: {
@@ -2613,14 +2614,14 @@ Then incrementally harden:
 </ul>
 <p><b>Debugging pattern:</b> isolate each stage, inspect intermediate artifacts, and confirm type expectations before the next boundary. This is faster than repeatedly tweaking the full chain.</p>
 <p><b>Operational value:</b> once you can inspect intermediate states, you can measure token usage, latency per stage, and failure concentration by boundary.</p>`,
-    example: `Trace-driven debugging flow:
-Query: "Summarize this policy in bullet points."
-- Stage 1 (Prompt render): confirms required keys are present.
-- Stage 2 (Model call): output includes prose paragraph instead of bullets.
-- Stage 3 (Parser): still succeeds as string parser, but policy requires bullet format.
-- Fix: tighten system prompt + add post-parse validation rule.
+    example:`Trace-level execution view:
+1) Prompt node receives structured input.
+2) Model node executes with provider config.
+3) Parser node validates output.
+4) If parser fails, retry/fallback path is triggered.
+5) Trace links all stages for debugging.
 
-Result: bug is attributed to prompt quality, not model reliability.`,
+This makes failures attributable to the exact stage, not "LLM was wrong."`,
     animation: "ChainRoutingPatternsViz",
     tool: null,
     interviewPrep: {
@@ -2656,14 +2657,13 @@ Result: bug is attributed to prompt quality, not model reliability.`,
 <p><b>Why it works:</b> sequential pipelines are easy to reason about, test, and monitor. They are ideal when branching is unnecessary and consistency is more important than flexibility.</p>
 <p><b>Trade-off:</b> latency increases with every added stage. If two stages are independent, consider moving them to parallel execution later.</p>
 <p><b>Production guideline:</b> keep sequential chain depth minimal. Add a stage only when it contributes measurable quality improvement.</p>`,
-    example: `Enterprise FAQ workflow:
-1) Rewrite user query for retrieval clarity.
-2) Retrieve top 5 policy chunks.
-3) Generate grounded answer with citations.
-4) Validate answer against policy confidence threshold.
-5) Return answer or fallback.
+    example:`Sequential pipeline example:
+1) Step A extracts key entities.
+2) Step B expands entities into explanation draft.
+3) Step C formats answer for target audience.
+4) Output is validated and returned.
 
-This remains sequential because every stage depends on outputs from the previous stage.`,
+Each step depends on previous output, so execution order is intentionally fixed.`,
     animation: "ChainRoutingPatternsViz",
     tool: null,
     interviewPrep: {
@@ -2704,13 +2704,13 @@ This remains sequential because every stage depends on outputs from the previous
 <li>Error handling must define whether one branch failure blocks final response.</li>
 </ul>
 <p><b>Common mistake:</b> parallelizing everything without considering merge complexity. If branch outputs are inconsistent, overall reliability can drop.</p>`,
-    example: `Support copilot parallel pattern:
-- Branch A: classify issue severity.
-- Branch B: extract affected product and version.
-- Branch C: retrieve known incident matches.
-Merge stage composes a triage summary and recommended next action.
+    example:`Parallel chain pattern:
+1) Same input fans out into two independent branches.
+2) Branch A summarizes technical perspective.
+3) Branch B summarizes business perspective.
+4) Join step merges both outputs into one response.
 
-Latency drops because the three analyses run at the same time instead of serially.`,
+Parallelism lowers latency when branches have no dependency.`,
     animation: "ChainRoutingPatternsViz",
     tool: null,
     interviewPrep: {
@@ -2751,13 +2751,13 @@ Latency drops because the three analyses run at the same time instead of seriall
 <li>Offline evaluation of router accuracy to prevent wrong-path degradation.</li>
 </ul>
 <p><b>Failure mode to watch:</b> unstable routing can create inconsistent user experience where similar queries get different treatment. Mitigate with stable routing rules and monitored confusion matrix.</p>`,
-    example: `Knowledge assistant router:
-- If query needs exact policy reference -> route to RAG branch with citations.
-- If query is brainstorming -> route to creative generation branch.
-- If query touches legal/compliance terms -> route to constrained compliance branch.
+    example:`Conditional routing flow:
+1) Classifier step labels request intent.
+2) Router sends request to specialized sub-chain.
+3) Domain-specific chain generates answer.
+4) Shared post-processor normalizes final output.
 
-All branches emit same response schema:
-{ answer, confidence, citations, escalation_required }`,
+This avoids one oversized chain trying to handle every intent poorly.`,
     animation: "ChainRoutingPatternsViz",
     tool: null,
     interviewPrep: {
@@ -2803,13 +2803,14 @@ All branches emit same response schema:
 <li>Weak prompts that fail to enforce grounding behavior.</li>
 </ul>
 <p><b>System mindset:</b> RAG is not one component; it is a retrieval quality system. Document hygiene, chunking policy, embedding choice, retriever config, and answer prompt all co-determine final quality.</p>`,
-    example: `Internal policy assistant:
-- HR policy docs are indexed in vector DB.
-- User asks: "What is maternity leave policy for contractors?"
-- Retriever fetches relevant policy sections.
-- Generator answers only with retrieved sections and cites source IDs.
+    example:`RAG baseline concept flow:
+1) User asks a domain question.
+2) Retriever fetches relevant chunks.
+3) Prompt injects chunks as evidence.
+4) Model answers only from provided context.
+5) If evidence is weak, system abstains safely.
 
-When policy changes, only documents are re-indexed; model weights remain unchanged.`,
+This is the foundation for grounded answers.`,
     animation: "RAGPipelineSteps",
     tool: null,
     interviewPrep: {
@@ -2852,13 +2853,14 @@ When policy changes, only documents are re-indexed; model weights remain unchang
 <li>Re-index strategy for document updates.</li>
 </ul>
 <p><b>Practical principle:</b> build ingestion pipeline as repeatable data engineering workflow, not ad hoc script.</p>`,
-    example: `Company handbook ingestion:
-1) Pull markdown and PDF handbooks.
-2) Clean headers/footers and normalize text.
-3) Chunk by headings with overlap for context continuity.
-4) Embed each chunk and attach metadata:
-   { doc_id, section, updated_at, visibility_scope }.
-5) Upsert into vector DB with version-aware IDs.`,
+    example:`Offline ingestion workflow:
+1) Load source documents.
+2) Clean and split into chunks.
+3) Generate embeddings.
+4) Upsert vectors with metadata.
+5) Run sanity retrieval checks.
+
+Good query-time quality starts with disciplined ingestion.`,
     animation: "RAGPipelineSteps",
     tool: null,
     interviewPrep: {
@@ -2899,12 +2901,13 @@ When policy changes, only documents are re-indexed; model weights remain unchang
 <li>Upsert/delete/version management.</li>
 </ul>
 <p><b>Practical trade-offs:</b> higher-dimensional embeddings can improve semantic nuance but increase storage and latency; top-k too small hurts recall, too large introduces noise.</p>`,
-    example: `Product-support retrieval:
-- Documents embedded with model A and stored in vector DB.
-- User query embedded with same model A.
-- Retrieve top 8 chunks by cosine similarity.
-- Apply metadata filter for product="Billing API".
-- Pass filtered chunks to generation stage.`,
+    example:`Semantic retrieval pipeline:
+1) Embed user query.
+2) Vector DB returns nearest chunk candidates.
+3) Metadata filters enforce scope.
+4) Top evidence set goes to generation.
+
+Embeddings map meaning; vector DB makes that mapping searchable at scale.`,
     animation: "VectorSearchVisualizer",
     tool: "TokenCounter",
     interviewPrep: {
@@ -2945,14 +2948,14 @@ When policy changes, only documents are re-indexed; model weights remain unchang
 <li>Evidence formatting (show source + section with each chunk).</li>
 </ul>
 <p><b>Important operational insight:</b> retrieval is iterative. Initial retriever settings are rarely optimal; quality improves via evaluation loops on real query sets.</p>`,
-    example: `Retriever tuning loop:
-- Start with top-k = 5.
-- Evaluate answer quality on 100 representative questions.
-- Observe frequent missing context for long policy queries.
-- Increase top-k to 8 + metadata filter by policy type.
-- Add query rewriting for abbreviations.
+    example:`Retriever tuning loop:
+1) Run eval queries against current retriever config.
+2) Inspect misses and noisy hits.
+3) Tune chunking/top-k/threshold.
+4) Re-run same eval set.
+5) Keep changes that improve grounded quality.
 
-Outcome: recall improves without large precision loss.`,
+Iteration discipline beats intuition-driven tuning.`,
     animation: "RetrievalQueryViz",
     tool: null,
     interviewPrep: {
@@ -2994,13 +2997,14 @@ Outcome: recall improves without large precision loss.`,
 <li>Fallback when retrieval confidence is low.</li>
 <li>Structured response schema including confidence and sources.</li>
 </ul>`,
-    example: `Query-time contract example:
-System instruction:
-"Answer only using retrieved context. If context is insufficient, explicitly say so."
+    example:`Query-time orchestration:
+1) Receive query and optional context.
+2) Retrieve candidate evidence.
+3) Assemble bounded context window.
+4) Generate evidence-grounded answer.
+5) Validate citations/confidence before return.
 
-Post-check:
-- Ensure at least one source citation appears.
-- If no citation or low retrieval score, route to clarification or escalation response.`,
+This stage determines what users actually experience as quality.`,
     animation: "RAGPipelineSteps",
     tool: null,
     interviewPrep: {
@@ -3035,12 +3039,13 @@ Post-check:
 </ul>
 <p><b>Why this step is essential:</b> without a baseline, tuning is guesswork. A simple pipeline provides a control condition for later improvements (chunking changes, reranking, metadata filtering, query rewriting).</p>
 <p><b>Success criterion:</b> system answers correctly for straightforward queries and fails gracefully for unsupported ones.</p>`,
-    example: `Minimal baseline test pack:
-1) Question directly answered in docs -> should return accurate answer with source.
-2) Question partially covered -> should return partial answer + caveat.
-3) Question absent from docs -> should abstain instead of hallucinating.
+    example:`Minimal end-to-end test:
+1) Ask a question clearly present in docs.
+2) Verify answer correctness with source.
+3) Ask partially covered question and verify caveats.
+4) Ask unsupported question and verify abstention.
 
-Only after these pass should you optimize retrieval parameters.`,
+Only after this baseline should you start advanced optimization.`,
     animation: "ChunkingVisualizer",
     tool: null,
     interviewPrep: {
@@ -3076,15 +3081,13 @@ Only after these pass should you optimize retrieval parameters.`,
 </ul>
 <p><b>Core lesson:</b> RAG quality grows through small controlled iterations, not one giant rewrite. Each change should be linked to measurable quality gain.</p>
 <p><b>Evaluation emphasis:</b> compare before/after on the same question set to avoid subjective conclusions.</p>`,
-    example: `Iteration comparison:
-Baseline:
-- top-k = 10, no deduplication, generic answer prompt.
-Iteration:
-- top-k = 6, deduplicate by source section, enforce citation-first response format.
+    example:`Incremental improvement cycle:
+1) Start from baseline config.
+2) Tune one parameter (for example top-k).
+3) Compare on fixed eval questions.
+4) Keep or rollback based on measured delta.
 
-Measured effect:
-- Fewer irrelevant citations.
-- Better directness and reduced hallucination in long-tail queries.`,
+Small controlled changes produce reliable quality gains.`,
     animation: "MultiQueryRAGViz",
     tool: null,
     interviewPrep: {
@@ -3125,13 +3128,13 @@ Measured effect:
 <li>Enables time-aware answers (latest policy only).</li>
 </ul>
 <p><b>Design caution:</b> poor metadata hygiene causes silent retrieval errors. Enforce schema at ingestion and validate required fields before index upsert.</p>`,
-    example: `Enterprise HR assistant with metadata filters:
-- Query: "What is leave carry-forward policy for India contractors?"
-- Retriever filter:
-  { region: "IN", employment_type: "contractor", policy_version: "active" }
-- Then semantic similarity search runs only inside filtered subset.
+    example:`Metadata-filtered retrieval:
+1) Query arrives with business context (region/role/version).
+2) Retriever applies metadata filter before semantic ranking.
+3) Candidate set is narrower and safer.
+4) Generation uses only scoped evidence.
 
-Result: higher precision and lower risk of returning policy from wrong region.`,
+This improves precision and prevents cross-scope leakage.`,
     animation: "RetrievalQueryViz",
     tool: null,
     interviewPrep: {
@@ -3166,12 +3169,13 @@ Result: higher precision and lower risk of returning policy from wrong region.`,
 </ul>
 <p><b>Benefits:</b> simpler architecture, easier caching, lower latency, easier observability because each request is independent.</p>
 <p><b>Trade-off:</b> no implicit continuity across turns. If follow-up context is needed, user input must restate context or system must explicitly support short-term context stitching.</p>`,
-    example: `Docs search widget:
-- User asks one isolated question.
-- System retrieves relevant chunks and returns grounded answer with citations.
-- Request completes with no memory state stored.
+    example:`Stateless one-off Q&A flow:
+1) User asks a single isolated question.
+2) Retriever fetches evidence.
+3) Model answers with citations.
+4) Request ends with no persistent chat memory.
 
-If user asks a follow-up, system treats it as new query unless follow-up context is explicitly included.`,
+Great for search widgets and low-latency doc Q&A endpoints.`,
     animation: "RetrievalQueryViz",
     tool: null,
     interviewPrep: {
@@ -3212,11 +3216,13 @@ If user asks a follow-up, system treats it as new query unless follow-up context
 <li>Permission-scoped actions for write operations.</li>
 <li>Trace logging for each decision/action step.</li>
 </ul>`,
-    example: `Travel assistant example:
-- User asks: "Find me the cheapest evening flight and a nearby hotel."
-- Agent reasons that flight search and hotel search tools are required.
-- Calls tools in sequence, observes outputs, then composes final ranked options.
-- If one tool fails, agent falls back with partial answer + explicit limitation note.`,
+    example:`Tool-using agent loop:
+1) Agent interprets objective.
+2) Chooses best tool for missing information.
+3) Executes tool and observes output.
+4) Decides whether to continue or finalize.
+
+Dynamic action selection is useful only when fixed chains are insufficient.`,
     animation: "LangChainArchitectureMap",
     tool: "AgentToolLoopSimulator",
     interviewPrep: {
@@ -3260,13 +3266,14 @@ If user asks a follow-up, system treats it as new query unless follow-up context
 <li>Trace capture for every thought/action/observation step.</li>
 </ul>
 <p><b>Operational insight:</b> an agent is only as reliable as its tool contracts and exit conditions.</p>`,
-    example: `Current-time agent implementation pattern:
-1) User asks "What is current time in London if system is in India?"
-2) Agent reasons it needs a real-time tool call.
-3) Calls get_system_time tool.
-4) Observes returned timestamp.
-5) Performs timezone reasoning and responds.
-6) If tool fails, retries within budget and then returns graceful fallback.`,
+    example:`ReAct-style deep-dive flow:
+1) Agent emits first action from prompt policy.
+2) Runtime executes tool with schema checks.
+3) Observation is appended and re-evaluated.
+4) Loop continues under iteration budget.
+5) Agent emits final answer or safe fallback.
+
+Reliability comes from loop bounds, tool contracts, and trace visibility.`,
     animation: "ChainRoutingPatternsViz",
     tool: "AgentToolLoopSimulator",
     interviewPrep: {
@@ -5003,7 +5010,25 @@ function applyTopicCodeGuides(sectionNodes, sectionId) {
   });
 }
 
-const authoredMlNodes = applyTopicCodeGuides(applyAuthoredInterviewAnswers(mlNodes, "ml"), "ml");
+function applyMlTranscriptDeepening(sectionNodes) {
+  const deepeningByOrder = getMlTranscriptDeepeningByOrder();
+  if (deepeningByOrder.size === 0) return sectionNodes;
+
+  return sectionNodes.map((node) => {
+    if (node.slug === "advanced-placeholder") return node;
+    const deepeningHtml = deepeningByOrder.get(node.order);
+    if (!deepeningHtml || !node.theory) return node;
+    if (node.theory.includes("Transcript Deepening")) return node;
+    return {
+      ...node,
+      theory: `${node.theory}${deepeningHtml}`,
+    };
+  });
+}
+
+const authoredMlNodes = applyMlTranscriptDeepening(
+  applyTopicCodeGuides(applyAuthoredInterviewAnswers(mlNodes, "ml"), "ml")
+);
 const authoredRagNodes = applyTopicCodeGuides(applyAuthoredInterviewAnswers(ragNodes, "rag"), "rag");
 const authoredLangchainNodes = applyTopicCodeGuides(
   applyAuthoredInterviewAnswers(langchainNodes, "langchain"),

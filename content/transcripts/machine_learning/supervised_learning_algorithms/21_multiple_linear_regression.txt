@@ -1,0 +1,274 @@
+# Prompt 21 Week2 Multiple Linear Regression
+
+Next week:
+Multiple features (multivariable linear regression)
+Non-linear curves
+Feature engineering
+Practical ML tips
+Youʼre about to unlock real-world capability.
+Final Intuition Check
+Why does batch gradient descent always move smoothly toward the center of the contour plot instead of
+jumping randomly around it?
+Answer that — I want to see if your optimization intuition is solid.
+Add the notes that are created and I want them to be added in a new
+page (or) folder inside Data Science Module. Can you do that.
+Structure them properly according to the Heading and Sub-heading.
+Give me the plan of action before proceeding
+Hereʼs the plan of action to add your notes as a new page within the Data Science Module and structure
+them by headings and subheadings:
+1. Locate the Data Science Module in Notion:
+Use the Notion search API to find the “Data Science Module” page or folder within your workspace so
+we can work with the correct parent location.
+2. Retrieve Page Details:
+Fetch the details of the Data Science Module to confirm its page ID and ensure it supports subpages
+(which it typically does).
+3. Create a New Page:
+Using the Notion “create page” API, weʼll create a subpage within the Data Science Module. We can
+name it appropriately (e.g. “Machine Learning Notes” or another name you prefer).
+4. Structure and Insert the Notes:
+Populate the new page with the notes content youʼve created, ensuring they follow a clear hierarchy
+of headings and subheadings. This will involve converting your notes into Notionʼs markdown format
+with proper heading tags.
+5. Confirm Completion:
+Once the new page is created and populated, Iʼll confirm itʼs visible within the Data Science Module
+and let you review it.
+Let me know if you have any preferences for the new page name, and Iʼll proceed with locating the Data
+Science Module and creating the notes page.
+Machine Learning Notes ( Coursera ) is preferrable
+I checked the available capabilities of the Notion connector, and currently it only supports searching for
+and fetching pages — it doesnʼt include any functionality to create or update pages. Unfortunately, that
+means I canʼt programmatically create a new page titled “Machine Learning Notes ( Coursera )” inside
+your Data Science Module.
+Hereʼs what I can do: below is a structured compilation of the Machine Learning notes weʼve created
+(organized by session with headings and subheadings). You can copy this into a new page in your “Data
+Science Module” manually, or provide Notion editing access if page creation becomes available in the
+future.
+Session 1 – What is Machine Learning?
+Definition & Overview
+Machine learning teaches computers to learn patterns from data rather than explicit rules.
+Everyday examples: search result ranking, face tagging, movie recommendations, voice
+assistants, spam filtering.
+Simple vs Technical Explanation
+Simple: letting computers learn from practice data.
+Technical: training a model to map input data to outputs (x → y).
+Importance
+Enables tasks that are impossible to hard-code, such as recognizing cats or detecting spam.
+Session 2 – Why ML Is Widely Used & Why It Matters
+Manual vs Learned Rules
+Some problems (sorting) have explicit rules; others (speech recognition) require learned
+patterns.
+Examples from Industry
+Speech recognition, mapping, fraud detection, self-driving cars, and industrial inspection use
+ML.
+Artificial General Intelligence (AGI)
+ML today is “narrow AI”; general human-level intelligence remains far off.
+Economic Impact
+ML is projected to generate trillions in value across healthcare, manufacturing, finance, and other
+sectors.
+Session 3 – Defining Machine Learning & Types Overview
+Formal Definition
+ML is “the field of study that gives computers the ability to learn without being explicitly
+programmed.”
+Learning involves experience (E), task (T), and performance (P).
+Supervised vs Unsupervised
+Supervised learning uses labeled data (x, y) pairs.
+Unsupervised learning uses unlabeled data to discover patterns.
+Session 4 – Supervised Learning (Regression)
+Regression Explained
+Predicts continuous values (house prices, temperatures).
+Basic example: fitting a line to house size vs price.
+Terminology
+Input feature: x; Output/target: y; Training set: collection of (x, y).
+Model parameters (w, b) define the line: f(x) = wx + b.
+Importance of Generalization
+The goal is not memorizing training data, but performing well on unseen data.
+Session 5 – Classification
+Binary & Multi-class Classification
+Predicts categories (e.g., benign vs malignant).
+Uses decision boundaries to separate classes.
+Multiple Features
+Real-world models use multiple inputs (age, tumor thickness) to improve predictions.
+Session 6 – Unsupervised Learning & Clustering
+Clustering
+Groups similar data points; examples: news article clustering, genetic data segmentation,
+customer segmentation.
+When to Use It
+Use when labels are unavailable and you need to explore structure in the data.
+Session 7 – Formal Unsupervised Learning, Anomaly Detection & Dimensionality
+Reduction
+Anomaly Detection
+Identifies unusual data points (fraud, defects).
+Dimensionality Reduction
+Compresses high-dimensional data while preserving key information.
+Session 8 – Jupyter Notebooks & Labs
+Interactive Environment
+Jupyter notebooks allow mixing code with text, running experiments line by line.
+Optional & Practice Labs
+Optional labs let you run provided code; practice labs let you write code yourself.
+Session 9 – Linear Regression Pipeline
+Process
+Collect training data → choose model → train model → evaluate → deploy.
+Model Parameters
+Notation for examples (x^(i), y^(i)) and number of examples (m).
+Session 10 – Supervised Learning Pipeline & Model Representation
+Model as a Function
+The model f(x) produces an estimate ŷ; the true value is y.
+Parameters as Variables
+w controls slope; b controls intercept.
+Session 11 – Cost Function & Linear Regression
+Squared Error Cost
+J(w, b) = (1/2m) ∑ (f(x^(i)) − y^(i))².
+Parameters (w, b)
+Finding the best w and b minimizes the cost.
+Session 12 – Cost Function Intuition
+Visual Example
+A simplified cost plot shows how different slopes affect error.
+Goal: choose w and b that minimize the cost.
+Session 13 – Visualizing the Cost Function in 3D & Contours
+3D Surface & Contour Plots
+In 3D, J(w, b) looks like a bowl; a contour plot shows “height rings.”
+The lowest point (center) is the global minimum.
+Session 14 – Relationship Between (w, b), Model & Cost
+Examples
+Poor choices of (w, b) correspond to lines far from data points and high cost.
+Near the minimum, the line fits well and cost is low.
+Session 15 – Gradient Descent Concept
+Analogy
+Imagine being on a hill and taking steps downhill in the steepest direction.
+Local vs Global Minimum
+Non-convex functions can have multiple valleys; linear regressionʼs squared error cost is convex.
+Session 16 – Gradient Descent Update Rule & Learning Rate
+Update Equations
+w := w − α (∂J/∂w); b := b − α (∂J/∂b).
+Learning Rate (α)
+Controls step size; too small → slow convergence; too large → overshooting or divergence.
+Simultaneous Updates
+Update w and b together using their old values.
+Session 17 – Intuition for the Derivative
+Derivative Sign
+Positive derivative means slope is upward → decrease w; negative → increase w.
+Convergence
+Near the minimum, the derivative approaches zero and updates become tiny.
+Session 18 – Choosing the Learning Rate
+Too Small vs Too Large
+Too small: very slow progress. Too large: oscillation and divergence.
+Fixed Rate Works
+Because gradients shrink near the minimum, even a fixed α leads to convergence.
+Session 19 – Final Linear Regression Algorithm
+Derivatives
+∂J/∂w = (1/m) ∑ (f(x^(i)) − y^(i)) x^(i)
+∂J/∂b = (1/m) ∑ (f(x^(i)) − y^(i))
+Batch Gradient Descent
+Uses all training examples at every update step; guaranteed global minimum for convex cost.
+Session 20 – Gradient Descent Demonstration
+Visualization
+Shows parameters moving along the contour plot toward the global minimum.
+Batch vs Stochastic
+Batch uses the entire dataset; stochastic uses one example per update (not covered here).
+Although I canʼt add this directly into Notion for you, you can use the above as the content for a new page
+titled Machine Learning Notes ( Coursera ) inside your “Data Science Module.” Let me know if thereʼs
+anything else I can help with!
+Welcome back. In this week, we'll learn to make linear regression
+much faster and much more powerful, and by the end of this week,
+you'll be two thirds of the way to finishing this first course. Let's start
+by looking at the version of linear regression that look at not just one
+feature, but a lot of different features. Let's take a look. In the original
+version of linear regression, you had a single feature x, the size of the
+house and you're able to predict y, the price of the house. The model
+was fwb of x equals wx plus b. But now, what if you did not only have
+the size of the house as a feature with which to try to predict the
+price, but if you also knew the number of bedrooms, the number of
+floors and the age of the home in years.
+It seems like this would give you a lot more information with which to
+predict the price. To introduce a little bit of new notation, we're going
+to use the variables X_1, X_2, X_3 and X_4, to denote the four
+features. For simplicity, let's introduce a little bit more notation. We'll
+write X subscript j or sometimes I'll just say for short, X sub j, to
+represent the list of features. Here, j will go from one to four, because
+we have four features. I'm going to use lowercase n to denote the
+total number of features, so in this example, n is equal to 4. As before,
+we'll use X superscript i to denote the ith training example.
+Here X superscript i is actually going to be a list of four numbers, or
+sometimes we'll call this a vector that includes all the features of the
+ith training example. As a concrete example, X superscript in
+parentheses 2, will be a vector of the features for the second training
+example, so it will equal to this 1416, 3, 2 and 40 and technically, I'm
+writing these numbers in a row, so sometimes this is called a row
+vector rather than a column vector. But if you don't know what the
+difference is, don't worry about it, it's not that important for this
+purpose. To refer to a specific feature in the ith training example, I will
+write X superscript i, subscript j, so for example, X superscript 2
+subscript 3 will be the value of the third feature, that is the number of
+floors in the second training example and so that's going to be equal
+to 2. Sometimes in order to emphasize that this X^2 is not a number
+but is actually a list of numbers that is a vector, we'll draw an arrow on
+top of that just to visually show that is a vector and over here as well,
+but you don't have to draw this arrow in your notation. You can think
+of the arrow as an optional signifier. They're sometimes used just to
+emphasize that this is a vector and not a number.
+Now that we have multiple features, let's take a look at what a model
+would look like. Previously, this is how we defined the model, where X
+was a single feature, so a single number. But now with multiple
+features, we're going to define it differently. Instead, the model will
+be, fwb of X equals w1x1 plus w2x2 plus w3x3 plus w4x4 plus b.
+Concretely for housing price prediction, one possible model may be
+that we estimate the price of the house as 0.1 times X_1, the size of
+the house, plus four times X_2, the number of bedrooms, plus ten
+times X_3, the number of floors, minus 2 times X_4, the age of the
+house in years plus 80. Let's think a bit about how you might interpret
+these parameters. If the model is trying to predict the price of the
+house in thousands of dollars, you can think of this b equals 80 as
+saying that the base price of a house starts off at maybe $80,000,
+assuming it has no size, no bedrooms, no floor and no age.
+You can think of this 0.1 as saying that maybe for every additional
+square foot, the price will increase by 0.1 $1,000 or by $100, because
+we're saying that for each square foot, the price increases by 0.1,
+times $1,000, which is $100. Maybe for each additional bathroom, the
+price increases by $4,000 and for each additional floor the price may
+increase by $10,000 and for each additional year of the house's age,
+the price may decrease by $2,000, because the parameter is negative
+2. In general, if you have n features, then the model will look like this.
+Here again is the definition of the model with n features. What we're
+going to do next is introduce a little bit of notation to rewrite this
+expression in a simpler but equivalent way. Let's define W as a list of
+numbers that list the parameters W_1, W_2, W_3, all the way through
+W_n. In mathematics, this is called a vector and sometimes to
+designate that this is a vector, which just means a list of numbers, I'm
+going to draw a little arrow on top.
+You don't always have to draw this arrow and you can do so or not in
+your own notation, so you can think of this little arrow as just an
+optional signifier to remind us that this is a vector. If you've taken the
+linear algebra class before, you might recognize that this is a row
+vector as opposed to a column vector. But if you don't know what
+those terms means, you don't need to worry about it. Next, same as
+before, b is a single number and not a vector and so this vector W
+together with this number b are the parameters of the model. Let me
+also write X as a list or a vector, again a row vector that lists all of the
+features X_1, X_2, X_3 up to X_n, this is again a vector, so I'm going
+to add a little arrow up on top to signify. In the notation up on top, we
+can also add little arrows here and here to signify that that W and that
+X are actually these lists of numbers, that they're actually these
+vectors. With this notation, the model can now be rewritten more
+succinctly as f of x equals, the vector w dot and this dot refers to a
+dot product from linear algebra of X the vector, plus the number b.
+What is this dot product thing? Well, the dot products of two vectors
+of two lists of numbers W and X, is computed by checking the
+corresponding pairs of numbers, W_1 and X_1 multiplying that, W_2
+X_2 multiplying that, W_3 X_3 multiplying that, all the way up to W_n
+and X_n multiplying that and then summing up all of these products.
+Writing that out, this means that the dot products is equal to W_1X_1
+plus W_2X_2 plus W_3X_3 plus all the way up to W_nX_n. Then
+finally we add back in the b on top. You notice that this gives us
+exactly the same expression as we had on top. The dot traffic
+notation lets you write the model in a more compact form with fewer
+characters. The name for this type of linear regression model with
+multiple input features is multiple linear regression.
+This is in contrast to univariate regression, which has just one feature.
+By the way, you might think this algorithm is called multivariate
+regression, but that term actually refers to something else that we
+won't be using here. I'm going to refer to this model as multiple linear
+regression. That's it for linear regression with multiple features, which
+is also called multiple linear regression. In order to implement this,
+there's a really neat trick called vectorization, which will make it much
+simpler to implement this and many other learning algorithms. Let's
+go on to the next video to take a look at what is vectorization.

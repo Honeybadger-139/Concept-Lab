@@ -10,6 +10,7 @@
  *   2. Create a new node array and spread it into `nodes` at the bottom.
  */
 import { authoredInterviewAnswers } from "./authoredInterviewAnswers.js";
+import { topicCodeGuides } from "./topicCodeGuides.js";
 
 // ─────────────────────────────────────────────────────────
 // SECTIONS
@@ -4722,9 +4723,24 @@ function applyAuthoredInterviewAnswers(sectionNodes, sectionId) {
   });
 }
 
-const authoredMlNodes = applyAuthoredInterviewAnswers(mlNodes, "ml");
-const authoredRagNodes = applyAuthoredInterviewAnswers(ragNodes, "rag");
-const authoredLangchainNodes = applyAuthoredInterviewAnswers(langchainNodes, "langchain");
+function applyTopicCodeGuides(sectionNodes, sectionId) {
+  return sectionNodes.map((node) => {
+    const key = `${sectionId}/${node.slug}`;
+    const codeGuide = topicCodeGuides[key];
+    if (!codeGuide) return node;
+    return {
+      ...node,
+      codeGuide,
+    };
+  });
+}
+
+const authoredMlNodes = applyTopicCodeGuides(applyAuthoredInterviewAnswers(mlNodes, "ml"), "ml");
+const authoredRagNodes = applyTopicCodeGuides(applyAuthoredInterviewAnswers(ragNodes, "rag"), "rag");
+const authoredLangchainNodes = applyTopicCodeGuides(
+  applyAuthoredInterviewAnswers(langchainNodes, "langchain"),
+  "langchain"
+);
 const langGraphCanonicalTopicMap = Object.freeze({
   "01-introduction": { order: 1, title: "Introduction" },
   "02-levels-of-autonomy-llm-applications": { order: 2, title: "Levels of Autonomy in LLM applications" },
@@ -4774,8 +4790,14 @@ const canonicalLangGraphNodes = langGraphNodes
     };
   });
 
-const authoredLangGraphNodes = applyAuthoredInterviewAnswers(canonicalLangGraphNodes, "langgraph");
-const authoredAdvancedNodes = applyAuthoredInterviewAnswers(advancedNodes, "ml");
+const authoredLangGraphNodes = applyTopicCodeGuides(
+  applyAuthoredInterviewAnswers(canonicalLangGraphNodes, "langgraph"),
+  "langgraph"
+);
+const authoredAdvancedNodes = applyTopicCodeGuides(
+  applyAuthoredInterviewAnswers(advancedNodes, "ml"),
+  "ml"
+);
 
 // ─────────────────────────────────────────────────────────
 // COMBINED EXPORTS

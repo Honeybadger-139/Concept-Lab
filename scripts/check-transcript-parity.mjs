@@ -3,7 +3,10 @@ import path from "node:path";
 
 const ROOT = process.cwd();
 const CURRICULUM_PATH = path.join(ROOT, "data", "curriculumData.js");
-const TRANSCRIPTS_DIR = path.join(ROOT, "transcripts");
+const TRANSCRIPT_DIR_CANDIDATES = [
+  path.join(ROOT, "transcripts"),
+  path.join(ROOT, "scratch_pad", "transcripts"),
+];
 
 const SECTION_FROM_TRANSCRIPT_TOP = Object.freeze({
   machine_learning: "ml",
@@ -58,8 +61,17 @@ function normalizeSlug(raw) {
 
 function getTranscriptTopics() {
   const rows = [];
-  for (const top of fs.readdirSync(TRANSCRIPTS_DIR)) {
-    const topPath = path.join(TRANSCRIPTS_DIR, top);
+  const transcriptsDir = TRANSCRIPT_DIR_CANDIDATES.find((dir) => fs.existsSync(dir));
+  if (!transcriptsDir) {
+    throw new Error(
+      `No transcripts directory found. Checked: ${TRANSCRIPT_DIR_CANDIDATES
+        .map((d) => path.relative(ROOT, d))
+        .join(", ")}`
+    );
+  }
+
+  for (const top of fs.readdirSync(transcriptsDir)) {
+    const topPath = path.join(transcriptsDir, top);
     if (!fs.statSync(topPath).isDirectory()) continue;
     const sectionId = SECTION_FROM_TRANSCRIPT_TOP[top];
     if (!sectionId) continue;
@@ -91,7 +103,7 @@ function getTranscriptTopics() {
     }
   }
   rows.sort((a, b) => a.sectionId.localeCompare(b.sectionId) || a.order - b.order);
-  return rows;
+  return { rows, transcriptsDir };
 }
 
 function getCurriculumNodes() {
@@ -161,7 +173,7 @@ function parityForSection(sectionId, transcripts, curriculum) {
 }
 
 function main() {
-  const transcripts = getTranscriptTopics();
+  const { rows: transcripts, transcriptsDir } = getTranscriptTopics();
   const allNodes = getCurriculumNodes();
 
   const canonicalLangGraph = getLangGraphCanonicalRowsIfPresent();
@@ -194,6 +206,7 @@ function main() {
     process.exitCode = 1;
     return;
   }
+  console.log(`Using transcripts from: ${path.relative(ROOT, transcriptsDir)}`);
   console.log("Parity check passed.");
 }
 

@@ -176,6 +176,35 @@ export default async function NodePage({ params }) {
               </section>
             )}
 
+            {/* ── Code walkthrough ── */}
+            {node.codeGuide && (
+              <section className={`nodeBlock ${styles.codeBlock}`}>
+                <h2>💻 Code Walkthrough</h2>
+                {node.codeGuide.summary && (
+                  <p className={styles.codeIntro}>{node.codeGuide.summary}</p>
+                )}
+                {Array.isArray(node.codeGuide.files) && node.codeGuide.files.length > 0 && (
+                  <div className={styles.codeFiles}>
+                    {node.codeGuide.files.map((entry, index) => (
+                      <article key={`${entry.path}-${index}`} className={styles.codeFileCard}>
+                        <p className={styles.codePath}>
+                          <code>{entry.path}</code>
+                        </p>
+                        {entry.focus && <p className={styles.codeFocus}>{entry.focus}</p>}
+                      </article>
+                    ))}
+                  </div>
+                )}
+                {Array.isArray(node.codeGuide.checkpoints) && node.codeGuide.checkpoints.length > 0 && (
+                  <ol className={styles.codeChecklist}>
+                    {node.codeGuide.checkpoints.map((checkpoint, index) => (
+                      <li key={index}>{checkpoint}</li>
+                    ))}
+                  </ol>
+                )}
+              </section>
+            )}
+
             {/* ── Interview Prep ── */}
             {node.interviewPrep?.questions?.length > 0 && (
               <section className={`nodeBlock ${styles.interviewBlock}`}>

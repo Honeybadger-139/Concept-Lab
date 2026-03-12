@@ -1,0 +1,86 @@
+[00:00:00] so in this section we'll see how we can
+[00:00:02] actually extend the chains that we have
+[00:00:04] written so far and how we can
+[00:00:05] continually add on more and more
+[00:00:07] runnables so I've already populated the
+[00:00:10] code as you can see right here we are
+[00:00:12] working with the same prompt uh as the
+[00:00:14] previous section but I've just given it
+[00:00:15] a slightly better name I've also added a
+[00:00:18] few more prompts here but actually let's
+[00:00:21] just go to the chain itself right here
+[00:00:24] and see what we're doing we'll take it
+[00:00:25] from the ground up okay so the first
+[00:00:27] three runnables we've already uh done
+[00:00:29] right uh so basically we're just going
+[00:00:31] to uh we just have the first prompt
+[00:00:33] which is going to tell the model to
+[00:00:34] generate a certain number of facts about
+[00:00:37] a certain animal right so in this case
+[00:00:39] two facts about cats and uh we're
+[00:00:42] extracting the content alone right here
+[00:00:44] okay great so now we have two facts so
+[00:00:47] what next so let's say based on my use
+[00:00:50] case I run a French Twitter page and
+[00:00:53] actually not an English Twitter page
+[00:00:54] right but the response that we would
+[00:00:56] have gotten from the model is going to
+[00:00:58] be in English right so now the next
+[00:01:00] thing that I want to do is send that
+[00:01:02] text to an llm and ask the llm to
+[00:01:05] convert it into French okay so to hit
+[00:01:07] that llm what do we want to do before
+[00:01:09] that we want to always do one thing
+[00:01:11] right we need a prompt template that is
+[00:01:14] going to tell the llm to translated to a
+[00:01:16] certain language right so what input
+[00:01:19] does the prompt template require it
+[00:01:21] requires an object like this to be
+[00:01:22] passed into it right a prompt template
+[00:01:25] always requires an object that needs to
+[00:01:27] be passed into it right but is the
+[00:01:30] result of this string output parser an
+[00:01:33] object of course not right it only has
+[00:01:35] the content string right so we need to
+[00:01:37] prepare the input so that we can
+[00:01:39] actually prepare the uh prepare to pass
+[00:01:41] it inside of the prom template right so
+[00:01:44] what we've done here is that we have
+[00:01:45] written a runnable called prepare for
+[00:01:48] translation that takes the output of the
+[00:01:51] previous task and then uh you can see it
+[00:01:53] also provides the output as well as the
+[00:01:55] language and then returns it as an
+[00:01:58] object to the next task right so now
+[00:02:00] that object goes inside of the prompt
+[00:02:02] template okay it says that you're a
+[00:02:05] translator and your job is to convert
+[00:02:07] the text to a certain language so we
+[00:02:10] have provided the text as well as the
+[00:02:12] language in the object now the final
+[00:02:14] prompt will be generated as well right
+[00:02:17] so now that the prompt is now sent to
+[00:02:18] the model which now gets invoked and we
+[00:02:21] finally get the content printed to the
+[00:02:23] console right so that is how simple it
+[00:02:26] is let's actually run this file so I'm
+[00:02:27] just going to go ahead and click on the
+[00:02:29] Run button all right we can see that it
+[00:02:30] is starting to execute let's give it a
+[00:02:32] couple of seconds and perfect so you can
+[00:02:35] see that we have two facts about cats in
+[00:02:38] French I can't read it either and we can
+[00:02:41] even further extend this right so we can
+[00:02:43] create another runnable which is now
+[00:02:45] going to talk to the Twitter API right
+[00:02:47] and then post it post that particular
+[00:02:49] fact as a post as a Twitter post
+[00:02:51] basically right so you can see that sky
+[00:02:55] is the limit when it comes to working
+[00:02:56] with chains right we can keep on adding
+[00:02:58] more and more chain chains sequentially
+[00:03:00] in a straight line right so that is what
+[00:03:04] sequential chaining is in a nutshell so
+[00:03:06] in the next section we'll actually be
+[00:03:08] looking at a type of chaining called
+[00:03:09] parallel chaining so I'll see you there

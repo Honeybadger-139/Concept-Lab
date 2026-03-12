@@ -1,0 +1,179 @@
+[00:00:00] hello guys in this section let us
+[00:00:01] actually start working with Lang chains
+[00:00:03] chat models so since we are going to be
+[00:00:06] predominantly working with open AI apis
+[00:00:09] I'm going to go ahead and install the
+[00:00:10] chart model related to the open AI right
+[00:00:14] so if you look at this this is what we
+[00:00:16] need right chat open AI so if I click on
+[00:00:21] it and if I scroll down here you can see
+[00:00:24] that this is the command that we have to
+[00:00:25] use to install this particular package
+[00:00:27] right so we have to install this package
+[00:00:30] L chain Das open aai so let me copy this
+[00:00:34] come down to my terminal in vs
+[00:00:36] code and uh let me install it okay it's
+[00:00:40] not installing because uh yeah we have
+[00:00:43] to remove this particular percentage
+[00:00:46] sign all right now it should install
+[00:00:50] let's give it a few seconds and perfect
+[00:00:52] it has successfully installed right so
+[00:00:55] let's actually go ahead and import this
+[00:00:57] particular chart model in our file I'm
+[00:01:00] going to say from longchain open AI so
+[00:01:04] this is the module and from this module
+[00:01:06] we want to import the chat open AI class
+[00:01:11] so this is what we need so we can now go
+[00:01:14] ahead and initialize our model so we can
+[00:01:16] call this llm or model or whatever you
+[00:01:18] prefer so we can say chat open Ai and we
+[00:01:23] want to use a certain model right so we
+[00:01:25] can pass in this particular keyword
+[00:01:27] parameter and the model that I want to
+[00:01:29] use for this this particular uh example
+[00:01:32] is going to be gbt 40 right and uh I'm
+[00:01:36] using this particular model because this
+[00:01:38] is kind of the latest model that's been
+[00:01:40] released by open aai and usually the
+[00:01:43] latest models can be a little bit
+[00:01:44] expensive because they are the most
+[00:01:46] advanced model but uh if you're a little
+[00:01:49] short on cash you can go you can always
+[00:01:51] go with GPD 3.5 or GPD 4 even so now
+[00:01:54] that we have used a chat model to
+[00:01:56] initialize an llm for us so this is the
+[00:01:59] variable that we are going to be using
+[00:02:01] to sort of communicate with open ai's
+[00:02:03] apis so to make an API call to open AI
+[00:02:08] we can just say llm do
+[00:02:11] invoke okay so we can pass in any string
+[00:02:14] that we want inside of this just
+[00:02:16] remember that anytime that we want to
+[00:02:18] make any sort of calls to the llm just
+[00:02:21] remember that this is going to be the
+[00:02:22] magic keyword that you have to remember
+[00:02:24] invoke right so this is going to be used
+[00:02:27] throughout the rest of the course in
+[00:02:28] rags it's going to be used used in a lot
+[00:02:30] of other sections as well so just
+[00:02:32] remember that this is going to be the
+[00:02:34] magic keyword in voke right so I can ask
+[00:02:38] pretty much any question that I want
+[00:02:40] right here so I can say something like
+[00:02:42] let's say what is the square root of
+[00:02:47] 49 right what I'm going to now do is I'm
+[00:02:50] going to store the result of this llm
+[00:02:53] response the API response inside of this
+[00:02:55] particular variable and I'm also going
+[00:02:57] to print this result
+[00:03:01] all right so now what I'm going to do is
+[00:03:03] I'm going to hit run let's see what
+[00:03:06] happens okay so we are getting an error
+[00:03:09] here and it says that the API key is
+[00:03:11] missing right so we have completely
+[00:03:13] forgotten to provide the API key so
+[00:03:15] let's actually quickly go ahead and
+[00:03:17] create an EnV file in The Parent
+[00:03:18] Directory right here and uh what should
+[00:03:22] be the name of the API key right so what
+[00:03:25] should be the key name right so you can
+[00:03:28] see that if I go inside of this
+[00:03:29] particular model chat open AI chat model
+[00:03:33] if I go inside of here you can see that
+[00:03:35] it automatically requires this
+[00:03:37] particular open AI API key to be
+[00:03:40] available globally right so what I can
+[00:03:43] do is I can go inside of the EnV file
+[00:03:47] put this thing here and I'm going to
+[00:03:49] copy paste my API key that I just copied
+[00:03:52] from open AI dashboard right here so I'm
+[00:03:55] going to paste this right here perfect
+[00:03:58] now if I come back to this file and if I
+[00:03:59] try to run it we're still going to get
+[00:04:01] the same API key error and that is
+[00:04:03] because just because we have created it
+[00:04:06] here does not mean that this file has
+[00:04:09] access to this particular key okay we
+[00:04:11] still have to explicitly provide the um
+[00:04:15] sort of access into all the contents of
+[00:04:18] this specifically inside of this
+[00:04:19] particular file so to do that we have to
+[00:04:22] install another package so the name of
+[00:04:25] the package is PIP install python Das do
+[00:04:30] EnV okay so it looks like it's been
+[00:04:33] installed so I'm going to come up here
+[00:04:35] and I'm going to say EnV import load.
+[00:04:40] EnV okay so this is the library and this
+[00:04:43] is what we want to import this is going
+[00:04:45] to be a method so to make the contents
+[00:04:47] of the EnV file available inside of this
+[00:04:50] file all that we have to do is
+[00:04:52] initialize or basically call this
+[00:04:54] particular method okay all right perfect
+[00:04:58] that's pretty much it so if I now again
+[00:05:01] run this particular
+[00:05:03] file you can see that we finally get the
+[00:05:07] entire response so we have the content
+[00:05:09] it says that the square root of 49 is 7
+[00:05:12] we've also got additional key arguments
+[00:05:14] we've also got response metata and a lot
+[00:05:16] of other things and just one more thing
+[00:05:18] if you're not able to see the response
+[00:05:20] down here in case opena is not letting
+[00:05:22] you access their apis it it's probably
+[00:05:25] because you don't have enough balance so
+[00:05:28] if you search in the terminal in the
+[00:05:30] error message you might probably find
+[00:05:32] that your balance is a little low so to
+[00:05:34] fix that it's pretty simple so just come
+[00:05:37] back to platform.
+[00:05:39] open.com and then uh go into settings
+[00:05:42] right here and uh go into billing and
+[00:05:46] you can just do a little bit of topup so
+[00:05:48] the least amount of uh money that open
+[00:05:51] AI accepts is $5 so since we're just
+[00:05:54] learning things you can just go for the
+[00:05:55] $5 it is probably going to last you a
+[00:05:58] couple of months so don't don't worry so
+[00:06:00] this contains a lot of additional data
+[00:06:02] as to you know how much tokens have been
+[00:06:05] consumed and a lot of other data but we
+[00:06:06] don't really need any of this we just
+[00:06:08] want this particular content uh property
+[00:06:11] inside of this entire object so what I
+[00:06:14] can instead do is I can just say result.
+[00:06:17] content so anytime that I'm making a
+[00:06:19] call to the llm the result that I'm
+[00:06:20] going to be getting is going to have all
+[00:06:22] of this chunk but the only thing that I
+[00:06:25] I'm interested in is the content
+[00:06:27] parameter or the property right so let
+[00:06:30] me just clear this out uh and then run
+[00:06:32] it again for you
+[00:06:33] guys so you can see that all right the
+[00:06:37] square root of 49 is 7 right so that is
+[00:06:40] how simple it is to use Lang chains chat
+[00:06:42] models in order to communicate with
+[00:06:45] pretty much any API that you want out
+[00:06:47] there so right now we're just working
+[00:06:48] with open AI API and uh this is
+[00:06:51] basically just an interface that lets us
+[00:06:53] access that particular API and this is
+[00:06:55] how simple it is we are just going to
+[00:06:57] provide whichever model that we want to
+[00:07:00] access on open AI side so if we want 3.5
+[00:07:04] let's say we can use that as well if you
+[00:07:05] want four we can access that as well so
+[00:07:08] in this section we just passed in a very
+[00:07:09] simple prompt to the llm saying what is
+[00:07:12] the square root of 49 in the next
+[00:07:14] section I want to send the llm an entire
+[00:07:17] conversation history right for example
+[00:07:19] the human said this thing the AI said
+[00:07:21] this thing the human said this thing so
+[00:07:23] basically the entire history is what I
+[00:07:25] want to send to the llm so that it is
+[00:07:27] able to better give responses because it
+[00:07:29] has the uh awareness of what happened
+[00:07:32] before right so we will see how to do
+[00:07:34] that in the next section

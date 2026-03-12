@@ -1,0 +1,38 @@
+[00:00:00] so now that we know what embeddings are
+[00:00:02] and what Vector databases are let's
+[00:00:04] actually continue with the flow so we
+[00:00:06] have split the big document or a huge
+[00:00:08] book or pretty much anything into
+[00:00:09] several chunks right here which is going
+[00:00:11] to be the first step the second step we
+[00:00:13] are converting each of those chunks into
+[00:00:15] Vector embeddings remember Vector
+[00:00:18] embeddings are mathematical
+[00:00:20] representation of texts in the chunks
+[00:00:22] all right so how can we convert it we
+[00:00:25] can use the llm embedders and again
+[00:00:27] there's a lot out there but open AI
+[00:00:30] provides us with an embedder API that
+[00:00:32] lets you convert simple text into
+[00:00:34] embeddings and that's exactly what we're
+[00:00:36] going to be using in this course as well
+[00:00:38] so once we've converted it we are then
+[00:00:40] going to have all the emings for each of
+[00:00:43] the chunks and finally we are going to
+[00:00:45] store all of that in the vector store
+[00:00:48] all right so note that we store the
+[00:00:50] actual plain text plus the embedded
+[00:00:52] version of each of the chunk okay so
+[00:00:55] it's each of the Chunk in the vector
+[00:00:57] store is going to have the embedded
+[00:00:58] version as well as the plain text
+[00:01:00] version as well right so now our entire
+[00:01:03] book or PDF or just pretty much any
+[00:01:05] private data is completely present in
+[00:01:08] our Vector store right so because of
+[00:01:10] this we can now query only the relevant
+[00:01:12] chunks based on the user uh question and
+[00:01:15] then get back the actual text right so
+[00:01:17] this brings us to the second um part of
+[00:01:20] the workflow so we'll explore that in
+[00:01:22] the next section

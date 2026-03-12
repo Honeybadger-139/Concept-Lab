@@ -1,0 +1,81 @@
+[00:00:00] okay so in this section we're going to
+[00:00:01] be talking about embeddings as well as
+[00:00:03] Vector databases right so basically they
+[00:00:06] work together so let's actually start
+[00:00:08] with embeddings what are they so to put
+[00:00:11] it very simply a vector embedding is a
+[00:00:14] mathematical representation of words
+[00:00:17] sentences or even images so for example
+[00:00:20] the word cat can have a vector embedding
+[00:00:22] that can look something like this right
+[00:00:25] so this is the computer's way of making
+[00:00:28] sense of the word cat but what exactly
+[00:00:31] are these numbers right and uh just for
+[00:00:34] your information this is how chat GPT
+[00:00:36] Works under the hood as well right so
+[00:00:39] it's going to be pretty interesting so
+[00:00:41] basically each of these numbers can
+[00:00:43] represent a certain aspect of the word
+[00:00:45] cat so the first number here in the
+[00:00:48] array could represent the size of the C
+[00:00:51] okay so if there was a similar
+[00:00:53] representation of the word let's say
+[00:00:54] kitten then the first value of the
+[00:00:57] kitten Vector embedding would be closer
+[00:00:59] to 34 right because they are with
+[00:01:02] regards to size they are much similar
+[00:01:04] right compare that to let's say an
+[00:01:07] elephant uh the embedding for the
+[00:01:10] elephant uh the first number can be much
+[00:01:12] more farther away from 34 because the
+[00:01:16] sizes are very different right now uh we
+[00:01:19] can think of the same thing for the
+[00:01:20] second number as well so let's say the
+[00:01:22] second number might represent whether it
+[00:01:24] is a pet or not right so if we vectorize
+[00:01:27] the word dog then the second value in
+[00:01:29] the Vector would be closer to this
+[00:01:31] because both cats as well as dogs are
+[00:01:33] pets so it's going to be closer now
+[00:01:37] picture this all right picture this each
+[00:01:39] of the values are actual coordinates in
+[00:01:42] a multi-dimensional space okay so let's
+[00:01:45] take a very simple example in the form
+[00:01:47] of a 2d graph we know that the words cat
+[00:01:50] and kitten are almost similar in meaning
+[00:01:53] and their Vector coordinates are also
+[00:01:54] very similar right so this is why we see
+[00:01:57] the words cat and kitten closer to
+[00:01:59] together in the map and is farther away
+[00:02:02] from something like mango because all
+[00:02:04] the coordinates are going to be
+[00:02:06] different because in every almost every
+[00:02:08] single aspect they are uh different from
+[00:02:10] each other right but this is just a very
+[00:02:13] simple 2D map example all right but in
+[00:02:15] reality though the vector has hundreds
+[00:02:18] of Dimensions that has some information
+[00:02:21] about the relationship between words and
+[00:02:23] sentences and etc etc so basically words
+[00:02:26] and sentences with similar meaning hang
+[00:02:28] out together like right here and then
+[00:02:31] something unrelated will be farther away
+[00:02:33] from it so once we create a vector
+[00:02:35] embedding we can then store it in a
+[00:02:37] database a database built to store all
+[00:02:39] of the vector embeddings is considered a
+[00:02:41] vector database right so what do
+[00:02:43] databases do right it basically lets us
+[00:02:46] retrieve information or update
+[00:02:48] information or do something like that
+[00:02:49] right so as you can imagine this Vector
+[00:02:51] database as well it enables us to
+[00:02:54] retrieve information based on meaning
+[00:02:56] rather than exact word matches right so
+[00:02:59] hope that you're starting to understand
+[00:03:01] what Vector databases are and embeddings
+[00:03:04] are so let's actually now jump back to
+[00:03:07] what we were doing in the previous
+[00:03:08] section which is Rags right so let us
+[00:03:10] see how all these Concepts sort of play
+[00:03:11] out there so I'll see you there

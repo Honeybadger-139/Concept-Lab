@@ -1,0 +1,113 @@
+[00:00:00] hello everybody in this section uh we're
+[00:00:02] going to start looking at the fourth
+[00:00:04] component of lank chain called Rags or
+[00:00:06] retrieval augmented generation so in my
+[00:00:09] opinion I feel the drags is a pretty
+[00:00:11] misunderstood topic because it can be a
+[00:00:14] little tricky for beginners to
+[00:00:16] understand especially if you are
+[00:00:17] completely new to the concepts like
+[00:00:19] embeddings and Vector databases all
+[00:00:21] right but don't worry we are going to be
+[00:00:23] taking it slow step by step all right so
+[00:00:27] what is rags and what is the problem
+[00:00:28] that it solves right
+[00:00:30] so to answer the question Rags solve
+[00:00:33] just one problem with llms okay just one
+[00:00:37] problem and that is giving llms
+[00:00:39] additional knowledge just remember that
+[00:00:42] for now okay it gives llms additional
+[00:00:44] knowledge or in other words Rags
+[00:00:46] basically just provide an external
+[00:00:48] source of information to llms so that
+[00:00:50] llms can better answer the users
+[00:00:52] questions so this is the first problem
+[00:00:54] that it solves right so if you don't
+[00:00:57] understand it let's explore a very
+[00:00:58] simple example so let's say you work at
+[00:01:00] a company with hundreds of internal
+[00:01:02] documents right let's say things like
+[00:01:04] policy guidelines technical specs
+[00:01:06] customer support documents right so
+[00:01:08] these are private documents that the llm
+[00:01:10] does not know okay just know that now
+[00:01:12] let's say you have a question that could
+[00:01:14] be answered by any one of these
+[00:01:16] documents right what you would normally
+[00:01:18] do without AI what you would normally do
+[00:01:20] is you would basically normally comb
+[00:01:22] through each and every single document
+[00:01:24] trying to find your answer or you would
+[00:01:25] just ask a colleague or something right
+[00:01:27] but with AI and with Rags especially we
+[00:01:31] can really streamline this entire
+[00:01:33] process right so what you're going to do
+[00:01:35] is instead of going through all the
+[00:01:37] files manually by yourself right that
+[00:01:40] which is like the most least efficient
+[00:01:41] way of doing things right instead of
+[00:01:43] doing that what we do is we make all of
+[00:01:46] these private data available to the llm
+[00:01:48] basically we give this external source
+[00:01:50] of information to the llm right so the
+[00:01:52] next time you have a question you can
+[00:01:54] just ask that question in plain English
+[00:01:56] and now that the llm has access to all
+[00:01:58] your private information it is now able
+[00:02:00] to comb through all your data and then
+[00:02:02] give you a very informed accurate answer
+[00:02:05] right so that is the power of Rags but
+[00:02:07] this brings us to another important
+[00:02:09] challenge right there's a challenge
+[00:02:11] called context limits or context window
+[00:02:13] right that is something that uh you know
+[00:02:16] uh you probably would have experienced
+[00:02:17] it where if you give large huge prompts
+[00:02:20] to the llm it really struggles to answer
+[00:02:22] the question right it really struggles
+[00:02:24] to it sort of starts hallucinating and
+[00:02:27] it sort of starts to forget what
+[00:02:28] happened before that and the past and
+[00:02:30] all of that because the context window
+[00:02:32] or the limit becomes very high so we
+[00:02:35] can't really dump all our private
+[00:02:37] documents into Chachi PT let's say and
+[00:02:40] then ask a question on it because that
+[00:02:41] is not going to work right so this is
+[00:02:44] the second problem that rag solve which
+[00:02:46] is with context limits you can make all
+[00:02:49] these PDFs and everything available to
+[00:02:52] the llm without having to actually dump
+[00:02:54] all of it into a prompt let's say you
+[00:02:57] have let's say 100 or th000 documents
+[00:02:59] sitting in your own private database
+[00:03:01] right so Rags the way that it solves
+[00:03:04] this is by only pulling in the relevant
+[00:03:06] sections of the documents based on the
+[00:03:09] prompt that the user provided okay so
+[00:03:11] this way we keep things efficient we
+[00:03:13] only extract certain chunks from all the
+[00:03:16] documents that are relevant to the user
+[00:03:18] question and then send it to the llm
+[00:03:20] okay so that's why it's even called Rags
+[00:03:22] or retrieval augmented generation right
+[00:03:25] so let's actually look at a much better
+[00:03:27] definition Rags is a method where we
+[00:03:30] combine llms with a retrieval system so
+[00:03:33] this retrieval system can search through
+[00:03:36] vast sources of external information
+[00:03:38] like documents databases knowledge base
+[00:03:41] whenever the llm needs additional
+[00:03:43] knowledge to give you better answers so
+[00:03:46] all the while making sure that the llm
+[00:03:48] is not overwhelmed with bigger prompts
+[00:03:51] so this section was just a very high
+[00:03:53] level introduction to rags I don't
+[00:03:55] expect you to completely understand it
+[00:03:57] but in the next couple of sections when
+[00:03:58] we actually start splitting the entire
+[00:04:01] rag module into all its individual
+[00:04:03] components it is going to start making a
+[00:04:05] lot of sense and that is exactly what
+[00:04:07] we're going to be doing in the next
+[00:04:08] section so I'll see you there

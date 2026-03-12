@@ -1,0 +1,130 @@
+[00:00:00] hello guys welcome to the first example
+[00:00:02] in chains for Lang chain so as you can
+[00:00:05] see I've already prepared the code here
+[00:00:06] as well so let's walk through this step
+[00:00:08] by step all right so the first section
+[00:00:11] is very similar to what we did in the
+[00:00:12] previous sections so all that we've done
+[00:00:15] here is we've initialized our open AI
+[00:00:17] chat model and then we also creating a
+[00:00:19] prompt templates uh basically creating
+[00:00:22] prompt templates using a list of tuples
+[00:00:25] right so this is another method that we
+[00:00:26] saw right also we know that we're doing
+[00:00:28] it this way because we want to include a
+[00:00:30] lot more information inside of the
+[00:00:32] template right so we want to include the
+[00:00:34] system message AI message human message
+[00:00:36] so that is why we're doing the tuple's
+[00:00:38] way right we also have a system message
+[00:00:41] here saying you are a facts expert who
+[00:00:44] knows facts about any animal right it
+[00:00:46] could be cats dogs elephants right and
+[00:00:49] the human message is saying tell me uh
+[00:00:52] it count right it could be 2 3 4 5 any
+[00:00:54] number of facts so here is the first
+[00:00:56] task that I want to do first off I want
+[00:00:58] to populate all these holders and create
+[00:01:00] the final prompt and then pass that
+[00:01:03] prompt to the model as well to the llm
+[00:01:05] as well right so what did we do earlier
+[00:01:07] in the first few sections we basically
+[00:01:09] did invoke on the prompt template and
+[00:01:12] then again we did an invoke on the model
+[00:01:15] so it was a separate uh the the tasks
+[00:01:17] were separate separate right it is the
+[00:01:19] same sequence but we had to repeat a few
+[00:01:22] things right but using chains though we
+[00:01:25] can do it very easy without seeing
+[00:01:27] invoke invoke every single time so we
+[00:01:30] say prompt template which is going to be
+[00:01:32] the first task and then we use the pipe
+[00:01:35] operator that is going to be the chain
+[00:01:36] for us very very simple just the pipe
+[00:01:39] operator is going to connect different
+[00:01:41] tasks together so once this particular
+[00:01:43] task is done we pass the result to the
+[00:01:46] next task which is the model now when
+[00:01:49] the response comes back from the llm it
+[00:01:51] is then passed into an other task which
+[00:01:54] is basically just a function called
+[00:01:56] string output parser so what is it going
+[00:01:58] to do it is just going to extract the
+[00:02:01] content property alone from the whole
+[00:02:04] object you know that you know the
+[00:02:05] response of the llm is going to be it's
+[00:02:07] going to have a lot of properties right
+[00:02:10] in that object we just this uh function
+[00:02:12] is just going to extract the content
+[00:02:14] property that is it so you can see I'm
+[00:02:17] using this method from here up here
+[00:02:19] right you can also do the same you know
+[00:02:22] what let me just remove this for now and
+[00:02:24] show you the output first next how do we
+[00:02:27] invoke this entire chain we say chain do
+[00:02:30] invoke and then we pass the object with
+[00:02:33] values that the prompt template needs
+[00:02:35] you know the prompt template requires a
+[00:02:37] lot of these placeholders right we are
+[00:02:38] passing all of that here so whatever we
+[00:02:41] pass in here will be available across
+[00:02:43] the chain so if we have another prom
+[00:02:46] template here as the fourth task let's
+[00:02:48] say we can pass in a third or the fourth
+[00:02:50] property in this object as well right so
+[00:02:53] whatever we pass in here it will be
+[00:02:55] available across the chain so even if
+[00:02:57] there is like a 15th or or the 20th the
+[00:02:59] task is going to be a prompt template
+[00:03:01] whatever we pass in here is going to be
+[00:03:03] available there as well right so let us
+[00:03:05] now quickly run this
+[00:03:07] file right and uh yeah and perfect we
+[00:03:11] asked for Just Two facts and we got just
+[00:03:13] that but along with that we also have a
+[00:03:16] lot of other stuff as well right which
+[00:03:17] is why we need to add the string output
+[00:03:20] parser task or the method right and what
+[00:03:23] this is going to do is this is going to
+[00:03:25] select only the content property from
+[00:03:27] the response from the previous task the
+[00:03:29] response from the previous task was the
+[00:03:31] response from the llm all right so if I
+[00:03:33] change something here also like let's
+[00:03:36] say change the animal to let's say
+[00:03:39] elephant and make the count to one right
+[00:03:42] and run the
+[00:03:43] file
+[00:03:46] right let's give it some time right
+[00:03:49] perfect so we get exactly one fact about
+[00:03:52] elephant so I hope that you starting to
+[00:03:54] see the power of chains and how simple
+[00:03:56] it makes the code look and how readable
+[00:03:58] it looks right compare it to the the
+[00:04:00] other the previous sections where we did
+[00:04:02] it uh step by step separate separate
+[00:04:03] right so let me actually put this side
+[00:04:05] by side so that you can actually see how
+[00:04:08] much less code that we had to write this
+[00:04:10] time so with chains right here we
+[00:04:13] chained a prom template and then sent
+[00:04:15] that to the llm and then printed that
+[00:04:17] with just a few lines right whereas
+[00:04:19] without chains on this side there were a
+[00:04:23] lot of additional steps that we had to
+[00:04:24] do right so this is the difference
+[00:04:27] chains simplify a lot of things right so
+[00:04:29] so in the next section let us see how
+[00:04:31] chains sort of work under the hood so
+[00:04:34] that uh you know I'd be able to write my
+[00:04:36] own tasks like custom tasks so for
+[00:04:38] example right here we used a pre-built
+[00:04:40] method that only extracts the content
+[00:04:42] property right but what if I want to
+[00:04:44] write my own method that you know I can
+[00:04:46] configure it to do pretty much anything
+[00:04:48] that I want and I can chain that as well
+[00:04:51] right so to do that we need to
+[00:04:52] understand how chains work under the
+[00:04:54] hood and that is exactly what we're
+[00:04:55] going to be seeing in the next section

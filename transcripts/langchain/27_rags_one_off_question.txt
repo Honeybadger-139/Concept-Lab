@@ -1,0 +1,123 @@
+[00:00:00] so what I've done is I've copy pasted
+[00:00:01] everything from the previous section in
+[00:00:03] this new file but in addition to it I've
+[00:00:05] also added a little bit more code as
+[00:00:06] well okay so let's look at what we're
+[00:00:08] doing step by step so so far we have the
+[00:00:11] user prompt as well as the relevant
+[00:00:13] chunks that are getting generated based
+[00:00:15] on this question so the first thing that
+[00:00:17] I'm going to do is very simple first I'm
+[00:00:20] preparing a combined prompt to the llm
+[00:00:23] saying here are some documents that
+[00:00:25] might help answer this question so here
+[00:00:28] we can put the actual user question
+[00:00:30] which in this case is where is Dracula's
+[00:00:33] castle located so we provide the prompt
+[00:00:37] now we need to provide all of the
+[00:00:38] relevant chunk texts if you remember we
+[00:00:42] short list the top three chunks and
+[00:00:44] we're providing that here as well by
+[00:00:46] joining these talks together very simple
+[00:00:49] and to make sure it works this is what
+[00:00:51] I'm going to do I'm going to say please
+[00:00:54] provide a rough answer based only on the
+[00:00:56] provided documents if the answer is not
+[00:00:58] found in the documents respond with I'm
+[00:01:01] not sure so we're doing this so that the
+[00:01:04] llm only answers the question from the
+[00:01:07] chunk texts
+[00:01:08] provided now we instantiating the model
+[00:01:11] so we've done this several times now we
+[00:01:13] are defining the messages array with the
+[00:01:15] system message as a simple you are a
+[00:01:18] helpful assistant and finally we are
+[00:01:21] going to invoke it and print the
+[00:01:23] result let's actually comment this out
+[00:01:26] so that we are only interested in the
+[00:01:28] content so let's actually run this file
+[00:01:30] and give it a few
+[00:01:32] seconds and we have the final result and
+[00:01:34] let's see what it says based on the
+[00:01:37] provided documents Dracula's Castle is
+[00:01:39] located in the extreme east of
+[00:01:41] Transylvania just on the borders of
+[00:01:43] Transylvania mavia and bukovina in the
+[00:01:47] midst of the carpatin mountains the post
+[00:01:49] town named by Count Dracula is B bis
+[00:01:53] tritz right I can't pronounce it either
+[00:01:55] how amazing is that right the llm is
+[00:01:58] able to identify this based on all this
+[00:02:01] data that was present in the chunks so
+[00:02:04] let me show you let's copy this word BDS
+[00:02:07] and search for this and you can see it
+[00:02:09] shows up in multiple places in the
+[00:02:11] chunks right just how amazing is that
+[00:02:15] let me ask another question as well so
+[00:02:17] let's say okay so we all know that the
+[00:02:20] Dracula hates garlic right so let's ask
+[00:02:24] that question what does Dracula fear the
+[00:02:27] most so now let's clear the terminal
+[00:02:30] and now let's run this file okay so we
+[00:02:34] have the response let us see what it
+[00:02:36] says it says the Dracula fears a lot of
+[00:02:39] things he cannot enter places unless
+[00:02:41] invited does not like garlic wow right
+[00:02:45] it gives the answer and it's given a lot
+[00:02:47] of other things that we even did not
+[00:02:49] know let's actually confirm if the llm
+[00:02:52] gave this answer based on the chunks we
+[00:02:55] sent it so I'm going to copy this word
+[00:02:57] garlic and search for it uh scroll up
+[00:03:02] and you can see this is mentioned
+[00:03:03] several times in the chunks how amazing
+[00:03:06] is that right see it says he is
+[00:03:09] afflicted by garlic he also does not
+[00:03:11] like crucifixes so if I scroll down all
+[00:03:14] the way you can see that the LM also
+[00:03:16] assures us that it only took all of this
+[00:03:19] based on the provided documents so this
+[00:03:22] way we know it didn't go into its own
+[00:03:24] knowledge or do an internet search U so
+[00:03:27] in your own projects instead of doing it
+[00:03:29] with books you can put in your private
+[00:03:31] data that the llm has no way of knowing
+[00:03:34] and give it additional knowledge and
+[00:03:36] chat with it and we can even take it one
+[00:03:38] step further so instead of it being a
+[00:03:41] oneoff question you can build it in such
+[00:03:43] a way that we can have a two and for
+[00:03:45] conversation as well okay so if you
+[00:03:48] remember we already did that in the
+[00:03:50] chart models module and you can
+[00:03:51] implement the same thing here and with
+[00:03:53] that said we've completed our Deep dive
+[00:03:55] into Rags take a moment to appreciate
+[00:03:58] you know how far we've come you are
+[00:04:00] currently in the top 5% of developers
+[00:04:02] who can build rack systems and uh you
+[00:04:04] know build these intelligent retrieval
+[00:04:06] systems using Lang chain right so you
+[00:04:08] can now you know build intelligent
+[00:04:09] document retrieval systems create
+[00:04:11] context aware conversational AI connect
+[00:04:14] AI to your private data and even
+[00:04:16] integrate web crawling abilities right
+[00:04:19] so if you're finding value in this
+[00:04:20] journey please don't forget to you know
+[00:04:22] click the Subscribe button because it
+[00:04:24] really helps the channel grow but at the
+[00:04:26] same time I can you know it gives me
+[00:04:27] more incentive to make more advanced uh
+[00:04:30] AI related content right uh but yeah
+[00:04:33] guys we're not done yet up next we're
+[00:04:35] going to dive into the fifth and the
+[00:04:37] final component of Lang chain called
+[00:04:40] agents and tools okay so this is where
+[00:04:43] it gets really interesting imagine
+[00:04:45] basically giving your AI the ability to
+[00:04:48] actually use tools and make decisions
+[00:04:51] like an actual human being right so if
+[00:04:54] that excites you we're going to be
+[00:04:55] exploring that in the next section so
+[00:04:58] I'll see you there oh

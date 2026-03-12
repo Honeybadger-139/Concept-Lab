@@ -1,0 +1,186 @@
+[00:00:00] so in this section we're going to be
+[00:00:01] looking at uh the last most commonly
+[00:00:04] used type of chaining called conditional
+[00:00:05] chaining right so as you can see I've
+[00:00:07] already prepared the code for that but
+[00:00:10] before we jump into the code it will
+[00:00:12] help if we sort of understand the
+[00:00:14] problem that we're actually trying to
+[00:00:16] tackle in the section so to explain this
+[00:00:18] I've prepared a
+[00:00:19] flowchart so here's what I want us to
+[00:00:21] solve okay so let's say you run an
+[00:00:24] e-commerce website and users can leave
+[00:00:27] feedbacks on the products that they have
+[00:00:28] bought right and depending on the type
+[00:00:31] of the feedback by the user right it
+[00:00:33] could be a positive feedback by the user
+[00:00:35] it could be a negative feedback right it
+[00:00:38] could be a very very bad feedback that
+[00:00:40] requires escalation I mean depending on
+[00:00:42] the type of the user feedback the
+[00:00:44] response from the customer support agent
+[00:00:47] would vary so this customer support
+[00:00:49] response is exactly what we're trying to
+[00:00:51] automate here with L chain and AI okay
+[00:00:55] so we're just going to see analyze
+[00:00:57] basically uh how the user is feeling uh
+[00:01:00] looking at the review whether it is
+[00:01:02] positive or negative or basically just a
+[00:01:04] neutral feedback or it is a very bad
+[00:01:07] feedback and the user is like really mad
+[00:01:09] and we have to escalate it right so we
+[00:01:11] are assessing that and accordingly the
+[00:01:14] AI is going to respond to that
+[00:01:16] particular thing so first off we are
+[00:01:18] taking the user feedback and then we're
+[00:01:20] sending the feedback to the model asking
+[00:01:23] it to tell whether it is a positive
+[00:01:24] feedback or a negative feedback a
+[00:01:26] neutral one or if it requires escalation
+[00:01:29] to a human AG agent so right here we
+[00:01:31] would have categorized the feedback the
+[00:01:33] next thing that we have to do is
+[00:01:35] depending on the type of feedback we
+[00:01:37] need the control flow to go to different
+[00:01:39] branches right so the first branch is
+[00:01:41] for the positive feedback flow the
+[00:01:43] second one is for the negative one and
+[00:01:45] we have the neutral branch and finally
+[00:01:47] we have the escalate Branch as well so
+[00:01:49] essentially we are conditionally sort of
+[00:01:51] making a decision to go into any one
+[00:01:54] branch so in the previous section we
+[00:01:56] talked about parallel branching where
+[00:01:58] all the branches start firing whereas in
+[00:02:01] this section we have multiple branches
+[00:02:03] or multiple chains and based on one
+[00:02:06] condition it is going to go to the first
+[00:02:08] one or the second one or the third one
+[00:02:09] or the I don't know the 100th one right
+[00:02:12] so I hope that that makes sense uh let's
+[00:02:14] actually jump back into the code and see
+[00:02:16] how to execute this so you can see I
+[00:02:18] have all the code ready already let's go
+[00:02:21] down let's scroll down to the chain and
+[00:02:24] let's again try to work backwards right
+[00:02:26] so here is the chain and first runable
+[00:02:28] that we're going to call is the
+[00:02:30] classification chain so if you remember
+[00:02:33] from the diagram that we saw earlier we
+[00:02:35] first going to take the user feedback
+[00:02:37] and then decide the type of the feedback
+[00:02:40] and this is a chain in and of itself
+[00:02:43] right it might look very simple but it's
+[00:02:45] it's actually a little abstracted if we
+[00:02:47] go inside of here we can see that first
+[00:02:49] we are preparing a template and always
+[00:02:52] remember anytime we talk to the model we
+[00:02:54] make a call to the model we first have
+[00:02:56] to prepare a prom template right
+[00:02:58] basically saying like hey what type of
+[00:02:59] of feedback is this review right so
+[00:03:02] let's look at the prompt now so we're
+[00:03:04] just seeing you are a helpful assistant
+[00:03:07] and we're seeing classify the sentiment
+[00:03:09] of the feedback as positive negative
+[00:03:12] neutral or escalator right and we are
+[00:03:14] providing the feedback here as well okay
+[00:03:17] so if you uh scroll down you can see
+[00:03:20] that we are providing the feedback
+[00:03:22] inside the object all right now let's
+[00:03:24] come back to the classification chain
+[00:03:27] now the model is going to spit back the
+[00:03:29] keyword right it could be just a keyword
+[00:03:31] called positive negative neutral or
+[00:03:34] escalate right so now we have the
+[00:03:35] condition ready as well so if we come
+[00:03:37] back to the diagram we now have the type
+[00:03:40] of the feedback which is going to be the
+[00:03:42] condition and that is ready now we have
+[00:03:44] to decide which exact Branch it should
+[00:03:48] go inside of right so let's see how
+[00:03:50] we've done that so now the type of the
+[00:03:52] feedback is sent inside of this next
+[00:03:55] chain called branches so let's click on
+[00:03:58] it and let's see what we have done here
+[00:04:00] so what we have here is like a switch
+[00:04:02] case right where if x which is going to
+[00:04:05] be the feedback type is positive then
+[00:04:08] this chain will execute right if it is
+[00:04:11] negative then this chain and then we
+[00:04:13] have the neutral and escalate at the end
+[00:04:16] as a final default case if it cannot
+[00:04:18] find a match above now let's say the
+[00:04:20] feedback was positive right what do we
+[00:04:23] do then so what we might have to do is
+[00:04:25] we need to send that feedback message to
+[00:04:27] the llm and ask it to provide a positive
+[00:04:30] response to the positive review right so
+[00:04:34] if I actually click on this you can see
+[00:04:36] that it says generate a thank you note
+[00:04:39] for this positive feedback and then we
+[00:04:41] are providing the feedback here as well
+[00:04:44] and as soon as the response comes from
+[00:04:46] the llm what do we do then let's scroll
+[00:04:48] down so we are getting the response back
+[00:04:51] from the llm and now we extracting the
+[00:04:53] content property from the object see the
+[00:04:56] branches is at the end of the chain so
+[00:04:58] it gets printed to the console that's it
+[00:05:01] so the same thing applies for other
+[00:05:03] types of feedbacks as well right so if
+[00:05:05] it was a negative feedback the promp the
+[00:05:07] prompting is going to be a little
+[00:05:09] different so we are going to say
+[00:05:11] generate a response addressing this
+[00:05:13] negative feedback basically if the user
+[00:05:15] is super frustrated then the control
+[00:05:17] flow will go inside of the Escalade
+[00:05:19] chain and this is going to be the prompt
+[00:05:21] so we are saying generate a message to
+[00:05:24] escalate this feedback to a human agent
+[00:05:26] right so let's actually try to run this
+[00:05:28] file so current ly you can see that this
+[00:05:30] is the review that I've hardcoded here
+[00:05:33] the product is terrible it just broke
+[00:05:35] after one news so clearly this is a
+[00:05:37] pretty negative review so if I run this
+[00:05:40] in the terminal uh let's give it a few
+[00:05:41] seconds all right so you can see that it
+[00:05:44] gives a proper response to the negative
+[00:05:47] feedback from the user it's it
+[00:05:49] apologizes for its service and it's
+[00:05:51] asking for more details the user faced
+[00:05:54] and right here I've also added more
+[00:05:56] feedback examples for different types uh
+[00:05:58] like uh happy user uh a neutral user a
+[00:06:02] negative an Escalade as well right so
+[00:06:04] you can just like play around with these
+[00:06:06] different reviews and then see where the
+[00:06:07] control goes and just to remind you all
+[00:06:09] the code that we've written so far it is
+[00:06:11] available in the repository so do go
+[00:06:13] ahead and pull it and yeah that's it
+[00:06:16] that brings us to the end of the chains
+[00:06:18] module uh I really hope that you're
+[00:06:20] confident enough to architect or
+[00:06:22] construct your own chains based on uh
+[00:06:24] the business problems that you're
+[00:06:25] currently facing and again if you ever
+[00:06:28] get stuck uh who join the community it
+[00:06:30] could be me or some other developer
+[00:06:32] could come and help you out in the next
+[00:06:34] section we are going to be looking at
+[00:06:35] the fourth comp flank chain and in my
+[00:06:38] opinion it is what is creating a lot of
+[00:06:41] impact in how businesses operate and
+[00:06:43] increase efficiency as well and that
+[00:06:45] component is called Rags or retrieval
+[00:06:48] augmented generation and it's kind of
+[00:06:50] the I would say the most difficult to
+[00:06:52] get to wrap your head around but at the
+[00:06:54] same time it would make you a really
+[00:06:56] valuable developer so we'll be diving
+[00:06:59] completely into it in the next section
+[00:07:00] so I'll see you there

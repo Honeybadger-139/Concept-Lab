@@ -1,0 +1,73 @@
+[00:00:00] all right so in this section let's
+[00:00:01] actually set up our development
+[00:00:02] environment so I'm going to create a
+[00:00:04] folder called Lang
+[00:00:07] chain and I'm going to open this folder
+[00:00:10] in my visual studio code so to do that
+[00:00:12] you can simply open Visual Studio code
+[00:00:14] and drag and drop this folder inside of
+[00:00:16] it and you can see that it's been opened
+[00:00:19] right here right so now let us open up
+[00:00:22] the terminal and we have to create
+[00:00:24] something called a virtual environment
+[00:00:27] so whenever we are installing packages
+[00:00:29] we don't want it to be available
+[00:00:30] globally we only want it to be available
+[00:00:32] inside of that one virtual environment
+[00:00:35] also it is a pretty standard process
+[00:00:36] whenever we are working with python
+[00:00:38] projects so I'm going to say Python 3
+[00:00:42] I'm working with Mac by the way so I
+[00:00:45] have to say Python 3 right here but if
+[00:00:47] you're a Windows user you can just say
+[00:00:48] python all right and then we have to say
+[00:00:51] Dash M and this is to tell python to run
+[00:00:55] a specific module so- M and then let's
+[00:00:59] say V e NB so this is the module that we
+[00:01:03] want python to run and finally we need
+[00:01:06] to give the name for the virtual
+[00:01:08] environment that we'll be creating as
+[00:01:10] well so I'm going to name the folder
+[00:01:12] that will be getting created as dot V
+[00:01:17] EnV so we put this dot here so that the
+[00:01:20] file that will be created will be hidden
+[00:01:23] but you can also choose not to hide it
+[00:01:24] as well so in that case we can just not
+[00:01:27] put the dot there so let's press enter
+[00:01:30] and now you can see that we have the
+[00:01:32] virtual environment created so the first
+[00:01:34] step of creating a virtual environment
+[00:01:36] is done the next step is to make the
+[00:01:38] terminal point to that virtual
+[00:01:40] environment right now you can see that
+[00:01:42] it is pointed to base which is the
+[00:01:45] location outside the virtual environment
+[00:01:47] but we need to point it to the virtual
+[00:01:49] environment because we'll be installing
+[00:01:50] a lot of packages for this course right
+[00:01:53] so to change this vs code might
+[00:01:55] automatically show a popup to accept it
+[00:01:57] right here but if it doesn't show you
+[00:02:00] you can just easily click on this button
+[00:02:02] right here and then select the V EnV
+[00:02:05] directory right here and that's it it
+[00:02:08] has been changed to the V EnV path so if
+[00:02:12] I open up another terminal window you
+[00:02:14] can see the V EnV on the left side so we
+[00:02:18] are now in the virtual environment
+[00:02:20] that's it our python development
+[00:02:21] environment is completely Set uh all
+[00:02:24] right so now I've gone ahead and created
+[00:02:26] a very simple folder right here and then
+[00:02:28] a file inside of it as well called chat
+[00:02:30] models starter so inside of it if I now
+[00:02:33] type uh let's say
+[00:02:35] print let's learn L chain and hit run
+[00:02:40] right here you can see that we have the
+[00:02:43] text in the terminal right all right so
+[00:02:46] our development environment is perfectly
+[00:02:47] done so we actually ready to start
+[00:02:49] working with lch now in the next section
+[00:02:51] we will look at the first most important
+[00:02:54] component of L chain which is called
+[00:02:55] chat models so I'll see you there

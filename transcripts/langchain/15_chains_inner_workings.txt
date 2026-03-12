@@ -1,0 +1,218 @@
+[00:00:00] hello guys welcome to the second example
+[00:00:02] in Chains where we are going to be
+[00:00:03] seeing what is going on internally in a
+[00:00:06] chain so basically if we understand that
+[00:00:08] it will it will make it easier for us to
+[00:00:11] customize it based on our own use case
+[00:00:13] right our own business Necessities right
+[00:00:16] so in the previous section we
+[00:00:17] essentially connected different tasks
+[00:00:20] together using the pipe operator right
+[00:00:22] so what would we do we created a prom
+[00:00:24] template right and the result of that is
+[00:00:27] passed to the model and then the result
+[00:00:29] of the llm is then passed to this other
+[00:00:32] task which only extracts the content
+[00:00:34] property right so for this section
+[00:00:36] though let us actually try to implement
+[00:00:38] the same thing but without the pipe
+[00:00:40] operator right that will help us see
+[00:00:42] what is actually going on under chains
+[00:00:45] under the hood basically right so what
+[00:00:47] I've done is I've just gone ahead and
+[00:00:48] created another file right here and I've
+[00:00:52] created the code here as well right so
+[00:00:54] if we scroll down up until here it is
+[00:00:57] all the code that we had written in the
+[00:00:59] previous section no different okay so we
+[00:01:01] are creating the model and then we
+[00:01:03] creating the prom template and then we
+[00:01:04] have all the placeholders here as well
+[00:01:07] now we basically know the goal right we
+[00:01:09] know uh we need to create a workflow
+[00:01:12] that takes the promt template invokes it
+[00:01:15] with all the values and then creates the
+[00:01:17] final prompt right so that is going to
+[00:01:19] be task one and the result of the task
+[00:01:21] one the chat model should take that and
+[00:01:24] make a call to the llm right so that is
+[00:01:26] going to be task two so this is what we
+[00:01:28] know and finally the task three is to
+[00:01:31] basically extract the content property
+[00:01:33] alone right so we are going to be
+[00:01:35] chaining all of these tasks together
+[00:01:37] with something called a runnable Lambda
+[00:01:40] okay so if we scroll up to the very top
+[00:01:43] we can see that we are importing
+[00:01:44] something called runnable Lambda and
+[00:01:46] something called runnable sequence from
+[00:01:48] L chain so this is very important this
+[00:01:50] is what we're going to be learning in
+[00:01:52] the section so what is it actually right
+[00:01:55] so to put it very simply a runable
+[00:01:57] Lambda is just a simple wrap that lets
+[00:02:00] us create each task as a single reusable
+[00:02:03] unit each runnable Lambda takes an input
+[00:02:07] does something with it it could be like
+[00:02:09] filling in a prompt or calling the model
+[00:02:11] and then gives us the output so this way
+[00:02:14] we can connect each step smoothly okay
+[00:02:16] so we have the first runnable Lambda
+[00:02:18] which is going to format The Prompt and
+[00:02:20] inside of the runnable Lambda we are
+[00:02:22] providing a function which takes input
+[00:02:24] values and returns a computed value all
+[00:02:27] right so in this case I'm using
+[00:02:29] something called a python Lambda
+[00:02:30] function but you can use pretty much any
+[00:02:33] you can use even regular functions if
+[00:02:34] you want basically just a function that
+[00:02:37] takes in an input and then returns an
+[00:02:38] output right so if you do not know what
+[00:02:41] python Lambda functions are it's
+[00:02:43] basically just a function that you can
+[00:02:45] write in line without even a function
+[00:02:48] name right it's just a very simple empty
+[00:02:50] function that takes in something and
+[00:02:52] then returns something so if you want to
+[00:02:54] learn more about it there's tons of
+[00:02:55] tutorials out there but yeah so this x
+[00:02:58] is the input to the Lambda function fun
+[00:03:00] and this expression is going to return
+[00:03:02] the output right so as you can see this
+[00:03:04] object or the dictionary is what will be
+[00:03:06] passed in as X inside of here and then
+[00:03:09] we are going to format The Prompt by
+[00:03:11] spreading out this object as multiple
+[00:03:13] arguments okay and this format prompt
+[00:03:16] method is going to replace all of the
+[00:03:18] placeholder values with the past in
+[00:03:20] values note that we are not calling the
+[00:03:22] invoke method here as we did in the
+[00:03:24] previous sections so there is a small
+[00:03:25] difference okay so uh invoke method
+[00:03:28] basically what it does is it not only
+[00:03:30] replaces the placeholder values but it
+[00:03:33] also converts the data into the right
+[00:03:35] format that can be sent to the llm right
+[00:03:38] whereas this method only replaces the
+[00:03:40] placeholder values the process of
+[00:03:43] converting the the data into the right
+[00:03:45] structure that can be sent to the llm
+[00:03:47] all of that will be done down here when
+[00:03:49] we invoke the chain okay not up here so
+[00:03:51] this constitutes as the first task or
+[00:03:54] the first runnable right in Lang chain
+[00:03:56] we can think of each task as a runnable
+[00:03:58] okay we can call each task as the
+[00:04:00] runnable as well let's now look at the
+[00:04:02] second task so the second task is to
+[00:04:05] take in a prompt string from the
+[00:04:07] previous task that is and then call the
+[00:04:09] llm using the invoke method and we know
+[00:04:12] that and we know that the last task is
+[00:04:14] to only extract the content keyword from
+[00:04:16] the response of the previous task okay
+[00:04:19] so so far we have a total of three
+[00:04:21] different tasks or we can also call them
+[00:04:23] three different runnables but they're
+[00:04:25] all separate right they don't actually
+[00:04:27] work with each other as a single unified
+[00:04:29] workflow right so the next step is we
+[00:04:32] need to chain it together right so this
+[00:04:34] is where Lang chain provides something
+[00:04:36] called a runnable sequence so if you
+[00:04:38] remember we imported it right runnable
+[00:04:40] sequence so using this particular class
+[00:04:43] we can chain multiple runnables together
+[00:04:45] okay so you can see this is what's going
+[00:04:48] to return us a chain and always remember
+[00:04:51] this particular runnable sequence class
+[00:04:53] is always going to take in three
+[00:04:55] parameters okay so it is always going to
+[00:04:57] have the first middle and the last
+[00:04:59] parameters the first task uh is always
+[00:05:02] going to have the first task it's pretty
+[00:05:04] intuitive right and the last one is
+[00:05:05] always going to have the last task and
+[00:05:07] in the middle it does not matter if you
+[00:05:09] have one task two tasks 5 10 100 tasks
+[00:05:13] all of those tasks needs to be put in
+[00:05:15] this array format in the middle
+[00:05:17] parameter okay so why do we do it like
+[00:05:19] that well if I go inside of this class
+[00:05:23] by pressing on the command on Mac or
+[00:05:25] control on PC and then I'm going to
+[00:05:27] scroll down to the class definition you
+[00:05:29] you can see that the first and the last
+[00:05:31] is going to be one runnable each right
+[00:05:35] so the first parameter and the last
+[00:05:37] parameter is always going to take just
+[00:05:38] one runnable and the middle one is going
+[00:05:40] to be a list of runnables right and also
+[00:05:43] if we scroll up a little bit you can see
+[00:05:45] that it says a runnable sequence can be
+[00:05:47] instantiated directly or a more common
+[00:05:50] way to do it is by using the pipe
+[00:05:52] operator so coming back in your pro
+[00:05:54] projects we can either use this
+[00:05:56] particular class and chain vulnerables
+[00:05:58] together or or you can use the Lang
+[00:06:00] chain expression language so Lang chain
+[00:06:03] expression language is basically using
+[00:06:05] the piping operator the pipe operator
+[00:06:07] and connecting different runnables
+[00:06:08] together okay so we can also do it like
+[00:06:11] this under the hood both are the same
+[00:06:14] right so you can create your separate
+[00:06:16] runnables using this runnable class and
+[00:06:19] pass in a function a normal python
+[00:06:21] function or a simple Lambda function it
+[00:06:23] needs to take in this x amount of inputs
+[00:06:26] and it does something inside of it and
+[00:06:28] then it returns a value
+[00:06:30] okay so once you have the rebles you can
+[00:06:32] chain it together using the one way or
+[00:06:35] the other we can either do it by piping
+[00:06:37] it together using the pipe operator or
+[00:06:39] we can use this particular class so when
+[00:06:41] we put it all together we are finally
+[00:06:43] going to get our chain okay and we can
+[00:06:46] invoke it by providing all of these
+[00:06:48] placeholder values so now I'm going to
+[00:06:51] run our chain so I can either click on
+[00:06:52] this play button right here or you can
+[00:06:54] just go to your terminal uh and say
+[00:06:56] Python 3 or python if you're a Windows
+[00:06:59] user and then just go to this file and
+[00:07:01] then hit enter right so I'm going to
+[00:07:03] click on play let's give it a few
+[00:07:08] seconds and perfect there we go so we
+[00:07:12] have two facts about cats because that
+[00:07:14] is exactly what we specified here right
+[00:07:17] so that is how things work under the
+[00:07:18] hood personally I prefer to work with
+[00:07:21] the pipe operator basically use the Lang
+[00:07:23] chain expression language but you can
+[00:07:25] also use this particular class you know
+[00:07:27] what let me actually put it side by side
+[00:07:29] so that you can you can actually see the
+[00:07:30] difference okay so you can see that uh
+[00:07:33] compared to doing it this way using the
+[00:07:35] pipe operator is much more easier to
+[00:07:38] understand right yeah and in the next
+[00:07:40] section we're going to be looking into
+[00:07:42] something very interesting so if you
+[00:07:44] remember from the overview section we
+[00:07:46] saw that there are different ways of
+[00:07:47] chaining chains right so for example we
+[00:07:50] had uh extended chains we had parallel
+[00:07:52] chains branching chains I mean
+[00:07:54] conditional chains right so we'll
+[00:07:55] actually look at examples for each of
+[00:07:57] those types and see how
+[00:08:00] you know real world applications are
+[00:08:01] built so that you get a clear idea of
+[00:08:03] where we can actually use it right so
+[00:08:05] I'm pretty excited and I'll see you
+[00:08:06] there

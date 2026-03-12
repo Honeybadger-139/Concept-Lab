@@ -1,0 +1,470 @@
+[00:00:00] hello guys welcome to the section where
+[00:00:01] we are going to be building an AI agent
+[00:00:03] from scratch using Code so by the end of
+[00:00:06] the section you should have a pretty
+[00:00:08] good idea of how to build agents for
+[00:00:10] pretty much any business use case and
+[00:00:12] since this is a New Concept we are going
+[00:00:15] to be taking it very slow step by step
+[00:00:17] so here's what we'll do firstly I will
+[00:00:19] show you a limitation that we currently
+[00:00:21] have with llms and then we'll see how we
+[00:00:24] can solve that limitation with an agent
+[00:00:26] so now I'm going to copy paste some code
+[00:00:28] right here so so all that we've done
+[00:00:30] here is loading the environment
+[00:00:32] variables initializing the llm using the
+[00:00:35] GPT 40 model again and I have this
+[00:00:37] question I want to ask to the llm what
+[00:00:40] is the current time now this query we
+[00:00:43] providing this as an input to the chain
+[00:00:46] so that this gets converted into a
+[00:00:47] prompt and gets sent to the llm very
+[00:00:50] basic stuff so let's run this file again
+[00:00:53] and let us see what gp40 has to say
+[00:00:56] about the current time so let us hit run
+[00:01:00] give it a few seconds all right so it's
+[00:01:02] saying that it cannot access real time
+[00:01:05] information right and the reason why
+[00:01:07] this happens is because llms by itself
+[00:01:10] cannot access realtime data they are
+[00:01:13] trained on some data and they usually
+[00:01:15] have a cut off date as well but if I ask
+[00:01:18] it something that happened today morning
+[00:01:20] chances are it does not know and this is
+[00:01:23] a perfect example where we can give more
+[00:01:25] ability to the llm by creating an agent
+[00:01:29] and now that that agent can then use a
+[00:01:31] tool to figure out the current time if
+[00:01:34] this sounds too sci-fi don't worry we
+[00:01:37] will all make sense of it pretty soon so
+[00:01:40] now first off we need to install a few
+[00:01:42] packages and the first package I need to
+[00:01:44] install is called Lang chain Hub so let
+[00:01:48] me go ahead and clear my terminal and
+[00:01:50] I'm going to say pip install Lang chain
+[00:01:54] Hub while it's installing we will Deep
+[00:01:57] dive into what this package is but on a
+[00:02:00] very high level it lets us use other
+[00:02:02] people's prompt templates from the
+[00:02:04] internet so instead of writing my own
+[00:02:07] I'm going to use someone else's very
+[00:02:09] simple so in this example I'm going to
+[00:02:12] need the react prom template don't worry
+[00:02:16] we are going to be seeing exactly what
+[00:02:18] the react prompt looks like later on but
+[00:02:20] for now let's just go ahead and use it
+[00:02:23] and let's see what we get so to do that
+[00:02:25] what we're going to do is I'm going to
+[00:02:27] replace this part right here for the
+[00:02:30] prompt template and instead we are going
+[00:02:33] to be using the react prompt template
+[00:02:35] from Lang chain Hub so I'm going to say
+[00:02:39] Hub dot pull and I'm going to specify
+[00:02:43] the exact repository and file so it is
+[00:02:47] going to be HW Chase
+[00:02:50] 17 SL react because we want the react
+[00:02:55] prompt if you're confused what this is
+[00:02:58] this is just the organ organization
+[00:03:00] space of Harrison Chase who is the
+[00:03:02] creator of Lang
+[00:03:04] chain so inside of this repository we
+[00:03:07] want the access to the react prompt
+[00:03:10] template so right now we are getting a
+[00:03:13] squiggly right here because we haven't
+[00:03:15] imported the package so I'm going to go
+[00:03:18] up here say from Lang chain import
+[00:03:24] Hub and now the squiggly line goes away
+[00:03:27] perfect we will look at what this prompt
+[00:03:30] actually contains later on but for now
+[00:03:32] let's move ahead and create some tools
+[00:03:34] that we can make the agent
+[00:03:36] use so I'm going to say tools and this
+[00:03:40] is going to be a
+[00:03:42] list we can provide a lot of tools to
+[00:03:44] the agent and depending on what the
+[00:03:46] agent is solving at that particular
+[00:03:48] point of time it can use the right tool
+[00:03:50] to get the job done it could be a Google
+[00:03:53] Search tool an email sending tool etc
+[00:03:56] etc in this case we need to create the
+[00:03:59] get system time
+[00:04:01] tool and this is going to let the agent
+[00:04:04] access the current
+[00:04:05] time we'll get to that in a minute now
+[00:04:08] the next thing that we have to do is
+[00:04:10] create an agent so to do that I'm going
+[00:04:13] to import something from up here so I'm
+[00:04:15] going to say from Lang chain. agents
+[00:04:19] import create react agent and in
+[00:04:23] addition to this we also need something
+[00:04:25] called the agent
+[00:04:27] executor I'll explain to you what all of
+[00:04:29] these mean in a minute and the later
+[00:04:31] part of the section we will see how we
+[00:04:33] can Implement all of this without all
+[00:04:35] these helper methods so that you
+[00:04:37] actually understand how an agent is
+[00:04:39] created under the hood but for now I'm
+[00:04:42] going to come down here and say
+[00:04:44] agent equals create react agent inside
+[00:04:49] of this I'm going to pass in the llm
+[00:04:52] which in this case is the GPT
+[00:04:54] 4 I'm going to pass in my
+[00:04:57] tools and then I'm going to to pass in
+[00:05:00] my prompt template which we are going to
+[00:05:02] be pulling from Lang chain Hub and what
+[00:05:05] I'm going to do is I'm going to remove
+[00:05:07] this chain and now we're going to
+[00:05:09] declare an agent
+[00:05:11] executor and then we can assign it to
+[00:05:13] the agent executor class and this takes
+[00:05:16] in a few
+[00:05:17] parameters we can pass in the agent
+[00:05:20] equals agent and then we can also pass
+[00:05:23] in the tools so tools equals tools and
+[00:05:28] finally I'm also setting verbos to
+[00:05:31] true so we set verbos to true because we
+[00:05:35] want to be able to see what the agent is
+[00:05:37] thinking and what it is doing at every
+[00:05:39] step of the way it is making it easier
+[00:05:42] to debug and tweak the
+[00:05:44] agent and finally I'm going to remove
+[00:05:46] all of this and just invoke on this
+[00:05:49] agent executor and the input is going to
+[00:05:51] be the query everything looks good and
+[00:05:54] we don't want to print anything because
+[00:05:56] the verbos is made to true so you're
+[00:05:58] anyway going to see the the logs all
+[00:06:01] right so to do a very quick recap we
+[00:06:04] have the query The Prompt which we're
+[00:06:06] pulling from the Lang chain hub no tools
+[00:06:09] we've written just yet and finally pass
+[00:06:11] in all of this information into the
+[00:06:13] executor which is going to execute
+[00:06:16] everything and finally we are going to
+[00:06:18] invoke the agent with the
+[00:06:20] query so if I run this what's going to
+[00:06:23] happen it is obviously going to fail
+[00:06:25] right because the llm does not have a
+[00:06:27] tool here to figure out the time so
+[00:06:30] let's actually run it and see what
+[00:06:32] happens and great you can actually see
+[00:06:35] all of the logs as the agent is going
+[00:06:37] through each and every single step right
+[00:06:40] so we know that the react agent prompt
+[00:06:42] follows reason act observe repeat right
+[00:06:45] and that is exactly what is happening
+[00:06:47] right here so the first one is reason
+[00:06:50] and that's what it does it reasons to
+[00:06:53] itself I need to check the current time
+[00:06:55] in my current
+[00:06:56] location so once it reasons what the
+[00:06:59] problem is or what it needs to do it
+[00:07:01] then needs to do something with it so
+[00:07:04] that's why the second step is action it
+[00:07:06] says use a tool to figure out the
+[00:07:08] current time but unfortunately we have
+[00:07:11] not provided the agent with the time
+[00:07:12] tool yet and that is why it says that it
+[00:07:15] does not have any tools to figure out
+[00:07:17] the problem or you know even if there
+[00:07:19] isn't any tools sometimes it starts to
+[00:07:21] hallucinate as well and finally it gives
+[00:07:24] an answer that it cannot find the
+[00:07:26] current time because it does not know
+[00:07:29] how to solve solve the problem by itself
+[00:07:31] so let's fix that let's now equip our
+[00:07:34] agent by providing it a tool so I'm
+[00:07:36] going to go ahead and create a very
+[00:07:38] simple python function that is going to
+[00:07:40] return the current time so I'm going to
+[00:07:43] say def get system
+[00:07:47] time and I want the agent to give me the
+[00:07:50] answer in a certain time format as well
+[00:07:53] so I'm going to put in the default time
+[00:07:55] format right here very simple I just
+[00:07:58] want the your
+[00:08:00] month day hours minutes and seconds so
+[00:08:05] now that we're done with that let's now
+[00:08:07] write the function and to do that I'm
+[00:08:09] going to make use of the standard date
+[00:08:11] time python library that gives you
+[00:08:13] access to the system time so I can come
+[00:08:16] up here and just say import date time
+[00:08:20] and then come back and I can say current
+[00:08:23] time is equal to date time dot date time
+[00:08:28] Dot now and this will give us the
+[00:08:31] current system date time and I also want
+[00:08:34] to format the time so that I can say
+[00:08:36] format time and then say current
+[00:08:41] time do s strf
+[00:08:44] time and pass in the format right
+[00:08:47] here so if the llm decides to not pass
+[00:08:50] in a certain format then in that case it
+[00:08:53] will just default to the default format
+[00:08:56] and that is it and oh let's actually
+[00:08:58] return this file right right now and
+[00:09:00] that is it for the function
+[00:09:02] definition so we have a pretty decent
+[00:09:04] function that Returns the current time
+[00:09:07] but unfortunately Lang chain doesn't
+[00:09:09] actually know what to do with this
+[00:09:11] particular function so there is one more
+[00:09:14] additional thing that we have to do we
+[00:09:16] have to add a python decorator for this
+[00:09:19] function so that we can say at tool and
+[00:09:23] we can import this by going up here and
+[00:09:25] saying from L chain Dot
+[00:09:30] agents and import
+[00:09:33] tool so what this decorator will do is
+[00:09:36] basically change this method into a
+[00:09:39] format that Lang chain can easily
+[00:09:41] understand and also provide in this a
+[00:09:43] doc string or a description about the
+[00:09:46] method so that the llm will have more
+[00:09:49] context about this
+[00:09:51] method so we can then use this triple
+[00:09:53] Cotes and inside of it say Returns the
+[00:09:57] current date and time in in the
+[00:09:59] specified
+[00:10:00] format so because of this the llm would
+[00:10:03] know if it should use this tool or not
+[00:10:05] for a particular task so make sure you
+[00:10:09] always give your tool functions a really
+[00:10:11] good description or a dog
+[00:10:13] string so now all that is left is to
+[00:10:16] provide this tool as an item in the
+[00:10:18] tools list like this
+[00:10:21] perfect before we run this file I want
+[00:10:24] to show you how the control flows so
+[00:10:26] that we get a much clearer picture of
+[00:10:28] how it all comes to together so the
+[00:10:31] first step is what we did was prompt and
+[00:10:35] initialization you provide a prompt to
+[00:10:37] the agent such as the react prompt The
+[00:10:40] Prompt includes an instruction to the
+[00:10:43] llm about its task example reasoning
+[00:10:46] step by step and deciding when to use
+[00:10:49] tools secondly a description of
+[00:10:52] available tools including their names
+[00:10:54] and usage
+[00:10:55] details and step two is Agent execution
+[00:11:00] when the user provides a query to the
+[00:11:01] agent the llm interprets the query and
+[00:11:05] generates a
+[00:11:06] response the llm does not directly
+[00:11:09] execute the tools instead it suggests
+[00:11:12] which tools to call and optionally
+[00:11:14] provides arguments based on its
+[00:11:17] reasoning step three tool
+[00:11:20] invocation the agent's framework Lang
+[00:11:22] chain intercepts the llm output to check
+[00:11:26] if it suggests a tool invocation
+[00:11:29] if a tool is suggested L chain calls the
+[00:11:32] tool in your python code passing in any
+[00:11:35] arguments the llm has
+[00:11:37] proposed step four tool execution the
+[00:11:41] tool runs in your python environment
+[00:11:44] with access to your Python's resources
+[00:11:47] like the current time file system apis
+[00:11:50] Etc the tool returns its result to L
+[00:11:53] chain and then llm response Lang chain
+[00:11:58] sends the tools output back to the llm
+[00:12:00] for further reasoning or generating a
+[00:12:03] final response for the
+[00:12:04] user so enough Theory I hope you're
+[00:12:07] excited to see how it is all going to
+[00:12:09] work together now so let's clear up our
+[00:12:12] terminal and then let's hit run and now
+[00:12:15] it has access to the tool so as you can
+[00:12:18] see right here it says it needs to
+[00:12:20] access the get system time tool so it's
+[00:12:23] reasoning first and once it is done
+[00:12:26] reasoning the second step is action Lan
+[00:12:29] chain is now calling our function with
+[00:12:31] the input that the llm provided as well
+[00:12:34] in this case it just took the default
+[00:12:36] format then it generates the final
+[00:12:39] answer and now another llm call happens
+[00:12:42] with this final data and the llm is like
+[00:12:45] okay I now have the final answer and now
+[00:12:49] it displays the final
+[00:12:51] answer so essentially what it has done
+[00:12:54] is look through all of the tools and
+[00:12:56] finds the tool that will help it achieve
+[00:12:58] its task and uses
+[00:13:00] it and it was able to identify the tool
+[00:13:03] with the description that we have
+[00:13:06] provided now we don't have to be super
+[00:13:08] stringent about a prompt we can actually
+[00:13:11] be a little bit different and maybe even
+[00:13:13] just ask it to tell us the current day
+[00:13:15] or the current year or the current hour
+[00:13:17] of the day so let's actually try it so
+[00:13:20] I'm going to add to this just show the
+[00:13:22] current time and not the
+[00:13:24] date now what this is going to do is the
+[00:13:27] llm is going to send back to Lang chain
+[00:13:30] a slightly different input format to
+[00:13:32] this
+[00:13:33] tool so let's run this file again let's
+[00:13:37] clear the terminal and run it let's give
+[00:13:40] it a few
+[00:13:42] seconds and great now you can see that
+[00:13:45] the format that it provided to the tool
+[00:13:47] is slightly different and this time we
+[00:13:50] can only see the time and not the date
+[00:13:52] in The Final Answer how cool is that
+[00:13:55] right in the reasoning it is able to see
+[00:13:58] that it just needs to adjust the format
+[00:14:00] to give the right answer so instead of
+[00:14:02] using the default format the llm is
+[00:14:05] suggesting a different format and Lang
+[00:14:07] chain executes the tool for us so once
+[00:14:10] Lang chain runs the tool it takes the
+[00:14:13] result and sends it back to the llm with
+[00:14:15] all the past context and the llm is like
+[00:14:18] okay we now have the final answer and it
+[00:14:21] ends the reason action observation Loop
+[00:14:24] right here in our example the cycle only
+[00:14:28] ran once
+[00:14:29] because it is a one-step problem find
+[00:14:32] the current time so it uses a tool and
+[00:14:34] that is it but there could be a much
+[00:14:37] more complicated query and in that case
+[00:14:39] the the cycle basically could run three
+[00:14:41] times four times five times depending on
+[00:14:44] the complexity of the user prompt so
+[00:14:46] that is how react agents work very very
+[00:14:49] cool stuff let's change the prompt a
+[00:14:51] little bit more this time this time we
+[00:14:53] will get it to tell us the time and I
+[00:14:56] right now in India so what is the
+[00:14:59] current time in London okay and it
+[00:15:02] doesn't know where the system is right
+[00:15:03] now so we can say you are in India
+[00:15:07] because I'm in India right so let's run
+[00:15:09] this and now if I run this one more time
+[00:15:13] it should hopefully be able to do the
+[00:15:14] calculation and manually figure out from
+[00:15:17] its own knowledge base figuring out the
+[00:15:19] time difference between India and London
+[00:15:23] so you can see it first reasons that it
+[00:15:25] needs to check the system time in India
+[00:15:28] and then convert to London time and then
+[00:15:31] it also knows that London is 5 something
+[00:15:33] hours behind India and it thinks about
+[00:15:36] that too and now it acts and calls the
+[00:15:39] get system time function and it now has
+[00:15:42] India's current time it passes in the
+[00:15:44] right format as well as the tool based
+[00:15:47] on the query so once it has the right
+[00:15:50] Indian time it then thinks and reasons
+[00:15:52] to itself okay so now we have the Indian
+[00:15:55] time now we need to calculate the London
+[00:15:58] time by subtracting five something hours
+[00:16:01] so you can see that is exactly what it
+[00:16:03] says here so the next step after
+[00:16:05] reasoning action it says subtract 5
+[00:16:08] hours from the time and then it gives
+[00:16:11] the final answer which is the current
+[00:16:13] London
+[00:16:15] time and to do the mathematical
+[00:16:17] operations we can provide our own
+[00:16:19] calculated tool but most of the times
+[00:16:21] the llm should be able to do it by
+[00:16:23] itself but it is always safer in
+[00:16:25] production to provide it our own tools
+[00:16:28] uh because sometimes it will just say I
+[00:16:30] cannot find the math tool to do the
+[00:16:32] subtraction so it's always better to be
+[00:16:34] on the safer side and that is a great
+[00:16:37] demonstration why tools are important
+[00:16:40] without the get system tool the llm has
+[00:16:43] no way of knowing what my current time
+[00:16:45] is so so far we've seen the logs of the
+[00:16:48] agent going through the cycle of
+[00:16:50] reasoning acting observing and then
+[00:16:52] repeating the cycle but how exactly is
+[00:16:55] the llm able to do it we know that it's
+[00:16:58] the react prompt so let's actually look
+[00:17:01] at what this react prompt actually
+[00:17:03] contain so that it's able to do this
+[00:17:05] repeated cycle until it gets the answer
+[00:17:08] so to look at that prompt I'm going to
+[00:17:10] go to
+[00:17:12] smith. Lan chain.com
+[00:17:16] slub SL HW Chase
+[00:17:20] 177 it might ask you to log in and once
+[00:17:23] you've logged in you will be able to see
+[00:17:25] the react prompt which is the reason
+[00:17:27] plus act prompt
+[00:17:29] this is the high level system prompt
+[00:17:31] which we've used in the app so what does
+[00:17:33] it say let's go through it step by step
+[00:17:37] so we are seeing answer the following
+[00:17:38] questions as best as you can you have
+[00:17:41] access to the following tools and all
+[00:17:44] the tools that we've written we are
+[00:17:45] providing it all in a string format if
+[00:17:48] you're wondering when we did that we did
+[00:17:50] not our helper functions did that all
+[00:17:52] right so all of our tools are provided
+[00:17:55] next we're instructing the llm to follow
+[00:17:58] this format
+[00:17:59] so first the input question we telling
+[00:18:02] the LM it must answer this and down here
+[00:18:05] we can also see that we providing the
+[00:18:06] question right here so once it
+[00:18:09] understands the question we are telling
+[00:18:10] the llm to First think so this is
+[00:18:14] thought or
+[00:18:15] Reason basically think about what is the
+[00:18:18] next step and that's what's written here
+[00:18:21] you should always think about what to do
+[00:18:23] before doing it once it thinks it then
+[00:18:26] needs to take action so the action to
+[00:18:29] take should be one of these tool
+[00:18:32] names so the name of the tools will be
+[00:18:34] provided here with our helper methods so
+[00:18:38] once it knows the action it is going to
+[00:18:39] take the action inputs or the inputs to
+[00:18:42] the tools and finally it is going to
+[00:18:44] look at the result so once it knows the
+[00:18:47] action it is going to take the action
+[00:18:49] inputs or the inputs to the tools and
+[00:18:51] finally it is going to look at the
+[00:18:53] result and that's what observation is
+[00:18:55] right here it's going to see hm well do
+[00:18:58] we have the final answer or do we have
+[00:19:01] to repeat the cycle again and once it
+[00:19:04] has the answer it then proceeds to the
+[00:19:06] final answer just like we saw in the
+[00:19:09] terminal the cycle of thought action
+[00:19:12] observation continues until the agent is
+[00:19:14] confident it has solved each part of
+[00:19:16] your prompt it's like watching a
+[00:19:18] detective walk through Clues one by one
+[00:19:21] and this brings us to the end of the
+[00:19:22] course this course is already gone on
+[00:19:24] for too long but I believe that we've
+[00:19:26] learned everything important in Lang
+[00:19:28] chain to be able to get started with
+[00:19:30] building AI applications so you might
+[00:19:32] notice that we've used a lot of helper
+[00:19:34] functions and pre-built proms from the
+[00:19:36] repository right here I'm also going to
+[00:19:38] make a separate video next where we're
+[00:19:41] going to be deep diving into agent
+[00:19:43] creation without the help of any of
+[00:19:45] these existing helper methods so no
+[00:19:48] helper functions no pre-made proms just
+[00:19:51] pure agent creation okay so that will
+[00:19:53] give you a much deeper understanding of
+[00:19:55] how agents work and how agents think
+[00:19:58] also I posting several videos per week
+[00:20:00] and if you haven't subscribed do
+[00:20:02] subscribe so that you'll be notified so
+[00:20:04] thank you very much for watching and
+[00:20:05] I'll see you in the next video

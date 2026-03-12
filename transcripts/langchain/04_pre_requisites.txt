@@ -1,0 +1,57 @@
+[00:00:00] all right so let us talk about the
+[00:00:01] prerequisits first to be able to follow
+[00:00:03] along with the scour you will need
+[00:00:05] python version 3.8 or higher installed
+[00:00:08] and the second thing is make sure that
+[00:00:09] you have a code editor installed as well
+[00:00:11] I will be using vs code in this course
+[00:00:13] and last but not least you will also
+[00:00:15] have to create an open AI account
+[00:00:17] because we will be using open AI apis in
+[00:00:20] this course if you don't have python
+[00:00:22] installed I have attached Python 3
+[00:00:24] installation tutorial links in the
+[00:00:26] description for both windows as well as
+[00:00:28] Mac so once you're done installing you
+[00:00:30] can come back to this video and for vs
+[00:00:32] code you can go to this particular link
+[00:00:33] right here and then you can download
+[00:00:35] visual studio code for whichever
+[00:00:36] operating system that you are working
+[00:00:38] with the installation is also pretty
+[00:00:40] straightforward for this and finally
+[00:00:41] let's go ahead and create an open AI
+[00:00:44] account if you don't have it already the
+[00:00:46] reason why we need that is because we
+[00:00:47] need the API key in order to be able to
+[00:00:50] hit that API endpoint to access open
+[00:00:52] llms right so to do that let's go to
+[00:00:55] platform.
+[00:00:58] open.com okay so I'm I'm going to log in
+[00:01:00] because I already have an account uh if
+[00:01:02] you don't you can just go ahead and sign
+[00:01:04] up right here so once you're in you can
+[00:01:06] click on this dashboard tab right here
+[00:01:09] on your left side you can see a tab for
+[00:01:11] API keys so we can click on it so if
+[00:01:15] you've never created a key before you
+[00:01:16] might see an empty list right here so
+[00:01:18] let's actually go ahead and create a new
+[00:01:20] one by clicking on this button I'm going
+[00:01:22] to name it l chain
+[00:01:25] tutorial I'm going to leave the
+[00:01:27] permissions as all and let's go ahead
+[00:01:29] and create it
+[00:01:31] all right so we have it right here also
+[00:01:33] please make sure to save it somewhere in
+[00:01:35] your computer because if you lose it you
+[00:01:37] will have to create another one again
+[00:01:39] okay and that's it so far we have
+[00:01:41] installed Python 3 we've installed
+[00:01:43] Visual Studio code as well as we've
+[00:01:45] created an openi account and created an
+[00:01:47] API key as well so in the next section
+[00:01:50] let us actually go ahead and set up our
+[00:01:52] development environment using python so
+[00:01:54] that we can actually start working with
+[00:01:55] L chain so I'll see you there

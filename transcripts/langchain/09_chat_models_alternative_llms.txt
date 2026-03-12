@@ -1,0 +1,77 @@
+[00:00:00] welcome to the third example of Lang
+[00:00:01] chain we are going to see how easy it is
+[00:00:03] to switch between different models using
+[00:00:05] Lang chain so so far we've only been
+[00:00:08] working with open AIS chat models right
+[00:00:11] so I have gone ahead and written out
+[00:00:13] some code for you so this first part of
+[00:00:15] the code you should be familiar already
+[00:00:17] we have the messages list we have a
+[00:00:19] simple system message and a human
+[00:00:21] message and for this we are using the
+[00:00:23] open AI chart model but in the future if
+[00:00:26] you want to switch to a different model
+[00:00:28] and this could be for whatever reason
+[00:00:30] maybe this model is a little more
+[00:00:32] pricier or there's another model that is
+[00:00:34] doing a certain task much better or
+[00:00:37] faster even right whatever is the case
+[00:00:39] you can sort of easily switch models in
+[00:00:41] Lang chain so in this section we will
+[00:00:43] look at using Google's gini model as
+[00:00:47] well as the anthropic model which is
+[00:00:49] clouds all right so you can see that up
+[00:00:52] top I have installed two more chart
+[00:00:54] models to communicate with Google as
+[00:00:57] well as anthropic so if I scroll down
+[00:01:00] you can see that the process is no
+[00:01:01] different to open AIS so we just use a
+[00:01:04] different model so in this case we are
+[00:01:06] using chat anthropic and we are passing
+[00:01:08] in the exact model inside of anthropic
+[00:01:11] that we want to work with so in this
+[00:01:13] case this is the model that I want to
+[00:01:15] work with all right no different to
+[00:01:18] working with let's say how we were doing
+[00:01:20] so far with open AI chart model right
+[00:01:23] same thing for Google Gemini as well so
+[00:01:25] if you have any questions or if you want
+[00:01:27] to download the right chat model package
+[00:01:29] I've provided the link to the Lang chain
+[00:01:31] docs where you can find the right model
+[00:01:33] that you want so if I scroll down even
+[00:01:36] below you can see that I have used Lang
+[00:01:38] chains chat model for Gemini and all
+[00:01:41] that I'm doing is specifying the exact
+[00:01:44] model that I want to use so in this case
+[00:01:47] we are using Gemini 1.5 flash all right
+[00:01:51] so as you can see Lang chain abstracts
+[00:01:53] away all of the complexity to sort of
+[00:01:55] interact with different models apis and
+[00:01:58] also it makes the process very
+[00:02:00] consistent as well right so I have
+[00:02:03] attached all of the docs related to what
+[00:02:05] are the models that are available in
+[00:02:07] gini what are the models that are
+[00:02:09] available in CLA etc etc so knowing how
+[00:02:12] to switch between models can be pretty
+[00:02:14] handy because let's say you're working
+[00:02:15] on a product or you're building a
+[00:02:17] solution and based on the task at hand
+[00:02:20] maybe a different model is better at
+[00:02:22] handling a certain thing maybe another
+[00:02:24] model is faster maybe another model is
+[00:02:26] more accurate maybe another model is
+[00:02:27] more faster or cheaper right so langin
+[00:02:31] also lets it very easy to sort of help
+[00:02:33] you switch things up as well all right
+[00:02:35] guys that's pretty much it for the
+[00:02:36] section in the next section we are going
+[00:02:38] to be doing something very interesting
+[00:02:40] uh we basically going to be having a
+[00:02:42] conversation with an llm through our
+[00:02:45] terminal very similar to how chat CHP
+[00:02:47] works but you're going to be doing all
+[00:02:48] of this locally instead of your terminal
+[00:02:50] so I'm really looking forward to it and
+[00:02:52] I'll see you there

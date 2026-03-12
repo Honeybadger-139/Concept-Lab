@@ -1,0 +1,178 @@
+[00:00:00] hello guys in this section we're going
+[00:00:01] to be breaking down the entire retrieval
+[00:00:03] augmented system and looking at each of
+[00:00:05] the components so that we can see what
+[00:00:07] exactly is going on right so I'm going
+[00:00:10] to be using the same example that we saw
+[00:00:12] in the last section and as you can see
+[00:00:14] up here we start with a few 100 PDFs or
+[00:00:17] basically just like a lot of text
+[00:00:19] documents that are private right so
+[00:00:21] we'll be doing something called chunking
+[00:00:23] right here okay so we'll be learning
+[00:00:24] terminologies like embeddings vector
+[00:00:27] store and how the retriever works right
+[00:00:29] here so once you understand how all of
+[00:00:31] these individual Pieces come together to
+[00:00:33] form the entire rag system the actual
+[00:00:35] coding aspect itself is actually kind of
+[00:00:38] a cakewalk and it's very simple all
+[00:00:40] right so what I'm going to do is I'm
+[00:00:41] going to split this section into two
+[00:00:43] different parts okay so in the first
+[00:00:46] part we're going to go over this first
+[00:00:49] process right here which is going to
+[00:00:51] basically take a huge amount of private
+[00:00:53] text in this case a lot of documents and
+[00:00:55] then make it go through several
+[00:00:57] processes and finally save that in a
+[00:00:59] very special type of a database called a
+[00:01:02] vector database and once we're done with
+[00:01:04] that in the second part of the section
+[00:01:06] we're going to be seeing how a user can
+[00:01:08] ask a question okay something like let's
+[00:01:10] say what are the company's policies on
+[00:01:12] remote work right and then this
+[00:01:14] component called the retriever retrieves
+[00:01:17] only the relevant parts from these
+[00:01:20] documents okay so once the retriever has
+[00:01:23] both the relevant parts from The
+[00:01:24] Document Plus the user's question as
+[00:01:26] well it sends both of that both of that
+[00:01:29] information to the llm so that it can
+[00:01:32] give an accurate well-informed answer so
+[00:01:35] this was a very quick glance on the
+[00:01:37] entire Rags workflow let's actually Deep
+[00:01:40] dive into the first section of this
+[00:01:42] workflow where we're going to be
+[00:01:43] converting all of this documents and
+[00:01:45] text into a certain format and store all
+[00:01:47] of that in the vector store right all
+[00:01:51] right so in the flowchart you can see
+[00:01:52] that there is a PDF that is insanely big
+[00:01:54] right so in other words this is uh 10
+[00:01:57] million tokens long so if you do not
+[00:02:00] know what tokens are let's first
+[00:02:02] understand that right so what is a token
+[00:02:05] so in the context of language models a
+[00:02:08] token is a unit of text that the model
+[00:02:10] processes okay so tokens uh tokens can
+[00:02:13] be as short as one character or as long
+[00:02:16] as one word depending on the language
+[00:02:18] and the structure of the text for
+[00:02:20] example the word hello is one token
+[00:02:23] while the phrase I am is typically
+[00:02:25] broken down into two tokens i and m
+[00:02:28] right so tokens are crucial because llms
+[00:02:31] have a limit on how many tokens they can
+[00:02:33] handle at once often referred to as the
+[00:02:36] context window so this means that if we
+[00:02:39] have a PDF that's 10 million tokens long
+[00:02:41] we cannot feed it to the model in one go
+[00:02:45] okay why let's look at actually let's
+[00:02:47] actually look at the context Windows of
+[00:02:50] different popular models out there so
+[00:02:53] GPD 3.5 turbo which is the model that
+[00:02:56] you get access to on your free chity
+[00:02:58] version right in this free version you
+[00:03:01] can only send 16,000 tokens at any given
+[00:03:03] time right GPD 4 though is somewhere
+[00:03:06] around 130,000 tokens right and Google's
+[00:03:10] Gemini right here is at the highest at 1
+[00:03:13] million tokens but in our example though
+[00:03:16] we have one PDF or several PDFs it could
+[00:03:18] be anything worth 10 million tokens
+[00:03:22] right so it is uh impossible to dump all
+[00:03:25] of that and ask a question to the llm
+[00:03:27] right it will complain that it's too
+[00:03:29] long right and it's not a scalable
+[00:03:31] solution either because think about it
+[00:03:33] right now yeah maybe Google's Gemini has
+[00:03:36] the context window so that you can dump
+[00:03:38] all your private documents and ask a
+[00:03:40] question on top of it you can do that
+[00:03:42] maybe but let's say in the future your
+[00:03:44] document size Grows Right and Google's
+[00:03:47] Gemini context window might remain the
+[00:03:49] same so it is not really a scalable
+[00:03:51] solution right this is exactly why in
+[00:03:54] the rags system we're going to be
+[00:03:56] putting all that text documents through
+[00:03:58] a process called chunking which is going
+[00:04:00] to be step two right so let's see what
+[00:04:03] chunking is okay chunking is a process
+[00:04:07] where we can split big documents into
+[00:04:09] several smaller chunks and you can see
+[00:04:11] here that you know each chunk is worth
+[00:04:13] thousand tokens right so if each chunk
+[00:04:17] is worth, tokens then you can do some
+[00:04:19] simple mathematics in your head and uh
+[00:04:22] we can probably say that we now have
+[00:04:24] 10,000 chunks right because 10,000
+[00:04:26] chunks into 1,000 tokens each is going
+[00:04:29] to be 1 million again we're just
+[00:04:31] chunking it because we cannot dump all
+[00:04:33] these large files into Char GPD but if
+[00:04:36] we make smaller chunks and based on the
+[00:04:38] user prompt this component the retriever
+[00:04:41] which we'll get to in a second okay so
+[00:04:43] this retriever what it will do is it
+[00:04:44] will go query only those relevant chunks
+[00:04:48] based on the users's prompt and then
+[00:04:50] pass it to the model along with the user
+[00:04:52] prompt okay so we doing this we can pass
+[00:04:54] in not just one or two chunks but
+[00:04:56] actually a lot of chunks right if each
+[00:04:58] chunk is like, tokens and the free
+[00:05:01] version of CH GPD even accepts like
+[00:05:03] 16,000 right so we can pass in like 12
+[00:05:05] 13 14 different chunks and in addition
+[00:05:07] to the users prompt which could be one
+[00:05:09] or two tokens right I mean not one or
+[00:05:11] two but a th000 or 2,000 tokens right so
+[00:05:15] yeah we also have a lot of room for the
+[00:05:17] users question as well about those
+[00:05:19] chunks so this way we will have some
+[00:05:21] more room for the users question as well
+[00:05:24] about those chunks right so we now know
+[00:05:26] that we sort of break everything down
+[00:05:28] into several chunks but what exactly is
+[00:05:31] a chunk what does it have right so if
+[00:05:33] you're wondering basically they just
+[00:05:35] plain text right so if you imagine this
+[00:05:38] to be a 500 page book and we also know
+[00:05:40] that each chunk can only have th000
+[00:05:42] tokens then each chunk can be thought of
+[00:05:45] as just like four to five lines or a
+[00:05:48] small paragraph like this right and the
+[00:05:51] next chunk is going to be the next four
+[00:05:52] to five lines so it's a continuation the
+[00:05:55] ordering is maintained as well right all
+[00:05:57] right so uh so we've chunked it what
+[00:06:00] next so so far we've just taken a huge
+[00:06:02] text split it into chunks now our next
+[00:06:05] goal is to extract only the chunks that
+[00:06:08] are relevant to the user prompt collect
+[00:06:11] only those particular chunks and then
+[00:06:12] send it to the model along with the
+[00:06:14] prompt so that's what we got to do
+[00:06:16] second right so we have to ask ourselves
+[00:06:18] a question how can we actually query
+[00:06:20] only the chunks that are
+[00:06:22] relevant okay after all we can't just
+[00:06:24] brute force uh search and check for
+[00:06:27] exact words that match with a prompt
+[00:06:29] right that's kind of like an old school
+[00:06:31] dumb way of doing things right we need
+[00:06:33] to be collecting the chunks based on
+[00:06:35] meaning not the exact word itself and
+[00:06:38] this is where the concept of embeddings
+[00:06:40] and Vector databases come into play it
+[00:06:43] lets us search for chunks semantically
+[00:06:46] or in other words based on meaning and
+[00:06:48] not look for exact words or letters so
+[00:06:50] in the next section we're just going to
+[00:06:52] quickly take a detour uh look at what
+[00:06:54] embeddings and vctor databases are and
+[00:06:56] then come back to this particular Rags
+[00:06:59] all right so I see you there

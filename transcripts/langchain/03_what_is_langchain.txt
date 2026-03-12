@@ -1,0 +1,71 @@
+[00:00:08] all right so to understand what Lang
+[00:00:10] chain is let's start with a very simple
+[00:00:12] problem so imagine you want to plan a
+[00:00:15] vacation and you want to seek the help
+[00:00:17] of chbd so I'm going to say something
+[00:00:19] like I want to plan a trip to Paris this
+[00:00:21] Saturday can you book my flight also
+[00:00:23] book a hotel the same day and suggest
+[00:00:25] some good restaurants okay so let's
+[00:00:27] actually see what happens behind the
+[00:00:28] scenes I'm not pressing enter just yet
+[00:00:31] so when I press enter this query is sent
+[00:00:33] to an llm model so this chity
+[00:00:36] application might use a lot of models it
+[00:00:38] might use charity 3.5 charity 40 40 mini
+[00:00:42] a lot of other models right so these are
+[00:00:44] the large language models that you see
+[00:00:47] on the right side the chat application
+[00:00:49] itself is just an interface for the user
+[00:00:52] like you and me right so when I press
+[00:00:54] enter let's see what
+[00:00:56] happens right so you can see that it
+[00:00:59] says I cannot make bookings directly but
+[00:01:01] I can help you with planning right so
+[00:01:03] this is one of the biggest limitations
+[00:01:05] of large language models they are smart
+[00:01:07] and can talk about travel but they
+[00:01:09] cannot actually interact with the real
+[00:01:10] world right so on its own the llms are
+[00:01:13] just the brains right they can be
+[00:01:15] trained on certain data and it will
+[00:01:17] reason with it right but it cannot do
+[00:01:20] anything outside of it let's say you
+[00:01:21] want to build an application that needs
+[00:01:23] to have the brains basically the
+[00:01:25] reasoning ability of an llm but at the
+[00:01:28] same time it also should have the
+[00:01:29] ability ability to communicate with the
+[00:01:31] real world right communicate with real
+[00:01:33] world apis databases right send emails
+[00:01:36] if you want to do that we need to have
+[00:01:38] some sort of a framework right in the
+[00:01:40] middle right and that is where Lang
+[00:01:43] chain comes into the picture Okay so
+[00:01:45] Lang chain acts as a bridge between the
+[00:01:48] llms and the real world so to put it
+[00:01:51] simply Lang chain is by far the most
+[00:01:53] popular framework that helps build
+[00:01:55] applications using llms right so in the
+[00:01:58] future if you want to switch out
+[00:02:00] gp4 with let's say a free hugging face
+[00:02:02] llm if you're shot on cash let's say you
+[00:02:05] can easily do so without even touching
+[00:02:07] the code that you wrote with L chain
+[00:02:09] right so with L chain the AI that we're
+[00:02:11] working with can do so much more in real
+[00:02:13] world I'll give you a few examples so it
+[00:02:16] can access a lot of apis for example it
+[00:02:18] can access flight and restaurant booking
+[00:02:20] apis from let's say booking.com or
+[00:02:23] open.com it can access private company
+[00:02:25] databases to answer customer queries it
+[00:02:28] can send emails it can browse Google
+[00:02:31] Wikipedia it can scrape websites and a
+[00:02:33] lot lot more right so Lang chain doesn't
+[00:02:36] just make the AI smarter it gives it the
+[00:02:38] ability to act in the real world this is
+[00:02:40] just a very small example so as we go
+[00:02:43] through the course we will explore a lot
+[00:02:45] more use cases so I hope you're excited
+[00:02:47] let's get started

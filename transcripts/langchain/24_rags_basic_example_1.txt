@@ -1,0 +1,227 @@
+[00:00:00] welcome to the first code example inside
+[00:00:01] the rag module so in this section we are
+[00:00:03] going to be implementing the same exact
+[00:00:05] thing that we saw in the diagram earlier
+[00:00:08] which is we are going to have a document
+[00:00:10] in this case it's going to be the Lord
+[00:00:12] of the Rings book technically it is a
+[00:00:14] book uh but we can think of it as a
+[00:00:15] large collection of texts all right so
+[00:00:18] I've split the code into two parts here
+[00:00:20] so that we can understand it better so
+[00:00:22] in the first part we're going to be
+[00:00:24] implementing the first part of the
+[00:00:25] diagram so if we come back here first
+[00:00:28] we're going to be loading the document
+[00:00:30] or the book or the collection of books
+[00:00:32] load it and then we are going to start
+[00:00:34] chunking it next we are going to convert
+[00:00:37] each of those text chunks into vector
+[00:00:40] embeddings and finally we are going to
+[00:00:43] be saving all of those embeddings along
+[00:00:45] with the original texts inside to the
+[00:00:47] vector store okay so for our code we're
+[00:00:50] going to be using the chroma DB Vector
+[00:00:52] store and it uh basically Let's us embed
+[00:00:55] I mean save our embeddings locally as
+[00:00:57] well so we don't have to use cloud for
+[00:00:59] that
+[00:01:00] for this section we have to install two
+[00:01:02] additional packages so you will have to
+[00:01:04] run the command pip install chroma DB
+[00:01:07] and this is going to have all the core
+[00:01:09] modules needed to create the vector
+[00:01:11] store and we also need Lang chain Das
+[00:01:14] chroma package as well this is going to
+[00:01:17] be the wrapper that connects our Lang
+[00:01:19] chain application with the vector store
+[00:01:21] so now that we've installed all the
+[00:01:23] necessary packages let's dive into the
+[00:01:25] code so we know that the first thing
+[00:01:27] that we have to do is to load the
+[00:01:29] document right right so to load the
+[00:01:31] document we need to know the path to
+[00:01:32] that particular document right and that
+[00:01:35] is exactly what we're doing here so this
+[00:01:37] dur name method is going to give us the
+[00:01:39] path to the current directory the file
+[00:01:42] is in and we are inside This 4ore Rags
+[00:01:46] directory right so now that we have the
+[00:01:48] current directory we can then go inside
+[00:01:51] of the documents and then the name of
+[00:01:53] the book and this gives us the file path
+[00:01:56] to the book right here okay so this is
+[00:01:58] just very standard p stuff all right so
+[00:02:01] now this is where the actual Vector
+[00:02:03] stores come into play now we need to
+[00:02:06] provide a directory in our project for
+[00:02:08] the chroma DB to go ahead and create its
+[00:02:10] Vector store remember we are going to be
+[00:02:13] storing all of our Vector embeddings
+[00:02:15] locally and not in the cloud because
+[00:02:17] we're just learning right so I'm just
+[00:02:19] going to tell it to create a folder
+[00:02:21] inside of our current directory call the
+[00:02:24] folder DB and then create a DB file
+[00:02:28] inside of it called chroma _
+[00:02:31] DB Okay so we've named it persistent
+[00:02:35] directory because you know whatever is
+[00:02:37] going to be saved there is going to be
+[00:02:39] persisted as in it's not going to be
+[00:02:41] erased every time we stop the
+[00:02:43] application and restart it okay so if we
+[00:02:45] go back to our diagram right here in
+[00:02:47] this step we have all of the chunks
+[00:02:50] converting it into embeddings and then
+[00:02:52] we are going to be storing all of that
+[00:02:53] content in the database and this data
+[00:02:56] will persist so that we can use it at a
+[00:02:58] later date all right next next I've got
+[00:03:00] a very simple check here saying that if
+[00:03:03] this DP file is already created we don't
+[00:03:05] want to be running the same thing again
+[00:03:08] why if we come back to the diagram the
+[00:03:10] text to embedding process it costs a
+[00:03:12] little bit of money right because we'll
+[00:03:14] be using an API to convert it right so
+[00:03:17] we're just making a check right here
+[00:03:18] saying that only if it is not created
+[00:03:21] already you know we allow it to go
+[00:03:23] inside of here all right so let's see
+[00:03:26] what happens inside of this so it says
+[00:03:29] persistent d Tre does not exist
+[00:03:31] initializing Vector store right so we're
+[00:03:34] starting the process but in order for
+[00:03:36] the process to start we actually need
+[00:03:39] this file in the location if we don't
+[00:03:42] have this file inside the documents
+[00:03:44] folder we are not we're just going to
+[00:03:46] throw an error saying that the file does
+[00:03:48] not exist let's keep going now we know
+[00:03:51] the exact path to the book as well as
+[00:03:53] the path to the DB next up let's load
+[00:03:56] the book so this is going to be the
+[00:03:58] first step right so we are going to be
+[00:04:00] using the text loader class that I'm
+[00:04:02] importing from the documents loader
+[00:04:05] module so this will help us uh basically
+[00:04:08] load the document in memory right here
+[00:04:11] like basically assigning a value to a
+[00:04:13] variable so once we've loaded the
+[00:04:15] document or it could be multiple
+[00:04:17] documents right we are going to start
+[00:04:19] chunking it right into smaller texts so
+[00:04:22] to do that we are going to be using the
+[00:04:23] character text splitter class that if I
+[00:04:27] scroll up here we've imported it from
+[00:04:29] the the text splitter module so this
+[00:04:32] takes care of chunking how much ever
+[00:04:34] documents you provided okay so we are
+[00:04:36] initializing it saying that we want each
+[00:04:38] chunk to have a th000 characters and we
+[00:04:41] currently have the chunk overlap set to
+[00:04:43] zero as well so what is this chunk
+[00:04:46] overlap right so let's look at that
+[00:04:49] chunk overlap defines how many
+[00:04:50] characters or tokens depending on the
+[00:04:53] splitter should be included in both the
+[00:04:55] end of one chunk and the beginning of
+[00:04:57] the next chunk so by setting the chunk
+[00:05:00] overlap to zero you are telling the
+[00:05:02] splitter to ensure that there is no
+[00:05:04] overlap between chunks if we set the
+[00:05:07] chunk overlap to 100 for example the
+[00:05:09] last 100 characters of one chunk will
+[00:05:11] appear at the beginning of the next
+[00:05:13] chunk so this helps preserve context
+[00:05:16] across the chunks all right this is an
+[00:05:18] example of two different chunks you can
+[00:05:20] see that the first chunk ends with the
+[00:05:22] sun was set and the second chunk begins
+[00:05:25] with Ting and the Shadows of the tree
+[00:05:28] right so this is the reason why we have
+[00:05:30] to add a little bit of overlap okay so
+[00:05:32] we ideally want to maintain as much
+[00:05:33] information within a particular chunk so
+[00:05:36] that is why we add some overlapping
+[00:05:38] right so by adding this extra overlap we
+[00:05:41] ensure that the model doesn't miss
+[00:05:43] important context while processing
+[00:05:45] chunks independently okay so secondly it
+[00:05:49] also helps with semantic understanding
+[00:05:52] especially when we working with large uh
+[00:05:54] texts it could be like books right
+[00:05:57] chunking with overlap can help with
+[00:05:59] better understanding across the chunks
+[00:06:01] when querying or processing so let's get
+[00:06:04] back to the code and let's add some
+[00:06:06] chunk overlap here as well if you're
+[00:06:08] working with complex texts like essays
+[00:06:11] novels Etc it's better to give it
+[00:06:13] somewhere between 20 to 100 characters
+[00:06:16] so I'm going to give something like 50
+[00:06:19] if we are working with a simple text
+[00:06:20] zero is also fine but I'm going to leave
+[00:06:22] it at 50 let's move along so now that
+[00:06:25] we've chunked it and now we have an
+[00:06:27] array of chunks it could be you know 20
+[00:06:30] 50 100 right so we'll print that as well
+[00:06:33] to look at the length so the next step
+[00:06:35] if we look at the diagram is to convert
+[00:06:37] each chunk into its Vector embeddings
+[00:06:40] version so we're going to be using the
+[00:06:42] help of this particular model right here
+[00:06:44] the text embedding three small okay this
+[00:06:48] is by far the most capable embedding
+[00:06:50] model by open aai that is also I believe
+[00:06:53] very cheap as well there is also another
+[00:06:55] model called text embedding three large
+[00:06:58] okay so if you want the your vector
+[00:07:00] embeddings to have a lot more numbers in
+[00:07:02] the array then you can go for this large
+[00:07:04] model okay so of course for this
+[00:07:07] tutorial we're going to be sticking with
+[00:07:08] the small okay so this I believe does
+[00:07:11] the job pretty well once we have all of
+[00:07:14] the embeddings right here the next step
+[00:07:15] is to store them in the database the
+[00:07:17] vector database right so if we come back
+[00:07:19] to the diagram we store the embeddings
+[00:07:22] as well as the corresponding texts in
+[00:07:24] the database and that is exactly what
+[00:07:27] we're doing here right so we pass in the
+[00:07:29] doc box as well as the embeddings to the
+[00:07:31] store and exactly where to store it that
+[00:07:35] is in this particular directory right so
+[00:07:38] let us go ahead and run this file so I'm
+[00:07:41] going to click on the play button also
+[00:07:43] note that there isn't any uh folders
+[00:07:46] database folder database files that are
+[00:07:48] getting that are not created just yet
+[00:07:49] right so if I run it let's give it a few
+[00:07:54] seconds and great so now you can see
+[00:07:57] that the embedding process has been done
+[00:08:00] and it's been successfully stored in
+[00:08:02] this file right here the same chroma DB
+[00:08:06] that we specified above in the code so
+[00:08:09] if I scroll up right here we can see
+[00:08:10] that we have several logs right what
+[00:08:13] were the processes it went through right
+[00:08:15] it's say created a chunk created a chunk
+[00:08:17] right and the total number of chunks is
+[00:08:19] going to be 40 something okay and we
+[00:08:22] we've also printed the first chunk to
+[00:08:25] the console the very first chunk and
+[00:08:27] it's nothing but the first few like the
+[00:08:28] first 10 lines of the book something
+[00:08:30] like that so it says the book is largely
+[00:08:32] concerned with Hobbits and if I go into
+[00:08:34] our book right here you can see that
+[00:08:37] that is exactly what we have at the very
+[00:08:39] top right so the first step in the whole
+[00:08:43] process is done we have stored our
+[00:08:45] private data in the vector store now
+[00:08:47] let's actually go to the part two of the
+[00:08:49] code where we're going to be looking at
+[00:08:52] this particular part of the system all
+[00:08:55] right I'll see you there

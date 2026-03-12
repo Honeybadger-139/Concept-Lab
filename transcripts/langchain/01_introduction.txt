@@ -1,0 +1,40 @@
+[00:00:00] hey guys welcome to this longchain crash
+[00:00:02] course for beginners if you're curious
+[00:00:04] about building AI applications then you
+[00:00:07] are in the right place whether you're a
+[00:00:09] developer entrepreneur or just somebody
+[00:00:11] interested in AI this course is for you
+[00:00:14] and by the end of the scratch course
+[00:00:16] we're going to solve real business
+[00:00:17] Problems by building our own rack
+[00:00:19] chatbots creating our own agents and
+[00:00:21] tools automate tasks using L train and a
+[00:00:24] lot lot more if you haven't heard of
+[00:00:26] these terminologies don't worry we're
+[00:00:28] going to be starting from the very
+[00:00:30] basics of L chain right from what is L
+[00:00:33] chain why is it used and build a way up
+[00:00:36] step by step you can find different
+[00:00:38] sections of the course below the video
+[00:00:39] here and if you ever get stuck all the
+[00:00:42] code that we'll be writing is available
+[00:00:44] in the GitHub repository the link is in
+[00:00:46] the description below if you're new to
+[00:00:48] my channel I'm Harish Neil I've worked
+[00:00:50] in software development and AI roles at
+[00:00:52] companies like freshworks Zoho Samsung I
+[00:00:56] also have a degree in machine learning
+[00:00:58] and artificial intelligence from bit
+[00:01:00] fani as well and more importantly I love
+[00:01:02] this stuff and I'm excited to share it
+[00:01:04] with you if you want to connect with me
+[00:01:06] or clear up any doubts or get stuck
+[00:01:08] anywhere I've got a free community where
+[00:01:11] you can find like-minded driven AI
+[00:01:13] developers Founders Freelancers even
+[00:01:15] free webinars on latest AI developments
+[00:01:17] it's really a place where you can
+[00:01:19] Network learn and maybe even Kickstart
+[00:01:21] your next big opportunity the link is in
+[00:01:23] the description below so with that said
+[00:01:25] let's get started

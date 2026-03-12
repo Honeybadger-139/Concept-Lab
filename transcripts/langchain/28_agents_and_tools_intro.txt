@@ -1,0 +1,131 @@
+[00:00:00] welcome to the last and final component
+[00:00:02] of L chain called agents and tools you
+[00:00:05] know that moment when you hear AI agents
+[00:00:07] and you think that it's going to be
+[00:00:09] super complicated I felt the same way
+[00:00:12] when I started it but here's the thing
+[00:00:14] it is actually much more simpler than it
+[00:00:17] sounds okay and by the end of the
+[00:00:18] section you'll be wondering why were you
+[00:00:20] even worrying so much you can think of
+[00:00:22] Agents as the problem solvers of the AI
+[00:00:25] World agents are capable of thinking on
+[00:00:27] their own so in other words it's AI that
+[00:00:30] can make autonomous decisions we learned
+[00:00:33] about chains and drags right they follow
+[00:00:36] our specific instruction but agents they
+[00:00:38] actually take it a step further they can
+[00:00:41] decide for themselves what steps to take
+[00:00:43] on their own if that sounds too complex
+[00:00:46] to understand don't worry we are going
+[00:00:48] to be starting from the basics we will
+[00:00:50] break down what agents really are why
+[00:00:53] they such a game changer and how they
+[00:00:55] solve real world problems so no complex
+[00:00:58] words no confusing concept
+[00:01:00] just straightforward explanations that
+[00:01:02] will make you say oh that's what it
+[00:01:04] means okay great let's get started with
+[00:01:07] the fundamental question what exactly
+[00:01:10] are
+[00:01:11] agents think of Agents as AI decision
+[00:01:14] makers that can pick the right tool for
+[00:01:16] the job without being told what to use
+[00:01:19] just like a chef who knows when to use a
+[00:01:21] knife whisk or the oven to create a
+[00:01:23] perfect dish an AI agent can decide when
+[00:01:26] to browse the internet or when to use a
+[00:01:28] calculator or when to make an API call
+[00:01:31] to the database so right here we notice
+[00:01:34] this keyword tools right so what are
+[00:01:37] these
+[00:01:38] tools tools are specific functions that
+[00:01:41] AI can use to complete tasks just like a
+[00:01:44] Chef's kitchen tools like knife for
+[00:01:46] cutting oven for baking blender for
+[00:01:49] mixing tools are the special abilities
+[00:01:52] we give to AI
+[00:01:53] agents okay so just like giving a
+[00:01:56] calculator tool or a search engine tool
+[00:01:58] or a calendar tool
+[00:02:00] right tools like perplexity and a lot of
+[00:02:02] other tool I mean applications are built
+[00:02:05] using tools only all right so now you
+[00:02:07] somewhat must have an idea why we might
+[00:02:10] want to use agents right so basically
+[00:02:13] agents help language models decide what
+[00:02:16] actions to take when solving a problem
+[00:02:20] they choose the right tools at the right
+[00:02:21] time without us telling them which tool
+[00:02:24] to use so let's look at a very simple
+[00:02:26] example of using tools if I ask a agent
+[00:02:30] what is the weather in Paris plus 5 it
+[00:02:34] gets really
+[00:02:35] interesting the AI agent isn't just
+[00:02:38] randomly picking tools it is actually
+[00:02:40] thinking through the process kind of
+[00:02:42] like a detective solving a case firstly
+[00:02:46] the agent saw two parts to the problem
+[00:02:48] finding weather and doing
+[00:02:51] math it knows to get the weather first
+[00:02:54] because you can't add five to something
+[00:02:56] that you don't know yet then it uses the
+[00:02:59] C calculate a tool to add five but you
+[00:03:03] might ask how does the agent know what
+[00:03:05] to do first and what to do
+[00:03:07] second this is where the concept of
+[00:03:10] react comes in this is one of the best
+[00:03:13] patterns in AI today to build agents and
+[00:03:15] by react I don't mean the front-end
+[00:03:17] framework we're talking in terms of AI
+[00:03:20] terms it stands for reasoning plus
+[00:03:23] acting so this is basically a concept
+[00:03:26] that mimics how human beings
+[00:03:28] think so if we look at a problem what do
+[00:03:30] we do first we first think about the
+[00:03:33] problem right and that's when that's
+[00:03:35] exactly what agents do as well think
+[00:03:39] right so the second step is Act and the
+[00:03:42] agent can act or perform the task using
+[00:03:44] various tools
+[00:03:46] available and then the third step is
+[00:03:48] observe what happened and lastly repeat
+[00:03:52] the entire process if needed so let's
+[00:03:55] actually see how our Paris weather
+[00:03:56] equation looks like with react so first
+[00:04:00] it's going to think so the thought comes
+[00:04:02] first I need to find the Paris
+[00:04:04] temperature first so the action is going
+[00:04:08] to be uses weather right it uses the
+[00:04:12] weather API and secondly the action is
+[00:04:15] going to be uses weather
+[00:04:18] API and the third step is the API
+[00:04:21] observation it's 20° C in
+[00:04:24] Paris and then again the thought happens
+[00:04:27] right it is come coming back it's it's
+[00:04:29] cycling so the thought happens it now
+[00:04:32] says now I can add five to this and then
+[00:04:35] the action again happens use this
+[00:04:37] calculator and then the final answer is
+[00:04:39] going to be 25°
+[00:04:41] C think of it like solving a puzzle
+[00:04:44] instead of just showing the finished
+[00:04:46] picture react lets us see each piece
+[00:04:49] being put into place this is a very
+[00:04:52] small example imagine I ask you a much
+[00:04:54] more complicated question like should I
+[00:04:57] pack an umbrella for my trip to London
+[00:04:59] next week and what restaurants should I
+[00:05:02] book you can imagine that this is a
+[00:05:04] multi-step problem right and our AI
+[00:05:07] agent might Loop through the thought
+[00:05:09] action observation repeat thought action
+[00:05:11] observation this thing multiple times to
+[00:05:13] solve this problem I hope you're
+[00:05:15] starting to somewhat get a picture of uh
+[00:05:18] what agents and tools are if you don't
+[00:05:20] understand it completely yet don't worry
+[00:05:22] in the next section we are going to be
+[00:05:23] building custom Agents from scratch and
+[00:05:26] we are going to be looking at a lot of
+[00:05:27] examples as well so I'll see you there

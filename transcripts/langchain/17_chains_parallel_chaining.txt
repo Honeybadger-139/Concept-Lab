@@ -1,0 +1,186 @@
+[00:00:00] in this section let us see how we can
+[00:00:01] use parallel chaining in Lang chain and
+[00:00:03] just to jog your memory let's actually
+[00:00:05] go back to the diagram so what we're
+[00:00:07] going to be doing is so first off we are
+[00:00:09] going to kick off one task okay and that
+[00:00:12] triggers two different chains or three
+[00:00:15] or even 100 even right and all those
+[00:00:18] chains run parallely at the same time
+[00:00:21] and once all of those chains resolve and
+[00:00:24] come to an end we can then do something
+[00:00:26] with the result of all of those chains
+[00:00:28] right so I'm going to be using using a
+[00:00:30] very simple example right here let's say
+[00:00:32] I want to write a blog post about a
+[00:00:34] movie that I'm critiquing or analyzing
+[00:00:37] okay a blog post let's say the movie is
+[00:00:39] Inception and I want the first section
+[00:00:42] of the blog post to have my analysis of
+[00:00:44] the plot okay and I want the second
+[00:00:47] section of the blog post to have the
+[00:00:49] analysis of the characters involved so
+[00:00:51] the first section is going to be all
+[00:00:53] about the plot and the second section is
+[00:00:55] going to be all about the characters
+[00:00:57] okay so what can we do first we we can
+[00:01:00] first get the summary of the movie from
+[00:01:02] the llm and once we have it we can
+[00:01:04] actually start off two separate chains
+[00:01:07] okay so the first chain is going to
+[00:01:08] analyze the plot and the second chain is
+[00:01:11] going to analyze the characters again
+[00:01:13] it's a very simple example but you can
+[00:01:16] imagine that we can apply it to pretty
+[00:01:17] much anything basically we trigger one
+[00:01:19] task and uh that is going to set off
+[00:01:21] several chains parallell and then once
+[00:01:24] all of it comes to an end we do
+[00:01:26] something with the results of all of
+[00:01:27] those right and that's exactly what
+[00:01:28] we're doing here as well so let's
+[00:01:30] actually go down to the chain itself you
+[00:01:32] can see I've already prepared the code
+[00:01:34] and let's actually go through it one by
+[00:01:36] one so as we discussed we are first
+[00:01:39] getting the summary of the movie from
+[00:01:41] the llm and to get it from the llm we
+[00:01:44] need to prompt it first okay so just
+[00:01:46] always remember that in right before
+[00:01:48] calling uh the llm always prompt it
+[00:01:51] because it makes life so much easier for
+[00:01:53] us so we have a summary template if I go
+[00:01:56] ahead and click on it uh with command
+[00:01:59] the system message says you are a movie
+[00:02:01] critic right provide me a brief summary
+[00:02:04] of the movie so we are passing the movie
+[00:02:07] name down here when we're invoking this
+[00:02:10] chain okay now this is when it starts to
+[00:02:12] get interesting so once we get the
+[00:02:15] content alone we are now going to start
+[00:02:18] something called a runnable parallel
+[00:02:20] okay so basically this is a class that
+[00:02:22] Lang chain provides that will help us
+[00:02:24] run multiple chains simultaneously so we
+[00:02:27] are basically you can see that we are
+[00:02:28] importing this from up here so let's
+[00:02:31] come down and you can see that we
+[00:02:33] specify a branches directory and we can
+[00:02:36] actually provide a name for each of the
+[00:02:38] branches or the chains that we want to
+[00:02:40] start okay so in this case we have the
+[00:02:43] plot chain which is going to analyze the
+[00:02:45] plot and then we also have the
+[00:02:47] characters chain which is also going to
+[00:02:49] analyze the characters right okay you
+[00:02:52] you picture this right we have the first
+[00:02:54] chain and the second chain and we're
+[00:02:55] basically naming it right here so let's
+[00:02:57] look at the first chain I'm going to
+[00:02:59] click on it it and you can see that this
+[00:03:01] is a chain itself right so the summary
+[00:03:04] of the movie from the previous task you
+[00:03:06] remember the first task was to gather
+[00:03:08] all of the summary from the llm right so
+[00:03:10] that summary of the movie from the
+[00:03:12] previous task is passed into this first
+[00:03:15] runnable Lambda task okay so here we're
+[00:03:17] constructing another prompt so here we
+[00:03:20] are just creating a prompt that tells
+[00:03:22] the model to analyze the plot if I
+[00:03:24] scroll up here you can see that it says
+[00:03:26] you are a movie critic and we provide in
+[00:03:28] the plot here as well okay so we are
+[00:03:31] passing it over to the model now and
+[00:03:33] finally we are going to get the output
+[00:03:35] right here okay so this is the exact
+[00:03:38] same thing that we're doing for the
+[00:03:39] character an analysis as well right so
+[00:03:42] we're going to create a prompt passing
+[00:03:44] in the plot summary same as before
+[00:03:47] making the llm call and keeping the
+[00:03:49] character analysis result ready okay so
+[00:03:52] once both of these chains sort of okay
+[00:03:55] we have both These Chains right so once
+[00:03:57] both of these chains are done with the
+[00:03:58] execution you can imagine that both of
+[00:04:01] those chains are running parall right
+[00:04:03] one can end earlier one can end a lot
+[00:04:06] before but basically once everything all
+[00:04:08] the parallel chains are done with their
+[00:04:10] execution we get to the next stage in
+[00:04:12] the chain where we have a method to
+[00:04:15] combine all of the results right so you
+[00:04:17] can see the result of the runnable
+[00:04:18] parallel is an object and the object is
+[00:04:21] going to have a property called branches
+[00:04:24] and each of the branch names with their
+[00:04:26] corresponding result will be present
+[00:04:28] inside of that as well
+[00:04:30] so if we actually take a look inside of
+[00:04:32] this method that is all that we're doing
+[00:04:34] right here right all that we're doing is
+[00:04:36] combining it all together that's it so
+[00:04:38] let's run this file and then see the
+[00:04:39] result and it's going to take a while
+[00:04:41] because it's first generating the
+[00:04:43] summary and then another API call goes
+[00:04:45] and then it starts two different chains
+[00:04:47] right one chain is for the character
+[00:04:49] analysis and the second chain is for
+[00:04:51] plot analysis right all right so we have
+[00:04:54] the result right here we first see the
+[00:04:56] plot analysis and if we scroll down here
+[00:05:00] we can see that we have the character
+[00:05:01] analysis as well right so this is just a
+[00:05:04] very simple example you can use this for
+[00:05:07] a variety of use cases based on uh the
+[00:05:10] business requirements right so I'll also
+[00:05:12] give you another example so that you
+[00:05:13] know you can see where we can apply uh
+[00:05:16] this concept of parallel chaining right
+[00:05:18] let's say you want to write a social
+[00:05:19] media post on multiple channels okay on
+[00:05:21] the same topic let's say right so we
+[00:05:24] have Twitter we have LinkedIn Instagram
+[00:05:26] Facebook right all of these channels
+[00:05:29] have different formats right we have to
+[00:05:30] write our content in a different way
+[00:05:33] right we can also generate a ful length
+[00:05:34] YouTube script as well right so what
+[00:05:37] could be the first task that we have to
+[00:05:38] do the first task is to basically
+[00:05:40] collect all of the information on the
+[00:05:42] topic right so let's say that's what we
+[00:05:46] first do and once we have that we can
+[00:05:48] then set off a chain for each and every
+[00:05:50] single social media channel right so
+[00:05:52] because each and every single Channel
+[00:05:54] have their own style of content right so
+[00:05:57] we can also have each chain talk to the
+[00:05:59] the apis of each of those channels and
+[00:06:02] also post them for you right so we first
+[00:06:05] off we collect the the all the necessary
+[00:06:07] information we set off multiple chains
+[00:06:10] parall to execute they all do their own
+[00:06:12] separate things where they are
+[00:06:14] formatting the content uh based on you
+[00:06:16] know the channel that they're U focusing
+[00:06:19] on and then they also communicate in the
+[00:06:21] next runnable they also communicate with
+[00:06:23] the corresponding channels apis and post
+[00:06:26] them if you don't want Lang chain to
+[00:06:28] directly post uh that particular post we
+[00:06:30] can actually talk to the uh the draft
+[00:06:32] apis right that's basically just going
+[00:06:34] to create a draft in that particular
+[00:06:36] platform and then we can just review it
+[00:06:39] right so basically the sky is the limit
+[00:06:42] right and that is it for parall chaining
+[00:06:44] I hope that you understood how we can
+[00:06:46] actually use parallel chaining to apply
+[00:06:48] for real world use cases so in the next
+[00:06:51] section we're going to be looking at the
+[00:06:52] last type of chaining which is called
+[00:06:55] conditional chaining so I'll see you
+[00:06:56] there

@@ -1,0 +1,172 @@
+[00:00:00] welcome to the second core component of
+[00:00:01] flank chain called prompt templates this
+[00:00:04] is something that you will find it very
+[00:00:05] easy to understand but in production
+[00:00:07] grid applications you'll find yourself
+[00:00:09] using this a lot so let's actually go
+[00:00:11] ahead let us look at an example and
+[00:00:13] you'll be able to grasp it very quickly
+[00:00:15] so this is an example of a prompt so we
+[00:00:18] have write a tone email to company
+[00:00:23] expressing interest in the position
+[00:00:26] mentioning the skill as the key strength
+[00:00:29] so all these placeholder values can be
+[00:00:31] replaced with custom values like the
+[00:00:33] tone could be write an enthusiastic
+[00:00:35] email write a confident email write a
+[00:00:37] professional email right a VM email
+[00:00:39] right so the company here could be
+[00:00:42] pretty much any company right uh it
+[00:00:43] could be Google Amazon Samsung whatever
+[00:00:46] and the position here could be you know
+[00:00:49] designer developer Etc and we have the
+[00:00:51] skill as well right so if we pass in
+[00:00:54] these values as input to The Prompt with
+[00:00:57] let's say tone as professional the as
+[00:01:00] Samsung the position as AI engineer we
+[00:01:04] get a string like this with the values
+[00:01:05] replaced that is it right so if you're
+[00:01:08] building a product that generates emails
+[00:01:10] based on all these varying parameters
+[00:01:12] then you can imagine we can easily make
+[00:01:14] it happen with prompt templates so let's
+[00:01:17] actually quickly see how we can
+[00:01:18] Implement all of this in our code so you
+[00:01:21] can see I've created a new file under
+[00:01:23] prompt templates and I've initialized a
+[00:01:26] chat model here as well so it's no
+[00:01:28] different to what we've been doing so so
+[00:01:30] far so now is when we are going to start
+[00:01:32] working with prompt templates so step
+[00:01:34] one we create a string with a
+[00:01:36] placeholders also note that this string
+[00:01:39] right here is only a prompt that you and
+[00:01:42] I can understand so this is the first
+[00:01:44] step right so the next step is to
+[00:01:46] convert this prompt into a format that
+[00:01:49] Lang chain understands so that is going
+[00:01:52] to be step two so to do that I'm going
+[00:01:54] to import something right here so I'm
+[00:01:56] going to say from Lang chain core
+[00:02:00] do prompts so from this particular L
+[00:02:03] chain core package we need the prompts
+[00:02:05] module and from this module we want to
+[00:02:08] import the chat prompt template class so
+[00:02:13] if you're curious about where we got
+[00:02:14] this Lang chain core from because we
+[00:02:16] never installed it right it
+[00:02:18] automatically gets installed when we
+[00:02:20] install the open AI chat model package
+[00:02:22] that we installed earlier in the first
+[00:02:24] section all right so to check you can
+[00:02:26] just go to the virtual environment
+[00:02:27] folder inside of the library right here
+[00:02:29] you will be able to find the core inside
+[00:02:32] okay it's right here all right now let's
+[00:02:34] look at step two so let's actually go
+[00:02:37] below the template string right here and
+[00:02:39] let's convert this prompt into a prompt
+[00:02:41] that Lang chain understands so I'm going
+[00:02:44] to name it prompt
+[00:02:46] template right equals chat prompt
+[00:02:50] template and we want to use the from
+[00:02:52] template method and we want to pass in
+[00:02:55] the template string right here so if I
+[00:02:58] now go ahead and print this
+[00:03:02] variable and hit run you can now see an
+[00:03:05] object with various properties like what
+[00:03:08] the input variables are and a lot of
+[00:03:10] other things right great so this brings
+[00:03:12] us to step number three let's populate
+[00:03:14] the placeholders with actual values so
+[00:03:17] to do that I'm going to say prompt
+[00:03:18] template and I'm going to use the magic
+[00:03:21] keyword invoke to tell Lan chain to do
+[00:03:23] that in the last section we use the
+[00:03:25] invoke keyword to talk to the llm in
+[00:03:27] this case we are going to do it to
+[00:03:28] replace all the placeholders
+[00:03:30] so this takes in an object okay so I'm
+[00:03:33] going to copy paste an object right here
+[00:03:35] and I'm going to save The Returned value
+[00:03:37] into a variable called prompt okay so
+[00:03:40] let's print this as well hit run and now
+[00:03:43] you can see longchain has converted this
+[00:03:45] prompt template into a list with human
+[00:03:47] message because only a human can prompt
+[00:03:50] right pretty obvious also if you
+[00:03:52] remember from the previous sections this
+[00:03:54] is the exact structure that we sent to
+[00:03:56] the llm for answers with the list and
+[00:03:58] everything right we can do the same
+[00:04:00] thing here we can say llm dot invoke and
+[00:04:04] pass in the
+[00:04:05] prompt and then we can store the result
+[00:04:08] in a variable called
+[00:04:10] result and let's print that as well so
+[00:04:13] just the
+[00:04:14] content all right so if I hit run let's
+[00:04:18] give it a few
+[00:04:20] seconds and now you can see the subject
+[00:04:22] and the content of the email and
+[00:04:24] everything right here and the tone that
+[00:04:26] we provided was energetic so the tone of
+[00:04:28] the email will also be energetic right
+[00:04:30] perfect so so far we've been able to
+[00:04:32] take a prompt and make it into a
+[00:04:34] template and send it to an llm but there
+[00:04:37] is one limitation with this particular
+[00:04:38] approach so when we convert our python
+[00:04:40] string prompt right into the prompt that
+[00:04:43] lanch understands which we do right here
+[00:04:46] you always see it creates a list with
+[00:04:48] just one human message right but what if
+[00:04:52] we want more control right what if we
+[00:04:54] want something like this where the
+[00:04:57] system message is also customizable and
+[00:04:59] that is what let's say your product the
+[00:05:01] product that you're building needs right
+[00:05:03] so doing that is very simple as well so
+[00:05:05] I'm just going to paste a bit of code
+[00:05:07] here and let's go through it step by
+[00:05:09] step all right so we're going to have a
+[00:05:13] list of tups right so a tuple is a data
+[00:05:16] structure in Python and each Tuple will
+[00:05:18] have the type of message and the message
+[00:05:21] itself all right so in this example we
+[00:05:24] have the system message and the human
+[00:05:25] message with placeholders all right now
+[00:05:29] this is a template that you me python
+[00:05:31] can understand but Lang chain does not
+[00:05:33] understand it right so we're converting
+[00:05:35] that right here so as you can see this
+[00:05:38] from messages method not only takes a
+[00:05:41] simple string but also a list of tuples
+[00:05:43] as well right and then finally we're
+[00:05:46] replacing the values by passing in these
+[00:05:48] placeholder values and invoking it now
+[00:05:51] I've already gone ahead and printed it
+[00:05:52] as well so let's actually run this file
+[00:05:54] right now all right so now you can see
+[00:05:58] we have an entire list with system
+[00:06:00] message as the first item and the
+[00:06:02] placeholder value has been replaced here
+[00:06:04] as well plus we also have the human
+[00:06:06] message as well now this could be a
+[00:06:09] functionality that your product requires
+[00:06:11] and now you know how to do it now we can
+[00:06:13] easily pass this fully built prompt and
+[00:06:15] get responses from the llm by using the
+[00:06:17] llm variable that we've just created
+[00:06:19] using the chat model and passing this
+[00:06:21] final prompt okay and that is it for the
+[00:06:24] section as I said this is a relatively
+[00:06:27] very simple component of flank chain and
+[00:06:29] and that brings us to the end of the
+[00:06:30] section in the next section we are going
+[00:06:32] to be looking at another core component
+[00:06:34] of L chain called chains and personally
+[00:06:37] it is my favorite because it is really
+[00:06:39] fun to work with at the same time its
+[00:06:42] potential is really unlimited so I'll
+[00:06:44] see you there

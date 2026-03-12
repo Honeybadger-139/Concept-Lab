@@ -1,0 +1,204 @@
+[00:00:00] in the second example of Rags let us see
+[00:00:02] how we can introduce metadata into our
+[00:00:04] chunks so first let's talk about why we
+[00:00:07] even need metadata let's say we put 100
+[00:00:10] different private docs or books into our
+[00:00:12] Vector store and we ask a question in
+[00:00:15] addition to getting the chunks it will
+[00:00:17] be better if we also know where the
+[00:00:18] chunks originated from right for example
+[00:00:22] like it's this particular book chapter 4
+[00:00:24] paragraph 3 or this particular document
+[00:00:27] this section paragraph 7 so it gives us
+[00:00:30] extra information on where the chunks
+[00:00:32] came from so if you think about it it is
+[00:00:35] very similar to what chat GPD search
+[00:00:37] does as well when we ask a question it
+[00:00:40] crawls the web gives you a response but
+[00:00:42] at the same time it attaches a source
+[00:00:44] URL as well like these are the websites
+[00:00:46] I took the answers from so this way we
+[00:00:49] know that the answers are legitimate and
+[00:00:51] it is not just hallucination and another
+[00:00:53] example could be we could store
+[00:00:55] transcripts from a meeting in the vector
+[00:00:57] store and 2 years from now we can chat
+[00:00:59] with the model ask it what was discussed
+[00:01:02] that particular day and it will give me
+[00:01:04] the answer along with the source as well
+[00:01:06] so we can just click on the particular
+[00:01:08] link and go further explore manually so
+[00:01:11] sky is the limit so to help with this
+[00:01:13] particular example I've added a lot more
+[00:01:16] books and prepared code for this section
+[00:01:18] as well as the next few sections for
+[00:01:19] Rags so let's jump into the code now and
+[00:01:22] you will find that it's not really that
+[00:01:24] different to what we've written earlier
+[00:01:26] in the previous section first thing we
+[00:01:29] need to pull all of our new books into
+[00:01:31] the vector store so that we can start
+[00:01:33] asking questions right so I've added a
+[00:01:36] few more books right here like
+[00:01:38] Frankenstein Dracula etc etc and these
+[00:01:41] are pretty long books now let us chunk
+[00:01:44] all of these books embed them and then
+[00:01:47] put them in the vector store so first
+[00:01:50] thing we are getting a reference to the
+[00:01:52] documents
+[00:01:53] directly and then we're also telling
+[00:01:55] Lang chain to create our Vector database
+[00:01:58] containing all of these books in this
+[00:02:00] new file called chroma DB with metadata
+[00:02:03] inside of the DB
+[00:02:05] folder so we're using a different
+[00:02:08] database file this time I've already run
+[00:02:10] this file so I already have the full
+[00:02:13] embedded version of all of my books in
+[00:02:15] this database file and the rest of the
+[00:02:18] code is very identical to the first
+[00:02:20] example we saw we're checking if the
+[00:02:22] database is already created or not if
+[00:02:25] it's already created we do not go inside
+[00:02:27] of this if block so coming in this is is
+[00:02:30] where it's slightly different basically
+[00:02:32] what we did the last time but this time
+[00:02:35] we're embedding several
+[00:02:37] books so the first thing that I'm going
+[00:02:39] to do is go inside of the documents
+[00:02:41] folder and search for all the files that
+[00:02:43] have a txt extension as you can see I've
+[00:02:47] I've got all the books with the txt
+[00:02:48] extension and this line is going to grab
+[00:02:51] all of those book file names and put it
+[00:02:53] in this array All Right Now We're
+[00:02:56] looping through all the book file names
+[00:02:58] and with each book file file name I'm
+[00:03:00] going to load it in memory using the
+[00:03:03] loader and I'm going to add it to the
+[00:03:05] final documents array very very similar
+[00:03:08] to what we did earlier but instead of
+[00:03:10] just one book or document we are doing
+[00:03:13] several right here but there is one more
+[00:03:16] additional thing that we're doing along
+[00:03:19] with the document we're also going to be
+[00:03:21] adding a metadata to each document okay
+[00:03:25] so we can have as much information that
+[00:03:28] we want but for now I'm just seeing
+[00:03:30] source and I'm adding a book file to the
+[00:03:33] source so if I'm loading the
+[00:03:35] Frankenstein book the book file name is
+[00:03:38] going to be
+[00:03:39] Frankenstein and from here on we are
+[00:03:42] going to go through the same process
+[00:03:44] with chunking the entire list of books
+[00:03:46] and then we specifying the embedding
+[00:03:48] model that we're going to be using to
+[00:03:50] embed which is going to be the next step
+[00:03:52] and finally we are creating the vector
+[00:03:54] store by providing the docs the
+[00:03:56] embedding model plus the final DB file
+[00:03:59] it should create
+[00:04:00] and put all of the embedded data in and
+[00:04:02] as I already told you at the start I've
+[00:04:04] already ran this file so I already got
+[00:04:07] the DB file created with all the chunks
+[00:04:09] embedded so let's now go to the next
+[00:04:11] section where we can actually ask
+[00:04:13] questions to the rack system so what
+[00:04:15] we're going to do here is pretty much
+[00:04:17] the same we point the file to the new DB
+[00:04:19] location that we've just created a
+[00:04:21] minute ago so this was the DB name if
+[00:04:23] you remember so this line loads the DB
+[00:04:26] file up so we provide the location as
+[00:04:28] well as the embedding model so here is
+[00:04:30] the query that we are going to be asking
+[00:04:32] so it is going to be where is Dracula's
+[00:04:34] castle located if you're familiar with
+[00:04:37] Dracula he's a vampire that lives in a
+[00:04:40] castle and this is the question that we
+[00:04:41] are asking and obviously somewhere in
+[00:04:44] the book the location of the castle will
+[00:04:46] be mentioned so our super intelligent
+[00:04:48] rack system is going to retrieve the
+[00:04:50] relevant chunks when I run this file so
+[00:04:52] let's look at the next piece of code and
+[00:04:54] here we're configuring the retriever
+[00:04:57] we're still going to be using this type
+[00:04:59] of searching the similarity score
+[00:05:00] threshold and we're also going to be
+[00:05:02] specifying the count should be three and
+[00:05:05] the threshold value should be
+[00:05:07] 0.3 this is the number that works for me
+[00:05:10] because if I reduce this it doesn't give
+[00:05:12] me any results so in your applications
+[00:05:14] you will have to find the right balance
+[00:05:16] and finally we are going to be using the
+[00:05:18] magic keyword invoke and if you remember
+[00:05:21] it does two things right it converts the
+[00:05:24] user question into an embedding and now
+[00:05:26] and now that we have a query that is in
+[00:05:28] an embedding V vectorized format the
+[00:05:31] book content which is also in a
+[00:05:33] vectorized embedding format it goes out
+[00:05:36] queries the top three chunks and finally
+[00:05:39] it prints out all of the chunks so I'm
+[00:05:41] pretty excited to run this file let us
+[00:05:43] see if we able to find the answer in the
+[00:05:45] retrieved chunks but let's run this file
+[00:05:47] so it's going to take anywhere from 4 to
+[00:05:49] 10
+[00:05:54] seconds and amazing we now have three
+[00:05:57] chunks and these are pretty big chunks
+[00:06:00] we know that Dracula exists in this town
+[00:06:02] called Transylvania if you've watched
+[00:06:05] any of the animated movies etc etc so
+[00:06:08] let us actually see if the term
+[00:06:10] Transylvania is present in any of these
+[00:06:12] retrieved chunks so as you can see we
+[00:06:15] have Transylvania mentioned in the third
+[00:06:17] line and also in the seventh line I had
+[00:06:20] visited the British Museum and made
+[00:06:22] search among the books and maps in the
+[00:06:24] library regarding
+[00:06:25] Transylvania and also down here it is
+[00:06:28] giving the exact locality of the castle
+[00:06:30] Dracula so with just this one paragraph
+[00:06:33] even a human can deduce that Dracula
+[00:06:35] lives in Transylvania and more even more
+[00:06:37] importantly we can also see the source
+[00:06:39] of the chunk which says Dracula txt
+[00:06:43] because if you remember we added the
+[00:06:45] book names as metadata to each of the
+[00:06:48] chunks so let's now move on to the next
+[00:06:50] chunk and let's search for the term
+[00:06:52] Transylvania and you can see that it is
+[00:06:55] not listed in the second and third
+[00:06:56] chunks but it probably gives more
+[00:06:59] information that the Dracula does live
+[00:07:01] in
+[00:07:01] Transylvania so you can see that it says
+[00:07:05] thus when we find the habitation of this
+[00:07:07] man that was meaning the Dracula so it
+[00:07:10] is still talking about the location of
+[00:07:12] the Dracula so we only have three books
+[00:07:15] right now but imagine 100 books thousand
+[00:07:18] books or private company documents right
+[00:07:21] and how Rags basically allow the
+[00:07:23] possibility of chatting with it in
+[00:07:25] natural language and be able to get that
+[00:07:27] answer right so I hope I hope that
+[00:07:29] you're starting to see the power of rag
+[00:07:31] systems so that is basically how we can
+[00:07:34] add metadata for each of our chunks all
+[00:07:37] right so the next step is basically to
+[00:07:39] send all these retrieved chunks along
+[00:07:41] with the users's question to the llm so
+[00:07:44] that the llm can actually look at the uh
+[00:07:46] chunks that might potentially have the
+[00:07:48] answer to that particular question and
+[00:07:50] it is going to give us the answer which
+[00:07:52] is going to be in this case Transylvania
+[00:07:54] so we will see how we can do that in the
+[00:07:56] next section

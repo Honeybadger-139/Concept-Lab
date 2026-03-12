@@ -1,0 +1,107 @@
+[00:00:00] in this section we are going to be
+[00:00:01] covering the third component of L chain
+[00:00:03] called chains and it is personally my
+[00:00:05] favorite component of L chain because it
+[00:00:07] lets you connect multiple tasks together
+[00:00:10] by chaining it together and it helps you
+[00:00:12] create sort of like an unified workflow
+[00:00:14] let's look at a quick example so if you
+[00:00:16] remember from The Prompt template
+[00:00:18] example where we just created a prompt
+[00:00:20] template called the invoke method on it
+[00:00:22] with the placeholder values passed in
+[00:00:24] and it gave us the final output right so
+[00:00:27] this can be considered as one task
+[00:00:29] another task would be passing that
+[00:00:31] prompt to the model and calling the
+[00:00:33] invoke method on it again so we can
+[00:00:35] chain the first task and the second task
+[00:00:37] so that once the first task is done the
+[00:00:39] result of that is passed to the second
+[00:00:41] task and then so on and so forth right
+[00:00:44] so you can think of a third task as well
+[00:00:46] right so from the second task we're
+[00:00:48] actually getting the response from the
+[00:00:49] llm so what we can do is there might be
+[00:00:52] a requirement in the product where you
+[00:00:54] might have to convert that particular
+[00:00:56] response from the llm into a specific
+[00:00:58] language let's say French right so that
+[00:01:00] could be a third task so sending that
+[00:01:03] message to the llm saying it okay
+[00:01:05] convert this particular uh message into
+[00:01:07] French and then send it to me so that
+[00:01:09] could be the third task a fourth task
+[00:01:11] would be sending that particular
+[00:01:13] response the French response to uh
+[00:01:17] another person via email right so that
+[00:01:19] could be a fourth task so we're chaining
+[00:01:21] all of these tasks together to create a
+[00:01:23] unified workflow so that is the idea
+[00:01:26] right so by using chains we can do
+[00:01:28] pretty much anything that the the
+[00:01:30] business or the product requires just by
+[00:01:32] connecting it with something called
+[00:01:34] chain next we're going to be looking at
+[00:01:36] all the possible ways to chain tasks so
+[00:01:38] the first task is the extended or
+[00:01:40] sequential chaining right so this is
+[00:01:43] basically what we've been discussing so
+[00:01:44] far right we have the first task the
+[00:01:46] response of that is getting sent to the
+[00:01:48] second one and then the third one and
+[00:01:49] the fourth one so it is in a straight
+[00:01:51] line it is sequential right so that is
+[00:01:53] the uh that is called extended or
+[00:01:55] sequential chaining the next type is we
+[00:01:58] have parallel chaining right so with
+[00:02:01] this type of chaining we can run tasks
+[00:02:03] parallell or simultaneously without it
+[00:02:06] being dependent on each other right so
+[00:02:09] in the previous example each task was
+[00:02:11] sort of dependent on the previous one
+[00:02:13] right but here it doesn't have to be
+[00:02:15] dependent I'll give you an example all
+[00:02:17] right so here's an example task one
+[00:02:20] could be brewing a cup of coffee task
+[00:02:22] two could be making a bread toast task
+[00:02:25] three could be frying an egg right all
+[00:02:28] these tasks run par
+[00:02:30] and quickly and then sort of converge
+[00:02:33] into the fourth task which is to serve a
+[00:02:35] breakfast plate with the coffee toast
+[00:02:38] and fried egg so in this example you can
+[00:02:40] see that none of these tasks are
+[00:02:42] dependent on the previous one they all
+[00:02:44] execute parall and then they converge
+[00:02:47] right so that is what is called parallel
+[00:02:49] chaining and finally we also have
+[00:02:52] conditional chaining which can be used
+[00:02:54] in certain scenarios here we start a
+[00:02:56] task and based on the result of the task
+[00:02:59] or the condition it can either go here
+[00:03:01] or here or here in parallel chaining all
+[00:03:04] the tasks execute simultaneously all the
+[00:03:07] chains execute simultaneously but in
+[00:03:09] this case based on a condition it will
+[00:03:11] only go towards one chain right I'll
+[00:03:13] give you an example so let's say in a
+[00:03:15] customer support chat bot if the user
+[00:03:18] selects technical issue the bot runs a
+[00:03:20] troubleshooting sequence which can be
+[00:03:22] thought of as the first Branch if the
+[00:03:25] user were to select building question it
+[00:03:27] triggers a building inquiry sequence
+[00:03:29] which is the second Branch whereas if it
+[00:03:30] is a general question then another
+[00:03:32] sequence it could be an FAQ sequence
+[00:03:35] right so based on the condition based on
+[00:03:37] whatever the user selects that
+[00:03:39] particular chain uh the the flow goes
+[00:03:41] into that particular chain all the
+[00:03:43] chains do not execute right so I hope
+[00:03:45] this high level explanation is
+[00:03:46] sufficient let us actually jump into our
+[00:03:48] code and see how to implement all of
+[00:03:50] this using our code in the next few
+[00:03:52] sections I'll see you there

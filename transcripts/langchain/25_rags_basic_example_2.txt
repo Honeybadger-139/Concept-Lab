@@ -1,0 +1,151 @@
+[00:00:00] so in this part of the section we are
+[00:00:01] going to be looking at the second part
+[00:00:03] of the rack system where we are only
+[00:00:05] going to be pulling the relevant chunks
+[00:00:07] from the database the vector database
+[00:00:09] based on the users's prompt so let's go
+[00:00:11] through it step by step so we already
+[00:00:14] know that the book is Vector embedded
+[00:00:16] and is now present in this file right
+[00:00:18] here right so to start off all that
+[00:00:21] we're going to do is referencing our
+[00:00:23] current file to the DB file okay so
+[00:00:26] we're taking the current directory and
+[00:00:28] with that we're piecing together the
+[00:00:30] exact location of the chroma DB
+[00:00:33] file okay and then we're loading the
+[00:00:36] vector store in this case the chroma DB
+[00:00:39] right here so that the database is
+[00:00:41] available to use inside of this file
+[00:00:44] right first we need the database to be
+[00:00:45] available to work with right so that is
+[00:00:47] what we're doing right here we're
+[00:00:49] telling it this persistent directory is
+[00:00:52] where the database exists and later if
+[00:00:54] you want to embed the users's question
+[00:00:56] as well to search the database for the
+[00:00:58] right chunks we can use this embedder
+[00:01:01] and again we're specifying the embedding
+[00:01:03] model that we're going to be using now
+[00:01:05] this is something that a lot of people
+[00:01:07] seem to get wrong right so whichever
+[00:01:10] embedding model that we used to embed
+[00:01:12] your private data we have to use the
+[00:01:15] same model to embed the users's question
+[00:01:17] as well okay you can't use different
+[00:01:19] models or else it's not going to work
+[00:01:21] all right so in this case we're
+[00:01:23] constantly always sticking to the text
+[00:01:25] embedding three small model okay just
+[00:01:27] remember that now the next step is to
+[00:01:30] set up a retriever and then we are going
+[00:01:32] to configure the retriever all right so
+[00:01:34] if you remember from the diagram the
+[00:01:36] retriever is basically what collects the
+[00:01:38] relevant chunks from the database based
+[00:01:41] on the users's prompt right so we can
+[00:01:43] configure it by mentioning the type of
+[00:01:46] the searching that we want to do so in
+[00:01:48] this case I'm using the similarity score
+[00:01:50] threshold searching type but in the next
+[00:01:52] few sections we're going to be doing uh
+[00:01:54] different uh we're going to be exploring
+[00:01:55] different types of searching right so
+[00:01:58] and then we are going to be using the
+[00:02:00] search KW args okay so what does this
+[00:02:03] mean we're specifying just how many
+[00:02:06] highest relevant chunks that we want the
+[00:02:08] retriever to bring okay so in this case
+[00:02:11] it is going to collect the top three
+[00:02:13] chunks with the highest relevance scores
+[00:02:16] and right now we're saying the
+[00:02:17] similarity score needs to be at least
+[00:02:20] 0.5 or higher okay so this is a scale
+[00:02:23] that goes from 0 to 1 so it is going to
+[00:02:26] collect all of the chunks that have the
+[00:02:28] similarity scores that is higher than
+[00:02:30] 0.5 and it is going to short list the
+[00:02:33] top three and then give it back to us
+[00:02:35] all right so now we've set up our
+[00:02:37] retriever we've configured it the next
+[00:02:39] step is we have to query uh the relevant
+[00:02:42] chunks based on the users's question
+[00:02:44] right so once again I'm going to be
+[00:02:45] using the magic keyword invoke right
+[00:02:48] here if you remember this is the magic
+[00:02:49] keyword that we're going to be using to
+[00:02:51] take action in Lang chain so once we run
+[00:02:54] this it's going to give us the top three
+[00:02:56] relevant chunks so let's actually go
+[00:02:58] ahead and run this file we're um also
+[00:03:01] going to be playing around with these
+[00:03:03] parameters see what happens so remember
+[00:03:05] all that we're doing is printing the
+[00:03:07] relevant chunks right now okay so if we
+[00:03:09] run it um let's see let's wait for a
+[00:03:16] while and great we have a response I
+[00:03:19] right now expect three different docks
+[00:03:22] or basically three different chunks that
+[00:03:24] relate to the users's question right so
+[00:03:27] we know that the question is where does
+[00:03:28] Gandalf meet Proto right so let's
+[00:03:31] actually go look at the first chunk see
+[00:03:33] if it actually contains the information
+[00:03:35] required to answer that question so you
+[00:03:38] can see it says it was in the heart of
+[00:03:40] hobbiton at the home of Frodo baggin
+[00:03:43] that Gandalf came to speak of matters
+[00:03:45] far greater than froto could have
+[00:03:47] imagined and this perfectly answers the
+[00:03:49] question right how amazing is that so
+[00:03:52] Gandalf meets Frodo at the heart of
+[00:03:54] hobbiton in Frodo's home right so let's
+[00:03:57] look at the second chunk here it says
+[00:03:59] Gandalf came to hobbiton to visit froto
+[00:04:02] one summer day this answers the question
+[00:04:05] as well right and finally let us look at
+[00:04:08] the last chunk Frodo was in his home in
+[00:04:11] hobbiton when Gandalf arrived his old
+[00:04:13] friend and
+[00:04:14] Mentor that's amazing right the exact
+[00:04:17] passages that contains the answer have
+[00:04:20] been retrieved so now you can actually
+[00:04:22] pull this code change the parameters
+[00:04:23] right here and then see what happens as
+[00:04:25] well so now we can say we need the top
+[00:04:28] 10 chunks let's say instead of three
+[00:04:30] and we lowering the upper limit as well
+[00:04:33] so it's going to bring in a lot more
+[00:04:34] results as you can imagine right in the
+[00:04:37] other hand if we become a little too
+[00:04:39] stringent so let's say I'm only saying
+[00:04:41] only collect the chunks that have a
+[00:04:43] similarity score of
+[00:04:44] 0.9 right so let's see what happens and
+[00:04:47] then run it
+[00:04:51] again okay so you can see that it says
+[00:04:54] it cannot find any relevant docks
+[00:04:57] because uh using this particular
+[00:04:59] threshold of 0.9 right so if you're
+[00:05:01] building your own drag applications you
+[00:05:04] might be you know mistakenly be a little
+[00:05:06] bit more stringent with your score and
+[00:05:09] this is the lesson you can't really go
+[00:05:10] too high or low you have to find the
+[00:05:12] right uh balance right and that brings
+[00:05:16] us to the end of the section where we
+[00:05:18] basically just dealt with one full book
+[00:05:20] and then we implemented a rack search in
+[00:05:23] the next section we'll actually see how
+[00:05:24] we can add metadata to each of the chunk
+[00:05:27] so what I mean by metadata is uh
+[00:05:29] basically being able to add you know uh
+[00:05:32] more information about where the chunk
+[00:05:34] came from for example this particular
+[00:05:36] chunk came from this book this chapter
+[00:05:38] this passage Etc so that in the future
+[00:05:42] by retrieving it we'll actually be able
+[00:05:43] to see where the source of the chunk
+[00:05:45] came from we'll also see why that is
+[00:05:48] helpful in real world applications as
+[00:05:50] well so I'll see you there

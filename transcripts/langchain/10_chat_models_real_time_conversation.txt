@@ -1,0 +1,118 @@
+[00:00:00] hello guys welcome to the fourth example
+[00:00:02] in chat models where we're going to have
+[00:00:04] a real-time conversation with the chat
+[00:00:06] model through our terminal right so it's
+[00:00:08] going to be very similar to what we do
+[00:00:10] in chat CPT application itself but
+[00:00:12] instead we are going to do it locally on
+[00:00:14] our computer so as you can see I've
+[00:00:16] already prepared the code let me show
+[00:00:17] you the result of it and then we can
+[00:00:19] jump into the code so when I hit run you
+[00:00:21] can see that it says youu right it is
+[00:00:24] basically prompting me the user to give
+[00:00:26] it a question right so if I were to say
+[00:00:29] h let's say what is the square root of
+[00:00:34] 49 and uh when I press enter let's wait
+[00:00:38] for a
+[00:00:39] while and now you can see the AI message
+[00:00:42] saying seven right and now I can also
+[00:00:45] ask a followup question something like
+[00:00:48] how did I how did you get that value
+[00:00:50] right and uh so I can say how did you
+[00:00:54] get that
+[00:00:56] value and then press enter and you can
+[00:00:59] see it is walking us through the
+[00:01:00] reasoning right it's great because it
+[00:01:02] sort of remembers the previous
+[00:01:04] conversations basically the history or
+[00:01:06] the context of the conversation so now
+[00:01:08] if I wanted to let's say know the square
+[00:01:10] root of 81 right so I don't even have to
+[00:01:14] explicitly type out what is the square
+[00:01:16] root of 81 I don't have to do that
+[00:01:17] anymore because it remembers right so I
+[00:01:20] can just say do the same for
+[00:01:23] 81 and press enter let's wait for a
+[00:01:26] second so you see it is it already knows
+[00:01:28] that we're asking for the square root so
+[00:01:31] it is already giving us the value which
+[00:01:32] is n right and now if I want to exit out
+[00:01:35] of a terminal I can just say exit press
+[00:01:38] enter and now we're out of it so
+[00:01:41] basically how chat CHT Works under the
+[00:01:42] hood let's actually see how we can
+[00:01:44] implement this in the code so as usual
+[00:01:47] as we've done in the previous sections
+[00:01:48] we are initializing our model right here
+[00:01:50] and then we are loading all the
+[00:01:51] environment variables now this is where
+[00:01:54] it starts to get interesting so very
+[00:01:56] similar to the list that we had two
+[00:01:57] sections ago we're still going to work
+[00:01:59] with the list here the list is going to
+[00:02:01] have ai messages system message human
+[00:02:03] messages right but this time we're not
+[00:02:04] going to have it hardcoded instead we
+[00:02:07] are going to be adding things
+[00:02:08] dynamically right so to start off we
+[00:02:11] have an empty list here called chat
+[00:02:13] history so as we discussed in the
+[00:02:15] previous sections the first item of the
+[00:02:18] history array or the list should
+[00:02:20] typically always be the system message
+[00:02:22] that sort of gives AI a certain role or
+[00:02:24] a responsibility right so we've created
+[00:02:27] a system message right here and then
+[00:02:29] we've added it to the chat history list
+[00:02:32] so in this case it's going to be helpful
+[00:02:33] assistant I'm I'm keeping it very simple
+[00:02:35] so let's move on so right here we have a
+[00:02:38] y Loop that keeps on looping until a
+[00:02:41] certain condition is met right so let's
+[00:02:43] go through it line by line let's see
+[00:02:45] what's
+[00:02:46] happening so to start off we are
+[00:02:48] basically prompting the user which is me
+[00:02:51] or the user basically to type in a
+[00:02:53] string it could be a question could be
+[00:02:54] anything right so I want to ask AI a
+[00:02:56] question right here uh like we did in
+[00:02:59] the demo what is the square root of 49
+[00:03:02] right so the entire string of what is
+[00:03:04] the square root of 49 is going to be in
+[00:03:06] this query variable so in case we put
+[00:03:09] the string exit exit then we're just
+[00:03:12] going to break out of this Loop but we
+[00:03:14] are not going to do that so it's going
+[00:03:16] to come to this particular line so this
+[00:03:18] line adds the human input message to the
+[00:03:21] list as the human message very simple
+[00:03:24] right now as soon as the uh list has a
+[00:03:27] human question at the very end we're
+[00:03:29] going to send the entire list with all
+[00:03:31] of its history to the llm now whatever
+[00:03:34] response that we get back from the llm
+[00:03:36] is going to be the AI message right so
+[00:03:38] the response which is now the AI message
+[00:03:40] is then put into the list right here and
+[00:03:43] the while loop just keeps on looping so
+[00:03:45] that is how simple it is to communicate
+[00:03:48] with an llm through our terminal right
+[00:03:50] so all the code again if you get stuck
+[00:03:53] anywhere all the code is available in
+[00:03:55] the repository so do pull it and uh do
+[00:03:57] run it by yourself all right so in this
+[00:03:59] section basically we've seen how to
+[00:04:01] store all the conversation history in a
+[00:04:04] local variable that is kept in memory
+[00:04:06] and that is the chart history variable
+[00:04:08] right but in real production
+[00:04:11] applications normally you would save all
+[00:04:13] of the conversations in the cloud so
+[00:04:15] that even if you exit out of the
+[00:04:17] terminal in this case or even if the
+[00:04:19] user were to close the application the
+[00:04:21] data is still going to remain in the
+[00:04:23] cloud so let's actually see how to do
+[00:04:25] that in the next section

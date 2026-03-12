@@ -1,0 +1,225 @@
+[00:00:00] welcome to the last example in chart
+[00:00:02] model section so so far we've been
+[00:00:04] storing all the past conversations in a
+[00:00:06] variable in memory right but in
+[00:00:08] production grade applications we might
+[00:00:10] ideally want to put it in the cloud so
+[00:00:12] that the user can sort of log back out
+[00:00:15] and then come back after a week and
+[00:00:16] still continue the conversation right so
+[00:00:19] we're going to be doing that uh in this
+[00:00:20] section so all the history is going to
+[00:00:23] be retrieved from the cloud as soon as
+[00:00:25] the application is going to be uh turned
+[00:00:27] up basically so for that we're going to
+[00:00:29] be using the Firebase fire store
+[00:00:31] database right so let me show you a
+[00:00:33] quick demo of what we are going to be
+[00:00:35] doing in this section so I'm going to
+[00:00:37] run this file so we have a message
+[00:00:39] prompting the user to type in something
+[00:00:41] so I'm going to say um let's say hey how
+[00:00:44] is it going right it's very simple
+[00:00:46] before I press enter let's actually go
+[00:00:48] to the fire store and you can see the
+[00:00:51] database currently is empty right so
+[00:00:53] let's come back so if I come back and if
+[00:00:56] I press
+[00:00:57] enter you can see that the AI responds
+[00:01:01] with a very simple message right now I'm
+[00:01:03] going to ask it something like let's say
+[00:01:06] what is 2 + 2 Enter let's give it a few
+[00:01:11] seconds yeah it gives back four right
+[00:01:14] now if I go back to the database you can
+[00:01:17] now see that we have four messages that
+[00:01:19] have been added right so now if I stop
+[00:01:22] the terminal so let's actually do that
+[00:01:24] let's stop the
+[00:01:26] terminal and then run the file again
+[00:01:31] okay you can see that all the messages
+[00:01:32] are retrieved from the database so that
+[00:01:35] the conversation actually continues
+[00:01:37] right so that is what I've coded out
+[00:01:39] already let's quickly walk through it
+[00:01:41] and you'll find it to be pretty simple
+[00:01:43] right the actual main code is not really
+[00:01:45] that much different to what we wrote in
+[00:01:47] the previous section most of the
+[00:01:49] difference is just in the Firebase setup
+[00:01:51] part okay so to make it very very simple
+[00:01:53] for you I've typed out installation
+[00:01:54] steps right here it's very
+[00:01:56] straightforward so once we do the cloud
+[00:01:59] setup works Firebase fire store setup
+[00:02:01] works the rest of the code is pretty
+[00:02:02] much the same there is literally no
+[00:02:04] difference actually so let's see so the
+[00:02:07] first thing that we're going to be doing
+[00:02:08] is creating a Firebase account so you
+[00:02:10] can just go to Firebase dog
+[00:02:14] google.com Okay and then let's go to
+[00:02:17] console right uh so click on this go to
+[00:02:19] console and then we are going to enter
+[00:02:21] the name of the project so I'm going to
+[00:02:24] call it Lang
+[00:02:25] chain all right so we don't really need
+[00:02:28] analytics for this
+[00:02:30] and the project creation itself might
+[00:02:32] take a minute or so let's actually give
+[00:02:34] it some
+[00:02:35] time all right so it's done and let's
+[00:02:37] click on this button right here and you
+[00:02:39] are in the project now now you can just
+[00:02:41] go to the built drop- down on the left
+[00:02:43] side and choose Firebase database and
+[00:02:46] this is what we're going to be working
+[00:02:48] with okay so just go ahead and click on
+[00:02:50] create a database I'm going to leave the
+[00:02:52] location as it is I'm going to click on
+[00:02:55] next next and now we can leave it in
+[00:02:58] test mode because the application is not
+[00:03:00] live yet and once we click on create
+[00:03:03] fire store will be set up for you in
+[00:03:06] this project so if you haven't worked
+[00:03:08] with fir store before it is basically
+[00:03:10] just a document based no SQL database so
+[00:03:14] you have something called a collection
+[00:03:16] in this panel you can have as many
+[00:03:17] collections as you want uh so for
+[00:03:19] example we can have a collection called
+[00:03:21] users and each user document can in turn
+[00:03:24] have a collection inside of it let's say
+[00:03:27] user messages right and each of those
+[00:03:29] message inside of the user messages is
+[00:03:33] going to be what you guessed it right
+[00:03:35] it's going to be a document so it's s of
+[00:03:37] alternates so we have collection
+[00:03:39] document collection document right so
+[00:03:42] just a short crash course on Firebase
+[00:03:44] fire store for you so let's head back
+[00:03:46] and let's look at the third step in the
+[00:03:48] list the third step is going to be you
+[00:03:50] need to retrieve the project ID of the
+[00:03:52] project that you've just created so you
+[00:03:54] see our application needs to know which
+[00:03:56] projects Firebase database it needs to
+[00:03:59] make changes to
+[00:04:00] because we can have multiple Firebase
+[00:04:02] projects right so to get it we can just
+[00:04:04] go back to Firebase click on this gear
+[00:04:07] icon project settings project ID so we
+[00:04:10] have it right here so I'm just going to
+[00:04:13] copy this come back here and I'm going
+[00:04:16] to replace this value perfect now let us
+[00:04:19] look at the fourth step right here it
+[00:04:21] might look a little bit complicated but
+[00:04:23] it's actually very simple so all that
+[00:04:25] we're doing is we need to install the
+[00:04:27] Google Cloud CLI in our computer and
+[00:04:30] sort of authenticate ourselves so that
+[00:04:32] Google or Firebase sort of trusts us
+[00:04:35] when we make changes to the database
+[00:04:37] right so the setup is extremely simple
+[00:04:40] just click on this particular link right
+[00:04:41] here scroll all the way
+[00:04:44] down uh if you're a Mac User just
+[00:04:46] download The Right package based on your
+[00:04:48] operating system the same for Windows as
+[00:04:50] well and then wherever this particular
+[00:04:52] package is installed probably it is
+[00:04:54] going to be in the downloads folder so
+[00:04:56] just go to that particular path in your
+[00:04:58] terminal and run this particular
+[00:04:59] particular command the same thing for
+[00:05:02] Windows as well all the instructions are
+[00:05:04] easily laid out here you just need to
+[00:05:05] follow it right and finally initialize
+[00:05:08] the CLI by running this last command and
+[00:05:11] that is it for this step let's look at
+[00:05:13] the next step so we have to configure
+[00:05:16] something called the ADC right the
+[00:05:18] documentation makes it very very easy to
+[00:05:20] set this up so let's click on this
+[00:05:22] particular link and let's scroll down
+[00:05:25] and you will have to run this particular
+[00:05:27] command and do an application default
+[00:05:31] login right so we have to do that and
+[00:05:34] finally you will have to run this
+[00:05:35] command as well and that is the last
+[00:05:37] step it is pretty simple there's tons of
+[00:05:39] tutorials out there that will help you
+[00:05:41] set this up and to be honest you don't
+[00:05:43] even need any of these tutorials because
+[00:05:45] the documentation is pretty
+[00:05:46] straightforward as well but uh we're not
+[00:05:48] going to go too deep into it uh in this
+[00:05:51] course because it's a little out of
+[00:05:52] scope for this course right and finally
+[00:05:55] we're going to install this particular
+[00:05:57] package as well again this package pack
+[00:05:59] is built by Lang chain and it does all
+[00:06:02] the magic to communicate with the uh the
+[00:06:05] Firebase fire store right so this entire
+[00:06:08] thing the Google Cloud setup is kind of
+[00:06:11] the most difficult part of the section
+[00:06:13] the setup of it but the rest of it is
+[00:06:15] very similar to what we did in the
+[00:06:16] previous section and at the end we just
+[00:06:19] have to make sure that we have all the
+[00:06:21] right Imports up here perfect so let's
+[00:06:24] actually scroll down and see what we
+[00:06:26] have so the first thing is we need to
+[00:06:28] initialize our fire store client so
+[00:06:31] we're going to pass in this particular
+[00:06:32] project ID as well that we had just
+[00:06:34] copied a while ago right now we are
+[00:06:36] going to initialize the fire store chat
+[00:06:38] message history this takes in three
+[00:06:41] arguments the session ID which is going
+[00:06:43] to be the unique identifier for the
+[00:06:45] current chat session so we can name it
+[00:06:48] pretty much anything that we want I've
+[00:06:49] just gone ahead and named it user
+[00:06:52] session but ideally this should be a
+[00:06:54] long 16 digigit string right because
+[00:06:57] there's going to be a lot of user
+[00:06:58] sessions and then we are going to have
+[00:07:01] the collection name right so the
+[00:07:03] collection name that is going to be
+[00:07:04] created and updated in the fire store is
+[00:07:07] going to be chatore history right here
+[00:07:10] and you can name it message history as
+[00:07:12] well right pretty much anything that you
+[00:07:14] want and finally we're going to pass in
+[00:07:16] the client as well so the rest of the
+[00:07:19] code is literally no different to what
+[00:07:20] we did in the previous section so the
+[00:07:22] only change that we're going to be doing
+[00:07:24] is instead of having the history list in
+[00:07:26] memory we are now going to be having it
+[00:07:28] from the cloud right right so this chat
+[00:07:30] history is being returned by the Lang
+[00:07:33] chains fir store class so now if we run
+[00:07:36] this file we can just start chatting
+[00:07:37] with the AI right and more importantly
+[00:07:39] we get to store every single message in
+[00:07:42] the cloud and this particular class the
+[00:07:45] fir store chat message history class
+[00:07:47] sort of abstracts away a lot of the
+[00:07:49] complexities so it sort of enables very
+[00:07:51] smooth communication between L chain as
+[00:07:54] well as the fire store right and that
+[00:07:56] brings us to the conclusion of chat
+[00:07:57] models so I hope you now have a pretty
+[00:08:00] good understanding of how chat models
+[00:08:02] work and how you can actually build
+[00:08:03] production grade applications by storing
+[00:08:05] your messages in the cloud and also I'm
+[00:08:08] pretty excited about the next core
+[00:08:09] component of L chain which is going to
+[00:08:11] be prompt templates and it's one of the
+[00:08:13] most easiest components to learn but at
+[00:08:15] the same time when you're building
+[00:08:17] production grid applications that would
+[00:08:19] save you a lot of time so I'm pretty
+[00:08:21] excited and I'll see you there

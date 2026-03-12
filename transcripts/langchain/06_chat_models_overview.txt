@@ -1,0 +1,83 @@
+[00:00:00] so in this section let us look at the
+[00:00:01] first core component of L chain which is
+[00:00:04] called chart models okay so let us now
+[00:00:06] look at the official definition a chat
+[00:00:08] model in lung chain is a component
+[00:00:10] designed to communicate in a structured
+[00:00:12] way with llms right so the llms could be
+[00:00:16] gbd4 llm it could be hugging phase and
+[00:00:18] open source llm it could be clot Sonet
+[00:00:21] apis right so chat models and L chain
+[00:00:25] offer sort of like an interface that you
+[00:00:27] can use to communicate with pretty much
+[00:00:29] any llm that you want right so if I go
+[00:00:31] to the official documentation in L chain
+[00:00:34] on chart models you can see that there
+[00:00:36] are different models right here right so
+[00:00:39] there is a longchain chart model for the
+[00:00:41] anthropic llm there is another one for
+[00:00:44] mistal right here and uh since we are
+[00:00:46] going to be communicating with open AIS
+[00:00:49] llms in this course then this is the
+[00:00:51] models class that we will be using and
+[00:00:53] this is the package that we will have to
+[00:00:55] install you can also see what each and
+[00:00:58] every single model is capable of
+[00:01:00] we can also use tools using these models
+[00:01:03] tools we will talk about in the later
+[00:01:04] part of this course and then we have the
+[00:01:06] structured output as well and if the
+[00:01:08] models support Json outputs or not all
+[00:01:11] right so so far we know that chat models
+[00:01:13] offer an interface for us to communicate
+[00:01:16] with so many different llm apis right
+[00:01:19] but now we need to ask ourselves a
+[00:01:21] question why do we need a middleman
+[00:01:23] right here after all we can directly
+[00:01:25] call them right the answer is yes of
+[00:01:27] course we can but as long as we buildt
+[00:01:29] building smaller apps but as we start
+[00:01:32] building more and more complicated apps
+[00:01:34] then you can see it will start getting
+[00:01:35] messy really fast so here are some
+[00:01:37] advantages of using Lang chain model
+[00:01:39] interfaces instead of directly calling
+[00:01:42] llm apis so knowing these things are
+[00:01:44] important because it gives you a high
+[00:01:46] level overview of why we do certain
+[00:01:48] things knowing that you can architect
+[00:01:50] your own Solutions better even after
+[00:01:52] this course right so let's look at a few
+[00:01:54] advantages so reason number one
+[00:01:56] consistent overflow Lang change chart
+[00:01:59] models unify different apis saving you
+[00:02:01] from managing each one's unique setup
+[00:02:03] and quirks we will explore all of this
+[00:02:06] pretty soon reason number two easy
+[00:02:08] switching between llms if you want to
+[00:02:11] switch between one llm to another Lang
+[00:02:14] chains chat models make it very simple
+[00:02:16] without a lot of code changes reason
+[00:02:18] number three context management working
+[00:02:21] with Lang chain chat models help manage
+[00:02:23] conversation history letting you keep
+[00:02:25] context across multiple interactions
+[00:02:28] seamlessly reason number four efficient
+[00:02:31] chaining you can connect multiple llm
+[00:02:34] calls and tasks in one structured
+[00:02:37] pipeline which can be a bit tricky to
+[00:02:38] set up manually and finally reason
+[00:02:41] number five
+[00:02:43] scalability as projects grow Lang chains
+[00:02:46] interface supports more complex
+[00:02:48] workflows letting you focus on features
+[00:02:50] and not API management so in this course
+[00:02:53] we'll be mostly working with open AI
+[00:02:55] apis so we will need the chat open AI
+[00:02:59] model right here here so if we click on
+[00:03:02] this you'll find it very easy to
+[00:03:03] understand the documentation on how to
+[00:03:05] set this up so let us actually go ahead
+[00:03:07] and set up a chart model and start
+[00:03:09] interacting with open AIS apis so I'll
+[00:03:11] see you in the next section

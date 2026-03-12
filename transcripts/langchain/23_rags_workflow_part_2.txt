@@ -1,0 +1,65 @@
+[00:00:00] now let's look at the second part of the
+[00:00:01] workflow it starts with the user asking
+[00:00:04] a question about the book let's say the
+[00:00:06] book is lot of the Rings right so let's
+[00:00:08] say the question is what is the name of
+[00:00:10] Frodo swad right so now what we do is we
+[00:00:13] also convert this question that prompt
+[00:00:16] into an embedding as well okay now the
+[00:00:19] next thing is we have a retriever
+[00:00:21] component right here that takes this
+[00:00:23] embedding which we know is the
+[00:00:25] mathematical representation of the
+[00:00:26] prompt and then asks the vector store
+[00:00:29] hey give me the top five relevant chunks
+[00:00:32] for this particular question okay and
+[00:00:35] the vector store um Vector stores
+[00:00:37] basically have very low latency meaning
+[00:00:40] they're very fast because they're
+[00:00:41] working with numbers right so this
+[00:00:44] Vector store with this extremely low
+[00:00:46] latency and high speed gives back the
+[00:00:48] top five chunks with the highest
+[00:00:51] relevant scores all right so at this
+[00:00:53] point we have two things we have the
+[00:00:55] users's question right here in English
+[00:00:58] as well as the passages from the book in
+[00:01:00] the form of smaller chunks that answers
+[00:01:03] the users's question chunks that are
+[00:01:05] relevant to the users's question all
+[00:01:07] right so now we have five the top five
+[00:01:09] chunks right now what we are going to be
+[00:01:11] doing is we're going to send both the
+[00:01:14] question in plain text as well as the
+[00:01:16] Chunk in plain text to the llm right so
+[00:01:20] now the llm has all the relevant
+[00:01:22] passages and also the users question so
+[00:01:24] the llm is now able to sort of reason
+[00:01:27] and give a very informed answer and
+[00:01:29] finally the llm is going to respond back
+[00:01:32] to the user right here I hope you now
+[00:01:34] have a full picture of rags and how they
+[00:01:36] work now Rags are pretty great when it
+[00:01:39] comes to you know giving our private
+[00:01:42] data to the llm basically giving it this
+[00:01:44] additional data and we can sort of chat
+[00:01:46] with our data right so that is one use
+[00:01:48] case we can also there is another way of
+[00:01:50] looking at Rags okay we can also think
+[00:01:52] of Rags as giving long-term memory to
+[00:01:55] llms right so I'll give you a very
+[00:01:57] simple example so I'll give you one
+[00:01:59] final example to better understand this
+[00:02:01] let's say there is a customer support
+[00:02:03] bot okay so all the past conversations
+[00:02:06] with a specific user can be stored in a
+[00:02:08] vector database so that in the future if
+[00:02:11] there's a specific question from history
+[00:02:13] Rags can go and retrieve that particular
+[00:02:15] relevant chunk and give more accurate
+[00:02:18] answers so in the next few sections
+[00:02:20] we're going to be looking at how to code
+[00:02:21] all of this with the same example that
+[00:02:23] we saw right now and you'll see it is
+[00:02:25] actually much more simpler than it looks
+[00:02:28] so I'll see you in the next section

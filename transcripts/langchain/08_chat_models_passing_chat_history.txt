@@ -1,0 +1,114 @@
+[00:00:00] hello guys in this section let us see
+[00:00:02] how we can send past conversation
+[00:00:04] history to the llm so that it has more
+[00:00:06] context awareness so to proceed forward
+[00:00:09] we need to learn about the types of
+[00:00:11] messages in Lang chain so the first one
+[00:00:14] is going to be system message it defines
+[00:00:16] the ai's role and sets the context for
+[00:00:18] the conversation it is typically set at
+[00:00:21] the very start of the conversation so
+[00:00:23] for example you are a marketing expert
+[00:00:26] let's look at the next type of L chain
+[00:00:27] message and it's called human message
+[00:00:30] and this should be pretty
+[00:00:31] self-explanatory it represents user
+[00:00:33] input or questions directed to the AI
+[00:00:36] and the last one is going to be AI
+[00:00:38] message it contains the ai's responses
+[00:00:41] based on previous messages for example
+[00:00:43] focus on social media engagement so now
+[00:00:46] that we know all of the types of
+[00:00:47] messages let us see how we can use them
+[00:00:49] in our code so the first thing that I'm
+[00:00:51] going to do is to import all these three
+[00:00:53] types of message classes from Lang chain
+[00:00:56] more specifically we'll be taking them
+[00:00:58] from Lang chain core package and from
+[00:01:01] this module we extract three classes
+[00:01:04] first is system message and then the
+[00:01:06] human message and then the AI message so
+[00:01:10] first let's sort of hardcode a
+[00:01:12] conversation history so that we can set
+[00:01:14] it to the llm to do that we can
+[00:01:16] initialize a list called messages and
+[00:01:18] the first item should be the system
+[00:01:20] message remember the system message is
+[00:01:23] what defines an ai's role right so I can
+[00:01:26] say you are an expert in let's say uh
+[00:01:30] social media marketing or social media
+[00:01:33] content strategy now I can provide the
+[00:01:35] human message or the question that I
+[00:01:37] want to ask so I can use the human
+[00:01:39] message class from up here and provide
+[00:01:42] in the content so I can say give a short
+[00:01:45] tip to create engaging posts on
+[00:01:48] Instagram because I don't want it to go
+[00:01:50] off and give me paragraphs upon
+[00:01:52] paragraphs right perfect we have a
+[00:01:54] simple conversation list we can also add
+[00:01:57] a lot more to this like add another AI
+[00:01:59] message message and then another human
+[00:02:01] message but for now let's just run it
+[00:02:03] now we need to talk to the llm and get
+[00:02:05] an answer so we can follow the same
+[00:02:08] thing that we did earlier let me copy
+[00:02:10] paste this from the starter
+[00:02:12] file and now instead of this particular
+[00:02:14] string we are now going to pass in this
+[00:02:17] list of messages so let's remove this
+[00:02:20] and put the messages list here so this
+[00:02:23] invoke method is pretty versatile as you
+[00:02:25] can start to see right because we can
+[00:02:26] pass in strings we can pass in this list
+[00:02:28] as well and Lang chain was exactly what
+[00:02:30] needs to be done it sort of abstracts
+[00:02:32] away all the complexity so that it gives
+[00:02:34] you a very clean interface to work with
+[00:02:36] right so let's also print the content
+[00:02:39] from the result as
+[00:02:40] well right now let's open the terminal
+[00:02:44] clear all of this and let's run the file
+[00:02:48] so now you can see that the llm returns
+[00:02:50] our data our answer so it says to create
+[00:02:53] engaging posts on Instagram focus on
+[00:02:55] storytelling by using captivating image
+[00:02:57] or video paired with a concise relatable
+[00:02:59] caption right so it is keeping it very
+[00:03:01] concise as well right it is giving us a
+[00:03:03] short tip so this is basically how you
+[00:03:05] can uh you know you're you're sending
+[00:03:07] the system message and the human message
+[00:03:09] and uh we can also take this uh Next
+[00:03:11] Step as well so basically we can copy
+[00:03:13] this entire content and then put it
+[00:03:15] inside of a AI message right here and
+[00:03:18] then again add another human message on
+[00:03:21] top of it okay so I know that this seems
+[00:03:24] a little weird because we're statically
+[00:03:25] sort of like adding the we're hardcoding
+[00:03:27] all of the data but knowing how these
+[00:03:30] things work is crucial because we can
+[00:03:32] then later make it Dynamic all right so
+[00:03:35] what we learned just now in this section
+[00:03:37] where we passing the entire past
+[00:03:39] conversations to the llm is pretty
+[00:03:41] important especially if you're building
+[00:03:43] real world applications because if
+[00:03:44] you're building a real world production
+[00:03:46] grade application and users are talking
+[00:03:48] to the AI the user also expects the AI
+[00:03:52] to remember the past conversation right
+[00:03:54] so that is exactly what this lets us do
+[00:03:56] so we need to know how to program these
+[00:03:58] things in the back end and have it in a
+[00:04:00] list using these three types of messages
+[00:04:02] the system human and AI this is pretty
+[00:04:05] important so I hope that you're starting
+[00:04:07] to see how it is all coming together so
+[00:04:09] so far we've only been interacting with
+[00:04:11] open AIS llms right in the next section
+[00:04:14] let us also look at you know how we can
+[00:04:16] easily sort of switch between different
+[00:04:18] models using Lang chain so I'll see you
+[00:04:20] there

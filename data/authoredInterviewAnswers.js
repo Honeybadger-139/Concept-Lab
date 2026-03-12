@@ -607,24 +607,47 @@ export const authoredInterviewAnswers = {
     "Tune thresholds/caps by replaying traces: lower threshold if quality is already strong, lower cap when marginal gains are tiny, and tighten rubric when critiques are noisy.",
     "Roll out safely with staged traffic: trace-only shadow phase, then risk-gated enablement, then broader rollout only if quality lift and cost envelope remain acceptable."
   ],
-  "langgraph/24-langgraph-persistence-memory-fundamentals": [
-    "Process-local memory fails whenever workers restart or sessions move across instances. Durable memory is required for continuity, replayability, and support-quality stability.",
-    "Keep a clean split between hot execution state and durable session state. Hot state serves fast node transitions; durable state preserves audit and recovery context across failures.",
-    "Concurrency controls are mandatory: use versioned writes, optimistic locking, or transactional boundaries to avoid stale updates during parallel traffic.",
-    "Production governance requires retention windows, redaction rules, and encryption for persisted conversation artifacts.",
-    "Measure persistence health with resume success rate, stale-read incidents, and memory growth per tenant/session."
+  "langgraph/24-rags-basic-example-1": [
+    "A production-safe minimum includes input normalization, retrieval, context shaping, grounded generation, and a validation route before END. If you skip validation, the system can look fluent while silently using weak evidence.",
+    "Before answer generation, state must include normalized query, retrieved docs, selected context, and retrieval diagnostics. Without those fields, answer quality issues are impossible to attribute to retrieval vs generation.",
+    "Force evidence-linked output contracts: citations or passage IDs must exist for high-confidence answers. If evidence coverage is low, route to clarification or fallback instead of final answer.",
+    "When retrieval is empty or contradictory, route to a deterministic low-confidence path: ask user to narrow scope, run bounded retry, or escalate. Never allow the answer node to proceed as if retrieval succeeded.",
+    "Track grounded-answer rate, empty-retrieval rate, citation coverage, p95 latency, and fallback frequency. These metrics expose whether the graph is robust or only appears correct in demos."
   ],
-  "langgraph/25-langgraph-checkpointing-and-resume": [
-    "Checkpointing reduces failure blast radius by letting runs resume from safe boundaries instead of replaying entire workflows.",
-    "A usable checkpoint must store node identity, route label, attempt counters, and the minimum payload needed for deterministic continuation.",
-    "Always pair resume logic with idempotency keys for side effects; otherwise retries can duplicate charges, notifications, or ticket mutations.",
-    "Checkpoint frequency is an optimization problem: too frequent raises storage/latency overhead, too sparse increases replay cost and recovery time."
+  "langgraph/25-rags-basic-example-2": [
+    "The key upgrade is bounded recovery: query rewrite and second retrieval pass when first-pass grounding is weak. Example (2) is about controlled improvement, not unlimited retries.",
+    "Use explicit retry policy in state: retry_count, max_retries, and retry_reason. Gate retries on measurable triggers such as low grounding score or low retriever confidence.",
+    "Log first-pass and second-pass retrieval snapshots, rewrite text, route decision, and final termination reason. Those fields let you debug why retries helped or hurt.",
+    "Decide with data: compare grounded-answer lift against added p95 latency and token spend. Keep second pass only when quality gain justifies operational cost.",
+    "If retries still fail grounding checks, route to deterministic fallback: clarification question, not-found response, or human escalation depending on business risk."
   ],
-  "langgraph/26-langgraph-multi-agent-actor-responder-pattern": [
-    "Actor/responder patterns are justified when generation and validation objectives are materially different and specialization improves policy or quality outcomes.",
-    "Prevent ping-pong loops by enforcing round caps, deterministic acceptance criteria, and explicit arbitration when disagreement persists.",
-    "Arbitration policies should be rule-driven (priority rubric, confidence thresholds, or domain-owner override), not ad hoc prompt behavior.",
-    "Track disagreement frequency, convergence rounds, and quality lift versus single-agent baselines to prove multi-agent ROI."
+  "langgraph/26-rags-with-metadata": [
+    "Metadata filtering must happen before generation so the model only sees policy-compliant context. Post-generation filtering is too late because leakage risk has already occurred.",
+    "Balance precision and recall with tiered search: strict filter pass first, then bounded relaxation on one dimension at a time. Unbounded relaxation defeats policy control.",
+    "At minimum store tenant, visibility scope, document type, effective date/version, and region. Those fields protect multi-tenant isolation and legal correctness.",
+    "Prevent metadata failures with ingestion checks: required tags, schema validation, stale-version detection, and index parity checks between vector and metadata stores.",
+    "For auditability, log filter criteria, retrieved doc IDs, relaxation events, and final evidence set per response. This gives compliance teams a full retrieval trail."
+  ],
+  "langgraph/27-rags-one-off-question": [
+    "Choose one-off RAG when user intents are independent and memory adds little value. It is ideal for docs lookup and FAQ-style queries where each request stands alone.",
+    "One-off graphs support strong cost control through short path depth, strict token caps, deterministic context limits, and cache-first retrieval for repeated questions.",
+    "Handle ambiguity by routing to a clarification prompt rather than forcing a low-confidence answer. Single-turn should not mean single-guess.",
+    "Exit one-off mode when intent requires action, account state mutation, or multi-step planning. Those requests belong in agent/tool workflows, not stateless retrieval.",
+    "Focus on grounded-answer rate, p95 latency, cache hit rate, and ambiguity-clarification rate. Together they show quality and efficiency for single-turn workloads."
+  ],
+  "langgraph/28-agents-tools-intro": [
+    "The boundary is this: if retrieval alone cannot complete the task and an external action or live system read is required, route to tool flow. Keep retrieval-only for information requests.",
+    "Tool execution must stay outside direct model control because runtime policy must enforce allowlists, schema validation, and permission checks before any side effect.",
+    "Before mutating tools, require idempotency keys, risk-based approval gates, strict argument schemas, and auditable request/response logging.",
+    "Stop wrong-tool loops with bounded retries, duplicate-action suppression, and evidence gating so repeated calls require new state evidence, not repeated intent text.",
+    "Capture tool name, arguments, response, error class, latency, retries, and route decision at every step. Without these fields, post-incident debugging is mostly guesswork."
+  ],
+  "langgraph/29-agents-tools-deep-dive": [
+    "Retry policy should be error-class aware: retry transient network/timeouts, do not retry policy-denied or schema-invalid actions, and escalate unknown classes quickly.",
+    "Insert HITL before irreversible or high-risk operations like payments, account mutation, and compliance exceptions. Approval nodes should receive full state snapshot and proposed action payload.",
+    "Prove improvement by comparing success rate, wrong-tool rate, retries per task, escalation rate, latency, and cost against a simpler baseline. Capability alone is not enough.",
+    "Prevent duplicate side effects with idempotency keys plus resume-safe execution checkpoints. A retry without idempotency is an incident waiting to happen.",
+    "Use staged rollout: replay traces in staging, canary low-risk traffic, monitor process metrics, then expand only if stability and quality stay within defined thresholds."
   ],
   "ml/advanced-placeholder": [
     "Start from data modality and constraints: tabular data with limited scale usually favors tree-based models; unstructured high-dimensional data often favors neural networks. Final choice should be validated on latency, calibration, and operational cost targets.",

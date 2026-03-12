@@ -4101,158 +4101,292 @@ Result: preserved quality gains with controlled budget impact.`,
     ],
   },
   {
-    slug: "24-langgraph-persistence-memory-fundamentals",
+    slug: "24-rags-basic-example-1",
     sectionId: "langgraph",
-    title: "LangGraph Persistence & Memory Fundamentals",
+    title: "RAGs - Basic Example (1)",
     order: 24,
-    excerpt: "Why in-memory conversation state breaks in production and how durable memory changes reliability guarantees.",
-    theory: `<p><b>In-memory state works for demos and fails for production.</b> If your graph state lives only inside process memory, any restart, deployment, crash, or autoscaling event drops user context.</p>
-<p><b>Production requirement:</b> separate execution logic from state durability. LangGraph workflows should treat memory as infrastructure, not as a local variable.</p>
-<p><b>Core persistence goals:</b></p>
+    excerpt: "First end-to-end LangGraph RAG pipeline: retrieval, context assembly, grounded generation, and safe fallback routing.",
+    theory: `<p><b>This session is the first concrete LangGraph RAG build.</b> The objective is to stop treating retrieval and generation as one black box and instead make each step explicit in graph state.</p>
+<p><b>Minimum graph shape:</b></p>
+<ol>
+<li>Input node captures user question and request metadata.</li>
+<li>Retriever node issues the vector search query.</li>
+<li>Context node normalizes and trims retrieved chunks.</li>
+<li>Answer node generates a grounded response using only retrieved context.</li>
+<li>Validator node checks whether grounding is sufficient.</li>
+<li>Route to END or fallback based on confidence and evidence coverage.</li>
+</ol>
+<p><b>Why this matters:</b> in production, most failures are not model-intelligence failures. They are orchestration failures: empty retrieval results, irrelevant chunks, token overflows, or context that does not support the final claim.</p>
+<p><b>State design for this basic example:</b></p>
 <ul>
-<li><b>Durability:</b> state survives process restarts.</li>
-<li><b>Continuity:</b> the same session can continue across workers.</li>
-<li><b>Recoverability:</b> failures can resume from a known checkpoint.</li>
-<li><b>Auditability:</b> critical transitions are inspectable after incidents.</li>
+<li><code>question</code>, <code>normalized_query</code></li>
+<li><code>retrieved_docs</code>, <code>selected_context</code></li>
+<li><code>answer_draft</code>, <code>evidence_spans</code></li>
+<li><code>grounding_score</code>, <code>route_decision</code></li>
 </ul>
-<p><b>State model split:</b></p>
-<ul>
-<li><b>Hot state</b> for current step execution (fast mutable fields).</li>
-<li><b>Durable state</b> for session timeline (messages, tool outputs, route decisions, termination reason).</li>
-</ul>
-<p><b>Tradeoff:</b> persistence improves reliability and HITL workflows, but adds storage latency, schema evolution complexity, and data governance obligations.</p>
-<p><b>Failure modes to design for:</b> stale session reads, race conditions from concurrent updates, unbounded memory growth, and PII retention drift.</p>
-<p><b>Guardrails:</b> optimistic concurrency or version checks, TTL/retention policies, encryption at rest, and explicit redaction for sensitive fields.</p>`,
-    example: `Customer support agent with persistent memory:
-1) User asks for refund policy and receives partial answer.
-2) App restarts during deployment.
-3) User asks follow-up: "What about the exception for annual plans?"
-4) With in-memory history, context is lost and answer quality collapses.
-5) With durable session memory, prior policy clauses and route history are restored and follow-up remains grounded.
+<p><b>Core edge cases:</b> no documents returned, contradictory passages, very long chunks that exceed token budget, and user queries that require tool calls instead of static retrieval.</p>
+<p><b>Guardrails:</b> enforce source-only answering, require citation spans for high-confidence answers, and route low-confidence responses to a clarification node instead of hallucinating.</p>
+<p><b>Latency/cost tradeoff:</b> the simplest graph is faster and cheaper, but quality collapses on ambiguous questions. Add only the minimum gates needed to protect grounding quality.</p>`,
+    example: `Policy Q&A baseline graph:
+1) User asks: "What is the cancellation window for annual contracts?"
+2) Retriever returns policy chunks from contract handbook.
+3) Context node filters irrelevant chunks (for monthly plans).
+4) Answer node drafts response with cited paragraph IDs.
+5) Validator sees enough evidence and confidence >= threshold.
+6) Graph returns answer and citations.
 
-Production result: fewer context-loss incidents and lower human-escalation rate.`,
-    animation: "StateGraphFlowViz",
-    tool: "AgentToolLoopSimulator",
+If retriever returns no annual-plan content, validator routes to "ask clarification" instead of fabricating a number.`,
+    animation: "RAGPipelineSteps",
+    tool: "RetrievalQueryViz",
     interviewPrep: {
       questions: [
-        "Why is process-local memory insufficient for production LangGraph systems?",
-        "How do you separate hot execution state from durable session state?",
-        "What concurrency and consistency controls are needed for persistent graph state?",
-        "What governance controls are mandatory for persisted conversation memory?",
+        "What is the minimum LangGraph node set for a production-safe basic RAG flow?",
+        "Which state fields must exist before the answer node runs?",
+        "How do you prevent unsupported claims when retrieval quality is weak?",
+        "What is your fallback strategy when retrieval returns empty or conflicting context?",
+        "Which metrics tell you this first RAG graph is failing in production?",
       ],
-      seniorTip: "Strong answers tie persistence to operational guarantees: resume safety, cross-worker continuity, retention control, and post-incident replay."
+      seniorTip: "Do not describe RAG as just retriever plus LLM. Show explicit graph control: retrieval quality checks, grounding validation, and deterministic low-confidence routing."
     },
     flashCards: [
-      { q: "Why does in-memory graph state fail in production?", a: "It is lost on restarts, crashes, and worker changes." },
-      { q: "What does persistence buy first?", a: "Session continuity and recoverability." },
-      { q: "One major persistence risk?", a: "Race conditions and stale writes across concurrent workers." },
-      { q: "Key governance requirement?", a: "Retention, redaction, and encryption policies for stored state." },
-      { q: "What enables reliable follow-up questions?", a: "Durable recovery of prior turns and route history." },
+      { q: "Why graph-based RAG instead of one prompt?", a: "You can separate retrieval, context prep, validation, and routing, which makes failures observable and controllable." },
+      { q: "Most common basic RAG failure?", a: "Answering confidently from weak or missing retrieved evidence." },
+      { q: "What should validator check?", a: "Evidence coverage, contradiction risk, and confidence threshold before final response." },
+      { q: "What is safe behavior on empty retrieval?", a: "Ask clarification or fallback, never fabricate." },
+      { q: "Key production KPI for this stage?", a: "Grounded-answer rate under latency budget." },
     ],
   },
   {
-    slug: "25-langgraph-checkpointing-and-resume",
+    slug: "25-rags-basic-example-2",
     sectionId: "langgraph",
-    title: "LangGraph Checkpointing, Resume, and Durable Session State",
+    title: "RAGs - Basic Example (2)",
     order: 25,
-    excerpt: "Checkpoint graph progress so failures and human approvals can resume from safe boundaries instead of restarting whole runs.",
-    theory: `<p><b>Checkpointing captures graph state at controlled boundaries.</b> Instead of replaying entire workflows after failure, you resume from last valid checkpoint.</p>
-<p><b>When checkpoints are critical:</b></p>
+    excerpt: "Second iteration of the baseline RAG graph with retry logic, query reformulation, and measurable quality improvements.",
+    theory: `<p><b>This session extends the first baseline into a resilient graph.</b> The main upgrade is iterative recovery when first retrieval is weak.</p>
+<p><b>New logic added in this version:</b></p>
 <ul>
-<li>Long-running agent loops with expensive tool calls.</li>
-<li>Human-in-the-loop approvals where execution pauses by design.</li>
-<li>External API dependencies with intermittent failure windows.</li>
-<li>Multi-step workflows with strict SLAs and retry budgets.</li>
+<li>Query-rewrite node when initial context score is low.</li>
+<li>Retry budget (for example max 2 retrieval attempts).</li>
+<li>Merge-and-rank step to compare first and second retrieval sets.</li>
+<li>Explicit termination reasons in state: <code>success</code>, <code>insufficient_context</code>, <code>budget_exhausted</code>.</li>
 </ul>
-<p><b>Checkpoint design principles:</b></p>
-<ol>
-<li>Define checkpoint boundaries at deterministic state transitions.</li>
-<li>Store route label, node id, attempt counters, and required payload.</li>
-<li>Use idempotency keys for external side-effecting actions.</li>
-<li>Resume only when schema/version compatibility checks pass.</li>
-</ol>
-<p><b>Recovery policy:</b> classify failures as retryable, resumable, or terminal. Do not blindly resume corrupted or partially written state.</p>
-<p><b>Common mistakes:</b> checkpointing too often (cost/latency overhead), too rarely (large replay blast radius), and forgetting side-effect dedupe (double charges/emails/tickets).</p>
-<p><b>Production observability:</b> checkpoint resume rate, replay depth, resume success ratio, and side-effect duplication incidents.</p>`,
-    example: `Order-cancellation workflow:
-- Step 1: validate request
-- Step 2: fetch order ledger
-- Step 3: compute refund
-- Step 4: request human approval for exceptions
-- Step 5: execute refund API
+<p><b>Why this matters:</b> real user questions are often underspecified. A one-pass retriever can miss relevant docs, while a controlled rewrite-and-retry loop recovers many of these cases.</p>
+<p><b>Failure modes introduced by retries:</b> latency spikes, duplicate retrieval calls, and runaway cost. That is why retry policy must be hard-capped and measurable.</p>
+<p><b>Evaluation pattern:</b> compare Example (1) vs Example (2) on the same test set using grounded-answer rate, escalation rate, p95 latency, and token cost.</p>
+<p><b>Production decision rule:</b> keep the second pass only if quality lift is meaningful for your business objective. If quality gain is small but latency doubles, keep the simpler graph.</p>`,
+    example: `Support knowledge base comparison:
+- Example (1): one retrieval pass, 72% grounded answers, p95 latency 1.8s.
+- Example (2): rewrite + second pass when needed, 84% grounded answers, p95 latency 2.4s.
 
-During approval wait, worker restarts.
-Without checkpoints: run restarts from step 1 and may recompute inconsistently.
-With checkpoints: run resumes at step 4 with approved payload, then executes step 5 once using idempotency key.`,
-    animation: "ReActGraphInspector",
-    tool: null,
+Rollout policy:
+1) Enable second pass only when initial grounding_score < 0.7.
+2) Cap total retrieval attempts at 2.
+3) Route to human queue if still below threshold after retry.`,
+    animation: "MultiQueryRAGViz",
+    tool: "RAGGuardrailsStudio",
     interviewPrep: {
       questions: [
-        "How do checkpoints reduce replay cost and incident blast radius in LangGraph?",
-        "What metadata must be persisted to safely resume a graph run?",
-        "How do idempotency keys protect checkpoint-based recovery paths?",
-        "How do you choose checkpoint frequency without hurting latency?",
+        "What exact upgrade differentiates Basic Example (2) from Basic Example (1)?",
+        "How do you design bounded retry for retrieval without runaway cost?",
+        "Which state fields are required to debug retry behavior later?",
+        "How do you decide whether the second retrieval pass is worth keeping?",
+        "What is a safe terminal path when retries still fail grounding checks?",
       ],
-      seniorTip: "Interview-grade checkpoint design always includes resume safety, idempotent side effects, and compatibility checks across versioned state schemas."
+      seniorTip: "Strong answers include quantitative comparison of baseline vs retry graph and a strict retry budget with explicit termination reasons."
     },
     flashCards: [
-      { q: "What is checkpointing?", a: "Persisting run state at controlled boundaries for safe resume." },
-      { q: "Why idempotency matters on resume?", a: "It prevents duplicate side effects when steps re-run." },
-      { q: "Checkpoint too often vs too rarely?", a: "Too often adds overhead; too rarely increases replay cost." },
-      { q: "What is a resumable failure?", a: "A failure where state integrity is intact and replay boundary is known." },
-      { q: "Key resume safety check?", a: "State schema/version compatibility before execution continues." },
+      { q: "Main purpose of Example (2)?", a: "Recover weak first-pass retrieval through bounded rewrite/retry." },
+      { q: "Why add termination_reason in state?", a: "So failed runs are diagnosable and policy-tunable." },
+      { q: "Largest risk of retries?", a: "Unbounded latency and cost growth." },
+      { q: "When to trigger second pass?", a: "Only below a clear retrieval/grounding threshold." },
+      { q: "When should second pass be removed?", a: "If quality lift is low relative to latency and cost overhead." },
     ],
   },
   {
-    slug: "26-langgraph-multi-agent-actor-responder-pattern",
+    slug: "26-rags-with-metadata",
     sectionId: "langgraph",
-    title: "LangGraph Multi-Agent Actor/Responder Pattern",
+    title: "RAGs - With MetaData",
     order: 26,
-    excerpt: "Design actor-responder agent collaboration with explicit routing, role boundaries, and conflict-resolution policies.",
-    theory: `<p><b>Multi-agent actor/responder setup separates responsibilities.</b> One agent plans or acts (actor), another critiques, refines, or formats final output (responder/reviewer).</p>
-<p><b>Why this pattern exists:</b> complex tasks often mix execution and quality-control objectives that are easier to optimize with role-specialized agents.</p>
-<p><b>Graph architecture:</b></p>
+    excerpt: "Constrain retrieval with metadata filters to improve precision, compliance boundaries, and tenant-level isolation.",
+    theory: `<p><b>Metadata turns semantic retrieval into policy-aware retrieval.</b> Instead of searching the whole corpus, the graph adds structured constraints such as tenant, document type, region, version, and access level.</p>
+<p><b>Typical metadata filters:</b></p>
 <ul>
-<li>Actor node proposes action or draft output.</li>
-<li>Responder node validates quality/policy/completeness.</li>
-<li>Router decides: accept, revise, escalate, or terminate.</li>
-<li>Shared state tracks agent outputs, rationale, and arbitration signals.</li>
+<li><code>tenant_id</code> for multi-tenant isolation.</li>
+<li><code>doc_type</code> for policy/manual/faq separation.</li>
+<li><code>effective_date</code> for version correctness.</li>
+<li><code>region</code> for legal and compliance boundaries.</li>
+<li><code>visibility</code> for role-based access.</li>
 </ul>
-<p><b>Failure modes:</b> role overlap, contradictory instructions, ping-pong loops, and arbitration deadlocks.</p>
-<p><b>Control strategies:</b></p>
-<ol>
-<li>Clear role contracts and input/output schemas.</li>
-<li>Revision cap and convergence policy.</li>
-<li>Arbitration node or deterministic tie-break rules.</li>
-<li>Escalation to HITL for unresolved conflicts.</li>
-</ol>
-<p><b>Observability metrics:</b> disagreement rate, rounds-to-convergence, arbitration frequency, and quality lift vs single-agent baseline.</p>
-<p><b>Cost/latency tradeoff:</b> multi-agent can improve robustness but increases call count. Use for high-value/high-risk workflows, not for trivial intents.</p>`,
-    example: `Compliance response assistant:
-1) Actor drafts answer with cited policy excerpts.
-2) Responder checks policy conformance and missing constraints.
-3) If compliant -> finalize.
-4) If conflict (e.g., missing exception clause) -> route back with revision instruction.
-5) After max 2 rounds, unresolved conflict goes to compliance analyst.
+<p><b>Graph placement:</b> apply metadata constraints before vector search, not after generation. Retrieval must already be compliant and scoped before context reaches the LLM.</p>
+<p><b>Failure modes:</b> over-filtering that returns empty results, stale metadata tags, and inconsistent indexing between vector store and metadata store.</p>
+<p><b>Guardrails:</b> fallback filter relaxation rules, metadata quality checks in ingestion pipeline, and audit logs that capture filter criteria per request.</p>
+<p><b>Tradeoff:</b> strict filters improve precision and safety but may reduce recall. Practical systems use tiered retrieval: strict pass first, bounded relaxation second.</p>`,
+    example: `Enterprise HR assistant:
+1) User asks leave-policy question from EU office.
+2) Graph sets filters: tenant=acme, doc_type=policy, region=EU, effective_date<=today.
+3) Retriever returns only EU-valid policy chunks.
+4) Answer node generates response with citations.
+5) If no chunks match strict filter, graph relaxes one dimension (date window) once, then escalates if still empty.
 
-Outcome: fewer policy-violating replies and deterministic escalation path.`,
-    animation: "LangGraphArchitectureViz",
-    tool: "AgentToolLoopSimulator",
+Result: answers stay policy-correct and tenant-safe.`,
+    animation: "AdvancedRetrievalLab",
+    tool: "HybridFusionLab",
     interviewPrep: {
       questions: [
-        "When is actor/responder multi-agent architecture justified over a single-agent loop?",
-        "How do you prevent ping-pong loops between collaborating agents?",
-        "What arbitration rules do you implement when agents disagree persistently?",
-        "Which metrics prove multi-agent adds value rather than cost-only overhead?",
+        "Why should metadata filtering happen before generation in a RAG graph?",
+        "How do you balance precision and recall when filters are too strict?",
+        "Which metadata fields are mandatory for multi-tenant production systems?",
+        "What ingestion-time checks prevent metadata-related retrieval failures?",
+        "How do you audit compliance for metadata-constrained retrieval?",
       ],
-      seniorTip: "Strong multi-agent design answers include role boundaries, arbitration policy, convergence controls, and measured ROI against single-agent baselines."
+      seniorTip: "Interview-level depth comes from policy design: strict first-pass retrieval, bounded relaxation, and auditable filter logs tied to each response."
     },
     flashCards: [
-      { q: "Actor vs responder?", a: "Actor executes/proposes; responder validates/refines before finalization." },
-      { q: "Main multi-agent risk?", a: "Unbounded disagreement loops without convergence controls." },
-      { q: "How to end deadlocks?", a: "Arbitration rules + max rounds + HITL escalation." },
-      { q: "When to use multi-agent?", a: "High-risk tasks where specialization improves quality and safety." },
-      { q: "Best ROI metric?", a: "Quality lift and policy-pass rate per unit latency/cost increase." },
+      { q: "What does metadata add to RAG?", a: "Policy-aware and scope-aware retrieval, not just semantic similarity." },
+      { q: "Main risk of strict filters?", a: "Empty retrieval due to over-constrained search." },
+      { q: "Main risk of weak filters?", a: "Data leakage or irrelevant context." },
+      { q: "Where should filters be enforced?", a: "At retrieval time before context reaches generation." },
+      { q: "How to recover from strict-filter misses?", a: "Bounded filter relaxation with explicit policy, then escalation." },
+    ],
+  },
+  {
+    slug: "27-rags-one-off-question",
+    sectionId: "langgraph",
+    title: "RAGs - One-off Question",
+    order: 27,
+    excerpt: "Design a stateless RAG path for single-turn questions with strict cost/latency control and grounded output guarantees.",
+    theory: `<p><b>One-off RAG is optimized for single-turn intent.</b> The graph handles isolated questions without conversation memory, which keeps architecture simpler and faster.</p>
+<p><b>Ideal use cases:</b> documentation search widget, help-center answer box, and inline knowledge lookup where each query is independent.</p>
+<p><b>Graph design differences from conversational RAG:</b></p>
+<ul>
+<li>No long-term memory state.</li>
+<li>Aggressive token budgeting for predictable cost.</li>
+<li>Short path: retrieve -> answer -> validate -> finish.</li>
+<li>Cache-first strategy for repeated popular queries.</li>
+</ul>
+<p><b>Critical edge cases:</b> vague questions that need follow-up context, intent that is action-oriented (needs tools, not retrieval), and stale index snapshots.</p>
+<p><b>Guardrails:</b> when ambiguity is high, route to clarification question instead of guessing. When query is out-of-domain, return explicit "not found in sources" behavior.</p>
+<p><b>Operational advantage:</b> one-off graphs are easier to benchmark and harden because state surface area is small and route space is limited.</p>`,
+    example: `API docs answer box:
+1) User asks: "How do I rotate API keys?"
+2) Retriever fetches top docs chunk set.
+3) Answer node drafts concise response with endpoint references.
+4) Validator checks citation coverage.
+5) Response returns with links.
+
+If query is "can you rotate keys for me now?", router identifies action intent and routes to agent/tool workflow instead of one-off RAG.`,
+    animation: "RerankerViz",
+    tool: "TokenCounter",
+    interviewPrep: {
+      questions: [
+        "When should you choose one-off RAG over conversational memory-based RAG?",
+        "What cost controls are easiest to enforce in a one-off graph design?",
+        "How do you handle ambiguous questions in a single-turn flow?",
+        "What route signal tells you this is not a one-off retrieval problem anymore?",
+        "Which KPIs matter most for one-off RAG quality and efficiency?",
+      ],
+      seniorTip: "A strong answer explains boundary policy: keep one-off paths stateless and fast, then route out to clarification or agent paths when intent requires multi-step reasoning."
+    },
+    flashCards: [
+      { q: "What is one-off RAG?", a: "A stateless retrieval flow optimized for single, independent questions." },
+      { q: "Why is one-off RAG cheaper?", a: "No long conversation memory and fewer graph steps." },
+      { q: "How to handle ambiguous one-off query?", a: "Ask clarification instead of forcing an answer." },
+      { q: "When to leave one-off path?", a: "When the query needs actions, tools, or multi-turn context." },
+      { q: "Top one-off KPI pair?", a: "Grounded-answer rate and p95 latency." },
+    ],
+  },
+  {
+    slug: "28-agents-tools-intro",
+    sectionId: "langgraph",
+    title: "Agents & Tools - Intro",
+    order: 28,
+    excerpt: "Transition from pure retrieval flows to agentic workflows where the model chooses tools under bounded orchestration policy.",
+    theory: `<p><b>This topic introduces the handoff from RAG-only systems to agent-plus-tool systems.</b> Retrieval answers many questions, but some requests require acting on external systems.</p>
+<p><b>Agent-tool architecture in LangGraph:</b></p>
+<ul>
+<li>Reason node decides whether retrieval is enough or a tool call is needed.</li>
+<li>Tool-selection node validates action against allowlist and policy.</li>
+<li>Act node executes tool with timeout and schema checks.</li>
+<li>Observation is appended to state, then graph decides continue vs finish.</li>
+</ul>
+<p><b>Core production rule:</b> model suggests actions; framework enforces execution policy. Never let free-form model text directly execute side effects.</p>
+<p><b>Failure modes:</b> wrong tool selection, malformed arguments, repeated calls without new evidence, and missing rollback semantics for write operations.</p>
+<p><b>Guardrails:</b> per-tool schema validation, idempotency keys for mutating calls, retry budgets, and optional human approval for sensitive operations.</p>
+<p><b>Tradeoff vs retrieval-only:</b> agents increase capability but also increase operational surface area. Introduce tools only when business tasks demand action, not just answering.</p>`,
+    example: `Travel assistant split decision:
+1) User asks: "Do I need a transit visa for a 6-hour layover?"
+2) Graph first runs retrieval over policy docs.
+3) Missing country-specific rules trigger tool route.
+4) Agent calls official visa-rules API tool.
+5) Output is merged with retrieved policy and returned with confidence note.
+
+For "book my ticket now", graph routes to approval gate before booking API call.`,
+    animation: "AgentToolLoopSimulator",
+    tool: "ChainRoutingPatternsViz",
+    interviewPrep: {
+      questions: [
+        "What decision boundary separates retrieval-only nodes from agent-tool routing?",
+        "Why must tool execution stay outside direct model control?",
+        "What minimum controls are required before enabling mutating tools?",
+        "How do you detect and stop repeated wrong-tool loops?",
+        "What observability fields are mandatory for tool-assisted flows?",
+      ],
+      seniorTip: "Interviewers look for control-plane thinking: model proposes, orchestrator validates, runtime executes, and every step is traceable."
+    },
+    flashCards: [
+      { q: "Why add tools to LangGraph?", a: "To handle tasks requiring external actions or real-time system state." },
+      { q: "Who should execute tools?", a: "Framework runtime with policy checks, not raw model output." },
+      { q: "Main risk of tool-enabled agents?", a: "Uncontrolled side effects from incorrect actions." },
+      { q: "How to secure mutating tools?", a: "Schema validation, idempotency, approval gates, and audit logs." },
+      { q: "How to reduce wrong-tool loops?", a: "Retry caps plus evidence-based re-attempt rules." },
+    ],
+  },
+  {
+    slug: "29-agents-tools-deep-dive",
+    sectionId: "langgraph",
+    title: "Agents & Tools - Deep Dive",
+    order: 29,
+    excerpt: "Production deep dive into tool orchestration: routing policy, retries, error classes, HITL gates, and evaluation strategy.",
+    theory: `<p><b>This session moves from concept to production mechanics.</b> A deep-dive agent graph needs formal routing and failure policy, not only prompt-level instructions.</p>
+<p><b>Recommended control architecture:</b></p>
+<ol>
+<li><b>Plan node</b> creates structured intent and action candidate.</li>
+<li><b>Policy node</b> checks permissions, risk level, and tool eligibility.</li>
+<li><b>Execution node</b> performs tool call with timeout and retry class.</li>
+<li><b>Validation node</b> checks output quality and completion criteria.</li>
+<li><b>Route node</b> selects continue, fallback, escalate, or end.</li>
+</ol>
+<p><b>Error taxonomy to encode in state:</b> retryable network failures, non-retryable validation failures, and policy-denied actions. Different classes must route differently.</p>
+<p><b>HITL integration:</b> route high-risk actions (payments, account changes, compliance exceptions) to approval node with full context snapshot and proposed action payload.</p>
+<p><b>Evaluation stack:</b> success rate, wrong-tool rate, retries per task, escalation rate, p95 latency, and cost per successful completion. Evaluate process metrics, not only final answer text.</p>
+<p><b>Latency/cost strategy:</b> short-circuit simple paths, cache deterministic tool outputs where valid, and use adaptive retries based on error class and SLA budget.</p>`,
+    example: `Billing operations agent:
+1) User asks to refund duplicate charge.
+2) Plan node proposes "lookup invoice -> validate duplicate -> execute refund".
+3) Policy node marks refund as high-risk and requests human approval.
+4) Analyst approves with one click.
+5) Execution node calls payment API with idempotency key.
+6) Validation confirms ledger update and routes to END.
+
+If payment API times out, graph retries once; if still failing, it opens incident route and informs user with safe status.`,
+    animation: "LangGraphArchitectureViz",
+    tool: "ReActGraphInspector",
+    interviewPrep: {
+      questions: [
+        "How do you design retry policy by error class in a tool-heavy agent graph?",
+        "Where should HITL gates be inserted for sensitive operations and why?",
+        "What metrics prove the deep-dive architecture is better than a simpler agent loop?",
+        "How do you prevent duplicate side effects across retries and resumes?",
+        "What rollout plan would you use before enabling this graph on full traffic?",
+      ],
+      seniorTip: "Senior-quality answers combine architecture and operations: explicit error taxonomy, idempotent side effects, risk-gated HITL, and measured rollout with regression traces."
+    },
+    flashCards: [
+      { q: "What changes in a deep-dive agent architecture?", a: "You formalize policy, error classes, retries, and escalation as graph nodes and state fields." },
+      { q: "Why classify errors before retrying?", a: "Retrying non-retryable failures wastes time and can amplify risk." },
+      { q: "Where is HITL most valuable?", a: "Before high-risk, irreversible, or compliance-sensitive actions." },
+      { q: "How to avoid duplicate refunds or writes?", a: "Use idempotency keys and resume-safe execution policy." },
+      { q: "What must be evaluated besides final answer quality?", a: "Process stability metrics like wrong-tool rate, retries, escalations, latency, and cost." },
     ],
   },
 ];
@@ -4349,7 +4483,42 @@ function applyAuthoredInterviewAnswers(sectionNodes, sectionId) {
 const authoredMlNodes = applyAuthoredInterviewAnswers(mlNodes, "ml");
 const authoredRagNodes = applyAuthoredInterviewAnswers(ragNodes, "rag");
 const authoredLangchainNodes = applyAuthoredInterviewAnswers(langchainNodes, "langchain");
-const authoredLangGraphNodes = applyAuthoredInterviewAnswers(langGraphNodes, "langgraph");
+const langGraphCanonicalTopicMap = Object.freeze({
+  "01-introduction": { order: 1, title: "Introduction" },
+  "02-levels-of-autonomy-llm-applications": { order: 2, title: "Levels of Autonomy in LLM applications" },
+  "03-agents-tools-intro": { order: 3, title: "Agents & Tools - Intro" },
+  "13-reflection-agent-introduction": { order: 6, title: "Reflection Agent - Introduction" },
+  "14-reflection-agent-creating-chains": { order: 7, title: "Reflection Agent - Creating Chains" },
+  "15-reflection-agent-building-graph": { order: 8, title: "Reflection Agent - Building The Graph" },
+  "16-reflection-agent-langsmith-tracing": { order: 9, title: "Reflection Agent - LangSmith Tracing" },
+  "12-drawbacks-of-react-agents": { order: 12, title: "Drawbacks of ReAct Agents" },
+  "04-what-is-stategraph": { order: 15, title: "What is StateGraph?" },
+  "05-react-using-langgraph-overview": { order: 18, title: "ReAct using LangGraph - Overview" },
+  "06-react-using-langgraph-reasoning-runnable": { order: 19, title: "ReAct using LangGraph - Reasoning Runnable" },
+  "07-react-using-langgraph-state": { order: 20, title: "ReAct using LangGraph - State" },
+  "08-react-using-langgraph-building-nodes": { order: 21, title: "ReAct using LangGraph - Building Nodes" },
+  "09-tool-executor-deprecated": { order: 21.5, title: "ToolExecutor (Deprecated)" },
+  "10-react-using-langgraph-final-graph": { order: 22, title: "ReAct using LangGraph - Final Graph" },
+  "11-react-using-langgraph-langsmith-tracing": { order: 23, title: "ReAct using LangGraph - LangSmith Tracing" },
+  "24-rags-basic-example-1": { order: 24, title: "RAGs - Basic Example (1)" },
+  "25-rags-basic-example-2": { order: 25, title: "RAGs - Basic Example (2)" },
+  "26-rags-with-metadata": { order: 26, title: "RAGs - With MetaData" },
+  "27-rags-one-off-question": { order: 27, title: "RAGs - One-off Question" },
+  "29-agents-tools-deep-dive": { order: 29, title: "Agents & Tools - Deep Dive" },
+});
+
+const canonicalLangGraphNodes = langGraphNodes
+  .filter((node) => Object.prototype.hasOwnProperty.call(langGraphCanonicalTopicMap, node.slug))
+  .map((node) => {
+    const canonicalTopic = langGraphCanonicalTopicMap[node.slug];
+    return {
+      ...node,
+      title: canonicalTopic.title,
+      order: canonicalTopic.order,
+    };
+  });
+
+const authoredLangGraphNodes = applyAuthoredInterviewAnswers(canonicalLangGraphNodes, "langgraph");
 const authoredAdvancedNodes = applyAuthoredInterviewAnswers(advancedNodes, "ml");
 
 // ─────────────────────────────────────────────────────────

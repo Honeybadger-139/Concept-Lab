@@ -2105,7 +2105,14 @@ Without orchestration, these are scattered custom scripts; with LangChain, they 
     order: 2,
     excerpt: "Core components: models, prompts, chains, memory, agents, tools.",
     theory: "<p>The LangChain crash course covers four main learning areas, each building on the previous:</p><ol><li><b>What is LangChain</b> — the problem it solves, the abstraction it provides</li><li><b>Chat Models</b> — the first core component: how to interact with LLMs using structured message objects (SystemMessage, HumanMessage, AIMessage)</li><li><b>Prompt Templates</b> — the second core component: building reusable, parameterised prompt structures rather than hard-coded strings</li><li><b>Chains</b> — the third and most powerful component: composing models, prompts, and other tools into sequential pipelines with LCEL's pipe operator (<code>|</code>)</li></ol><p>Each component is introduced with a practical coding example. The course style is deliberately concise — theory is explained only as much as needed to understand the code, then you build immediately. This mirrors how effective engineers learn: by building and encountering problems, not by memorising concepts first.</p>",
-    example: "The course builds four progressively complex LangChain apps: (1) a simple chat model call, (2) a prompt template chain, (3) a RAG retrieval chain, (4) a multi-model agentic flow. Each week adds one layer of abstraction to the same mental model.",
+    example: `Progressive build path:
+1) Start with one direct chat-model call to understand message I/O.
+2) Add prompt templates so instructions become reusable and testable.
+3) Add chains so prompt -> model -> parser is one reliable pipeline.
+4) Add retrieval (RAG) to ground answers in external documents.
+5) Add agents/tools only when runtime decision-making is actually needed.
+
+This staged progression helps first-time learners isolate one concept at a time and avoid mixing too many moving parts in one build.`,
     animation: "LangChainArchitectureMap",
     tool: null,
     interviewPrep: {
@@ -2172,7 +2179,14 @@ This converts a vague conversational prompt into a controlled multi-step applica
     order: 4,
     excerpt: "Python basics, API keys, .env setup — everything before you write LangChain code.",
     theory: "<p>Before building with LangChain, you need a working foundation in three areas:</p><ul><li><b>Python 3.8+</b> — the course uses Python exclusively; any version 3.8 or higher works</li><li><b>pip</b> — Python's package manager for installing LangChain and its dependencies</li><li><b>API keys</b> — at minimum an OpenAI API key (for GPT models). Optional: Anthropic, Google Gemini, or Groq keys if you want to test alternative providers</li></ul><p>You do NOT need deep Python expertise — if you know functions, loops, and basic OOP you have enough to follow along. The course explains every new concept as it appears.</p><p>A code editor (VS Code recommended), basic terminal comfort, and willingness to install packages are the practical requirements. Everything else is learned during the course.</p>",
-    example: "You'll need Python 3.11+, a virtual environment (venv or conda), and a .env file storing your OPENAI_API_KEY. The course also uses python-dotenv to load secrets automatically — never hardcode keys in source files.",
+    example: `Beginner setup checklist:
+1) Install Python 3.11+ and verify with \`python --version\`.
+2) Create/activate virtual environment (\`python -m venv venv\`, then activate).
+3) Install required packages with pip.
+4) Create .env file and add \`OPENAI_API_KEY=...\`.
+5) Load env vars with \`load_dotenv()\` and run one simple model call.
+
+If step 5 fails, fix environment before continuing to chains and RAG.`,
     animation: null,
     tool: null,
     interviewPrep: {
@@ -2195,7 +2209,14 @@ This converts a vague conversational prompt into a controlled multi-step applica
     order: 5,
     excerpt: "virtualenv, installing langchain-openai, and .env management best practices.",
     theory: "<p>The course uses a clean, minimal setup pattern that mirrors professional Python development:</p><ol><li><b>Create project folder</b>: <code>mkdir langchain-crash-course && cd langchain-crash-course</code></li><li><b>Virtual environment</b>: <code>python -m venv venv</code> then activate it. This isolates your project dependencies from global Python packages.</li><li><b>Install packages</b>: <code>pip install langchain langchain-openai python-dotenv</code></li><li><b>Create .env file</b>: Store <code>OPENAI_API_KEY=sk-...</code> here. Never commit this file — add it to <code>.gitignore</code>.</li><li><b>Load env vars in code</b>: <code>from dotenv import load_dotenv; load_dotenv()</code></li></ol><p>The activation command differs by OS: Mac/Linux uses <code>source venv/bin/activate</code>, Windows uses <code>venv\\Scripts\\activate</code>. Once activated, your terminal prompt shows <code>(venv)</code> — all pip installs go into the isolated environment.</p><p>VS Code tip: the instructor opens the project folder directly in VS Code (<code>code .</code>) and uses the integrated terminal. Keeps everything in one place.</p>",
-    example: "Create a virtual env: python -m venv venv && source venv/bin/activate. Install dependencies: pip install langchain langchain-openai python-dotenv. Add your OpenAI key to .env. Import and run a ChatOpenAI call — if it returns a response, setup is confirmed.",
+    example: `Concrete environment bring-up:
+1) \`python -m venv venv\`
+2) \`source venv/bin/activate\` (Mac/Linux) or \`venv\\Scripts\\activate\` (Windows)
+3) \`pip install langchain langchain-openai python-dotenv\`
+4) Add API key to \`.env\`
+5) Run a smoke test script that imports ChatOpenAI and prints one response.
+
+Treat this as your "green check" gate before building any workflow.`,
     animation: null,
     tool: null,
     interviewPrep: {
@@ -2219,7 +2240,13 @@ This converts a vague conversational prompt into a controlled multi-step applica
     order: 6,
     excerpt: "The structured message format — SystemMessage, HumanMessage, AIMessage.",
     theory: "<p>Chat Models are LangChain's first core component — the standardised interface to Large Language Models. Instead of passing raw strings, LangChain uses structured <em>message objects</em> that map to how modern chat LLMs actually work:</p><ul><li><code>SystemMessage</code> — sets the AI's persona, constraints, tone ('You are a helpful assistant')</li><li><code>HumanMessage</code> — the user's input</li><li><code>AIMessage</code> — the model's response (used for storing history)</li></ul><p>The official definition: a <em>Chat Model</em> is a type of language model that uses a sequence of messages as inputs and returns a message as output. This is different from older completion-style LLMs that took a single string.</p><p>LangChain's key value here: all these message types work identically across OpenAI, Anthropic, Google Gemini, Ollama (local), and any other provider. You write your code once and swap providers by changing one import.</p><p>The <code>.invoke()</code> method takes a list of messages and returns an <code>AIMessage</code> with a <code>.content</code> attribute containing the response text.</p>",
-    example: "Calling ChatOpenAI directly: model = ChatOpenAI(model='gpt-4o-mini'); response = model.invoke([HumanMessage(content='What is RAG?')]). The response object contains .content (the answer string) and .response_metadata (token counts, finish reason, model name).",
+    example: `Chat-model I/O walkthrough:
+1) Build message list with explicit roles (SystemMessage + HumanMessage).
+2) Invoke model once.
+3) Read \`response.content\` for user-facing text.
+4) Read \`response.response_metadata\` for token/cost diagnostics.
+
+This pattern is the core primitive every later chain, retriever, and agent builds on.`,
     animation: "ChatModelDemo",
     tool: null,
     interviewPrep: {
@@ -2293,7 +2320,13 @@ This keeps every chain using consistent model behavior and metrics.`,
     order: 8,
     excerpt: "How LLMs simulate memory — passing the full conversation list each call.",
     theory: "<p>LLMs are <em>stateless APIs</em> — each call is completely independent. The model has no memory of previous exchanges. To create a conversational experience, you must explicitly pass the entire conversation history in every call.</p><p><strong>Pattern:</strong> Maintain a <code>chat_history</code> list. After each turn, append the user's <code>HumanMessage</code> and the AI's <code>AIMessage</code>. On the next call, prepend history to the messages list.</p><pre><code>chat_history = []\\n\\ndef chat(user_input):\\n    messages = [SystemMessage('You are a helpful assistant.')] + chat_history + [HumanMessage(user_input)]\\n    response = model.invoke(messages)\\n    chat_history.append(HumanMessage(user_input))\\n    chat_history.append(AIMessage(response.content))\\n    return response.content</code></pre><p>This is why LLM conversation UIs like ChatGPT send the full history on every request — they're building this list and passing it each time. The context window limit is the practical ceiling: long enough conversations hit the token limit and older messages must be truncated or summarised.</p>",
-    example: "Multi-turn memory with InMemoryChatMessageHistory: history stores all previous HumanMessages and AIMessages. On turn 3, when the user asks 'Can you elaborate?', the model receives turns 1+2 as context and knows what to elaborate on — without you manually managing the list.",
+    example: `Multi-turn context flow:
+1) Turn 1 user asks a question; model responds.
+2) Both messages are appended to chat history.
+3) Turn 2 includes prior history + new user message.
+4) Turn 3 follow-up ("can you elaborate?") works because earlier turns are part of input.
+
+Without this explicit history pass, follow-up questions lose context and quality drops.`,
     animation: null,
     tool: null,
     interviewPrep: {
@@ -2317,7 +2350,15 @@ This keeps every chain using consistent model behavior and metrics.`,
     order: 9,
     excerpt: "Swapping providers with one line — Anthropic, Cohere, local Ollama.",
     theory: "<p>One of LangChain's most powerful features: switching between LLM providers requires changing only one import. The rest of your code — message types, chains, prompt templates — stays identical.</p><p><strong>Provider examples:</strong></p><ul><li><code>ChatOpenAI</code> (<code>langchain-openai</code>) — GPT-4o, GPT-4o-mini</li><li><code>ChatAnthropic</code> (<code>langchain-anthropic</code>) — Claude 3.5, Claude 3 Haiku</li><li><code>ChatGoogleGenerativeAI</code> (<code>langchain-google-genai</code>) — Gemini 1.5 Pro/Flash</li><li><code>ChatOllama</code> (<code>langchain-ollama</code>) — local models (Llama 3, Mistral, etc.)</li><li><code>ChatGroq</code> (<code>langchain-groq</code>) — fast inference (Llama, Mixtral on Groq)</li></ul><p>The pattern is always the same: install the provider-specific package, import the Chat class, initialise with model name, then call <code>.invoke(messages)</code> identically.</p><p><strong>Ollama (local models):</strong> No API key needed. Runs entirely on your machine. Great for privacy-sensitive development, offline use, or cost-free experimentation with open-source models like Llama 3.</p>",
-    example: "The same chain runs on three providers: ChatOpenAI(model='gpt-4o-mini'), ChatAnthropic(model='claude-3-5-haiku-20241022'), ChatOllama(model='llama3.2'). Only the import and model constructor changes — the rest of your chain code is identical. This is LangChain's core value proposition.",
+    example: `Provider swap pattern:
+1) Keep chain logic identical: prompt | model | parser.
+2) Replace only model constructor:
+   - ChatOpenAI(...)
+   - ChatAnthropic(...)
+   - ChatOllama(...)
+3) Re-run same eval queries and compare quality/cost/latency.
+
+This lets teams choose models by business constraints without rewriting orchestration code.`,
     animation: null,
     tool: null,
     interviewPrep: {
@@ -2469,7 +2510,17 @@ This turns prompt engineering into controlled software change management.`,
     order: 13,
     excerpt: "Composing prompts, models, and parsers into end-to-end LCEL pipelines.",
     theory: "<p>Chains are LangChain's most powerful component — the ability to compose multiple steps into a sequential pipeline. The instructor calls them his personal favourite because they're where the framework earns its name.</p><p><strong>LCEL (LangChain Expression Language)</strong> uses the pipe operator (<code>|</code>) to compose any Runnable component into a chain:</p><pre><code>chain = prompt | model | output_parser\\nresult = chain.invoke({'topic': 'Python decorators'})</code></pre><p>Each component receives the output of the previous one as input. The final output is the result of the last component in the chain.</p><p><strong>Output Parsers</strong> are commonly the last step — they transform the raw <code>AIMessage</code> into a more useful format:</p><ul><li><code>StrOutputParser</code> — extracts just the text string</li><li><code>JsonOutputParser</code> — parses the response as JSON</li><li><code>PydanticOutputParser</code> — validates and types the response</li></ul><p>Chains are <em>lazy</em> — they don't execute until <code>.invoke()</code>, <code>.stream()</code>, or <code>.batch()</code> is called. This enables building complex workflows declaratively before triggering execution.</p>",
-    example: "A three-step LCEL chain: chain = prompt | model | StrOutputParser(). One call chain.invoke({'topic': 'RAG'}) runs all three steps in sequence. Add a RunnableParallel to split into two branches simultaneously, or .with_retry() for automatic error handling — composability is the entire design philosophy.",
+    example: `LCEL execution example:
+1) Define \`chain = prompt | model | StrOutputParser()\`.
+2) Call \`chain.invoke({ topic: "RAG" })\`.
+3) Prompt stage formats instructions.
+4) Model stage generates AIMessage.
+5) Parser stage returns clean text for downstream code.
+
+Then extend safely:
+- add \`RunnableParallel\` for independent subtasks
+- add \`.with_retry()\` for transient failures
+- add tracing so each stage is observable.`,
     animation: "LCELChainViz",
     tool: null,
     interviewPrep: {
@@ -3274,22 +3325,17 @@ const langGraphNodes = [
 <p><b>Common beginner mistake:</b> trying to put all logic inside a single prompt. The correct approach is to move logic into node boundaries and let prompts do focused local reasoning.</p>
 <p><b>Another critical takeaway:</b> autonomy is not free. As autonomy increases, you must increase instrumentation: traces, state snapshots, retry limits, safe tool boundaries, and human-in-the-loop checkpoints for sensitive actions.</p>
 <p><b>End result of this lesson:</b> you should clearly understand that LangGraph is not just another LLM library - it is the control-plane for agent behavior.</p>`,
-    example: `Detailed scenario: customer-support triage agent.
-1) User asks a complex policy question.
-2) Router node classifies intent (billing, compliance, technical).
-3) Retrieval node pulls policy docs.
-4) Tool node checks account metadata.
-5) Validator node scores answer confidence.
-6) If confidence is low, graph loops to retrieval with refined query.
-7) If question is high-risk, graph routes to human approval node.
-8) Final answer is produced with evidence links.
+    example: `Beginner walkthrough with explicit state:
+1) User asks a policy question; state.input is set.
+2) Router node classifies intent and writes state.intent="billing".
+3) Retrieval node adds top policy chunks into state.docs.
+4) Tool node enriches with account metadata into state.account_context.
+5) Validator writes state.confidence=0.63.
+6) Route logic sees low confidence and loops to retrieval with refined query.
+7) Second pass reaches state.confidence=0.88 and adds citation-ready evidence.
+8) Final response node writes answer + sources and exits to END.
 
-Additional architecture example:
-- Fraud-monitoring assistant routes "suspicious transaction" queries to a risk-scoring tool.
-- If score > threshold, graph auto-routes to analyst review node before customer response.
-- If score <= threshold, graph skips human review and closes with explainable rationale.
-
-This is difficult to implement cleanly as a single chain, but natural in LangGraph because each step is explicit and stateful.`,
+If risk flag is high at any step, route diverts to human-review node before finalization.`,
     animation: "LangGraphArchitectureViz",
     tool: null,
     interviewPrep: {
@@ -3338,18 +3384,17 @@ This is difficult to implement cleanly as a single chain, but natural in LangGra
 </ul>
 <p><b>Why this topic exists before deep agent building:</b> it teaches architectural discipline. You should justify every increase in autonomy with measured gains, not with hype.</p>
 <p><b>LangGraph connection:</b> LangGraph is ideal once you cross into dynamic autonomy, because it gives explicit state transitions, conditional routing, and bounded loops instead of hidden behavior in prompts.</p>`,
-    example: `Autonomy selection case study:
-- Task: answer employee policy questions.
-- Option A (Level 1): one-shot prompt over raw policy text. Fast but brittle.
-- Option B (Level 2): fixed retrieval chain with templated answer. Better grounding.
-- Option C (Level 3/4): tool-calling agent that rewrites query, retrieves, validates confidence, and escalates low-confidence answers.
+    example: `Autonomy decision with metrics:
+1) Baseline Level 1 (single prompt) gives 71% accuracy, 1.2s latency.
+2) Level 2 (retrieval chain) improves to 86% accuracy, 1.8s latency.
+3) Level 3/4 agent reaches 89% but raises latency to 3.6s and cost significantly.
+4) Team chooses Level 2 for production because it meets SLA and quality target.
 
-Second example:
-- Task: classify incoming support tickets.
-- Level 0 deterministic regex/rules may already hit SLA for known categories.
-- Move to Level 2 only when long-tail categories and ambiguous language reduce accuracy.
+Second case:
+- Ticket classifier with stable categories already meets KPI using deterministic rules.
+- Upgrade to higher autonomy is deferred until long-tail miss rate rises.
 
-If Option B already hits target accuracy and latency, do not jump to Option C yet. Increase autonomy only when measured gaps justify it.`,
+This is the core lesson: increase autonomy only when measured benefit justifies operational cost.`,
     animation: "AutonomyLadderViz",
     tool: null,
     interviewPrep: {
@@ -3401,20 +3446,17 @@ If Option B already hits target accuracy and latency, do not jump to Option C ye
 </ul>
 <p><b>Common failure modes:</b> ambiguous tool descriptions, over-broad tool permissions, missing timeout/retry strategy, and no fallback route when tool calls fail.</p>
 <p><b>LangGraph connection:</b> each loop stage can be represented as nodes with controlled transitions, making agent behavior inspectable and stable under production constraints.</p>`,
-    example: `Practical walkthrough:
-User asks: "What is the current time in London if my system is in India?"
-1) Agent reasons it needs real-time reference from local system.
-2) Agent calls get_system_time tool.
-3) Tool returns structured current timestamp.
-4) Agent computes timezone conversion.
-5) Agent returns final answer and exits loop.
+    example: `Action-observation walkthrough:
+1) User asks a real-time question.
+2) Agent emits AgentAction(tool="get_system_time", args={...}).
+3) Runtime validates schema, executes tool, captures observation.
+4) Agent receives observation and either finalizes or requests another action.
+5) If second action is unnecessary, agent emits AgentFinish and exits.
 
-Additional example:
-- User asks for reimbursement cap.
-- Agent selects policy_search tool, retrieves top chunk, validates confidence.
-- If confidence is low, loop retries with refined keywords; if still low, route to human review.
-
-If tool fails, graph can route to a retry node (with max attempts) and then fallback to a graceful error response.`,
+Failure path:
+- Tool timeout -> observation stores structured error.
+- Route retries once with backoff.
+- If still failing, graph returns safe fallback and avoids hallucinated answers.`,
     animation: null,
     tool: "AgentToolLoopSimulator",
     interviewPrep: {
@@ -3462,17 +3504,17 @@ If tool fails, graph can route to a retry node (with max attempts) and then fall
 </ul>
 <p><b>Common failure modes:</b> ambiguous state fields, conflicting node writes, missing exit conditions, and conditional predicates that rely on loosely formatted text.</p>
 <p><b>Hardening pattern:</b> keep route predicates deterministic (thresholds, enums, booleans), cap retries, and enforce END routes for irrecoverable cases.</p>`,
-    example: `Claims assistant state graph:
-1) START -> intake node parses user claim + attachments.
-2) retrieval node fetches policy clauses.
-3) validator node computes confidence and policy match score.
-4) Conditional edge:
-   - confidence >= 0.85 -> response node
-   - 0.5 to 0.85 -> clarification node
-   - < 0.5 or high-risk flag -> human review node
-5) END with final decision + audit trail snapshot.
+    example: `StateGraph walkthrough:
+1) Intake node writes state.claim_type and parsed entities.
+2) Retrieval node writes state.evidence_chunks.
+3) Validator computes state.confidence and state.risk_level.
+4) Conditional router branches:
+   - high confidence + low risk -> response node.
+   - medium confidence -> clarification node.
+   - low confidence or high risk -> human review node.
+5) Final node writes decision and state.audit_snapshot, then END.
 
-This structure gives deterministic governance while preserving adaptive behavior.`,
+Every transition is explicit, so post-incident replay is straightforward.`,
     animation: "StateGraphFlowViz",
     tool: null,
     interviewPrep: {
@@ -3516,15 +3558,15 @@ This structure gives deterministic governance while preserving adaptive behavior
 <li>Confidence/risk gates that route to human review when needed.</li>
 </ul>
 <p><b>Evaluation approach:</b> benchmark final-answer quality <i>and</i> process quality (wrong-tool rate, loop depth, timeout rate, escalation frequency).</p>`,
-    example: `Incident triage agent:
-- Reason node decides to query logs first.
-- Act node calls log_search tool.
-- Observation indicates incomplete evidence.
-- Route sends flow back to reason node.
-- Next action calls metrics tool.
-- Once confidence threshold is met, reason node returns finish and route goes to END.
+    example: `ReAct loop with bounds:
+1) Reason node selects log_search.
+2) Act node executes and appends observation.
+3) Router checks outcome: not enough evidence -> continue loop.
+4) Reason selects metrics_query on second pass.
+5) Combined evidence raises confidence above threshold.
+6) Reason emits finish and router sends END.
 
-Without explicit graph control, this loop is hard to bound and audit.`,
+Guardrails: max_iterations=4 and max_tool_calls=3 prevent runaway behavior.`,
     animation: "ReActGraphInspector",
     tool: "AgentToolLoopSimulator",
     interviewPrep: {
@@ -3565,12 +3607,16 @@ Without explicit graph control, this loop is hard to bound and audit.`,
 </ul>
 <p><b>Mitigations:</b> parser retry on malformed outputs, fallback model for parser failures, hard tool-name validation against registry, and confidence-driven finish policy.</p>
 <p><b>Production guidance:</b> version prompts and parser schemas together; changes to either can alter route behavior and must be regression-tested.</p>`,
-    example: `Customer refund assistant:
-- Input state contains user query, prior tool observations, and allowed tools.
-- Runnable emits AgentAction(tool="fetch_order", input={"order_id":"..."}).
-- After tool observation is appended, runnable emits AgentFinish with decision + rationale.
+    example: `Typed outcome walkthrough:
+1) Runnable receives input + prior steps and emits AgentAction(fetch_order).
+2) Tool result is appended to state.intermediate_steps.
+3) Runnable re-evaluates with fresh context and emits AgentFinish.
+4) Router terminates cleanly.
 
-If runnable emits unknown tool "chargeback_api", validation rejects it and routes to safe fallback.`,
+Invalid-action branch:
+- Runnable outputs unknown tool name.
+- Validator rejects action before execution.
+- Graph routes to fallback/human path instead of attempting unsafe tool call.`,
     animation: "ReActGraphInspector",
     tool: "AgentToolLoopSimulator",
     interviewPrep: {
@@ -3613,15 +3659,15 @@ If runnable emits unknown tool "chargeback_api", validation rejects it and route
 <li>Redact sensitive tool payloads before persistence.</li>
 </ul>
 <p><b>Failure patterns:</b> oversized state (token blowup), duplicate step entries, or stale outcomes not cleared between runs.</p>`,
-    example: `Security triage run:
-1) input = "Investigate suspicious login spike."
-2) agent_outcome -> AgentAction(search_logs).
-3) intermediate_steps append action+result.
-4) next reasoning sees prior result and calls geoip_enrichment.
-5) second append captures enrichment output.
-6) reasoning returns AgentFinish with final incident summary.
+    example: `State evolution example:
+1) state.input set to security incident query.
+2) Reason step writes AgentAction(search_logs).
+3) Act step appends (search_logs, observation_1) to intermediate_steps.
+4) Next reason sees observation_1 and emits AgentAction(geoip_enrichment).
+5) Act appends second tuple.
+6) Final reason emits AgentFinish with incident summary.
 
-Because the full action/observation chain is in state, incident review is straightforward.`,
+This ordered step history enables deterministic replay and debugging.`,
     animation: "StateGraphFlowViz",
     tool: null,
     interviewPrep: {
@@ -3662,13 +3708,15 @@ Because the full action/observation chain is in state, incident review is straig
 <li>Serialization error -> safe-stringify observation and attach parse status.</li>
 </ul>
 <p><b>Testing priority:</b> node-level tests for state updates and error branches, then integration tests for full loop routing.</p>`,
-    example: `Order support node flow:
-- reason node emits AgentAction("fetch_order_status", {"order_id":"A123"}).
-- act node executes tool, receives status=delayed and eta=2026-03-15.
-- act node appends tuple to intermediate_steps.
-- next reason node sees delay and emits AgentFinish with apology + ETA.
+    example: `Reason/act node contract example:
+1) reason node writes AgentAction(fetch_order_status).
+2) act node validates args and executes tool with timeout.
+3) act node appends structured observation tuple.
+4) reason node emits final response based on observation.
 
-If tool raises timeout, act node appends timeout observation and the next reason step decides retry vs escalation.`,
+Timeout branch:
+- act node writes error observation (type=timeout, attempt=1).
+- next reason step decides retry or escalate based on policy state.`,
     animation: "ReActGraphInspector",
     tool: "AgentToolLoopSimulator",
     interviewPrep: {
@@ -3707,16 +3755,15 @@ If tool raises timeout, act node appends timeout observation and the next reason
 </ul>
 <p><b>Tradeoff:</b> slightly more boilerplate, but much better long-term control and upgrade safety.</p>
 <p><b>Production recommendation:</b> wrap dispatch in your own thin adapter layer so future framework upgrades only require one localized change.</p>`,
-    example: `Before:
-- Act node delegates invocation to ToolExecutor class.
-
+    example: `Migration walkthrough:
+Before: implicit ToolExecutor call hides invocation details.
 After:
-1) Read agent_action.tool + agent_action.tool_input.
-2) Find matching tool in registry.
-3) Invoke selected tool function directly.
-4) Store output/error in intermediate_steps.
+1) Read tool name/args from AgentAction.
+2) Resolve tool from explicit registry.
+3) Execute with timeout wrapper.
+4) Normalize result/error and append to state.
 
-Outcome: fewer hidden abstractions and clearer failure diagnostics during upgrades.`,
+Result: clearer stack traces, easier upgrades, and one adapter boundary for framework changes.`,
     animation: "ReActGraphInspector",
     tool: null,
     interviewPrep: {
@@ -3763,16 +3810,15 @@ Outcome: fewer hidden abstractions and clearer failure diagnostics during upgrad
 <li>Attach run_id/session_id for replay and audit.</li>
 </ul>
 <p><b>Failure modes to test:</b> unknown route labels, missing state keys, infinite loop due bad route logic, and finish payload that violates output schema.</p>`,
-    example: `Subscription cancellation assistant:
-1) Graph starts at reason node with user input.
-2) Reason emits AgentAction(check_subscription_status).
-3) Act runs tool and appends observation.
-4) Reason emits AgentAction(calculate_refund) based on policy.
-5) Act appends result.
-6) Reason emits AgentFinish with final refund + caveats.
-7) Route sends flow to END and stores final state.
+    example: `Final graph execution:
+1) Entry reason node decides first action.
+2) Act node executes and records observation.
+3) Router sends back to reason until finish signal appears.
+4) Finish route writes final answer + audit fields and exits END.
 
-A deterministic route function ensures this cannot loop forever without hitting budget limits.`,
+Safety guarantees:
+- Unknown route labels are rejected.
+- Iteration/time/tool-call budgets enforce hard termination.`,
     animation: "ReActGraphInspector",
     tool: "AgentToolLoopSimulator",
     interviewPrep: {
@@ -3817,18 +3863,13 @@ A deterministic route function ensures this cannot loop forever without hitting 
 <p><b>Observability KPIs for production:</b> median/p95 loop depth, wrong-tool rate, timeout rate, escalation rate, and final-answer-with-citations rate.</p>
 <p><b>Governance benefit:</b> trace artifacts provide auditable evidence for compliance and incident postmortems, especially in regulated workflows.</p>
 <p><b>Cost control insight:</b> trace-level token and latency hotspots show which node/tool pair should be optimized first.</p>`,
-    example: `A 13-second run is flagged as slow.
-Trace analysis shows:
-- reason node #2 consumed 4.2s due oversized intermediate context
-- first tool call timed out and triggered retry
-- second reason step still queried redundant tool
+    example: `Trace-driven optimization:
+1) Run shows p95 latency spike.
+2) Trace pinpoints slow node and repeated tool pattern.
+3) Team applies three targeted fixes: context compression, tighter timeout, duplicate-tool guard.
+4) Re-run eval confirms similar quality but lower latency/cost.
 
-Fix:
-- compress intermediate context
-- tighten timeout + fallback policy
-- add dedupe guard before repeated tool selection
-
-Result after patch: 7.4s median with same answer quality.`,
+This is the expected engineering loop: observe -> isolate cause -> patch one layer -> verify with traces.`,
     animation: "ReActGraphInspector",
     tool: null,
     interviewPrep: {
@@ -3874,17 +3915,11 @@ Result after patch: 7.4s median with same answer quality.`,
 <li>Trace-level observability for route and tool diagnostics.</li>
 </ol>
 <p><b>Decision rule:</b> use simple chains when tasks are deterministic; use ReAct only when dynamic action selection is necessary and measurable benefit exceeds operational cost.</p>`,
-    example: `Support chatbot regression:
-- Initial ReAct deployment improved answer quality on long-tail queries.
-- Under load, p95 latency doubled and tool timeouts triggered repeated retries.
-- Wrong-tool rate rose for ambiguous billing intents.
-
-Fix:
-1) Add max_iterations=4 and max_tool_calls=3.
-2) Add route guard that blocks duplicate tool call unless new evidence exists.
-3) Add escalation route for low-confidence loops.
-
-Outcome: near-original quality with stable latency and bounded cost.`,
+    example: `Failure and recovery pattern:
+1) Naive ReAct rollout improves quality but destabilizes latency under load.
+2) Metrics reveal deeper loops, repeated timeouts, and higher wrong-tool rate.
+3) Team introduces loop caps, duplicate-action guard, and escalation route.
+4) System regains stable SLO while preserving most quality gains.`,
     animation: "ReActGraphInspector",
     tool: "AgentToolLoopSimulator",
     interviewPrep: {
@@ -3927,14 +3962,12 @@ Outcome: near-original quality with stable latency and bounded cost.`,
 <li>Generator and reflector objectives misaligned.</li>
 </ul>
 <p><b>Production guidance:</b> enforce max reflection rounds, explicit scoring rubric, and final fallback route when improvement plateaus.</p>`,
-    example: `Knowledge-base assistant:
-1) Generator drafts answer with citations.
-2) Reflector scores citation relevance and missing constraints.
-3) Score is low because one policy clause is absent.
-4) Router triggers one revision pass.
-5) Revised answer includes missing clause and passes threshold.
-
-Without reflection, first response would have looked fluent but incomplete.`,
+    example: `Reflection loop walkthrough:
+1) Generator produces draft response.
+2) Reflector scores against rubric and flags missing clause.
+3) Router sends one revision pass.
+4) Revised draft includes missing evidence and better structure.
+5) Score crosses threshold and graph finalizes.`,
     animation: "LangGraphArchitectureViz",
     tool: "AgentToolLoopSimulator",
     interviewPrep: {
@@ -3975,12 +4008,12 @@ Without reflection, first response would have looked fluent but incomplete.`,
 <p><b>Key implementation detail:</b> keep outputs strongly typed. Graph routing should read numeric score/flags, not parse narrative critique text.</p>
 <p><b>Failure modes:</b> incompatible schemas between chains, reflector feedback too vague to drive revision, or generator ignoring critique instructions.</p>
 <p><b>Mitigation:</b> enforce schema validation and add revision-specific prompt slots (for example list of failing rubric checks).</p>`,
-    example: `Draft-review chain setup:
-- <code>draft_chain</code> returns: answer, bullet rationale, citation list.
-- <code>review_chain</code> returns: score=0.62, issues=[\"missing edge-case handling\"], revision_prompt=\"address failure-mode section\".
-- Router sees score < 0.8 and passes revision_prompt back to draft_chain.
+    example: `Chain-contract example:
+1) draft_chain returns structured answer + citations.
+2) review_chain returns numeric score + issue list + revision instructions.
+3) Router reads score directly and decides revise/finalize.
 
-The explicit schema allows deterministic route behavior and easier tests.`,
+Because contracts are typed, each chain can be unit-tested independently before graph assembly.`,
     animation: "ReActGraphInspector",
     tool: null,
     interviewPrep: {
@@ -4022,13 +4055,13 @@ The explicit schema allows deterministic route behavior and easier tests.`,
 </ul>
 <p><b>Production strategy:</b> apply reflection graph selectively by request risk/complexity. Low-risk/simple requests can bypass reflection to preserve latency.</p>
 <p><b>Common failure:</b> quality score improves marginally but never reaches target; without plateau detection you waste loops for tiny gains.</p>`,
-    example: `Enterprise response drafting graph:
-- Target score: 0.85, max revisions: 2.
-- Round 1 score: 0.58 -> revision.
-- Round 2 score: 0.79 -> revision.
-- Round 3 score: 0.81 but cap reached -> fallback finalize with \"needs manual review\" tag.
+    example: `Threshold + cap behavior:
+1) Round 1 score below target -> revise.
+2) Round 2 improves but still below target -> revise.
+3) Round 3 plateau detected and cap reached.
+4) Router finalizes via fallback with review-needed tag.
 
-System exits safely instead of endless optimization.`,
+This prevents endless optimize loops while preserving controlled output quality.`,
     animation: "StateGraphFlowViz",
     tool: "AgentToolLoopSimulator",
     interviewPrep: {
@@ -4072,16 +4105,14 @@ System exits safely instead of endless optimization.`,
 </ul>
 <p><b>Debugging signals:</b> flat score trajectory indicates unhelpful critique; frequent cap exits indicate threshold mismatch; high token spend with small quality gain indicates poor ROI.</p>
 <p><b>Production rollout pattern:</b> run tracing on sampled traffic first, calibrate thresholds and cap, then scale reflection only where quality gain justifies added cost.</p>`,
-    example: `Tracing review on 1,000 requests:
-- Reflection improved quality on 37% of high-risk queries.
-- For low-risk queries, median improvement was negligible but cost rose 24%.
-
-Rollout decision:
-1) Enable reflection only for high-risk intents.
-2) Set max revisions=1 for medium-risk.
-3) Disable reflection for low-risk requests.
-
-Result: preserved quality gains with controlled budget impact.`,
+    example: `Data-driven rollout example:
+1) Offline trace study measures quality gain vs extra cost by intent type.
+2) High-risk intents show strong gain, low-risk intents show weak ROI.
+3) Policy is updated:
+   - high-risk: reflection on
+   - medium-risk: max 1 revision
+   - low-risk: reflection off
+4) Production metrics confirm improved budget efficiency with maintained quality.`,
     animation: "ReActGraphInspector",
     tool: null,
     interviewPrep: {

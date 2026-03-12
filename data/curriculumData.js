@@ -4907,6 +4907,190 @@ Without this gate, original over-broad query could have violated data-minimizati
       { q: "Why is this stronger than one-shot generation?", a: "It supports iterative quality improvement with human control." },
     ],
   },
+  {
+    slug: "34-rags-introduction",
+    sectionId: "langgraph",
+    title: "RAGs - Introduction",
+    order: 34,
+    excerpt: "Refresh how RAG works in two stages: build a searchable knowledge base, then retrieve grounded context at query time.",
+    theory: `<p><b>RAG combines private knowledge with model reasoning without retraining the base model.</b> The transcript frames this as a 2-part pipeline: <i>knowledge-base construction</i> and <i>query processing</i>.</p>
+<p><b>Part 1: Knowledge-base construction.</b></p>
+<ul>
+<li>Start with long internal documents (for example company docs).</li>
+<li>Chunk them into smaller pieces (the walkthrough uses manageable chunk sizes).</li>
+<li>Convert each chunk into embeddings (numeric vectors) with an embedding model.</li>
+<li>Store both text and vectors in a vector database (the lesson uses Chroma for local learning).</li>
+</ul>
+<p><b>Part 2: Query processing.</b></p>
+<ul>
+<li>User question is embedded into the same vector space.</li>
+<li>Retriever finds semantically similar chunks (for example top-k with MMR diversity).</li>
+<li>Retrieved chunk text + user question are injected into a prompt template.</li>
+<li>LLM answers with grounded context instead of parametric memory alone.</li>
+</ul>
+<p><b>Why this matters in LangGraph tracks:</b> this topic establishes retrieval mechanics before graph-based control patterns (classification gates, tool-calling, and multi-step loops). Without this baseline, later RAG-agent designs feel like black boxes.</p>
+<p><b>Beginner pitfall:</b> confusing embeddings with storage. Embeddings only represent meaning; the vector DB enables fast similarity search over those embeddings.</p>`,
+    example: `Gym assistant refresher:
+1) Internal docs contain: founder details, operating hours, membership tiers, classes, trainers, facilities.
+2) Docs are chunked and embedded, then stored in Chroma.
+3) User asks: "Who founded the gym and what are the timings?"
+4) Retriever fetches top relevant chunks (for example founder + hours).
+5) Prompt template receives:
+   - context = joined page_content from retrieved docs
+   - question = user query
+6) LLM returns grounded answer with founder name and timing window.
+
+Design note: MMR retrieval helps avoid near-duplicate chunks so context remains informative, not repetitive.`,
+    animation: "LangGraphArchitectureViz",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "Why does RAG use both chunking and embeddings before retrieval?",
+        "What is the practical role of a retriever between user question and LLM?",
+        "How does MMR change retrieval quality in real systems?",
+      ],
+      seniorTip: "Strong answers separate indexing-time decisions (chunking/embedding/storage) from query-time decisions (retrieval/prompting/generation)."
+    },
+    flashCards: [
+      { q: "Two core stages of RAG?", a: "Knowledge-base construction and query-time retrieval + generation." },
+      { q: "Why chunk documents?", a: "To make retrieval granular and semantically precise." },
+      { q: "What does retriever return?", a: "Relevant document chunks used as grounding context." },
+    ],
+  },
+  {
+    slug: "35-rags-classification-driven-retrieval",
+    sectionId: "langgraph",
+    title: "RAGs - Classification-Driven Retrieval",
+    order: 35,
+    excerpt: "Route on-topic questions through retrieval and block off-topic requests with deterministic graph control.",
+    theory: `<p><b>This pattern adds a governance gate before retrieval.</b> Instead of always running RAG, a classifier node first labels the question as on-topic/off-topic for a constrained domain (for example one company knowledge base).</p>
+<p><b>State design in the transcript flow:</b></p>
+<ul>
+<li><code>messages</code> for conversation content,</li>
+<li><code>documents</code> for retrieved chunks,</li>
+<li><code>onTopic</code> (yes/no) for routing decisions.</li>
+</ul>
+<p><b>Classifier implementation details:</b> use a structured output schema (Pydantic model) that forces a strict label rather than free-form prose. This creates reliable routing behavior.</p>
+<p><b>Routing contract:</b></p>
+<ul>
+<li><b>On-topic:</b> retrieve relevant docs -> generate answer from retrieved context.</li>
+<li><b>Off-topic:</b> skip retrieval + generation, return fixed safe response.</li>
+</ul>
+<p><b>Why teams use this in production:</b> lower hallucination risk, tighter domain boundaries, and lower token/API cost by avoiding unnecessary retrieval/generation for irrelevant prompts.</p>
+<p><b>Important tradeoff:</b> you gain policy control but classifier quality now directly impacts user experience. False negatives can reject valid questions.</p>`,
+    example: `Website support bot for "Peak Performance Gym":
+1) User asks: "Who is the owner and what are the timings?" -> classifier returns on-topic.
+2) Graph routes to retriever (k=3, MMR), stores docs in state.
+3) QA node formats context + question and calls LLM.
+4) User asks: "What does Apple do?" -> classifier returns off-topic.
+5) Graph routes to off-topic node and returns a safe boilerplate response.
+
+Result: same assistant, but only domain-relevant queries consume retrieval + LLM answer generation.`,
+    animation: "StateGraphFlowViz",
+    tool: "ChainRoutingPatternsViz",
+    interviewPrep: {
+      questions: [
+        "Why force structured outputs for the topic classifier?",
+        "What operational risks are reduced by classification-driven routing?",
+        "How would you monitor false-positive and false-negative classifier behavior?",
+      ],
+      seniorTip: "Show that this is a policy architecture decision, not just a model prompt trick."
+    },
+    flashCards: [
+      { q: "Main purpose of pre-retrieval classifier?", a: "Decide whether question should enter RAG path." },
+      { q: "Off-topic branch usually does what?", a: "Returns controlled response and skips retrieval." },
+      { q: "Why structured classifier output?", a: "Deterministic routing with fewer parsing errors." },
+    ],
+  },
+  {
+    slug: "36-rags-rag-powered-tool-calling",
+    sectionId: "langgraph",
+    title: "RAGs - RAG-powered Tool Calling",
+    order: 36,
+    excerpt: "Expose retrieval as a tool and let the agent decide when to call it, including off-topic handling tools.",
+    theory: `<p><b>This design moves control from explicit classifier routing to model-driven tool selection.</b> Instead of a hard pre-gate, the LLM sees available tools and chooses whether to call retrieval.</p>
+<p><b>Tool set from the transcript walkthrough:</b></p>
+<ul>
+<li><b>Retrieval tool</b> built from the retriever with a clear name/description of covered knowledge.</li>
+<li><b>Off-topic tool</b> that returns a restricted message for unrelated questions.</li>
+</ul>
+<p><b>Execution pattern:</b> agent node -> conditional tool node -> agent node -> end. If model emits tool calls, graph executes them and returns observations back to the model for final answer synthesis.</p>
+<p><b>Key behavior to understand:</b> one user query can trigger multiple tool calls (for example one call for founder, another for operating hours). This is normal and often improves completeness.</p>
+<p><b>Tradeoff versus classification-driven retrieval:</b> tool-calling is flexible and compact, but gives less deterministic control over routing and formatting. Classification pipelines are more explicit for strict compliance contexts.</p>`,
+    example: `Two-query behavior from one agent:
+1) User asks off-topic question: "What is Apple's latest product?"
+2) Model selects `off_topic_tool`; tool message returns "forbidden/do not respond" style guardrail.
+3) Agent uses tool result to produce constrained final response.
+
+On-topic case:
+1) User asks: "Who owns the gym and what are the timings?"
+2) Model emits two retrieval tool calls (owner query + hours query).
+3) Tool node executes both, returns observations.
+4) Agent synthesizes one final grounded answer covering both parts.`,
+    animation: "AgentToolLoopSimulator",
+    tool: "StateGraphFlowViz",
+    interviewPrep: {
+      questions: [
+        "When is tool-calling RAG a better fit than explicit classifier routing?",
+        "Why can a single question produce multiple retrieval tool calls?",
+        "What control do you lose when model chooses routing behavior?",
+      ],
+      seniorTip: "Compare architecture choices using control, observability, and policy enforcement as evaluation axes."
+    },
+    flashCards: [
+      { q: "Core idea of this pattern?", a: "Retriever is exposed as a callable tool for the agent." },
+      { q: "Can one prompt lead to multiple tool calls?", a: "Yes, especially for multi-part questions." },
+      { q: "Main drawback vs explicit routing?", a: "Less deterministic control over decision path." },
+    ],
+  },
+  {
+    slug: "37-rags-multi-step-reasoning-advanced",
+    sectionId: "langgraph",
+    title: "RAGs - Multi-step Reasoning (Advanced)",
+    order: 37,
+    excerpt: "Production-style RAG graph with question rewriting, retrieval grading, controlled refinement loops, and memory.",
+    theory: `<p><b>This advanced flow is a reliability-first RAG architecture for real user conversations.</b> It addresses follow-up questions, irrelevant retrieval, and bounded retry behavior.</p>
+<p><b>Important nodes in sequence:</b></p>
+<ol>
+<li><b>Question rewriter:</b> turns follow-up prompts into standalone retrieval-friendly queries.</li>
+<li><b>Topic classifier:</b> blocks off-topic requests early.</li>
+<li><b>Retriever:</b> fetches candidate chunks.</li>
+<li><b>Retrieval grader:</b> filters chunks by relevance (yes/no per document).</li>
+<li><b>Proceed router:</b> generate answer if enough signal, otherwise refine query.</li>
+<li><b>Refine question loop:</b> adjust query and retry retrieval with max-attempt cap.</li>
+<li><b>Cannot-answer fallback:</b> safe terminal path when relevant evidence is still missing.</li>
+</ol>
+<p><b>Why rewriting is essential:</b> prompts like "What about weekends?" are ambiguous alone. Rewriter converts this into standalone form (for example "What are Peak Performance Gym's weekend hours?"), improving retrieval precision.</p>
+<p><b>Why bounded loops matter:</b> retries improve recall, but unbounded retries explode latency and cost. Transcript pattern caps refinement attempts (for example 3) before fallback.</p>
+<p><b>Memory/checkpointing:</b> checkpointer preserves cross-turn state so each run can start from START while still using prior conversation context for rewriting and grounded answers.</p>`,
+    example: `Production conversation scenario:
+1) User: "Who founded Peak Performance?"
+2) Rewriter keeps question as-is (first turn), system retrieves and answers founder.
+3) User follow-up: "When did he start it?"
+4) Rewriter converts to standalone: "When did Marcus Chen start Peak Performance Gym?"
+5) Retriever + grader find relevant "about" chunk.
+6) Generator returns grounded answer ("2015").
+
+Failure-path scenario:
+1) User asks on-topic but unsupported question (for example cancellation policy not in docs).
+2) System retries with refined wording up to configured cap.
+3) Still no relevant chunks -> `cannot_answer` node returns safe fallback instead of hallucinating.`,
+    animation: "LangGraphArchitectureViz",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "Why is a question-rewriter node crucial for multi-turn RAG?",
+        "How does retrieval grading improve answer quality and safety?",
+        "What is the purpose of max rephrase/retry count in production systems?",
+      ],
+      seniorTip: "Best responses tie every node to a concrete failure mode: ambiguity, off-topic drift, weak retrieval, and unbounded retries."
+    },
+    flashCards: [
+      { q: "Why rewrite follow-up questions?", a: "To make them standalone and retrieval-friendly." },
+      { q: "What does retrieval grader do?", a: "Keeps relevant chunks and filters weak matches." },
+      { q: "Why cap refinement loops?", a: "Control latency/cost and prevent infinite retries." },
+    ],
+  },
 ];
 
 // ─────────────────────────────────────────────────────────
@@ -5070,6 +5254,10 @@ const langGraphCanonicalTopicMap = Object.freeze({
   "31-human-in-the-loop-resume-graph": { order: 31, title: "Human in the Loop - Resume Graph" },
   "32-human-in-the-loop-review-tool-calls": { order: 32, title: "Human in the Loop - Review Tool Calls" },
   "33-human-in-the-loop-multi-turn-conversations": { order: 33, title: "Human in the Loop - Multi-turn Conversations" },
+  "34-rags-introduction": { order: 34, title: "RAGs - Introduction" },
+  "35-rags-classification-driven-retrieval": { order: 35, title: "RAGs - Classification-Driven Retrieval" },
+  "36-rags-rag-powered-tool-calling": { order: 36, title: "RAGs - RAG-powered Tool Calling" },
+  "37-rags-multi-step-reasoning-advanced": { order: 37, title: "RAGs - Multi-step Reasoning (Advanced)" },
 });
 
 const canonicalLangGraphNodes = langGraphNodes

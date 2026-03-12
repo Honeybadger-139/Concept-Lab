@@ -63,6 +63,10 @@
 
 * { box-sizing: border-box; }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   font-family: var(--font-body);
@@ -77,6 +81,11 @@ body {
 a { color: var(--accent-tertiary); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
+:where(a, button, input, select, textarea, summary, [role="button"]):focus-visible {
+  outline: 2px solid var(--accent-tertiary);
+  outline-offset: 2px;
+}
+
 /* ── Layout helpers ── */
 .container {
   max-width: 900px;
@@ -87,6 +96,17 @@ a:hover { text-decoration: underline; }
 .section-padding {
   padding-top: 2rem;
   padding-bottom: 4rem;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 1rem;
+  }
+
+  .section-padding {
+    padding-top: 1.25rem;
+    padding-bottom: 2.5rem;
+  }
 }
 
 /* ── Glass card ── */
@@ -117,6 +137,12 @@ a:hover { text-decoration: underline; }
   border-radius: var(--radius-md);
   border: 1px solid var(--glass-border);
   background: var(--bg-secondary);
+}
+
+@media (max-width: 640px) {
+  .nodeBlock {
+    padding: 1rem;
+  }
 }
 
 .nodeBlock h2 {
@@ -290,6 +316,20 @@ a:hover { text-decoration: underline; }
 [data-theme="light"] .glass {
   background: rgba(255, 255, 255, 0.88);
   border-color: rgba(15, 23, 42, 0.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* ══════════════════════════════════════════

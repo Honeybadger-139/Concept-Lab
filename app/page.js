@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getSections, getNodesBySection } from "@/data/curriculumData";
+import ContinueLearningCard from "@/components/ContinueLearningCard";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -33,6 +34,8 @@ export default function HomePage() {
             Theory, interactive demos, flash cards, and interview prep — built
             from real course transcripts. RAG, machine learning, LangChain.
           </p>
+
+          <ContinueLearningCard />
 
           {/* Stats strip */}
           <div className={styles.statsRow}>

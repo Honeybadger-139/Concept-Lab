@@ -5,48 +5,58 @@ import styles from "./node.module.css";
 import dynamic from "next/dynamic";
 import NodeShell from "@/components/NodeShell";
 
+const lazyPlaceholder = (
+  <div className={styles.lazyPlaceholder} role="status" aria-live="polite">
+    Loading interactive module...
+  </div>
+);
+
+function withLoader(importer) {
+  return dynamic(importer, { loading: () => lazyPlaceholder });
+}
+
 // Interactive components loaded only when needed
 const ComponentMap = {
-  VectorSearchVisualizer: dynamic(() => import("@/components/VectorSearchVisualizer")),
-  TokenCounter:           dynamic(() => import("@/components/TokenCounter")),
-  CosineSimilarityDemo:   dynamic(() => import("@/components/CosineSimilarityDemo")),
-  RAGPipelineSteps:       dynamic(() => import("@/components/RAGPipelineSteps")),
-  ChunkingVisualizer:     dynamic(() => import("@/components/ChunkingVisualizer")),
-  LCELChainViz:           dynamic(() => import("@/components/LCELChainViz")),
-  ChatModelDemo:          dynamic(() => import("@/components/ChatModelDemo")),
+  VectorSearchVisualizer: withLoader(() => import("@/components/VectorSearchVisualizer")),
+  TokenCounter:           withLoader(() => import("@/components/TokenCounter")),
+  CosineSimilarityDemo:   withLoader(() => import("@/components/CosineSimilarityDemo")),
+  RAGPipelineSteps:       withLoader(() => import("@/components/RAGPipelineSteps")),
+  ChunkingVisualizer:     withLoader(() => import("@/components/ChunkingVisualizer")),
+  LCELChainViz:           withLoader(() => import("@/components/LCELChainViz")),
+  ChatModelDemo:          withLoader(() => import("@/components/ChatModelDemo")),
   // ML visualizations
-  GradientDescentViz:     dynamic(() => import("@/components/GradientDescentViz")),
-  CostFunctionViz:        dynamic(() => import("@/components/CostFunctionViz")),
-  LogisticSigmoidViz:     dynamic(() => import("@/components/LogisticSigmoidViz")),
-  OverfittingViz:         dynamic(() => import("@/components/OverfittingViz")),
-  LearningRateViz:        dynamic(() => import("@/components/LearningRateViz")),
-  FeatureScalingViz:      dynamic(() => import("@/components/FeatureScalingViz")),
-  PolynomialRegressionViz: dynamic(() => import("@/components/PolynomialRegressionViz")),
+  GradientDescentViz:     withLoader(() => import("@/components/GradientDescentViz")),
+  CostFunctionViz:        withLoader(() => import("@/components/CostFunctionViz")),
+  LogisticSigmoidViz:     withLoader(() => import("@/components/LogisticSigmoidViz")),
+  OverfittingViz:         withLoader(() => import("@/components/OverfittingViz")),
+  LearningRateViz:        withLoader(() => import("@/components/LearningRateViz")),
+  FeatureScalingViz:      withLoader(() => import("@/components/FeatureScalingViz")),
+  PolynomialRegressionViz: withLoader(() => import("@/components/PolynomialRegressionViz")),
   // RAG visualizations
-  RetrievalQueryViz:      dynamic(() => import("@/components/RetrievalQueryViz")),
-  MultiQueryRAGViz:       dynamic(() => import("@/components/MultiQueryRAGViz")),
-  RAGGuardrailsStudio:    dynamic(() => import("@/components/RAGGuardrailsStudio")),
-  HistoryAwareQueryLab:   dynamic(() => import("@/components/HistoryAwareQueryLab")),
-  ChunkingStrategyWorkbench: dynamic(() => import("@/components/ChunkingStrategyWorkbench")),
-  MultimodalRAGFlowViz:   dynamic(() => import("@/components/MultimodalRAGFlowViz")),
-  AdvancedRetrievalLab:   dynamic(() => import("@/components/AdvancedRetrievalLab")),
-  HybridFusionLab:        dynamic(() => import("@/components/HybridFusionLab")),
-  RerankerViz:            dynamic(() => import("@/components/RerankerViz")),
+  RetrievalQueryViz:      withLoader(() => import("@/components/RetrievalQueryViz")),
+  MultiQueryRAGViz:       withLoader(() => import("@/components/MultiQueryRAGViz")),
+  RAGGuardrailsStudio:    withLoader(() => import("@/components/RAGGuardrailsStudio")),
+  HistoryAwareQueryLab:   withLoader(() => import("@/components/HistoryAwareQueryLab")),
+  ChunkingStrategyWorkbench: withLoader(() => import("@/components/ChunkingStrategyWorkbench")),
+  MultimodalRAGFlowViz:   withLoader(() => import("@/components/MultimodalRAGFlowViz")),
+  AdvancedRetrievalLab:   withLoader(() => import("@/components/AdvancedRetrievalLab")),
+  HybridFusionLab:        withLoader(() => import("@/components/HybridFusionLab")),
+  RerankerViz:            withLoader(() => import("@/components/RerankerViz")),
   // LangGraph visualizations
-  LangGraphArchitectureViz: dynamic(() => import("@/components/LangGraphArchitectureViz")),
-  StateGraphFlowViz:        dynamic(() => import("@/components/StateGraphFlowViz")),
-  ReActGraphInspector:      dynamic(() => import("@/components/ReActGraphInspector")),
-  AutonomyLadderViz:        dynamic(() => import("@/components/AutonomyLadderViz")),
-  AgentToolLoopSimulator:   dynamic(() => import("@/components/AgentToolLoopSimulator")),
+  LangGraphArchitectureViz: withLoader(() => import("@/components/LangGraphArchitectureViz")),
+  StateGraphFlowViz:        withLoader(() => import("@/components/StateGraphFlowViz")),
+  ReActGraphInspector:      withLoader(() => import("@/components/ReActGraphInspector")),
+  AutonomyLadderViz:        withLoader(() => import("@/components/AutonomyLadderViz")),
+  AgentToolLoopSimulator:   withLoader(() => import("@/components/AgentToolLoopSimulator")),
   // LangChain visualizations
-  LangChainArchitectureMap: dynamic(() => import("@/components/LangChainArchitectureMap")),
-  ChainRoutingPatternsViz:  dynamic(() => import("@/components/ChainRoutingPatternsViz")),
+  LangChainArchitectureMap: withLoader(() => import("@/components/LangChainArchitectureMap")),
+  ChainRoutingPatternsViz:  withLoader(() => import("@/components/ChainRoutingPatternsViz")),
   // ML visualizations
-  MLLearningSpectrumViz:    dynamic(() => import("@/components/MLLearningSpectrumViz")),
-  MLProblemFramingTool:     dynamic(() => import("@/components/MLProblemFramingTool")),
+  MLLearningSpectrumViz:    withLoader(() => import("@/components/MLLearningSpectrumViz")),
+  MLProblemFramingTool:     withLoader(() => import("@/components/MLProblemFramingTool")),
 };
 
-const FlashCardDeck = dynamic(() => import("@/components/FlashCardDeck"));
+const FlashCardDeck = withLoader(() => import("@/components/FlashCardDeck"));
 
 // Per-section visual config
 const SECTION_META = {
@@ -141,6 +151,15 @@ export default async function NodePage({ params }) {
 
   const AnimComponent  = node.animation && ComponentMap[node.animation] ? ComponentMap[node.animation] : null;
   const ToolComponent  = node.tool      && ComponentMap[node.tool]      ? ComponentMap[node.tool]      : null;
+  const pageSections = [
+    { id: "core-theory", label: "Theory" },
+    ...(node.example ? [{ id: "concrete-example", label: "Example" }] : []),
+    ...((AnimComponent || node.animation) ? [{ id: "interactive-visualization", label: "Visualization" }] : []),
+    ...((ToolComponent || node.tool) ? [{ id: "interactive-tool", label: "Tool" }] : []),
+    ...(node.codeGuide ? [{ id: "code-walkthrough", label: "Code" }] : []),
+    ...(node.interviewPrep?.questions?.length > 0 ? [{ id: "interview-prep", label: "Interview" }] : []),
+    ...(node.flashCards?.length > 0 ? [{ id: "flash-cards", label: "Flash Cards" }] : []),
+  ];
 
   return (
     <NodeShell sectionId={section} slug={slug}>
@@ -173,10 +192,21 @@ export default async function NodePage({ params }) {
             </div>
           </header>
 
+          <nav className={styles.quickNav} aria-label="On this page">
+            <span className={styles.quickNavLabel}>On this page</span>
+            <div className={styles.quickNavLinks}>
+              {pageSections.map((item) => (
+                <a key={item.id} href={`#${item.id}`} className={styles.quickNavLink}>
+                  {item.label}
+                </a>
+              ))}
+            </div>
+          </nav>
+
           <div className={styles.blocks}>
 
             {/* ── Theory ── */}
-            <section className={`nodeBlock ${styles.theoryBlock}`}>
+            <section id="core-theory" className={`nodeBlock ${styles.theoryBlock}`}>
               <h2>Core Theory</h2>
               {node.theory ? (
                 <div
@@ -190,7 +220,7 @@ export default async function NodePage({ params }) {
 
             {/* ── Example ── */}
             {node.example && (
-              <section className={`nodeBlock ${styles.exampleBlock}`}>
+              <section id="concrete-example" className={`nodeBlock ${styles.exampleBlock}`}>
                 <h2>💡 Concrete Example</h2>
                 <div className={styles.exampleCard}>
                   <p className={styles.exampleText}>{node.example}</p>
@@ -200,7 +230,7 @@ export default async function NodePage({ params }) {
 
             {/* ── Animation / Visualization ── */}
             {(AnimComponent || node.animation) && (
-              <section className={`nodeBlock ${styles.vizBlock}`}>
+              <section id="interactive-visualization" className={`nodeBlock ${styles.vizBlock}`}>
                 <h2>🎬 Interactive Visualization</h2>
                 {AnimComponent ? (
                   <AnimComponent />
@@ -214,7 +244,7 @@ export default async function NodePage({ params }) {
 
             {/* ── Interactive Tool ── */}
             {(ToolComponent || node.tool) && (
-              <section className={`nodeBlock ${styles.toolBlock}`}>
+              <section id="interactive-tool" className={`nodeBlock ${styles.toolBlock}`}>
                 <h2>🛠 Interactive Tool</h2>
                 {ToolComponent ? (
                   <ToolComponent />
@@ -228,7 +258,7 @@ export default async function NodePage({ params }) {
 
             {/* ── Code walkthrough ── */}
             {node.codeGuide && (
-              <section className={`nodeBlock ${styles.codeBlock}`}>
+              <section id="code-walkthrough" className={`nodeBlock ${styles.codeBlock}`}>
                 <h2>💻 Code Walkthrough</h2>
                 {node.codeGuide.summary && (
                   <p className={styles.codeIntro}>{node.codeGuide.summary}</p>
@@ -260,7 +290,7 @@ export default async function NodePage({ params }) {
 
             {/* ── Interview Prep ── */}
             {node.interviewPrep?.questions?.length > 0 && (
-              <section className={`nodeBlock ${styles.interviewBlock}`}>
+              <section id="interview-prep" className={`nodeBlock ${styles.interviewBlock}`}>
                 <h2>🎯 Interview Prep</h2>
                 <p className={styles.interviewIntro}>
                   Questions an interviewer is likely to ask about this topic.
@@ -298,7 +328,7 @@ export default async function NodePage({ params }) {
 
             {/* ── Flash Cards ── */}
             {node.flashCards?.length > 0 && (
-              <section className={`nodeBlock ${styles.flashBlock}`}>
+              <section id="flash-cards" className={`nodeBlock ${styles.flashBlock}`}>
                 <h2>📚 Revision Flash Cards</h2>
                 <p className={styles.flashIntro}>
                   Test yourself before moving on. Flip each card to check your understanding —

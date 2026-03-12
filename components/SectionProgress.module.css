@@ -32,6 +32,44 @@
   transition: width 0.5s ease;
 }
 
+.progressMeta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+}
+
+.filtersRow {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.searchInput,
+.filterSelect {
+  border: 1px solid var(--glass-border);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  padding: 0.48rem 0.62rem;
+}
+
+.searchInput {
+  flex: 1 1 280px;
+  min-width: 230px;
+}
+
+.searchInput::placeholder {
+  color: var(--text-tertiary);
+}
+
+.filterSelect {
+  flex: 0 0 170px;
+  cursor: pointer;
+}
+
 /* ── Concept groups (ML) ── */
 .conceptGroups {
   display: flex;
@@ -53,6 +91,14 @@
   gap: 0.75rem;
 }
 
+.conceptHeadingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 .conceptHeading {
   font-size: 1.1rem;
   font-weight: 600;
@@ -60,6 +106,12 @@
   margin: 0;
   padding-bottom: 0.25rem;
   border-bottom: 1px solid var(--glass-border);
+}
+
+.conceptSummary {
+  color: var(--text-tertiary);
+  font-size: 0.76rem;
+  letter-spacing: 0.02em;
 }
 
 /* ── Node grid ── */
@@ -122,4 +174,45 @@
   font-size: 0.83rem;
   line-height: 1.45;
   margin: 0;
+}
+
+.cardMetaRow {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.72rem;
+  flex-wrap: wrap;
+}
+
+.metaChip {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  padding: 0.14rem 0.5rem;
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.emptyState {
+  margin: 0;
+  padding: 0.8rem;
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  border: 1px dashed var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: rgba(99, 102, 241, 0.04);
+}
+
+@media (max-width: 640px) {
+  .progressMeta {
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .filterSelect,
+  .searchInput {
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 100%;
+  }
 }

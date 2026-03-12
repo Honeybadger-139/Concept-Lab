@@ -73,11 +73,71 @@
   padding-top: 0.15rem;
 }
 
+.quickNav {
+  position: sticky;
+  top: 4.8rem;
+  z-index: 20;
+  margin-bottom: 1rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--bg-secondary) 90%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 0.65rem 0.8rem;
+}
+
+.quickNavLabel {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.45rem;
+}
+
+.quickNavLinks {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.quickNavLink {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  padding: 0.24rem 0.55rem;
+  text-decoration: none;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.quickNavLink:hover {
+  color: var(--text-primary);
+  border-color: rgba(99, 102, 241, 0.35);
+  background: rgba(99, 102, 241, 0.08);
+  text-decoration: none;
+}
+
 /* ── Blocks stack ── */
 .blocks {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+}
+
+.blocks section {
+  scroll-margin-top: 6rem;
+}
+
+.lazyPlaceholder {
+  border: 1px dashed rgba(99, 102, 241, 0.35);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 0.95rem;
+  color: var(--text-tertiary);
+  font-size: 0.85rem;
+  background: rgba(99, 102, 241, 0.06);
 }
 
 /* ── Per-block accent styles ── */
@@ -382,4 +442,85 @@ details[open] .seniorSummary::before { transform: rotate(90deg); }
   color: var(--text-primary);
   font-weight: 600;
   line-height: 1.3;
+}
+
+@media (max-width: 900px) {
+  .headerMeta {
+    gap: 0.65rem;
+  }
+
+  .excerpt {
+    font-size: 0.95rem;
+  }
+
+  .navBtn {
+    max-width: 48%;
+  }
+}
+
+@media (max-width: 640px) {
+  .main {
+    padding-bottom: 2rem;
+  }
+
+  .topRow {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .nodeProgress {
+    font-size: 0.73rem;
+  }
+
+  .header {
+    margin-bottom: 1.4rem;
+  }
+
+  .header h1 {
+    font-size: 1.34rem;
+  }
+
+  .headerMeta {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .quickNav {
+    top: 4.2rem;
+    padding: 0.55rem 0.65rem;
+  }
+
+  .quickNavLink {
+    font-size: 0.74rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .excerpt {
+    font-size: 0.92rem;
+  }
+
+  .readingTime {
+    padding-top: 0;
+  }
+
+  .interviewQuestion {
+    align-items: flex-start;
+  }
+
+  .navRow {
+    flex-direction: column;
+    margin-top: 2rem;
+    gap: 0.75rem;
+  }
+
+  .navBtn {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .navBtnRight {
+    align-items: flex-start;
+    text-align: left;
+  }
 }

@@ -4101,292 +4101,534 @@ Result: preserved quality gains with controlled budget impact.`,
     ],
   },
   {
-    slug: "24-rags-basic-example-1",
+    slug: "04-agents-and-tools-implementation",
     sectionId: "langgraph",
-    title: "RAGs - Basic Example (1)",
-    order: 24,
-    excerpt: "First end-to-end LangGraph RAG pipeline: retrieval, context assembly, grounded generation, and safe fallback routing.",
-    theory: `<p><b>This session is the first concrete LangGraph RAG build.</b> The objective is to stop treating retrieval and generation as one black box and instead make each step explicit in graph state.</p>
-<p><b>Minimum graph shape:</b></p>
+    title: "Agents & Tools - Implementation",
+    order: 4,
+    excerpt: "Implement a ReAct-style agent from scratch to understand thought-action-observation before LangGraph abstractions.",
+    theory: `<p><b>This transcript implements the agent loop manually first.</b> The key learning goal is to understand what the framework automates later.</p>
+<p><b>Core steps covered:</b></p>
 <ol>
-<li>Input node captures user question and request metadata.</li>
-<li>Retriever node issues the vector search query.</li>
-<li>Context node normalizes and trims retrieved chunks.</li>
-<li>Answer node generates a grounded response using only retrieved context.</li>
-<li>Validator node checks whether grounding is sufficient.</li>
-<li>Route to END or fallback based on confidence and evidence coverage.</li>
+<li>Set up environment and model access.</li>
+<li>Define tool(s) and expose tool descriptions to the model.</li>
+<li>Run thought -> action -> observation iterations.</li>
+<li>Inspect why tool execution must happen in runtime, not inside model text.</li>
 </ol>
-<p><b>Why this matters:</b> in production, most failures are not model-intelligence failures. They are orchestration failures: empty retrieval results, irrelevant chunks, token overflows, or context that does not support the final claim.</p>
-<p><b>State design for this basic example:</b></p>
-<ul>
-<li><code>question</code>, <code>normalized_query</code></li>
-<li><code>retrieved_docs</code>, <code>selected_context</code></li>
-<li><code>answer_draft</code>, <code>evidence_spans</code></li>
-<li><code>grounding_score</code>, <code>route_decision</code></li>
-</ul>
-<p><b>Core edge cases:</b> no documents returned, contradictory passages, very long chunks that exceed token budget, and user queries that require tool calls instead of static retrieval.</p>
-<p><b>Guardrails:</b> enforce source-only answering, require citation spans for high-confidence answers, and route low-confidence responses to a clarification node instead of hallucinating.</p>
-<p><b>Latency/cost tradeoff:</b> the simplest graph is faster and cheaper, but quality collapses on ambiguous questions. Add only the minimum gates needed to protect grounding quality.</p>`,
-    example: `Policy Q&A baseline graph:
-1) User asks: "What is the cancellation window for annual contracts?"
-2) Retriever returns policy chunks from contract handbook.
-3) Context node filters irrelevant chunks (for monthly plans).
-4) Answer node drafts response with cited paragraph IDs.
-5) Validator sees enough evidence and confidence >= threshold.
-6) Graph returns answer and citations.
-
-If retriever returns no annual-plan content, validator routes to "ask clarification" instead of fabricating a number.`,
-    animation: "RAGPipelineSteps",
-    tool: "RetrievalQueryViz",
-    interviewPrep: {
-      questions: [
-        "What is the minimum LangGraph node set for a production-safe basic RAG flow?",
-        "Which state fields must exist before the answer node runs?",
-        "How do you prevent unsupported claims when retrieval quality is weak?",
-        "What is your fallback strategy when retrieval returns empty or conflicting context?",
-        "Which metrics tell you this first RAG graph is failing in production?",
-      ],
-      seniorTip: "Do not describe RAG as just retriever plus LLM. Show explicit graph control: retrieval quality checks, grounding validation, and deterministic low-confidence routing."
-    },
-    flashCards: [
-      { q: "Why graph-based RAG instead of one prompt?", a: "You can separate retrieval, context prep, validation, and routing, which makes failures observable and controllable." },
-      { q: "Most common basic RAG failure?", a: "Answering confidently from weak or missing retrieved evidence." },
-      { q: "What should validator check?", a: "Evidence coverage, contradiction risk, and confidence threshold before final response." },
-      { q: "What is safe behavior on empty retrieval?", a: "Ask clarification or fallback, never fabricate." },
-      { q: "Key production KPI for this stage?", a: "Grounded-answer rate under latency budget." },
-    ],
-  },
-  {
-    slug: "25-rags-basic-example-2",
-    sectionId: "langgraph",
-    title: "RAGs - Basic Example (2)",
-    order: 25,
-    excerpt: "Second iteration of the baseline RAG graph with retry logic, query reformulation, and measurable quality improvements.",
-    theory: `<p><b>This session extends the first baseline into a resilient graph.</b> The main upgrade is iterative recovery when first retrieval is weak.</p>
-<p><b>New logic added in this version:</b></p>
-<ul>
-<li>Query-rewrite node when initial context score is low.</li>
-<li>Retry budget (for example max 2 retrieval attempts).</li>
-<li>Merge-and-rank step to compare first and second retrieval sets.</li>
-<li>Explicit termination reasons in state: <code>success</code>, <code>insufficient_context</code>, <code>budget_exhausted</code>.</li>
-</ul>
-<p><b>Why this matters:</b> real user questions are often underspecified. A one-pass retriever can miss relevant docs, while a controlled rewrite-and-retry loop recovers many of these cases.</p>
-<p><b>Failure modes introduced by retries:</b> latency spikes, duplicate retrieval calls, and runaway cost. That is why retry policy must be hard-capped and measurable.</p>
-<p><b>Evaluation pattern:</b> compare Example (1) vs Example (2) on the same test set using grounded-answer rate, escalation rate, p95 latency, and token cost.</p>
-<p><b>Production decision rule:</b> keep the second pass only if quality lift is meaningful for your business objective. If quality gain is small but latency doubles, keep the simpler graph.</p>`,
-    example: `Support knowledge base comparison:
-- Example (1): one retrieval pass, 72% grounded answers, p95 latency 1.8s.
-- Example (2): rewrite + second pass when needed, 84% grounded answers, p95 latency 2.4s.
-
-Rollout policy:
-1) Enable second pass only when initial grounding_score < 0.7.
-2) Cap total retrieval attempts at 2.
-3) Route to human queue if still below threshold after retry.`,
-    animation: "MultiQueryRAGViz",
-    tool: "RAGGuardrailsStudio",
-    interviewPrep: {
-      questions: [
-        "What exact upgrade differentiates Basic Example (2) from Basic Example (1)?",
-        "How do you design bounded retry for retrieval without runaway cost?",
-        "Which state fields are required to debug retry behavior later?",
-        "How do you decide whether the second retrieval pass is worth keeping?",
-        "What is a safe terminal path when retries still fail grounding checks?",
-      ],
-      seniorTip: "Strong answers include quantitative comparison of baseline vs retry graph and a strict retry budget with explicit termination reasons."
-    },
-    flashCards: [
-      { q: "Main purpose of Example (2)?", a: "Recover weak first-pass retrieval through bounded rewrite/retry." },
-      { q: "Why add termination_reason in state?", a: "So failed runs are diagnosable and policy-tunable." },
-      { q: "Largest risk of retries?", a: "Unbounded latency and cost growth." },
-      { q: "When to trigger second pass?", a: "Only below a clear retrieval/grounding threshold." },
-      { q: "When should second pass be removed?", a: "If quality lift is low relative to latency and cost overhead." },
-    ],
-  },
-  {
-    slug: "26-rags-with-metadata",
-    sectionId: "langgraph",
-    title: "RAGs - With MetaData",
-    order: 26,
-    excerpt: "Constrain retrieval with metadata filters to improve precision, compliance boundaries, and tenant-level isolation.",
-    theory: `<p><b>Metadata turns semantic retrieval into policy-aware retrieval.</b> Instead of searching the whole corpus, the graph adds structured constraints such as tenant, document type, region, version, and access level.</p>
-<p><b>Typical metadata filters:</b></p>
-<ul>
-<li><code>tenant_id</code> for multi-tenant isolation.</li>
-<li><code>doc_type</code> for policy/manual/faq separation.</li>
-<li><code>effective_date</code> for version correctness.</li>
-<li><code>region</code> for legal and compliance boundaries.</li>
-<li><code>visibility</code> for role-based access.</li>
-</ul>
-<p><b>Graph placement:</b> apply metadata constraints before vector search, not after generation. Retrieval must already be compliant and scoped before context reaches the LLM.</p>
-<p><b>Failure modes:</b> over-filtering that returns empty results, stale metadata tags, and inconsistent indexing between vector store and metadata store.</p>
-<p><b>Guardrails:</b> fallback filter relaxation rules, metadata quality checks in ingestion pipeline, and audit logs that capture filter criteria per request.</p>
-<p><b>Tradeoff:</b> strict filters improve precision and safety but may reduce recall. Practical systems use tiered retrieval: strict pass first, bounded relaxation second.</p>`,
-    example: `Enterprise HR assistant:
-1) User asks leave-policy question from EU office.
-2) Graph sets filters: tenant=acme, doc_type=policy, region=EU, effective_date<=today.
-3) Retriever returns only EU-valid policy chunks.
-4) Answer node generates response with citations.
-5) If no chunks match strict filter, graph relaxes one dimension (date window) once, then escalates if still empty.
-
-Result: answers stay policy-correct and tenant-safe.`,
-    animation: "AdvancedRetrievalLab",
-    tool: "HybridFusionLab",
-    interviewPrep: {
-      questions: [
-        "Why should metadata filtering happen before generation in a RAG graph?",
-        "How do you balance precision and recall when filters are too strict?",
-        "Which metadata fields are mandatory for multi-tenant production systems?",
-        "What ingestion-time checks prevent metadata-related retrieval failures?",
-        "How do you audit compliance for metadata-constrained retrieval?",
-      ],
-      seniorTip: "Interview-level depth comes from policy design: strict first-pass retrieval, bounded relaxation, and auditable filter logs tied to each response."
-    },
-    flashCards: [
-      { q: "What does metadata add to RAG?", a: "Policy-aware and scope-aware retrieval, not just semantic similarity." },
-      { q: "Main risk of strict filters?", a: "Empty retrieval due to over-constrained search." },
-      { q: "Main risk of weak filters?", a: "Data leakage or irrelevant context." },
-      { q: "Where should filters be enforced?", a: "At retrieval time before context reaches generation." },
-      { q: "How to recover from strict-filter misses?", a: "Bounded filter relaxation with explicit policy, then escalation." },
-    ],
-  },
-  {
-    slug: "27-rags-one-off-question",
-    sectionId: "langgraph",
-    title: "RAGs - One-off Question",
-    order: 27,
-    excerpt: "Design a stateless RAG path for single-turn questions with strict cost/latency control and grounded output guarantees.",
-    theory: `<p><b>One-off RAG is optimized for single-turn intent.</b> The graph handles isolated questions without conversation memory, which keeps architecture simpler and faster.</p>
-<p><b>Ideal use cases:</b> documentation search widget, help-center answer box, and inline knowledge lookup where each query is independent.</p>
-<p><b>Graph design differences from conversational RAG:</b></p>
-<ul>
-<li>No long-term memory state.</li>
-<li>Aggressive token budgeting for predictable cost.</li>
-<li>Short path: retrieve -> answer -> validate -> finish.</li>
-<li>Cache-first strategy for repeated popular queries.</li>
-</ul>
-<p><b>Critical edge cases:</b> vague questions that need follow-up context, intent that is action-oriented (needs tools, not retrieval), and stale index snapshots.</p>
-<p><b>Guardrails:</b> when ambiguity is high, route to clarification question instead of guessing. When query is out-of-domain, return explicit "not found in sources" behavior.</p>
-<p><b>Operational advantage:</b> one-off graphs are easier to benchmark and harden because state surface area is small and route space is limited.</p>`,
-    example: `API docs answer box:
-1) User asks: "How do I rotate API keys?"
-2) Retriever fetches top docs chunk set.
-3) Answer node drafts concise response with endpoint references.
-4) Validator checks citation coverage.
-5) Response returns with links.
-
-If query is "can you rotate keys for me now?", router identifies action intent and routes to agent/tool workflow instead of one-off RAG.`,
-    animation: "RerankerViz",
-    tool: "TokenCounter",
-    interviewPrep: {
-      questions: [
-        "When should you choose one-off RAG over conversational memory-based RAG?",
-        "What cost controls are easiest to enforce in a one-off graph design?",
-        "How do you handle ambiguous questions in a single-turn flow?",
-        "What route signal tells you this is not a one-off retrieval problem anymore?",
-        "Which KPIs matter most for one-off RAG quality and efficiency?",
-      ],
-      seniorTip: "A strong answer explains boundary policy: keep one-off paths stateless and fast, then route out to clarification or agent paths when intent requires multi-step reasoning."
-    },
-    flashCards: [
-      { q: "What is one-off RAG?", a: "A stateless retrieval flow optimized for single, independent questions." },
-      { q: "Why is one-off RAG cheaper?", a: "No long conversation memory and fewer graph steps." },
-      { q: "How to handle ambiguous one-off query?", a: "Ask clarification instead of forcing an answer." },
-      { q: "When to leave one-off path?", a: "When the query needs actions, tools, or multi-turn context." },
-      { q: "Top one-off KPI pair?", a: "Grounded-answer rate and p95 latency." },
-    ],
-  },
-  {
-    slug: "28-agents-tools-intro",
-    sectionId: "langgraph",
-    title: "Agents & Tools - Intro",
-    order: 28,
-    excerpt: "Transition from pure retrieval flows to agentic workflows where the model chooses tools under bounded orchestration policy.",
-    theory: `<p><b>This topic introduces the handoff from RAG-only systems to agent-plus-tool systems.</b> Retrieval answers many questions, but some requests require acting on external systems.</p>
-<p><b>Agent-tool architecture in LangGraph:</b></p>
-<ul>
-<li>Reason node decides whether retrieval is enough or a tool call is needed.</li>
-<li>Tool-selection node validates action against allowlist and policy.</li>
-<li>Act node executes tool with timeout and schema checks.</li>
-<li>Observation is appended to state, then graph decides continue vs finish.</li>
-</ul>
-<p><b>Core production rule:</b> model suggests actions; framework enforces execution policy. Never let free-form model text directly execute side effects.</p>
-<p><b>Failure modes:</b> wrong tool selection, malformed arguments, repeated calls without new evidence, and missing rollback semantics for write operations.</p>
-<p><b>Guardrails:</b> per-tool schema validation, idempotency keys for mutating calls, retry budgets, and optional human approval for sensitive operations.</p>
-<p><b>Tradeoff vs retrieval-only:</b> agents increase capability but also increase operational surface area. Introduce tools only when business tasks demand action, not just answering.</p>`,
-    example: `Travel assistant split decision:
-1) User asks: "Do I need a transit visa for a 6-hour layover?"
-2) Graph first runs retrieval over policy docs.
-3) Missing country-specific rules trigger tool route.
-4) Agent calls official visa-rules API tool.
-5) Output is merged with retrieved policy and returned with confidence note.
-
-For "book my ticket now", graph routes to approval gate before booking API call.`,
+<p><b>Beginner takeaway:</b> if you understand this manual loop, LangGraph node design becomes much easier and less magical.</p>`,
+    example: "Prompt asks for today's weather. Model cannot answer directly, emits tool call, runtime executes search, observation returns, model writes final grounded response.",
     animation: "AgentToolLoopSimulator",
     tool: "ChainRoutingPatternsViz",
     interviewPrep: {
       questions: [
-        "What decision boundary separates retrieval-only nodes from agent-tool routing?",
-        "Why must tool execution stay outside direct model control?",
-        "What minimum controls are required before enabling mutating tools?",
-        "How do you detect and stop repeated wrong-tool loops?",
-        "What observability fields are mandatory for tool-assisted flows?",
+        "Why implement ReAct manually before using LangGraph abstractions?",
+        "Where is control handed from model to runtime in this loop?",
+        "What goes wrong if you skip tool contract design?",
       ],
-      seniorTip: "Interviewers look for control-plane thinking: model proposes, orchestrator validates, runtime executes, and every step is traceable."
+      seniorTip: "Explain clear responsibility split: model chooses, runtime executes, orchestrator validates."
     },
     flashCards: [
-      { q: "Why add tools to LangGraph?", a: "To handle tasks requiring external actions or real-time system state." },
-      { q: "Who should execute tools?", a: "Framework runtime with policy checks, not raw model output." },
-      { q: "Main risk of tool-enabled agents?", a: "Uncontrolled side effects from incorrect actions." },
-      { q: "How to secure mutating tools?", a: "Schema validation, idempotency, approval gates, and audit logs." },
-      { q: "How to reduce wrong-tool loops?", a: "Retry caps plus evidence-based re-attempt rules." },
+      { q: "ReAct loop sequence?", a: "Thought -> Action -> Observation (repeat until final answer)." },
+      { q: "Who executes tools?", a: "Runtime/framework, not the model directly." },
+      { q: "Why inspect loop logs?", a: "To debug wrong-tool selection and prompt/tool mismatches." },
     ],
   },
   {
-    slug: "29-agents-tools-deep-dive",
+    slug: "09.5-structured-llm-outputs",
     sectionId: "langgraph",
-    title: "Agents & Tools - Deep Dive",
-    order: 29,
-    excerpt: "Production deep dive into tool orchestration: routing policy, retries, error classes, HITL gates, and evaluation strategy.",
-    theory: `<p><b>This session moves from concept to production mechanics.</b> A deep-dive agent graph needs formal routing and failure policy, not only prompt-level instructions.</p>
-<p><b>Recommended control architecture:</b></p>
-<ol>
-<li><b>Plan node</b> creates structured intent and action candidate.</li>
-<li><b>Policy node</b> checks permissions, risk level, and tool eligibility.</li>
-<li><b>Execution node</b> performs tool call with timeout and retry class.</li>
-<li><b>Validation node</b> checks output quality and completion criteria.</li>
-<li><b>Route node</b> selects continue, fallback, escalate, or end.</li>
-</ol>
-<p><b>Error taxonomy to encode in state:</b> retryable network failures, non-retryable validation failures, and policy-denied actions. Different classes must route differently.</p>
-<p><b>HITL integration:</b> route high-risk actions (payments, account changes, compliance exceptions) to approval node with full context snapshot and proposed action payload.</p>
-<p><b>Evaluation stack:</b> success rate, wrong-tool rate, retries per task, escalation rate, p95 latency, and cost per successful completion. Evaluate process metrics, not only final answer text.</p>
-<p><b>Latency/cost strategy:</b> short-circuit simple paths, cache deterministic tool outputs where valid, and use adaptive retries based on error class and SLA budget.</p>`,
-    example: `Billing operations agent:
-1) User asks to refund duplicate charge.
-2) Plan node proposes "lookup invoice -> validate duplicate -> execute refund".
-3) Policy node marks refund as high-risk and requests human approval.
-4) Analyst approves with one click.
-5) Execution node calls payment API with idempotency key.
-6) Validation confirms ledger update and routes to END.
-
-If payment API times out, graph retries once; if still failing, it opens incident route and informs user with safe status.`,
-    animation: "LangGraphArchitectureViz",
-    tool: "ReActGraphInspector",
+    title: "Structured LLM Outputs",
+    order: 9.5,
+    excerpt: "Use schema-constrained outputs to make routing and tool execution deterministic.",
+    theory: `<p><b>Structured outputs turn free-form model text into machine-safe contracts.</b> Instead of parsing prose, you require typed fields (for example answer, critique, search_queries).</p>
+<p><b>Why this matters in graphs:</b> routing predicates become reliable because they consume typed values, not fragile regex over natural language.</p>
+<p><b>Production pattern:</b> pair schema validation with retry/fallback so malformed outputs fail safely.</p>`,
+    example: "Responder returns JSON-like object with `answer`, `critique`, and `search_queries`. Tools execute from `search_queries` directly with no brittle string parsing.",
+    animation: "ReActGraphInspector",
+    tool: null,
     interviewPrep: {
       questions: [
-        "How do you design retry policy by error class in a tool-heavy agent graph?",
-        "Where should HITL gates be inserted for sensitive operations and why?",
-        "What metrics prove the deep-dive architecture is better than a simpler agent loop?",
-        "How do you prevent duplicate side effects across retries and resumes?",
-        "What rollout plan would you use before enabling this graph on full traffic?",
+        "Why are structured outputs critical in multi-node graphs?",
+        "What should happen when schema validation fails?",
+        "How do structured outputs improve observability?",
       ],
-      seniorTip: "Senior-quality answers combine architecture and operations: explicit error taxonomy, idempotent side effects, risk-gated HITL, and measured rollout with regression traces."
+      seniorTip: "Always connect schemas to deterministic routing and safer execution."
     },
     flashCards: [
-      { q: "What changes in a deep-dive agent architecture?", a: "You formalize policy, error classes, retries, and escalation as graph nodes and state fields." },
-      { q: "Why classify errors before retrying?", a: "Retrying non-retryable failures wastes time and can amplify risk." },
-      { q: "Where is HITL most valuable?", a: "Before high-risk, irreversible, or compliance-sensitive actions." },
-      { q: "How to avoid duplicate refunds or writes?", a: "Use idempotency keys and resume-safe execution policy." },
-      { q: "What must be evaluated besides final answer quality?", a: "Process stability metrics like wrong-tool rate, retries, escalations, latency, and cost." },
+      { q: "Main benefit of structured outputs?", a: "Deterministic machine-readable control flow." },
+      { q: "What reduces parser fragility?", a: "Typed schema + validator." },
+      { q: "Where are they most useful?", a: "Any node whose output drives routing or tool invocation." },
+    ],
+  },
+  {
+    slug: "10-reflexion-agent-introduction",
+    sectionId: "langgraph",
+    title: "Reflexion Agent - Introduction",
+    order: 10,
+    excerpt: "Reflexion extends reflection by grounding critique/revision with live external data via tools.",
+    theory: `<p><b>Reflexion improves on reflection by adding evidence gathering.</b> Reflection can critique drafts, but Reflexion can also fetch fresh data and revise against it.</p>
+<p><b>Core actors from transcript:</b> responder, tool execution, and reviser, coordinated in iterative loops.</p>
+<p><b>Why this matters:</b> higher factual quality for tasks where stale model knowledge is a major risk.</p>`,
+    example: "Blog post draft is created, critique suggests missing latest stats, search tools fetch updates, reviser rewrites with citations.",
+    animation: "LangGraphArchitectureViz",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "How is Reflexion different from Reflection?",
+        "Why are tools essential in Reflexion systems?",
+        "What tradeoff does Reflexion introduce?",
+      ],
+      seniorTip: "Reflexion is quality-through-evidence, not just quality-through-self-critique."
+    },
+    flashCards: [
+      { q: "Reflection vs Reflexion?", a: "Reflexion adds external evidence loops via tools." },
+      { q: "Main quality gain source?", a: "Grounding revisions with live data." },
+      { q: "Main cost tradeoff?", a: "More loops and tool calls increase latency/tokens." },
+    ],
+  },
+  {
+    slug: "11-reflexion-agent-building-responder-chain",
+    sectionId: "langgraph",
+    title: "Reflexion Agent - Building Responder Chain",
+    order: 11,
+    excerpt: "Build responder output contract: draft answer + critique + search terms for evidence collection.",
+    theory: `<p><b>The responder chain does more than draft text.</b> It returns structured fields that drive downstream nodes: initial answer, self-critique, and search intents.</p>
+<p><b>Design rule:</b> output must be explicit and typed so tool node can execute immediately without ambiguous parsing.</p>`,
+    example: "Responder returns `{ answer, critique, search_queries }`; tool node runs each query and stores observations for reviser.",
+    animation: "ReActGraphInspector",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Why should responder emit critique and search terms together?",
+        "What schema fields are minimum for this chain?",
+        "How do you validate responder outputs before tool execution?",
+      ],
+      seniorTip: "Show chain contract thinking, not just prompt writing."
+    },
+    flashCards: [
+      { q: "Responder output should include?", a: "Draft answer, critique, and search queries." },
+      { q: "Why include search queries?", a: "To gather grounding evidence for revision." },
+      { q: "What breaks pipeline reliability?", a: "Unstructured responder outputs." },
+    ],
+  },
+  {
+    slug: "12-reflexion-agent-building-revisor-chain",
+    sectionId: "langgraph",
+    title: "Reflexion Agent - Building Revisor Chain",
+    order: 12,
+    excerpt: "Revisor consumes draft + tool evidence, then rewrites output with better grounding and citations.",
+    theory: `<p><b>The reviser is the improvement engine.</b> It combines responder draft and tool observations to produce a more accurate, evidence-backed response.</p>
+<p><b>Practical pattern:</b> keep revisor outputs structured too (revised_answer, revised_critique, next_search_queries, citations).</p>`,
+    example: "After tool results arrive, reviser updates a blog draft with current facts and explicit references.",
+    animation: "ReActGraphInspector",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What extra inputs does reviser need beyond the first draft?",
+        "Why add citations in reviser output?",
+        "How do you avoid endless revise loops?",
+      ],
+      seniorTip: "Tie reviser quality to concrete evidence coverage, not style alone."
+    },
+    flashCards: [
+      { q: "Reviser key input?", a: "Tool observations plus first draft context." },
+      { q: "Why add citations?", a: "To make grounding auditable." },
+      { q: "Loop guard for reviser?", a: "Max iteration cap + termination conditions." },
+    ],
+  },
+  {
+    slug: "13-reflexion-agent-tool-execution-component",
+    sectionId: "langgraph",
+    title: "Reflexion Agent - Tool Execution Component",
+    order: 13,
+    excerpt: "Execute responder/reviser search intents, normalize observations, and append tool messages into state.",
+    theory: `<p><b>This node operationalizes evidence retrieval.</b> It executes tool calls requested by agent chains and converts results into consistent state payloads.</p>
+<p><b>Transcript emphasis:</b> tool outputs should be normalized and bounded so reviser consumes them predictably.</p>
+<p><b>Safety:</b> include timeout and error handling; tool failure should produce structured fallback observations.</p>`,
+    example: "Three search terms are executed; node aggregates URL/content pairs and stores them for the next reviser step.",
+    animation: "AgentToolLoopSimulator",
+    tool: "ChainRoutingPatternsViz",
+    interviewPrep: {
+      questions: [
+        "What should tool execution node return to state?",
+        "How should errors/timeouts be represented?",
+        "Why normalize tool outputs?",
+      ],
+      seniorTip: "Execution nodes should be deterministic adapters, not hidden business logic layers."
+    },
+    flashCards: [
+      { q: "Tool execution node role?", a: "Run tool intents and return structured observations." },
+      { q: "Why normalize outputs?", a: "To keep downstream reviser logic stable." },
+      { q: "Timeout failure handling?", a: "Return structured error observation for controlled routing." },
+    ],
+  },
+  {
+    slug: "14-reflexion-agent-building-graph",
+    sectionId: "langgraph",
+    title: "Reflexion Agent - Building Graph",
+    order: 14,
+    excerpt: "Wire responder, tool execution, and reviser into a bounded iterative graph with clear termination rules.",
+    theory: `<p><b>This is the full Reflexion assembly step.</b> Graph loops through draft -> evidence -> revise until convergence or iteration cap.</p>
+<p><b>Critical controls:</b> max iterations, explicit stop criteria, and fallback completion path.</p>
+<p><b>Why beginners should care:</b> this is the blueprint for quality-improving agent systems that stay controllable.</p>`,
+    example: "Run starts with user prompt, gathers search evidence, revises twice, then exits when quality threshold is met.",
+    animation: "StateGraphFlowViz",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "What are mandatory nodes in a Reflexion graph?",
+        "How do you define stop conditions?",
+        "How do you cap compute cost in iterative graphs?",
+      ],
+      seniorTip: "A safe Reflexion graph is bounded and observable."
+    },
+    flashCards: [
+      { q: "Core Reflexion graph loop?", a: "Responder -> tools -> reviser -> (repeat or end)." },
+      { q: "Why hard cap iterations?", a: "To bound latency and cost." },
+      { q: "What indicates convergence?", a: "Quality threshold or no meaningful improvement." },
+    ],
+  },
+  {
+    slug: "16-manual-state-transformation",
+    sectionId: "langgraph",
+    title: "Manual State Transformation",
+    order: 16,
+    excerpt: "Update custom state fields directly inside nodes (e.g., count, sum, history) to understand explicit state mutation.",
+    theory: `<p><b>This transcript demonstrates explicit state updates.</b> Nodes compute new values and return updated fields manually.</p>
+<p><b>Learning objective:</b> understand exactly how state evolves when each node computes and writes transformed values.</p>
+<p><b>Typical fields shown:</b> running count, accumulated sum, and history list.</p>`,
+    example: "Each iteration increments count and updates sum using `sum + new_count`, while appending new_count into history array.",
+    animation: "StateGraphFlowViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "When is manual state transformation preferable?",
+        "What bugs are common in manual aggregate updates?",
+        "How do you test manual state mutation correctness?",
+      ],
+      seniorTip: "Manual updates are transparent but can get repetitive at scale."
+    },
+    flashCards: [
+      { q: "Manual state transformation means?", a: "Compute and return updated state fields directly inside nodes." },
+      { q: "Common aggregate fields?", a: "Count, sum, and history." },
+      { q: "Main downside?", a: "Repeated update logic across many nodes." },
+    ],
+  },
+  {
+    slug: "17-declarative-annotated-state-transformation",
+    sectionId: "langgraph",
+    title: "Declarative Annotated State Transformation",
+    order: 17,
+    excerpt: "Use annotated reducers (e.g., add/concat) so state merge logic is declarative instead of duplicated in each node.",
+    theory: `<p><b>This section upgrades manual updates to declarative reducers.</b> You attach merge behavior in state annotations so nodes can return partial values cleanly.</p>
+<p><b>Transcript example:</b> use additive reducer for numeric accumulation and concat reducer for list-history growth.</p>
+<p><b>Benefit:</b> less duplication and clearer state semantics across many nodes.</p>`,
+    example: "Instead of manually writing `sum = sum + value` in every node, annotated reducer applies add behavior whenever `sum` receives new partial output.",
+    animation: "StateGraphFlowViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Why prefer declarative reducers in larger graphs?",
+        "How do add vs concat reducers differ?",
+        "When should you still use manual updates?",
+      ],
+      seniorTip: "Use declarative reducers for repeatable merge patterns; fall back to manual when custom logic is unique."
+    },
+    flashCards: [
+      { q: "Annotated reducer purpose?", a: "Define field merge behavior once at schema level." },
+      { q: "Typical reducer pair?", a: "Add for numbers, concat for lists." },
+      { q: "Why useful in multi-node graphs?", a: "Removes duplicated update logic and reduces mutation bugs." },
+    ],
+  },
+  {
+    slug: "24-chatbot-introduction",
+    sectionId: "langgraph",
+    title: "Chatbot Introduction",
+    order: 24,
+    excerpt: "Roadmap from basic chatbot to tools, memory, human-in-the-loop, complex state, and time-travel.",
+    theory: `<p><b>This topic opens the chatbot track of the LangGraph course.</b> The instructor lays out a progressive path: start simple, then add controlled capability one layer at a time.</p>
+<p><b>Planned progression from the transcript:</b></p>
+<ol>
+<li>Basic chatbot (no memory, no tools).</li>
+<li>Chatbot with tools (live data access).</li>
+<li>Chatbot with persistence/checkpoint memory.</li>
+<li>Human-in-the-loop patterns for controlled decisions.</li>
+<li>Complex state and edge-case handling.</li>
+<li>Time-travel and advanced graph controls.</li>
+</ol>
+<p><b>Why this sequencing matters for beginners:</b> each step introduces exactly one new systems concept, so debugging stays manageable and your mental model remains clear.</p>`,
+    example: "Think of it as a ladder: first you build a bot that only responds, then a bot that can look things up, then one that remembers, then one that asks human approval before risky actions.",
+    animation: "LangGraphArchitectureViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Why is incremental chatbot design better than jumping to a full agent directly?",
+        "What capability boundaries separate basic bot, tool bot, and memory bot?",
+        "What risks appear first when adding HITL controls?",
+      ],
+      seniorTip: "Strong answers show staged architecture thinking: isolate one capability per iteration and validate it before stacking the next."
+    },
+    flashCards: [
+      { q: "What is the first chatbot version in this track?", a: "A basic single-node chatbot with no memory and no tools." },
+      { q: "What comes after tool integration?", a: "Persistence/memory with checkpointers and thread IDs." },
+      { q: "Why introduce HITL later?", a: "Because control patterns are easier once state and routing are already understood." },
+    ],
+  },
+  {
+    slug: "25-chatbot-basic",
+    sectionId: "langgraph",
+    title: "Chatbot Basic",
+    order: 25,
+    excerpt: "Build the minimal START -> chatbot -> END graph and understand invoke/stream behavior and no-memory limitation.",
+    theory: `<p><b>Here the chatbot is intentionally minimal.</b> A single model node receives messages and returns one response, then the graph exits.</p>
+<p><b>Core implementation from transcript:</b></p>
+<ul>
+<li>State holds only message history list.</li>
+<li>One chatbot node invokes the model.</li>
+<li>Graph shape: <code>START -> chatbot -> END</code>.</li>
+</ul>
+<p><b>Key limitation:</b> each invocation is independent, so the bot cannot remember previous turns unless memory/checkpointing is added later.</p>`,
+    example: "User says: 'Hi, my name is Harish.' Next turn asks: 'What is my name?' Basic chatbot fails because previous state is not persisted across invokes.",
+    animation: "StateGraphFlowViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Why does a basic chatbot forget prior turns?",
+        "What is the minimum state schema for this graph?",
+        "What is the exact graph shape in this section?",
+      ],
+      seniorTip: "Say clearly that the failure is architectural (no persistence), not model intelligence."
+    },
+    flashCards: [
+      { q: "Basic chatbot graph topology?", a: "START -> chatbot node -> END." },
+      { q: "Why no memory by default?", a: "No checkpointer/thread binding is used yet." },
+      { q: "First capability to add after this?", a: "Tools for real-time grounded responses." },
+    ],
+  },
+  {
+    slug: "26-chatbot-with-tools",
+    sectionId: "langgraph",
+    title: "Chatbot with Tools",
+    order: 26,
+    excerpt: "Add tool-calling with router + ToolNode so chatbot can fetch live data before final response.",
+    theory: `<p><b>This topic adds external action capability.</b> The model can choose a tool (for example search) when it lacks current data, then continue reasoning with tool output.</p>
+<p><b>Flow pattern:</b> model node -> conditional router -> tool node (if needed) -> model node -> END.</p>
+<p><b>Transcript emphasis:</b> bind tools to the model, inspect tool calls in AI output, execute via prebuilt tool node, then append tool message back into state.</p>`,
+    example: "Question: 'What is the current weather in Bangalore?' Model emits tool call instead of guessing. Tool executes search, returns observation, model then answers with grounded data.",
+    animation: "AgentToolLoopSimulator",
+    tool: "ChainRoutingPatternsViz",
+    interviewPrep: {
+      questions: [
+        "How does a tool-enabled chatbot decide when to call tools?",
+        "What does ToolNode do in LangGraph?",
+        "Why is the second model pass required after tool execution?",
+      ],
+      seniorTip: "Highlight the action-observation loop: tool output must re-enter model context before final answer."
+    },
+    flashCards: [
+      { q: "What does tool binding enable?", a: "Model can return tool-call intents instead of hallucinated answers." },
+      { q: "Where is route decision made?", a: "In a conditional router checking the latest AI tool-call field." },
+      { q: "Why still no memory here?", a: "Tools add capability, not persistence." },
+    ],
+  },
+  {
+    slug: "27-chatbot-with-memory-what-is-checkpointer",
+    sectionId: "langgraph",
+    title: "Chatbot with Memory - What is Checkpointer?",
+    order: 27,
+    excerpt: "Introduce checkpointers + thread IDs for conversation persistence across invocations.",
+    theory: `<p><b>Checkpointer is the persistence layer for graph state.</b> It saves checkpoints after node execution so the conversation can continue coherently.</p>
+<p><b>Two mandatory pieces from transcript:</b></p>
+<ul>
+<li>Checkpointer instance (state storage mechanism).</li>
+<li>Thread ID in config (session identity binding).</li>
+</ul>
+<p><b>Without thread IDs:</b> sessions collide or reset. <b>Without checkpointer:</b> every run starts from scratch.</p>`,
+    example: "First invoke stores: 'My name is Harish.' Next invoke in same thread asks: 'What is my name?' With checkpointer + same thread ID, bot answers correctly.",
+    animation: "StateGraphFlowViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Why are thread IDs required with checkpointers?",
+        "What happens if thread ID changes between turns?",
+        "How is checkpointing different from plain in-process variables?",
+      ],
+      seniorTip: "State continuity is a data-system guarantee, not prompt engineering."
+    },
+    flashCards: [
+      { q: "What does a checkpointer store?", a: "Graph execution state snapshots/checkpoints." },
+      { q: "What does thread ID represent?", a: "Unique conversation/session key." },
+      { q: "Can memory work with changing thread ID?", a: "No, that starts a new conversation context." },
+    ],
+  },
+  {
+    slug: "28-chatbot-with-sqlitesaver-checkpointer",
+    sectionId: "langgraph",
+    title: "Chatbot with SqliteSaver Checkpointer",
+    order: 28,
+    excerpt: "Replace in-memory checkpointing with SQLite-backed persistence for restart-safe sessions.",
+    theory: `<p><b>In-memory checkpointing is useful for demos but not durable.</b> This section upgrades memory to SQLite so sessions persist across process restarts.</p>
+<p><b>Operational points from transcript:</b></p>
+<ul>
+<li>Use SQLite saver with explicit DB connection.</li>
+<li>Handle thread-related SQLite connection settings correctly.</li>
+<li>Inspect persisted checkpoints in DB for debugging.</li>
+</ul>
+<p><b>Practical takeaway:</b> durable persistence makes conversational systems production-usable, while in-memory checkpointing does not survive restarts.</p>`,
+    example: "Stop app, restart app, keep same thread ID, ask follow-up question. With SQLite saver, chatbot still remembers prior context.",
+    animation: "StateGraphFlowViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Why is in-memory checkpointer insufficient for production?",
+        "What reliability gain does SQLite saver add?",
+        "How do you validate checkpoint persistence end to end?",
+      ],
+      seniorTip: "Always connect persistence choice to failure modes: crash/restart behavior, recovery, and auditability."
+    },
+    flashCards: [
+      { q: "Main benefit of SQLite saver?", a: "Durable state across restarts." },
+      { q: "What remains required with SQLite saver?", a: "Consistent thread ID/session config." },
+      { q: "Why inspect DB checkpoints?", a: "To debug state progression and verify persistence." },
+    ],
+  },
+  {
+    slug: "29-human-in-the-loop-introduction",
+    sectionId: "langgraph",
+    title: "Human in the Loop - Introduction",
+    order: 29,
+    excerpt: "Foundational HITL patterns: approve/reject, state edit, and tool-call review for controlled autonomy.",
+    theory: `<p><b>HITL adds governance to autonomous workflows.</b> The graph can pause at critical points and wait for human approval, correction, or extra context.</p>
+<p><b>Transcript design patterns:</b></p>
+<ul>
+<li>Approve/reject before critical action.</li>
+<li>Review/edit generated state.</li>
+<li>Review sensitive or costly tool calls.</li>
+</ul>
+<p><b>Why this is essential:</b> LLM outputs can be fluent but wrong; HITL creates safe decision gates in production.</p>`,
+    example: "LinkedIn post assistant generates draft, pauses for human review, then either posts on approval or routes to feedback loop for revision.",
+    animation: "LangGraphArchitectureViz",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "When should HITL gates be mandatory?",
+        "What are common HITL decision patterns in LangGraph?",
+        "How does checkpointing support HITL workflows?",
+      ],
+      seniorTip: "Best answers connect HITL to risk control and explainability, not just UX."
+    },
+    flashCards: [
+      { q: "What is HITL in graphs?", a: "A controlled pause for human input before continuing execution." },
+      { q: "Typical HITL use case?", a: "Approving sensitive tool calls/actions." },
+      { q: "What enables resume after pause?", a: "Checkpointer + thread context + resume command." },
+    ],
+  },
+  {
+    slug: "30-human-in-the-loop-command-class",
+    sectionId: "langgraph",
+    title: "Human in the Loop - Command Class",
+    order: 30,
+    excerpt: "Use Command for edgeless routing and state updates inside nodes, then combine with interrupts.",
+    theory: `<p><b>The Command class allows node-level routing decisions.</b> Instead of only static edges, a node can decide next destination dynamically and optionally update state in the same return value.</p>
+<p><b>Transcript focus:</b> command-based flow is useful to express resume-time branches (for example route to C vs D based on human response).</p>
+<p><b>Why it matters for HITL:</b> after interrupt resumes, command can immediately route to the correct next node without brittle global edge wiring.</p>`,
+    example: "Node B pauses for human choice. Resume value is 'D'. Command returns goto='node_d' with state update of decision audit field.",
+    animation: "ChainRoutingPatternsViz",
+    tool: "StateGraphFlowViz",
+    interviewPrep: {
+      questions: [
+        "What does Command enable that static edges cannot?",
+        "How do you combine goto and state update safely?",
+        "Why is Command helpful in HITL resumes?",
+      ],
+      seniorTip: "State your routing contract explicitly: allowed destinations and expected update schema."
+    },
+    flashCards: [
+      { q: "Command goto purpose?", a: "Choose next node at runtime from within current node." },
+      { q: "Can Command update state too?", a: "Yes, via the update payload in the same return." },
+      { q: "Why useful for HITL?", a: "Human decisions can directly drive branch routing." },
+    ],
+  },
+  {
+    slug: "31-human-in-the-loop-resume-graph",
+    sectionId: "langgraph",
+    title: "Human in the Loop - Resume Graph",
+    order: 31,
+    excerpt: "Pause with interrupt, inspect checkpoint next-node state, then resume execution using Command(resume=...).",
+    theory: `<p><b>This section operationalizes pause/resume.</b> Interrupt stops execution at a controlled point, persists state, and waits for external input.</p>
+<p><b>Resume flow from transcript:</b></p>
+<ol>
+<li>Run graph until interrupt fires.</li>
+<li>Read checkpoint snapshot/next node metadata.</li>
+<li>Send resume payload through Command.</li>
+<li>Graph continues from interrupted node with provided input.</li>
+</ol>
+<p><b>Key safety point:</b> once a run has ended, resume is no longer possible on that finished thread path without time-travel/branch behavior.</p>`,
+    example: "Execution pauses at decision node. Resume payload 'C' routes to node C. A later attempt to resume the same completed run fails because no active interrupt remains.",
+    animation: "StateGraphFlowViz",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "What metadata should you inspect before resume?",
+        "Why can’t you resume a run that has already ended?",
+        "How does thread identity affect resume behavior?",
+      ],
+      seniorTip: "Mention lifecycle explicitly: active interrupt -> resumable; completed run -> not resumable."
+    },
+    flashCards: [
+      { q: "What triggers resumability?", a: "An active interrupt checkpoint in the run." },
+      { q: "What carries human input back in?", a: "Command with resume payload." },
+      { q: "Can ended runs be resumed directly?", a: "No, they require new run/time-travel branch semantics." },
+    ],
+  },
+  {
+    slug: "32-human-in-the-loop-review-tool-calls",
+    sectionId: "langgraph",
+    title: "Human in the Loop - Review Tool Calls",
+    order: 32,
+    excerpt: "Interrupt before tool execution so humans can approve/reject costly or sensitive tool calls.",
+    theory: `<p><b>This pattern gates tool execution.</b> Model proposes a tool call, graph pauses, human reviews, then execution proceeds only on approval.</p>
+<p><b>Transcript pattern:</b> compile graph with interrupt-before on tool node; inspect pending tool intent; resume only after approval.</p>
+<p><b>Why this is production-critical:</b> tools can be expensive, privacy-sensitive, or side-effectful; pre-execution review reduces operational risk.</p>`,
+    example: "User asks weather; model proposes search tool call; system pauses before tool node; reviewer approves; tool runs; model returns grounded answer.",
+    animation: "AgentToolLoopSimulator",
+    tool: "ChainRoutingPatternsViz",
+    interviewPrep: {
+      questions: [
+        "Why interrupt before tools instead of after?",
+        "What information should be shown to reviewers?",
+        "How do you handle rejected tool calls safely?",
+      ],
+      seniorTip: "A complete answer includes approval UX, audit logs, and fallback route for rejected calls."
+    },
+    flashCards: [
+      { q: "Main goal of review-tool-calls pattern?", a: "Human approval before executing sensitive/costly tools." },
+      { q: "Where is interrupt configured in this pattern?", a: "Before the tool node execution step." },
+      { q: "What if approval is denied?", a: "Route to fallback/clarification instead of executing the tool." },
+    ],
+  },
+  {
+    slug: "33-human-in-the-loop-multi-turn-conversations",
+    sectionId: "langgraph",
+    title: "Human in the Loop - Multi-turn Conversations",
+    order: 33,
+    excerpt: "Integrate interrupts into iterative human feedback loops for refinement workflows.",
+    theory: `<p><b>This final section combines HITL with multi-turn state.</b> Human feedback becomes part of state and each loop iteration refines output quality.</p>
+<p><b>Transcript workflow:</b> model drafts content, interrupt asks for feedback, resume feeds latest feedback back into model, repeat until user says done.</p>
+<p><b>Architecture value:</b> this pattern turns one-shot generation into controlled collaborative editing with full state trace.</p>`,
+    example: "LinkedIn post workflow: draft -> human says 'shorter and funnier' -> revised draft -> human says 'done' -> graph exits with final approved post.",
+    animation: "LangGraphArchitectureViz",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "How do you store evolving human feedback across turns?",
+        "What exit conditions should terminate refinement loops?",
+        "How do you avoid infinite feedback cycles?",
+      ],
+      seniorTip: "Mention loop caps and explicit done/accept signals to prevent unbounded iterations."
+    },
+    flashCards: [
+      { q: "What is persisted each turn in this pattern?", a: "Generated outputs and human feedback state." },
+      { q: "How does loop stop?", a: "User confirmation (for example 'done') or policy cap." },
+      { q: "Why is this stronger than one-shot generation?", a: "It supports iterative quality improvement with human control." },
     ],
   },
 ];
@@ -4487,12 +4729,21 @@ const langGraphCanonicalTopicMap = Object.freeze({
   "01-introduction": { order: 1, title: "Introduction" },
   "02-levels-of-autonomy-llm-applications": { order: 2, title: "Levels of Autonomy in LLM applications" },
   "03-agents-tools-intro": { order: 3, title: "Agents & Tools - Intro" },
+  "04-agents-and-tools-implementation": { order: 4, title: "Agents & Tools - Implementation" },
+  "12-drawbacks-of-react-agents": { order: 5, title: "Drawbacks of ReAct Agents" },
   "13-reflection-agent-introduction": { order: 6, title: "Reflection Agent - Introduction" },
   "14-reflection-agent-creating-chains": { order: 7, title: "Reflection Agent - Creating Chains" },
   "15-reflection-agent-building-graph": { order: 8, title: "Reflection Agent - Building The Graph" },
   "16-reflection-agent-langsmith-tracing": { order: 9, title: "Reflection Agent - LangSmith Tracing" },
-  "12-drawbacks-of-react-agents": { order: 12, title: "Drawbacks of ReAct Agents" },
+  "09.5-structured-llm-outputs": { order: 9.5, title: "Structured LLM Outputs" },
+  "10-reflexion-agent-introduction": { order: 10, title: "Reflexion Agent - Introduction" },
+  "11-reflexion-agent-building-responder-chain": { order: 11, title: "Reflexion Agent - Building Responder Chain" },
+  "12-reflexion-agent-building-revisor-chain": { order: 12, title: "Reflexion Agent - Building Revisor Chain" },
+  "13-reflexion-agent-tool-execution-component": { order: 13, title: "Reflexion Agent - Tool Execution Component" },
+  "14-reflexion-agent-building-graph": { order: 14, title: "Reflexion Agent - Building Graph" },
   "04-what-is-stategraph": { order: 15, title: "What is StateGraph?" },
+  "16-manual-state-transformation": { order: 16, title: "Manual State Transformation" },
+  "17-declarative-annotated-state-transformation": { order: 17, title: "Declarative Annotated State Transformation" },
   "05-react-using-langgraph-overview": { order: 18, title: "ReAct using LangGraph - Overview" },
   "06-react-using-langgraph-reasoning-runnable": { order: 19, title: "ReAct using LangGraph - Reasoning Runnable" },
   "07-react-using-langgraph-state": { order: 20, title: "ReAct using LangGraph - State" },
@@ -4500,11 +4751,16 @@ const langGraphCanonicalTopicMap = Object.freeze({
   "09-tool-executor-deprecated": { order: 21.5, title: "ToolExecutor (Deprecated)" },
   "10-react-using-langgraph-final-graph": { order: 22, title: "ReAct using LangGraph - Final Graph" },
   "11-react-using-langgraph-langsmith-tracing": { order: 23, title: "ReAct using LangGraph - LangSmith Tracing" },
-  "24-rags-basic-example-1": { order: 24, title: "RAGs - Basic Example (1)" },
-  "25-rags-basic-example-2": { order: 25, title: "RAGs - Basic Example (2)" },
-  "26-rags-with-metadata": { order: 26, title: "RAGs - With MetaData" },
-  "27-rags-one-off-question": { order: 27, title: "RAGs - One-off Question" },
-  "29-agents-tools-deep-dive": { order: 29, title: "Agents & Tools - Deep Dive" },
+  "24-chatbot-introduction": { order: 24, title: "Chatbot Introduction" },
+  "25-chatbot-basic": { order: 25, title: "Chatbot Basic" },
+  "26-chatbot-with-tools": { order: 26, title: "Chatbot with Tools" },
+  "27-chatbot-with-memory-what-is-checkpointer": { order: 27, title: "Chatbot with Memory - What is Checkpointer?" },
+  "28-chatbot-with-sqlitesaver-checkpointer": { order: 28, title: "Chatbot with SqliteSaver Checkpointer" },
+  "29-human-in-the-loop-introduction": { order: 29, title: "Human in the Loop - Introduction" },
+  "30-human-in-the-loop-command-class": { order: 30, title: "Human in the Loop - Command Class" },
+  "31-human-in-the-loop-resume-graph": { order: 31, title: "Human in the Loop - Resume Graph" },
+  "32-human-in-the-loop-review-tool-calls": { order: 32, title: "Human in the Loop - Review Tool Calls" },
+  "33-human-in-the-loop-multi-turn-conversations": { order: 33, title: "Human in the Loop - Multi-turn Conversations" },
 });
 
 const canonicalLangGraphNodes = langGraphNodes

@@ -80,11 +80,9 @@ export default function RootLayout({ children }) {
             }}
           >
             <p style={{ margin: 0 }}>
-              Part of{" "}
               <a href="/" style={{ color: "var(--primary)", textDecoration: "none" }}>
-                Abhishek Gupta&apos;s portfolio
+                Concept Lab
               </a>
-              .
             </p>
           </footer>
         </ThemeProvider>

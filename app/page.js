@@ -19,7 +19,6 @@ export default function HomePage() {
   const sections = getSections();
 
   // Stats
-  const totalNodes = sections.reduce((acc, s) => acc + getNodesBySection(s.id).length, 0);
   const totalSections = sections.length;
 
   return (
@@ -40,11 +39,6 @@ export default function HomePage() {
             <div className={styles.stat}>
               <span className={styles.statNum}>{totalSections}</span>
               <span className={styles.statLabel}>Courses</span>
-            </div>
-            <div className={styles.statDivider} />
-            <div className={styles.stat}>
-              <span className={styles.statNum}>{totalNodes}</span>
-              <span className={styles.statLabel}>Nodes</span>
             </div>
             <div className={styles.statDivider} />
             <div className={styles.stat}>

@@ -334,4 +334,19 @@ export const topicCodeGuides = Object.freeze({
     [fileRef(`${LANGGRAPH_BASE}/8_human-in-the-loop/5_multiturn_conversation.py`, "Iterative human feedback loop with finalization control.")],
     ["Follow model -> human_node -> Command loop until done signal."]
   ),
+  "langgraph/38-multi-agent-intro-what-are-subgraphs": guide(
+    "Subgraph composition intro for multi-agent architecture.",
+    [fileRef(`${LANGGRAPH_BASE}/10_multi_agent_architecture/1_subgraphs.ipynb`, "Shared-schema vs transformed-schema subgraph embedding examples.")],
+    ["Focus on how child graph is embedded into parent graph nodes."]
+  ),
+  "langgraph/39-multi-agent-supervisor-agent-system": guide(
+    "Supervisor multi-agent orchestration implementation notebook.",
+    [fileRef(`${LANGGRAPH_BASE}/10_multi_agent_architecture/2_supervisor_multiagent_workflow.ipynb`, "Supervisor routing across enhancer/researcher/coder/validator roles.")],
+    ["Trace supervisor -> worker -> validator control flow and command-based routing."]
+  ),
+  "langgraph/40-streaming-deep-dive": guide(
+    "Streaming events deep-dive notebook for production-like UX updates.",
+    [fileRef(`${LANGGRAPH_BASE}/11_streaming/1_stream_events.ipynb`, "values/updates stream modes and token/event streaming patterns.")],
+    ["Inspect event filtering for on_chat_model_stream and node-level metadata usage."]
+  ),
 });

@@ -5091,6 +5091,134 @@ Failure-path scenario:
       { q: "Why cap refinement loops?", a: "Control latency/cost and prevent infinite retries." },
     ],
   },
+  {
+    slug: "38-multi-agent-intro-what-are-subgraphs",
+    sectionId: "langgraph",
+    title: "Multi-agent Intro - What are Subgraphs?",
+    order: 38,
+    excerpt: "Why multi-agent systems are needed, architecture patterns, and how subgraphs are embedded in parent graphs.",
+    theory: `<p><b>This lesson introduces multi-agent architecture fundamentals.</b> As one agent grows (too many tools, too much context, mixed responsibilities), quality and controllability degrade.</p>
+<p><b>Why split into multiple agents:</b></p>
+<ul>
+<li><b>Modularity:</b> easier to test and maintain focused components.</li>
+<li><b>Specialization:</b> separate planning, research, coding, validation roles.</li>
+<li><b>Control:</b> explicit communication/routing policy between agents.</li>
+</ul>
+<p><b>Architectures covered in transcript:</b> network, supervisor, supervisor-as-tools, hierarchical, and custom flows.</p>
+<p><b>Core subgraph concept:</b> build reusable child graphs and compose them into parent graphs.</p>
+<p><b>Two embedding modes:</b></p>
+<ol>
+<li><b>Shared schema keys</b> -> parent can add compiled subgraph directly as a node.</li>
+<li><b>Different schemas</b> -> parent uses an adapter node to transform state in/out of subgraph.</li>
+</ol>
+<p><b>Practical payoff:</b> subgraphs let you scale graph complexity without turning one file into an unmaintainable monolith.</p>`,
+    example: `Subgraph embedding pattern:
+1) Build child "search agent" graph (messages -> LLM/tool loop -> messages).
+2) Parent graph routes into search subgraph.
+3) If parent and child both use "messages", direct embedding works.
+4) If parent uses {query,response}, add adapter node:
+   - query -> child messages
+   - child final AI message -> parent response.
+
+This gives reusable specialist behavior without duplicating graph logic.`,
+    animation: "LangGraphArchitectureViz",
+    tool: "ChainRoutingPatternsViz",
+    interviewPrep: {
+      questions: [
+        "What failure signals indicate one-agent architecture should be split?",
+        "When can you embed a subgraph directly vs via adapter node?",
+        "Why do multi-agent systems improve maintainability?",
+      ],
+      seniorTip: "Frame subgraphs as software architecture reuse: contract boundaries + explicit state translation."
+    },
+    flashCards: [
+      { q: "Main reason to use multi-agent architecture?", a: "Reduce complexity by splitting responsibilities across specialized agents." },
+      { q: "Shared-schema subgraph embedding?", a: "Compile child graph and add it directly as parent node." },
+      { q: "Different-schema embedding requires?", a: "An adapter node that transforms parent state to child input and back." },
+    ],
+  },
+  {
+    slug: "39-multi-agent-supervisor-agent-system",
+    sectionId: "langgraph",
+    title: "Multi-agent - Supervisor Agent System",
+    order: 39,
+    excerpt: "Implement supervisor orchestration with enhancer/researcher/coder/validator agents and command-based routing.",
+    theory: `<p><b>This section operationalizes the supervisor pattern.</b> A supervisor node decides which specialist agent runs next and why.</p>
+<p><b>Transcript workflow:</b></p>
+<ol>
+<li>Supervisor inspects request + history and chooses next worker.</li>
+<li>Enhancer rewrites vague prompts when clarification is needed.</li>
+<li>Researcher gathers facts via web-search tooling.</li>
+<li>Coder executes calculation/code tasks using Python REPL tooling.</li>
+<li>Validator checks if latest output fully answers original question.</li>
+<li>If incomplete, flow returns to supervisor; else finish.</li>
+</ol>
+<p><b>Structured outputs are critical:</b> supervisor and validator return constrained decisions (for example next=enhancer/researcher/coder/finish) to keep routing deterministic.</p>
+<p><b>Command class role:</b> convert routing decision into explicit graph transition without brittle prompt parsing.</p>
+<p><b>Key architecture benefit:</b> supervisor centralizes orchestration while workers stay specialized and independently tunable.</p>`,
+    example: `Prompt: "Give me the 20th Fibonacci number."
+1) Supervisor routes to coder (clear computational request).
+2) Coder agent calls Python REPL tool and computes result.
+3) Validator compares final answer against original intent.
+4) If answer is complete -> finish; otherwise supervisor re-routes.
+
+Prompt: "Weather in Chennai" follows researcher branch instead, proving role-specialized delegation.`,
+    animation: "LangGraphArchitectureViz",
+    tool: "AgentToolLoopSimulator",
+    interviewPrep: {
+      questions: [
+        "Why enforce structured output contracts for supervisor decisions?",
+        "What is validator's role in preventing premature termination?",
+        "How does this design differ from a single ReAct agent with many tools?",
+      ],
+      seniorTip: "Emphasize orchestration governance: deterministic routing, specialist isolation, and validation gates."
+    },
+    flashCards: [
+      { q: "Supervisor node responsibility?", a: "Choose next specialist and control workflow progression." },
+      { q: "Why include validator node?", a: "Ensure output actually satisfies original user request before finishing." },
+      { q: "Where is Command used?", a: "To route execution explicitly to selected agent node." },
+    ],
+  },
+  {
+    slug: "40-streaming-deep-dive",
+    sectionId: "langgraph",
+    title: "Streaming Deep Dive",
+    order: 40,
+    excerpt: "Build production-grade responsiveness with state streaming, token streaming, event filtering, and node-aware UI updates.",
+    theory: `<p><b>This lesson focuses on production UX and observability for agent apps.</b> Without streaming, users wait blindly while tools and models run.</p>
+<p><b>Two graph streaming APIs:</b></p>
+<ul>
+<li><code>graph.stream(..., stream_mode=&quot;values&quot;)</code>: emits full state snapshot after each node step.</li>
+<li><code>graph.stream(..., stream_mode=&quot;updates&quot;)</code>: emits only state delta from that step.</li>
+</ul>
+<p><b>When you need token-by-token output:</b> use event streaming (<code>astream_events</code>) and filter <code>on_chat_model_stream</code> events.</p>
+<p><b>Event payload model:</b> each event carries event type, name, data, and metadata (including source LangGraph node), enabling fine-grained UI instrumentation.</p>
+<p><b>Production pattern from transcript:</b> stream tool-call progress + token generation together so user sees what the system is doing in real time.</p>
+<p><b>Implementation detail:</b> flush output frequently when rendering tokens to avoid buffered, delayed display.</p>`,
+    example: `Perplexity-style UX flow:
+1) User asks weather question.
+2) UI streams "searching web..." as tool node starts.
+3) Tool responses stream as intermediate updates.
+4) Final model answer streams token-by-token.
+5) Metadata identifies which node emitted each event, enabling rich step-level UI cards.
+
+Result: users see progress continuously instead of waiting 20-30s on a static screen.`,
+    animation: "StateGraphFlowViz",
+    tool: "ChainRoutingPatternsViz",
+    interviewPrep: {
+      questions: [
+        "Difference between stream mode values vs updates?",
+        "Why use event streaming instead of only state streaming?",
+        "How does node-level metadata improve frontend UX?",
+      ],
+      seniorTip: "Connect streaming to user trust: visibility into reasoning/tool progress reduces perceived latency and abandonment."
+    },
+    flashCards: [
+      { q: "values mode emits what?", a: "Entire graph state after each node step." },
+      { q: "updates mode emits what?", a: "Only incremental state changes from each step." },
+      { q: "Token streaming is typically captured from?", a: "on_chat_model_stream events in astream_events." },
+    ],
+  },
 ];
 
 // ─────────────────────────────────────────────────────────
@@ -5258,6 +5386,9 @@ const langGraphCanonicalTopicMap = Object.freeze({
   "35-rags-classification-driven-retrieval": { order: 35, title: "RAGs - Classification-Driven Retrieval" },
   "36-rags-rag-powered-tool-calling": { order: 36, title: "RAGs - RAG-powered Tool Calling" },
   "37-rags-multi-step-reasoning-advanced": { order: 37, title: "RAGs - Multi-step Reasoning (Advanced)" },
+  "38-multi-agent-intro-what-are-subgraphs": { order: 38, title: "Multi-agent Intro - What are Subgraphs?" },
+  "39-multi-agent-supervisor-agent-system": { order: 39, title: "Multi-agent - Supervisor Agent System" },
+  "40-streaming-deep-dive": { order: 40, title: "Streaming Deep Dive" },
 });
 
 const canonicalLangGraphNodes = langGraphNodes

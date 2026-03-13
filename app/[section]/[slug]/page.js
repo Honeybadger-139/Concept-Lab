@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getSection, getNode, getNodesBySection, nodes } from "@/data/curriculumData";
+import {
+  getNode,
+  getNodesBySection,
+  getNodesByTrack,
+  getSection,
+  getTrack,
+  getTrackHref,
+  nodes,
+} from "@/data/curriculumData";
 import styles from "./node.module.css";
 import dynamic from "next/dynamic";
 import NodeShell from "@/components/NodeShell";
@@ -168,19 +176,37 @@ export async function generateMetadata({ params }) {
   return { title: `${node.title} | Concept Lab` };
 }
 
-export default async function NodePage({ params }) {
+function buildTopicHref(sectionId, slug, trackId) {
+  const base = `/${sectionId}/${slug}`;
+  return trackId ? `${base}?track=${trackId}` : base;
+}
+
+export default async function NodePage({ params, searchParams }) {
   const { section, slug } = await params;
+  const query = await searchParams;
   const sec   = getSection(section);
   const node  = getNode(section, slug);
   if (!sec || !node) notFound();
 
-  const sectionNodes   = getNodesBySection(section);
-  const currentIndex   = sectionNodes.findIndex((n) => n.slug === slug);
-  const prevNode       = currentIndex > 0 ? sectionNodes[currentIndex - 1] : null;
-  const nextNode       = currentIndex < sectionNodes.length - 1 ? sectionNodes[currentIndex + 1] : null;
+  const rawTrackId = Array.isArray(query?.track) ? query.track[0] : query?.track;
+  const requestedTrack = rawTrackId ? getTrack(String(rawTrackId)) : null;
+  const trackNodes = requestedTrack &&
+    requestedTrack.sectionId === section &&
+    getNodesByTrack(requestedTrack.id).some((candidate) => candidate.slug === slug)
+      ? getNodesByTrack(requestedTrack.id)
+      : null;
+
+  const activeTrack = trackNodes ? requestedTrack : null;
+  const activeNodes = trackNodes ?? getNodesBySection(section);
+  const currentIndex   = activeNodes.findIndex((n) => n.slug === slug);
+  const prevNode       = currentIndex > 0 ? activeNodes[currentIndex - 1] : null;
+  const nextNode       = currentIndex < activeNodes.length - 1 ? activeNodes[currentIndex + 1] : null;
   const meta           = SECTION_META[section] || { color: "#6366f1", emoji: "📚" };
   const polishedTheory = getPolishedTheory(section, node.theory);
   const rt             = readingTime(polishedTheory);
+  const topicHref = buildTopicHref(section, slug, activeTrack?.id ?? null);
+  const backHref = activeTrack ? getTrackHref(activeTrack.id) : `/${section}`;
+  const backLabel = activeTrack ? activeTrack.title : sec.title;
   const showTopicChatbot = Boolean(
     node.excerpt ||
       polishedTheory ||
@@ -223,11 +249,11 @@ export default async function NodePage({ params }) {
 
           {/* ── Back + progress ── */}
           <div className={styles.topRow}>
-            <Link href={`/${section}`} className="backLink">
-              ← {sec.title}
+            <Link href={backHref} className="backLink">
+              ← {backLabel}
             </Link>
             <span className={styles.nodeProgress}>
-              {meta.emoji} {currentIndex + 1} / {sectionNodes.length}
+              {meta.emoji} {currentIndex + 1} / {activeNodes.length}
             </span>
           </div>
 
@@ -332,7 +358,7 @@ export default async function NodePage({ params }) {
                           <code>{entry.path}</code>
                         </p>
                         {entry.focus && <p className={styles.codeFocus}>{entry.focus}</p>}
-                        <Link href={buildCodeViewerHref(entry, `/${section}/${slug}`)} className={styles.codeOpenLink}>
+                        <Link href={buildCodeViewerHref(entry, topicHref)} className={styles.codeOpenLink}>
                           Open highlighted code →
                         </Link>
                       </article>
@@ -404,14 +430,14 @@ export default async function NodePage({ params }) {
           {/* ── Prev / Next ── */}
           <nav className={styles.navRow}>
             {prevNode ? (
-              <Link href={`/${section}/${prevNode.slug}`} className={styles.navBtn}>
+              <Link href={buildTopicHref(section, prevNode.slug, activeTrack?.id ?? null)} className={styles.navBtn}>
                 <span className={styles.navDir}>← Previous</span>
                 <span className={styles.navTitle}>{prevNode.title}</span>
               </Link>
             ) : <div />}
 
             {nextNode ? (
-              <Link href={`/${section}/${nextNode.slug}`} className={`${styles.navBtn} ${styles.navBtnRight}`}>
+              <Link href={buildTopicHref(section, nextNode.slug, activeTrack?.id ?? null)} className={`${styles.navBtn} ${styles.navBtnRight}`}>
                 <span className={styles.navDir}>Next →</span>
                 <span className={styles.navTitle}>{nextNode.title}</span>
               </Link>

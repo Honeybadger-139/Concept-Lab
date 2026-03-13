@@ -15,8 +15,29 @@ import { getMlTranscriptDeepeningByOrder } from "./mlTranscriptDeepening.js";
 import { topicCodeGuides } from "./topicCodeGuides.js";
 
 // ─────────────────────────────────────────────────────────
-// SECTIONS
+// DOMAINS & TRACKS
 // ─────────────────────────────────────────────────────────
+export const domains = [
+  {
+    id: "machine-learning",
+    title: "Machine Learning",
+    emoji: "🧠",
+    color: "#3b82f6",
+    description:
+      "Foundational ML study organized into focused tracks while preserving transcript-derived topic order.",
+    order: 1,
+  },
+  {
+    id: "ai-engineering",
+    title: "AI Engineering",
+    emoji: "🛠️",
+    color: "#10b981",
+    description:
+      "RAG, LangChain, and LangGraph organized as separate learning tracks under one systems-focused domain.",
+    order: 2,
+  },
+];
+
 export const sections = [
   {
     id: "ml",
@@ -48,10 +69,77 @@ export const sections = [
   },
 ];
 
+const SECTION_DOMAIN_ID = Object.freeze({
+  ml: "machine-learning",
+  rag: "ai-engineering",
+  langgraph: "ai-engineering",
+  langchain: "ai-engineering",
+});
+
 // ML concept folders (used when sectionId === "ml")
 export const mlConcepts = [
   { id: "supervised-learning-algorithms", title: "Supervised Learning Algorithms", order: 1 },
   { id: "advanced-learning-algorithms", title: "Advanced Learning Algorithms", order: 2 },
+];
+
+export const tracks = [
+  {
+    id: "supervised-learning-algorithms",
+    domainId: "machine-learning",
+    sectionId: "ml",
+    conceptId: "supervised-learning-algorithms",
+    title: "Supervised Learning Algorithms",
+    emoji: "📈",
+    color: "#2563eb",
+    description:
+      "Transcript-backed ML fundamentals: linear regression, logistic regression, gradient descent, feature scaling, overfitting, and regularization.",
+    order: 1,
+  },
+  {
+    id: "advanced-learning-algorithms",
+    domainId: "machine-learning",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Advanced Learning Algorithms",
+    emoji: "🧩",
+    color: "#6366f1",
+    description:
+      "The advanced ML track. It stays transcript-driven as new advanced lessons are added into Concept Lab.",
+    order: 2,
+  },
+  {
+    id: "rag",
+    domainId: "ai-engineering",
+    sectionId: "rag",
+    title: "RAG Systems",
+    emoji: "🔎",
+    color: "#f97316",
+    description:
+      "Retrieval foundations, chunking strategies, hybrid search, reranking, and practical RAG workflows.",
+    order: 1,
+  },
+  {
+    id: "langchain",
+    domainId: "ai-engineering",
+    sectionId: "langchain",
+    title: "LangChain",
+    emoji: "⛓️",
+    color: "#10b981",
+    description:
+      "Chat models, prompt templates, chains, agents, and RAG implementations built with LangChain.",
+    order: 2,
+  },
+  {
+    id: "langgraph",
+    domainId: "ai-engineering",
+    sectionId: "langgraph",
+    title: "LangGraph",
+    emoji: "🕸️",
+    color: "#8b5cf6",
+    description:
+      "State graphs, agent loops, HITL, RAG agents, multi-agent systems, and streaming workflows.",
+    order: 3,
+  },
 ];
 
 const ML_CONCEPT_BY_SLUG = {
@@ -5444,14 +5532,71 @@ export function getSections() {
   return [...sections].sort((a, b) => a.order - b.order);
 }
 
+export function getDomains() {
+  return [...domains].sort((a, b) => a.order - b.order);
+}
+
+export function getDomain(domainId) {
+  return domains.find((domain) => domain.id === domainId) ?? null;
+}
+
 export function getNodesBySection(sectionId) {
   return nodes
     .filter((n) => n.sectionId === sectionId)
     .sort((a, b) => a.order - b.order);
 }
 
+export function getDomainForSection(sectionId) {
+  return getDomain(SECTION_DOMAIN_ID[sectionId] ?? "");
+}
+
 export function getSection(sectionId) {
   return sections.find((s) => s.id === sectionId) ?? null;
+}
+
+export function getTracksByDomain(domainId) {
+  return tracks
+    .filter((track) => track.domainId === domainId)
+    .sort((a, b) => a.order - b.order);
+}
+
+export function getTrack(trackId) {
+  return tracks.find((track) => track.id === trackId) ?? null;
+}
+
+export function getTrackHref(trackId) {
+  return `/tracks/${trackId}`;
+}
+
+export function getNodesByTrack(trackId) {
+  const track = getTrack(trackId);
+  if (!track) return [];
+
+  const sectionNodes = getNodesBySection(track.sectionId);
+  if (!track.conceptId) return sectionNodes;
+
+  return sectionNodes.filter((node) => {
+    const conceptId = node.conceptId ?? ML_CONCEPT_BY_SLUG[node.slug] ?? "supervised-learning-algorithms";
+    return conceptId === track.conceptId;
+  });
+}
+
+export function getNodesByTrackGrouped(trackId) {
+  const track = getTrack(trackId);
+  if (!track) return [];
+
+  const trackNodes = getNodesByTrack(trackId);
+  if (!track.conceptId) {
+    return [{ conceptId: null, conceptTitle: null, nodes: trackNodes }];
+  }
+
+  return [
+    {
+      conceptId: track.conceptId,
+      conceptTitle: track.title,
+      nodes: trackNodes,
+    },
+  ];
 }
 
 export function getNode(sectionId, slug) {

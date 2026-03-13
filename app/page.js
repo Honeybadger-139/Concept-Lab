@@ -1,26 +1,18 @@
 import Link from "next/link";
-import { getSections, getNodesBySection } from "@/data/curriculumData";
+import { getDomains, getTracksByDomain } from "@/data/curriculumData";
 import ContinueLearningCard from "@/components/ContinueLearningCard";
 import styles from "./page.module.css";
 
 export const metadata = {
   title: "Concept Lab | Abhishek Gupta",
-  description: "Interactive learning: RAG, ML, LangChain and more.",
-};
-
-// Per-section visual config
-const SECTION_META = {
-  ml:        { emoji: "🧠", color: "#3b82f6", label: "Machine Learning" },
-  rag:       { emoji: "🔍", color: "#f97316", label: "RAG" },
-  langchain: { emoji: "⛓️", color: "#10b981", label: "LangChain" },
-  langgraph: { emoji: "🕸️", color: "#8b5cf6", label: "LangGraph" },
+  description:
+    "Disciplines, tracks, and topics are structured for sustained, cumulative study.",
 };
 
 export default function HomePage() {
-  const sections = getSections();
+  const domains = getDomains();
 
-  // Stats
-  const totalSections = sections.length;
+  const totalDomains = domains.length;
 
   return (
     <main className={styles.main}>
@@ -31,8 +23,8 @@ export default function HomePage() {
           <div className={styles.heroEyebrow}>Abhishek&apos;s Personal Learning Hub</div>
           <h1 className={styles.title}>Concept Lab</h1>
           <p className={styles.subtitle}>
-            Theory, interactive demos, flash cards, and interview prep — built
-            from real course transcripts. RAG, machine learning, LangChain.
+            Disciplines, tracks, and topics are structured for sustained, cumulative study.
+            The curriculum preserves a coherent progression while remaining extensible as the knowledge base expands.
           </p>
 
           <ContinueLearningCard />
@@ -40,8 +32,8 @@ export default function HomePage() {
           {/* Stats strip */}
           <div className={styles.statsRow}>
             <div className={styles.stat}>
-              <span className={styles.statNum}>{totalSections}</span>
-              <span className={styles.statLabel}>Courses</span>
+              <span className={styles.statNum}>{totalDomains}</span>
+              <span className={styles.statLabel}>Domains</span>
             </div>
             <div className={styles.statDivider} />
             <div className={styles.stat}>
@@ -56,24 +48,23 @@ export default function HomePage() {
           </div>
         </header>
 
-        {/* ── Section cards ── */}
+        {/* ── Domain cards ── */}
         <div className={styles.grid}>
-          {sections.map((section) => {
-            const meta = SECTION_META[section.id] || { emoji: "📚", color: "#6366f1" };
-            const nodeCount = getNodesBySection(section.id).length;
+          {domains.map((domain) => {
+            const tracks = getTracksByDomain(domain.id);
 
             return (
               <Link
-                key={section.id}
-                href={`/${section.id}`}
+                key={domain.id}
+                href={`/domains/${domain.id}`}
                 className={styles.card}
-                style={{ "--card-color": meta.color }}
+                style={{ "--card-color": domain.color ?? "#6366f1" }}
               >
-                <div className={styles.cardEmoji}>{meta.emoji}</div>
-                <h2 className={styles.cardTitle}>{section.title}</h2>
-                <p className={styles.cardDesc}>{section.description}</p>
+                <div className={styles.cardEmoji}>{domain.emoji ?? "📚"}</div>
+                <h2 className={styles.cardTitle}>{domain.title}</h2>
+                <p className={styles.cardDesc}>{domain.description}</p>
                 <div className={styles.cardFooter}>
-                  <span className={styles.nodeCount}>{nodeCount} nodes</span>
+                  <span className={styles.nodeCount}>{tracks.length} tracks</span>
                   <span className={styles.cardArrow}>→</span>
                 </div>
               </Link>

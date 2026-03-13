@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getSection, getNodesBySection, getNodesBySectionGroupedByConcept, sections } from "@/data/curriculumData";
+import {
+  getDomainForSection,
+  getNodesBySection,
+  getNodesBySectionGroupedByConcept,
+  getSection,
+  sections,
+} from "@/data/curriculumData";
 import SectionProgress from "@/components/SectionProgress";
 import styles from "./section.module.css";
 
@@ -20,6 +26,7 @@ export default async function SectionPage({ params }) {
   const { section } = await params;
   const sec = getSection(section);
   if (!sec) notFound();
+  const domain = getDomainForSection(section);
 
   const nodes = getNodesBySection(section);
   const grouped = getNodesBySectionGroupedByConcept(section);
@@ -27,8 +34,8 @@ export default async function SectionPage({ params }) {
   return (
     <main className={styles.main}>
       <section className="section-padding container">
-        <Link href="/" className="backLink">
-          ← Back to Concept Lab
+        <Link href={domain ? `/domains/${domain.id}` : "/"} className="backLink">
+          ← Back to {domain?.title ?? "Concept Lab"}
         </Link>
 
         <header className={styles.header}>

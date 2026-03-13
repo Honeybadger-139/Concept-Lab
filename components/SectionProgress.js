@@ -24,14 +24,14 @@ function detectNodeMode(node) {
   return "Theory";
 }
 
-function NodeCard({ sectionId, node, isVisited }) {
+function NodeCard({ sectionId, node, isVisited, topicHref }) {
   const done = isVisited(sectionId, node.slug);
   const estMins = estimateNodeMinutes(node);
   const mode = detectNodeMode(node);
 
   return (
     <Link
-      href={`/${sectionId}/${node.slug}`}
+      href={topicHref}
       className={`${styles.card} glass ${done ? styles.done : ""}`}
     >
       <div className={styles.cardTop}>
@@ -50,7 +50,7 @@ function NodeCard({ sectionId, node, isVisited }) {
   );
 }
 
-export default function SectionProgress({ sectionId, nodes, groupedByConcept }) {
+export default function SectionProgress({ sectionId, nodes, groupedByConcept, trackId = null }) {
   const { isVisited } = useProgress();
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -87,6 +87,11 @@ export default function SectionProgress({ sectionId, nodes, groupedByConcept }) 
       .map((group) => ({ ...group, nodes: group.nodes.filter((node) => matchesFilters(node)) }))
       .filter((group) => group.nodes.length > 0);
   }, [groupedByConcept, hasConceptFolders, normalizedQuery, statusFilter, isVisited, sectionId]);
+
+  const getTopicHref = (node) => {
+    const base = `/${sectionId}/${node.slug}`;
+    return trackId ? `${base}?track=${trackId}` : base;
+  };
 
   return (
     <div className={styles.wrapper}>
@@ -151,6 +156,7 @@ export default function SectionProgress({ sectionId, nodes, groupedByConcept }) 
                     sectionId={sectionId}
                     node={node}
                     isVisited={isVisited}
+                    topicHref={getTopicHref(node)}
                   />
                 ))}
               </div>
@@ -168,6 +174,7 @@ export default function SectionProgress({ sectionId, nodes, groupedByConcept }) 
               sectionId={sectionId}
               node={node}
               isVisited={isVisited}
+              topicHref={getTopicHref(node)}
             />
           ))}
         </div>

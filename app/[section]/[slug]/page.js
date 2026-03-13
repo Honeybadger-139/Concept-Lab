@@ -12,6 +12,7 @@ import {
 import styles from "./node.module.css";
 import dynamic from "next/dynamic";
 import NodeShell from "@/components/NodeShell";
+import { requireAuthPage } from "@/lib/requireAuthPage";
 
 const lazyPlaceholder = (
   <div className={styles.lazyPlaceholder} role="status" aria-live="polite">
@@ -184,6 +185,12 @@ function buildTopicHref(sectionId, slug, trackId) {
 export default async function NodePage({ params, searchParams }) {
   const { section, slug } = await params;
   const query = await searchParams;
+  const callbackPath = Array.isArray(query?.track)
+    ? `/${section}/${slug}?track=${query.track[0]}`
+    : query?.track
+      ? `/${section}/${slug}?track=${query.track}`
+      : `/${section}/${slug}`;
+  await requireAuthPage(callbackPath);
   const sec   = getSection(section);
   const node  = getNode(section, slug);
   if (!sec || !node) notFound();

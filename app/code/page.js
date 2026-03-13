@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { requireAuthPage } from "@/lib/requireAuthPage";
 import styles from "./page.module.css";
 
 const ROOT = process.cwd();
@@ -186,6 +187,7 @@ function buildLearningNotes(blocks, lines, focus) {
 }
 
 export default async function CodeViewerPage({ searchParams }) {
+  await requireAuthPage("/code");
   const params = await searchParams;
   const fileParam = params?.file;
   const fromPath = params?.from ? String(params.from) : "/";

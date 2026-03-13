@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getDomains, getTracksByDomain } from "@/data/curriculumData";
 import ContinueLearningCard from "@/components/ContinueLearningCard";
+import { requireAuthPage } from "@/lib/requireAuthPage";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -9,7 +10,8 @@ export const metadata = {
     "Disciplines, tracks, and topics are structured for sustained, cumulative study.",
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  await requireAuthPage("/");
   const domains = getDomains();
 
   const totalDomains = domains.length;
@@ -74,7 +76,7 @@ export default function HomePage() {
 
         {/* ── Footer tip ── */}
         <p className={styles.tip}>
-          💡 <strong>Tip:</strong> Flash cards track your progress per session — use ← → arrow keys to navigate, Space to flip.
+          💡 <strong>Tip:</strong> Your topic progress now syncs to your signed-in account. Flash cards still support ← → navigation and Space to flip.
         </p>
       </section>
     </main>

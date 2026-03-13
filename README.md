@@ -19,13 +19,22 @@ npm run dev
 
 Open [http://localhost:3001](http://localhost:3001).
 
-### Optional: Enable LLM topic chatbot mode
-
-The per-topic chatbot supports a guarded LLM + retrieval path.
+### Configure OAuth login (Google + GitHub)
 
 ```bash
 cp .env.local.example .env.local
 ```
+
+Then set in `.env.local`:
+
+- `AUTH_SECRET`
+- `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`
+- `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`
+- optional `ALLOWED_EMAILS` (comma-separated allowlist)
+
+### Optional: Enable LLM topic chatbot mode
+
+The per-topic chatbot supports a guarded LLM + retrieval path.
 
 For local Ollama mode (recommended):
 - Ensure Ollama is running on `http://127.0.0.1:11434`
@@ -33,6 +42,16 @@ For local Ollama mode (recommended):
 - Set `TOPIC_CHAT_OLLAMA_MODEL` to your local model name (for example `llama3.2`)
 
 Then restart `npm run dev`.
+
+### Optional: LangFuse observability for per-user topic chatbot usage
+
+Set these env vars:
+
+- `LANGFUSE_PUBLIC_KEY`
+- `LANGFUSE_SECRET_KEY`
+- optional `LANGFUSE_BASEURL`
+
+Each topic chatbot request is logged with `userId` (signed-in email), section, and topic metadata.
 
 ## Deploy
 

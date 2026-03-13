@@ -8,6 +8,7 @@ import {
   sections,
 } from "@/data/curriculumData";
 import SectionProgress from "@/components/SectionProgress";
+import { requireAuthPage } from "@/lib/requireAuthPage";
 import styles from "./section.module.css";
 
 // Auto-derive from data — no manual maintenance needed
@@ -24,6 +25,7 @@ export async function generateMetadata({ params }) {
 
 export default async function SectionPage({ params }) {
   const { section } = await params;
+  await requireAuthPage(`/${section}`);
   const sec = getSection(section);
   if (!sec) notFound();
   const domain = getDomainForSection(section);

@@ -69,3 +69,10 @@
 .buttonSecondary:hover {
   background: var(--bg-tertiary);
 }
+
+.warning {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-tertiary);
+  line-height: 1.5;
+}

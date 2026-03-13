@@ -8,6 +8,7 @@ import {
   tracks,
 } from "@/data/curriculumData";
 import SectionProgress from "@/components/SectionProgress";
+import { requireAuthPage } from "@/lib/requireAuthPage";
 import styles from "@/app/[section]/section.module.css";
 
 export async function generateStaticParams() {
@@ -23,6 +24,7 @@ export async function generateMetadata({ params }) {
 
 export default async function TrackPage({ params }) {
   const { track } = await params;
+  await requireAuthPage(`/tracks/${track}`);
   const currentTrack = getTrack(track);
   if (!currentTrack) notFound();
 

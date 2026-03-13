@@ -6,6 +6,7 @@ const REASON_COPY = {
   "unverified-email": "Your email is not verified with the identity provider.",
   "not-allowlisted": "Your email is not in the current access allowlist.",
   "unsupported-provider": "This sign-in provider is not allowed for this app.",
+  "provider-not-configured": "OAuth provider configuration is incomplete for this deployment.",
 };
 
 export const metadata = {

@@ -9,6 +9,11 @@ const ALLOWED_EMAILS = new Set(
     .filter(Boolean)
 );
 
+const AUTH_SECRET =
+  process.env.AUTH_SECRET ||
+  process.env.NEXTAUTH_SECRET ||
+  (process.env.NODE_ENV === "development" ? "concept-lab-dev-secret-change-in-prod" : undefined);
+
 function isAllowlistEnabled() {
   return ALLOWED_EMAILS.size > 0;
 }
@@ -67,19 +72,21 @@ if (process.env.AUTH_GITHUB_ID && process.env.AUTH_GITHUB_SECRET) {
   );
 }
 
-if (providers.length === 0) {
-  // Keeps the app fail-fast if OAuth env vars are missing in deployment.
-  throw new Error("No OAuth providers configured. Set Google and/or GitHub auth env vars.");
+function hasConfiguredProviders() {
+  return providers.length > 0;
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers,
+  secret: AUTH_SECRET,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
   },
   callbacks: {
     async signIn({ user, account, profile }) {
+      if (!hasConfiguredProviders()) return "/pending-access?reason=provider-not-configured";
+
       const email = String(user?.email || "").trim().toLowerCase();
       if (!email) return "/pending-access?reason=missing-email";
 

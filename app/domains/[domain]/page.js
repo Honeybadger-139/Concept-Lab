@@ -7,6 +7,7 @@ import {
   getTrackHref,
   getTracksByDomain,
 } from "@/data/curriculumData";
+import { requireAuthPage } from "@/lib/requireAuthPage";
 import styles from "@/app/page.module.css";
 
 export async function generateStaticParams() {
@@ -22,6 +23,7 @@ export async function generateMetadata({ params }) {
 
 export default async function DomainPage({ params }) {
   const { domain } = await params;
+  await requireAuthPage(`/domains/${domain}`);
   const currentDomain = getDomain(domain);
   if (!currentDomain) notFound();
 

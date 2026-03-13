@@ -10,6 +10,9 @@ export default async function LoginPage({ searchParams }) {
   const session = await auth();
   const query = await searchParams;
   const callbackUrl = String(query?.callbackUrl || "/");
+  const hasGoogle = Boolean(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);
+  const hasGitHub = Boolean(process.env.AUTH_GITHUB_ID && process.env.AUTH_GITHUB_SECRET);
+  const hasAnyProvider = hasGoogle || hasGitHub;
 
   if (session?.user?.email) {
     redirect(callbackUrl);
@@ -35,16 +38,25 @@ export default async function LoginPage({ searchParams }) {
         </p>
 
         <div className={styles.actions}>
-          <form action={signInWithGoogle}>
-            <button className={styles.button} type="submit">
-              Continue with Google
-            </button>
-          </form>
-          <form action={signInWithGitHub}>
-            <button className={styles.buttonSecondary} type="submit">
-              Continue with GitHub
-            </button>
-          </form>
+          {hasGoogle && (
+            <form action={signInWithGoogle}>
+              <button className={styles.button} type="submit">
+                Continue with Google
+              </button>
+            </form>
+          )}
+          {hasGitHub && (
+            <form action={signInWithGitHub}>
+              <button className={styles.buttonSecondary} type="submit">
+                Continue with GitHub
+              </button>
+            </form>
+          )}
+          {!hasAnyProvider && (
+            <p className={styles.warning}>
+              OAuth providers are not configured yet. Add Google/GitHub keys in <code>.env.local</code> and restart the server.
+            </p>
+          )}
         </div>
       </section>
     </main>

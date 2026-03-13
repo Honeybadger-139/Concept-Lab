@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "check:parity": "node scripts/check-transcript-parity.mjs",
     "sync:topic-code": "node scripts/sync-topic-code-assets.mjs",
-    "sync:ml-transcripts": "node scripts/sync-ml-transcripts.mjs"
+    "sync:ml-transcripts": "node scripts/sync-ml-transcripts.mjs",
+    "sync:langgraph-transcripts": "node scripts/sync-langgraph-transcripts.mjs"
   },
   "dependencies": {
     "next": "16.1.6",

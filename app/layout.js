@@ -44,8 +44,8 @@ export default function RootLayout({ children }) {
 
           <header className={styles.header}>
             <div className={styles.headerInner}>
-              <a href="/" className={styles.brandLink}>
-                Concept Lab
+              <a href="/" className={styles.brandText}>
+                Concept Labs
               </a>
 
               <ThemeToggle />
@@ -56,9 +56,7 @@ export default function RootLayout({ children }) {
 
           <footer className={styles.footer}>
             <p className={styles.footerText}>
-              <a href="/" className={styles.footerLink}>
-                Concept Lab
-              </a>
+              @2026 Concept Labs
             </p>
           </footer>
         </ThemeProvider>

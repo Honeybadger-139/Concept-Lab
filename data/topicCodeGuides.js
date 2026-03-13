@@ -254,6 +254,11 @@ export const topicCodeGuides = Object.freeze({
     [fileRef(`${LANGGRAPH_BASE}/4_reflexion_agent_system/reflexion_graph.py`, "Draft -> execute_tools -> revise loop with max iteration guard.")],
     ["Confirm event_loop termination condition is explicit and bounded."]
   ),
+  "langgraph/04-what-is-stategraph": guide(
+    "StateGraph basics become much clearer when you inspect a tiny loop with explicit state.",
+    [fileRef(`${LANGGRAPH_BASE}/5_state_deepdive/1_basic_state.py`, "Minimal StateGraph with state updates and stop condition.")],
+    ["Watch how state is passed into each node and how conditional edges decide the next step."]
+  ),
   "langgraph/16-manual-state-transformation": guide(
     "Manual state updates are demonstrated in this state deep-dive script.",
     [fileRef(`${LANGGRAPH_BASE}/5_state_deepdive/1_basic_state.py`, "Explicitly updates state fields each step.")],
@@ -288,6 +293,11 @@ export const topicCodeGuides = Object.freeze({
     "Final ReAct graph assembly and loop termination.",
     REACT_AGENT_FILES,
     ["Validate conditional edge logic from reason node."]
+  ),
+  "langgraph/24-chatbot-introduction": guide(
+    "Chatbot track roadmap is easiest to grasp by looking at the four progressively richer chatbot files together.",
+    CHATBOT_FILES,
+    ["Read the files in order to see the capability ladder: basic -> tools -> memory -> durable memory."]
   ),
   "langgraph/25-chatbot-basic": guide(
     "Baseline chatbot implementation without tools/memory.",
@@ -333,6 +343,26 @@ export const topicCodeGuides = Object.freeze({
     "Multi-turn HITL implementation with interrupt + memory.",
     [fileRef(`${LANGGRAPH_BASE}/8_human-in-the-loop/5_multiturn_conversation.py`, "Iterative human feedback loop with finalization control.")],
     ["Follow model -> human_node -> Command loop until done signal."]
+  ),
+  "langgraph/34-rags-introduction": guide(
+    "Basic LangGraph RAG flow that mirrors the transcript refresher section.",
+    [fileRef(`${LANGGRAPH_BASE}/9_RAG_agent/1_basic.ipynb`, "Document setup, retriever wiring, and simple RAG answer generation.")],
+    ["Track the handoff from retriever output into the final QA prompt."]
+  ),
+  "langgraph/35-rags-classification-driven-retrieval": guide(
+    "Classification-gated RAG notebook for on-topic vs off-topic routing.",
+    [fileRef(`${LANGGRAPH_BASE}/9_RAG_agent/2_classification_driven_agent.ipynb`, "Classifier-controlled RAG entry with structured output routing.")],
+    ["Focus on how the classifier output gates retrieval and off-topic fallback behavior."]
+  ),
+  "langgraph/36-rags-rag-powered-tool-calling": guide(
+    "RAG exposed as a tool so the agent decides when to retrieve.",
+    [fileRef(`${LANGGRAPH_BASE}/9_RAG_agent/3_rag_powered_tool_calling.ipynb`, "Agent/tool loop where retrieval is invoked as one of the available tools.")],
+    ["Notice how tool results return to the agent before the final answer is written."]
+  ),
+  "langgraph/37-rags-multi-step-reasoning-advanced": guide(
+    "Advanced multi-step RAG reasoning notebook with refinement and stronger control flow.",
+    [fileRef(`${LANGGRAPH_BASE}/9_RAG_agent/4_advanced_multi_step_reasoning.ipynb`, "Rewrite, retrieve, grade, refine, and fallback flow for production-style RAG.")],
+    ["Trace the retry/refinement loop and where the graph decides to stop vs rewrite the question."]
   ),
   "langgraph/38-multi-agent-intro-what-are-subgraphs": guide(
     "Subgraph composition intro for multi-agent architecture.",

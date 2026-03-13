@@ -10,6 +10,7 @@
  *   2. Create a new node array and spread it into `nodes` at the bottom.
  */
 import { authoredInterviewAnswers } from "./authoredInterviewAnswers.js";
+import { getLangGraphTranscriptDeepeningByOrder } from "./langgraphTranscriptDeepening.js";
 import { getMlTranscriptDeepeningByOrder } from "./mlTranscriptDeepening.js";
 import { topicCodeGuides } from "./topicCodeGuides.js";
 
@@ -5338,6 +5339,21 @@ function applyMlTranscriptDeepening(sectionNodes) {
   });
 }
 
+function applyLangGraphTranscriptDeepening(sectionNodes) {
+  const deepeningByOrder = getLangGraphTranscriptDeepeningByOrder();
+  if (deepeningByOrder.size === 0) return sectionNodes;
+
+  return sectionNodes.map((node) => {
+    const deepeningHtml = deepeningByOrder.get(node.order);
+    if (!deepeningHtml || !node.theory) return node;
+    if (node.theory.includes("Transcript Deepening")) return node;
+    return {
+      ...node,
+      theory: `${node.theory}${deepeningHtml}`,
+    };
+  });
+}
+
 const authoredMlNodes = applyMlTranscriptDeepening(
   applyTopicCodeGuides(applyAuthoredInterviewAnswers(mlNodes, "ml"), "ml")
 );
@@ -5403,7 +5419,9 @@ const canonicalLangGraphNodes = langGraphNodes
   });
 
 const authoredLangGraphNodes = applyTopicCodeGuides(
-  applyAuthoredInterviewAnswers(canonicalLangGraphNodes, "langgraph"),
+  applyLangGraphTranscriptDeepening(
+    applyAuthoredInterviewAnswers(canonicalLangGraphNodes, "langgraph")
+  ),
   "langgraph"
 );
 const authoredAdvancedNodes = applyTopicCodeGuides(

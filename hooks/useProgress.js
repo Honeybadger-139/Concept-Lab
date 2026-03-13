@@ -1,33 +1,74 @@
 "use client";
 
 /**
- * useProgress — persists visited node IDs in localStorage so the learner
- * can always see which topics they've already opened, even after closing
- * the browser. Zero dependencies, no server needed.
- *
- * Key format: "cl_visited" → Set of "<sectionId>/<slug>" strings.
+ * useProgress — backed by server APIs and per-user storage.
+ * Keeps client components simple while ensuring progress is tied to
+ * authenticated users (not browser-only localStorage).
  */
 
 import { useState, useEffect, useCallback } from "react";
 
-const STORAGE_KEY = "cl_visited";
+const LEGACY_STORAGE_KEY = "cl_visited";
+const LEGACY_MIGRATED_FLAG = "cl_visited_migrated_v1";
 
-function readFromStorage() {
-  if (typeof window === "undefined") return new Set();
+function isValidSnapshot(payload) {
+  return payload && typeof payload === "object" && Array.isArray(payload.visitedKeys);
+}
+
+function toVisitedSet(visitedKeys) {
+  return new Set(Array.isArray(visitedKeys) ? visitedKeys.map((key) => String(key)) : []);
+}
+
+function readLegacyVisitedKeys() {
+  if (typeof window === "undefined") return [];
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? new Set(JSON.parse(raw)) : new Set();
+    const raw = localStorage.getItem(LEGACY_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.map((entry) => String(entry)) : [];
   } catch {
-    return new Set();
+    return [];
   }
 }
 
-function writeToStorage(set) {
+function readLegacyMigrationFlag() {
+  if (typeof window === "undefined") return false;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
+    return localStorage.getItem(LEGACY_MIGRATED_FLAG) === "1";
   } catch {
-    /* storage full or unavailable – silently ignore */
+    return false;
   }
+}
+
+function writeLegacyMigrationFlag() {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(LEGACY_MIGRATED_FLAG, "1");
+  } catch {
+    // ignore
+  }
+}
+
+function clearLegacyStorage() {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(LEGACY_STORAGE_KEY);
+  } catch {
+    // ignore
+  }
+}
+
+async function fetchProgressSnapshot() {
+  const response = await fetch("/api/progress", { cache: "no-store" });
+  if (!response.ok) throw new Error(`progress GET failed: ${response.status}`);
+  const payload = await response.json();
+  if (!isValidSnapshot(payload)) throw new Error("invalid progress payload");
+  return payload;
+}
+
+function applySnapshot(setVisited, setLastVisited, setSuggestion, snapshot) {
+  setVisited(toVisitedSet(snapshot.visitedKeys));
+  setLastVisited(snapshot.lastVisited || null);
+  setSuggestion(snapshot.suggestion || null);
 }
 
 /** Returns a nodeKey string for a given section + slug */
@@ -35,38 +76,86 @@ export function nodeKey(sectionId, slug) {
   return `${sectionId}/${slug}`;
 }
 
-/**
- * Hook used on any client component that needs progress info.
- *
- * Returns:
- *   visited      – Set<string> of visited nodeKeys
- *   markVisited  – (sectionId, slug) => void
- *   isVisited    – (sectionId, slug) => boolean
- *   clearAll     – () => void
- */
 export function useProgress() {
-  // Keep first render deterministic across server + client to avoid hydration mismatch.
   const [visited, setVisited] = useState(() => new Set());
+  const [lastVisited, setLastVisited] = useState(null);
+  const [suggestion, setSuggestion] = useState(null);
+  const [hydrated, setHydrated] = useState(false);
 
-  // Keep state in sync if another tab changes localStorage
-  useEffect(() => {
-    // Hydrate from localStorage only after mount.
-    setVisited(readFromStorage());
-
-    function onStorage(e) {
-      if (e.key === STORAGE_KEY) setVisited(readFromStorage());
+  const hydrate = useCallback(async () => {
+    try {
+      const snapshot = await fetchProgressSnapshot();
+      applySnapshot(setVisited, setLastVisited, setSuggestion, snapshot);
+    } catch {
+      setVisited(new Set());
+      setLastVisited(null);
+      setSuggestion(null);
+    } finally {
+      setHydrated(true);
     }
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  const markVisited = useCallback((sectionId, slug) => {
+  useEffect(() => {
+    hydrate();
+  }, [hydrate]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    if (readLegacyMigrationFlag()) return;
+
+    const legacyKeys = readLegacyVisitedKeys();
+    if (legacyKeys.length === 0) {
+      writeLegacyMigrationFlag();
+      clearLegacyStorage();
+      return;
+    }
+
+    fetch("/api/progress/import", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ visitedKeys: legacyKeys }),
+    })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((snapshot) => {
+        if (isValidSnapshot(snapshot)) {
+          applySnapshot(setVisited, setLastVisited, setSuggestion, snapshot);
+        }
+        writeLegacyMigrationFlag();
+        clearLegacyStorage();
+      })
+      .catch(() => {
+        // Avoid retry loops if import endpoint fails.
+        writeLegacyMigrationFlag();
+      });
+  }, [hydrated]);
+
+  const markVisited = useCallback((sectionId, slug, trackId = null) => {
+    const key = nodeKey(sectionId, slug);
+    const nowIso = new Date().toISOString();
+
     setVisited((prev) => {
       const next = new Set(prev);
-      next.add(nodeKey(sectionId, slug));
-      writeToStorage(next);
+      if (next.has(key)) next.delete(key);
+      next.add(key);
       return next;
     });
+
+    setLastVisited({ sectionId, slug, trackId: trackId || null, visitedAt: nowIso, href: trackId ? `/${sectionId}/${slug}?track=${trackId}` : `/${sectionId}/${slug}` });
+
+    fetch("/api/progress/visit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sectionId, slug, trackId }),
+    })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((snapshot) => {
+        if (isValidSnapshot(snapshot)) {
+          applySnapshot(setVisited, setLastVisited, setSuggestion, snapshot);
+        }
+      })
+      .catch(() => {
+        // Keep optimistic client state if server write fails.
+      });
   }, []);
 
   const isVisited = useCallback(
@@ -76,8 +165,12 @@ export function useProgress() {
 
   const clearAll = useCallback(() => {
     setVisited(new Set());
-    localStorage.removeItem(STORAGE_KEY);
+    setLastVisited(null);
+    setSuggestion(null);
+    fetch("/api/progress/clear", { method: "POST" }).catch(() => {
+      // noop
+    });
   }, []);
 
-  return { visited, markVisited, isVisited, clearAll };
+  return { visited, lastVisited, suggestion, hydrated, markVisited, isVisited, clearAll };
 }

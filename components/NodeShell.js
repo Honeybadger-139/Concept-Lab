@@ -9,12 +9,12 @@
 import { useEffect } from "react";
 import { useProgress } from "@/hooks/useProgress";
 
-export default function NodeShell({ sectionId, slug, children }) {
+export default function NodeShell({ sectionId, slug, trackId = null, children }) {
   const { markVisited } = useProgress();
 
   useEffect(() => {
-    markVisited(sectionId, slug);
-  }, [sectionId, slug, markVisited]);
+    markVisited(sectionId, slug, trackId);
+  }, [sectionId, slug, trackId, markVisited]);
 
   return <>{children}</>;
 }

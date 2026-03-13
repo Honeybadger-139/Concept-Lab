@@ -217,6 +217,7 @@ export default async function NodePage({ params, searchParams }) {
   const topicChatContext = {
     sectionId: section,
     sectionTitle: sec.title,
+    slug,
     title: node.title,
     excerpt: node.excerpt || "",
     theoryHtml: polishedTheory || "",
@@ -238,7 +239,7 @@ export default async function NodePage({ params, searchParams }) {
   ];
 
   return (
-    <NodeShell sectionId={section} slug={slug}>
+    <NodeShell sectionId={section} slug={slug} trackId={activeTrack?.id ?? null}>
       <main className={styles.main} data-section={section}>
 
         {/* top accent bar */}

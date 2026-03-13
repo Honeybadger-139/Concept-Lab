@@ -2,6 +2,7 @@ import "./globals.css";
 import styles from "./layout.module.css";
 import ThemeProvider from "@/components/ThemeProvider";
 import ThemeToggle from "@/components/ThemeToggle";
+import AuthControls from "@/components/AuthControls";
 
 export const metadata = {
   title: "Concept Lab | Abhishek Gupta",
@@ -48,7 +49,10 @@ export default function RootLayout({ children }) {
                 Concept Labs
               </a>
 
-              <ThemeToggle />
+              <div className={styles.actions}>
+                <AuthControls />
+                <ThemeToggle />
+              </div>
             </div>
           </header>
 

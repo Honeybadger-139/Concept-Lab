@@ -27,7 +27,12 @@ The per-topic chatbot supports a guarded LLM + retrieval path.
 cp .env.local.example .env.local
 ```
 
-Set `OPENAI_API_KEY` in `.env.local`, then restart `npm run dev`.
+For local Ollama mode (recommended):
+- Ensure Ollama is running on `http://127.0.0.1:11434`
+- Set `TOPIC_CHAT_PROVIDER=ollama` (or keep `auto` for Ollama-first fallback)
+- Set `TOPIC_CHAT_OLLAMA_MODEL` to your local model name (for example `llama3.2`)
+
+Then restart `npm run dev`.
 
 ## Deploy
 

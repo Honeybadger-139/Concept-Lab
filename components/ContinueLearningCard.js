@@ -20,19 +20,18 @@ function toTitleCaseFromSlug(slug) {
 }
 
 export default function ContinueLearningCard() {
-  const { visited } = useProgress();
+  const { visited, lastVisited, suggestion, hydrated } = useProgress();
   const visitedKeys = Array.from(visited);
-  const lastVisited = visitedKeys.length > 0 ? visitedKeys[visitedKeys.length - 1] : null;
 
-  let href = "/ml";
+  let resumeHref = "/ml";
   let sectionLabel = "Machine Learning";
   let nodeLabel = "Start your first lesson";
 
   if (lastVisited) {
-    const [sectionId, ...slugParts] = lastVisited.split("/");
-    const slug = slugParts.join("/");
+    const sectionId = String(lastVisited?.sectionId || "");
+    const slug = String(lastVisited?.slug || "");
     if (sectionId && slug) {
-      href = `/${sectionId}/${slug}`;
+      resumeHref = String(lastVisited?.href || `/${sectionId}/${slug}`);
       sectionLabel = SECTION_LABELS[sectionId] || "Concept Lab";
       nodeLabel = toTitleCaseFromSlug(slug);
     }
@@ -46,10 +45,18 @@ export default function ContinueLearningCard() {
           {sectionLabel}: {nodeLabel}
         </p>
         <p className={styles.meta}>
-          {visitedKeys.length} topic{visitedKeys.length === 1 ? "" : "s"} visited
+          {hydrated ? `${visitedKeys.length} topic${visitedKeys.length === 1 ? "" : "s"} visited` : "Loading progress..."}
         </p>
+        {suggestion?.href && (
+          <p className={styles.suggestion}>
+            Next suggestion:{" "}
+            <Link href={suggestion.href} className={styles.suggestionLink}>
+              {suggestion.title || toTitleCaseFromSlug(suggestion.slug || "")}
+            </Link>
+          </p>
+        )}
       </div>
-      <Link href={href} className={styles.cta}>
+      <Link href={resumeHref} className={styles.cta}>
         {lastVisited ? "Resume" : "Start"}
       </Link>
     </section>

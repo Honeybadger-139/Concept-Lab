@@ -35,6 +35,12 @@
   justify-content: space-between;
 }
 
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
 .brandText {
   color: var(--text-primary);
   font-weight: 700;

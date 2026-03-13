@@ -29,7 +29,19 @@ export default function TopicScopedChatbot({ topic }) {
     const nextQuestion = String(rawQuestion || "").trim();
     if (!nextQuestion || isLoading) return;
 
-    setMessages((prev) => [...prev, { role: "user", text: nextQuestion }]);
+    const draftId = `draft-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const quickAnswer = deterministicTopicAnswer(nextQuestion, topic, knowledge, topicVocabulary);
+
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", text: nextQuestion },
+      {
+        id: draftId,
+        role: "assistant",
+        text: quickAnswer,
+        meta: "source (instant_draft)",
+      },
+    ]);
     setQuestion("");
     setIsLoading(true);
 
@@ -50,23 +62,27 @@ export default function TopicScopedChatbot({ topic }) {
       const payload = await response.json();
       const answerText = String(payload?.answer || "").trim();
       const mode = payload?.mode ? ` (${payload.mode})` : "";
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          text: answerText || deterministicTopicAnswer(nextQuestion, topic, knowledge, topicVocabulary),
-          meta: mode ? `source${mode}` : "",
-        },
-      ]);
+      setMessages((prev) =>
+        prev.map((message) => {
+          if (message.id !== draftId) return message;
+          return {
+            ...message,
+            text: answerText || quickAnswer,
+            meta: mode ? `source${mode}` : "source (deterministic_fallback)",
+          };
+        })
+      );
     } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          text: deterministicTopicAnswer(nextQuestion, topic, knowledge, topicVocabulary),
-          meta: "source (deterministic_fallback)",
-        },
-      ]);
+      setMessages((prev) =>
+        prev.map((message) => {
+          if (message.id !== draftId) return message;
+          return {
+            ...message,
+            text: quickAnswer,
+            meta: "source (deterministic_fallback)",
+          };
+        })
+      );
     } finally {
       setIsLoading(false);
     }
@@ -100,7 +116,7 @@ export default function TopicScopedChatbot({ topic }) {
             {message.meta && <div className={styles.meta}>{message.meta}</div>}
           </div>
         ))}
-        {isLoading && <div className={styles.assistantBubble}>Thinking...</div>}
+        {isLoading && <div className={styles.assistantBubble}>Refining answer...</div>}
       </div>
 
       <form onSubmit={onSubmit} className={styles.form}>

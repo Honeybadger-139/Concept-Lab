@@ -26,6 +26,15 @@ const OPENAI_MODEL =
   process.env.TOPIC_CHAT_MODEL ||
   "gpt-4o-mini";
 
+function envPositiveInt(name, fallback) {
+  const value = Number.parseInt(process.env[name] || "", 10);
+  if (!Number.isFinite(value) || value <= 0) return fallback;
+  return value;
+}
+
+const LLM_TIMEOUT_MS = envPositiveInt("TOPIC_CHAT_TIMEOUT_MS", 12000);
+const TOPIC_CHAT_MAX_TOKENS = envPositiveInt("TOPIC_CHAT_MAX_TOKENS", 220);
+
 function normalizedProvider(providerRaw) {
   const provider = String(providerRaw || DEFAULT_PROVIDER).toLowerCase();
   if (["ollama", "openai", "auto"].includes(provider)) return provider;
@@ -177,7 +186,7 @@ async function callOpenAI(messages) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) return { ok: false, guardrail: "openai_missing_api_key", provider: "openai", model: OPENAI_MODEL };
 
-  const timeout = withTimeout(18000);
+  const timeout = withTimeout(LLM_TIMEOUT_MS);
   try {
     const response = await fetch(OPENAI_ENDPOINT, {
       method: "POST",
@@ -188,7 +197,7 @@ async function callOpenAI(messages) {
       body: JSON.stringify({
         model: OPENAI_MODEL,
         temperature: 0.1,
-        max_tokens: 380,
+        max_tokens: TOPIC_CHAT_MAX_TOKENS,
         messages,
       }),
       signal: timeout.signal,
@@ -224,7 +233,7 @@ async function callOpenAI(messages) {
 }
 
 async function callOllama(messages) {
-  const timeout = withTimeout(18000);
+  const timeout = withTimeout(LLM_TIMEOUT_MS);
   try {
     const response = await fetch(`${OLLAMA_BASE_URL.replace(/\/$/, "")}${OLLAMA_CHAT_PATH}`, {
       method: "POST",
@@ -235,7 +244,7 @@ async function callOllama(messages) {
         stream: false,
         options: {
           temperature: 0.1,
-          num_predict: 380,
+          num_predict: TOPIC_CHAT_MAX_TOKENS,
         },
       }),
       signal: timeout.signal,

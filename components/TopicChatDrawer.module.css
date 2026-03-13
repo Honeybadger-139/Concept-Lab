@@ -1,0 +1,115 @@
+.toggleButton {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 80;
+  border: 1px solid color-mix(in srgb, var(--chat-accent) 55%, transparent);
+  background: color-mix(in srgb, var(--chat-accent) 20%, var(--bg-secondary));
+  color: var(--text-primary);
+  border-radius: 999px;
+  padding: 0.62rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.24);
+}
+
+.toggleButton:hover {
+  background: color-mix(in srgb, var(--chat-accent) 30%, var(--bg-secondary));
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.45);
+  z-index: 68;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+.backdropVisible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(440px, 100vw);
+  height: 100dvh;
+  z-index: 75;
+  transform: translateX(102%);
+  transition: transform 0.24s ease;
+  border-left: 1px solid var(--glass-border);
+  background: color-mix(in srgb, var(--bg-primary) 94%, #020617 6%);
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.drawerOpen {
+  transform: translateX(0);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1rem 0.85rem;
+  border-bottom: 1px solid var(--glass-border);
+  background: color-mix(in srgb, var(--chat-accent) 9%, var(--bg-secondary));
+}
+
+.headerLabel {
+  margin: 0 0 0.25rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--text-tertiary);
+}
+
+.headerTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  color: var(--text-primary);
+}
+
+.closeButton {
+  border: 1px solid var(--glass-border);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-radius: 8px;
+  font-size: 1.2rem;
+  width: 2rem;
+  height: 2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  border-color: color-mix(in srgb, var(--chat-accent) 45%, transparent);
+}
+
+.body {
+  min-height: 0;
+  overflow: auto;
+  padding: 0.9rem;
+}
+
+@media (max-width: 800px) {
+  .toggleButton {
+    right: 0.75rem;
+    bottom: 0.75rem;
+    font-size: 0.78rem;
+    padding: 0.56rem 0.9rem;
+  }
+
+  .drawer {
+    width: 100vw;
+  }
+}

@@ -14,7 +14,9 @@
     "sync:langgraph-transcripts": "node scripts/sync-langgraph-transcripts.mjs"
   },
   "dependencies": {
+    "langfuse": "^3.38.6",
     "next": "16.1.6",
+    "next-auth": "^4.24.13",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

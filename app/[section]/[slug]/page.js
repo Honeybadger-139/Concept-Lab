@@ -65,7 +65,7 @@ const ComponentMap = {
 };
 
 const FlashCardDeck = withLoader(() => import("@/components/FlashCardDeck"));
-const TopicScopedChatbot = withLoader(() => import("@/components/TopicScopedChatbot"));
+const TopicChatDrawer = withLoader(() => import("@/components/TopicChatDrawer"));
 
 // Per-section visual config
 const SECTION_META = {
@@ -230,7 +230,6 @@ export default async function NodePage({ params, searchParams }) {
   const pageSections = [
     { id: "core-theory", label: "Theory" },
     ...(node.example ? [{ id: "concrete-example", label: "Example" }] : []),
-    ...(showTopicChatbot ? [{ id: "topic-chatbot", label: "Ask" }] : []),
     ...((AnimComponent || node.animation) ? [{ id: "interactive-visualization", label: "Visualization" }] : []),
     ...((ToolComponent || node.tool) ? [{ id: "interactive-tool", label: "Tool" }] : []),
     ...(node.codeGuide ? [{ id: "code-walkthrough", label: "Code" }] : []),
@@ -302,16 +301,6 @@ export default async function NodePage({ params, searchParams }) {
                 <div className={styles.exampleCard}>
                   <p className={styles.exampleText}>{node.example}</p>
                 </div>
-              </section>
-            )}
-
-            {showTopicChatbot && (
-              <section id="topic-chatbot" className={`nodeBlock ${styles.chatBlock}`}>
-                <h2>💬 Ask This Topic</h2>
-                <p className={styles.chatIntro}>
-                  This tutor is strictly scoped to this topic and refuses off-topic questions.
-                </p>
-                <TopicScopedChatbot topic={topicChatContext} />
               </section>
             )}
 
@@ -445,6 +434,7 @@ export default async function NodePage({ params, searchParams }) {
           </nav>
 
         </section>
+        {showTopicChatbot && <TopicChatDrawer topic={topicChatContext} accentColor={meta.color} />}
       </main>
     </NodeShell>
   );

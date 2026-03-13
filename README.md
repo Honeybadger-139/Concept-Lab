@@ -19,6 +19,16 @@ npm run dev
 
 Open [http://localhost:3001](http://localhost:3001).
 
+### Optional: Enable LLM topic chatbot mode
+
+The per-topic chatbot supports a guarded LLM + retrieval path.
+
+```bash
+cp .env.local.example .env.local
+```
+
+Set `OPENAI_API_KEY` in `.env.local`, then restart `npm run dev`.
+
 ## Deploy
 
 Deploy as its own app (e.g. Vercel: new project, root directory = this repo). No connection to the main portfolio codebase — link to this repo or the live URL from your portfolio’s **Projects** or **GitHub** section.

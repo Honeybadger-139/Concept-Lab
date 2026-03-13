@@ -176,6 +176,18 @@
   background: rgba(16, 185, 129, 0.03) !important;
 }
 
+.chatBlock {
+  border-color: rgba(59, 130, 246, 0.2) !important;
+  background: rgba(59, 130, 246, 0.03) !important;
+}
+
+.chatIntro {
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  margin: -0.25rem 0 0.85rem;
+  line-height: 1.5;
+}
+
 /* Code walkthrough */
 .codeBlock {
   border-color: rgba(14, 165, 233, 0.24) !important;

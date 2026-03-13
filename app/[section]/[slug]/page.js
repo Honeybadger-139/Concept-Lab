@@ -57,6 +57,7 @@ const ComponentMap = {
 };
 
 const FlashCardDeck = withLoader(() => import("@/components/FlashCardDeck"));
+const TopicScopedChatbot = withLoader(() => import("@/components/TopicScopedChatbot"));
 
 // Per-section visual config
 const SECTION_META = {
@@ -180,12 +181,30 @@ export default async function NodePage({ params }) {
   const meta           = SECTION_META[section] || { color: "#6366f1", emoji: "📚" };
   const polishedTheory = getPolishedTheory(section, node.theory);
   const rt             = readingTime(polishedTheory);
+  const showTopicChatbot = Boolean(
+    node.excerpt ||
+      polishedTheory ||
+      node.example ||
+      node.interviewPrep?.questions?.length ||
+      node.flashCards?.length
+  );
+  const topicChatContext = {
+    sectionId: section,
+    sectionTitle: sec.title,
+    title: node.title,
+    excerpt: node.excerpt || "",
+    theoryHtml: polishedTheory || "",
+    example: node.example || "",
+    interviewPrep: node.interviewPrep || null,
+    flashCards: Array.isArray(node.flashCards) ? node.flashCards : [],
+  };
 
   const AnimComponent  = node.animation && ComponentMap[node.animation] ? ComponentMap[node.animation] : null;
   const ToolComponent  = node.tool      && ComponentMap[node.tool]      ? ComponentMap[node.tool]      : null;
   const pageSections = [
     { id: "core-theory", label: "Theory" },
     ...(node.example ? [{ id: "concrete-example", label: "Example" }] : []),
+    ...(showTopicChatbot ? [{ id: "topic-chatbot", label: "Ask" }] : []),
     ...((AnimComponent || node.animation) ? [{ id: "interactive-visualization", label: "Visualization" }] : []),
     ...((ToolComponent || node.tool) ? [{ id: "interactive-tool", label: "Tool" }] : []),
     ...(node.codeGuide ? [{ id: "code-walkthrough", label: "Code" }] : []),
@@ -257,6 +276,16 @@ export default async function NodePage({ params }) {
                 <div className={styles.exampleCard}>
                   <p className={styles.exampleText}>{node.example}</p>
                 </div>
+              </section>
+            )}
+
+            {showTopicChatbot && (
+              <section id="topic-chatbot" className={`nodeBlock ${styles.chatBlock}`}>
+                <h2>💬 Ask This Topic</h2>
+                <p className={styles.chatIntro}>
+                  This tutor is strictly scoped to this topic and refuses off-topic questions.
+                </p>
+                <TopicScopedChatbot topic={topicChatContext} />
               </section>
             )}
 

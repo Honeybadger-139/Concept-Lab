@@ -1,5 +1,6 @@
 import { auth, signIn } from "@/auth";
 import { redirect } from "next/navigation";
+import { isAuthEnabled } from "@/lib/authMode";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -7,6 +8,10 @@ export const metadata = {
 };
 
 export default async function LoginPage({ searchParams }) {
+  if (!isAuthEnabled()) {
+    redirect("/");
+  }
+
   const session = await auth();
   const query = await searchParams;
   const callbackUrl = String(query?.callbackUrl || "/");

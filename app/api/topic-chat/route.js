@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { flushLangfuse, getLangfuseClient } from "@/lib/langfuse";
+import { getSessionUserEmail } from "@/lib/sessionUser";
 import {
   MIN_MATCH_SCORE,
   buildKnowledge,
@@ -267,8 +267,7 @@ async function callOllama(messages) {
 }
 
 export async function POST(request) {
-  const session = await auth();
-  const userId = String(session?.user?.email || "").trim().toLowerCase();
+  const userId = await getSessionUserEmail();
   if (!userId) {
     return NextResponse.json(
       { answer: "Unauthorized.", mode: "error", guardrail: "unauthorized" },

@@ -76,7 +76,7 @@ export default async function HomePage() {
 
         {/* ── Footer tip ── */}
         <p className={styles.tip}>
-          💡 <strong>Tip:</strong> Your topic progress now syncs to your signed-in account. Flash cards still support ← → navigation and Space to flip.
+          💡 <strong>Tip:</strong> Topic progress syncs for your current local profile. Flash cards still support ← → navigation and Space to flip.
         </p>
       </section>
     </main>

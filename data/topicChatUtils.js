@@ -152,7 +152,7 @@ export function deterministicTopicAnswer(question, topic, knowledge, topicVocabu
     return createOutOfScopeReply(topic.title);
   }
 
-  const responseLines = evidence.map((item, index) => `${index + 1}. ${item.text} [${item.source}]`);
+  const responseLines = evidence.map((item, index) => `${index + 1}. ${item.text}`);
   return `Based on this topic:
 
 ${responseLines.join("\n")}

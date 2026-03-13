@@ -1,7 +1,10 @@
 import { auth, signOut } from "@/auth";
+import { isAuthEnabled } from "@/lib/authMode";
 import styles from "./AuthControls.module.css";
 
 export default async function AuthControls() {
+  if (!isAuthEnabled()) return null;
+
   const session = await auth();
   const email = String(session?.user?.email || "").trim();
 

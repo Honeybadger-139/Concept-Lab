@@ -19,7 +19,15 @@ npm run dev
 
 Open [http://localhost:3001](http://localhost:3001).
 
-### Configure OAuth login (Google + GitHub)
+### Local mode (default)
+
+By default, auth is disabled locally.
+
+- `CONCEPTLAB_AUTH_ENABLED=false`
+- App works without Google/GitHub login
+- Progress is stored under `CONCEPTLAB_LOCAL_USER_ID`
+
+### Optional: Enable OAuth login (Google + GitHub)
 
 ```bash
 cp .env.local.example .env.local
@@ -52,6 +60,7 @@ Set these env vars:
 - optional `LANGFUSE_BASEURL`
 
 Each topic chatbot request is logged with `userId` (signed-in email), section, and topic metadata.
+In local mode (auth disabled), `userId` uses `CONCEPTLAB_LOCAL_USER_ID`.
 
 ## Deploy
 

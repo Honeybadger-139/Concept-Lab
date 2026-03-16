@@ -66,7 +66,6 @@ const ComponentMap = {
 };
 
 const FlashCardDeck = withLoader(() => import("@/components/FlashCardDeck"));
-const TopicChatDrawer = withLoader(() => import("@/components/TopicChatDrawer"));
 
 // Per-section visual config
 const SECTION_META = {
@@ -214,25 +213,6 @@ export default async function NodePage({ params, searchParams }) {
   const topicHref = buildTopicHref(section, slug, activeTrack?.id ?? null);
   const backHref = activeTrack ? getTrackHref(activeTrack.id) : `/${section}`;
   const backLabel = activeTrack ? activeTrack.title : sec.title;
-  const showTopicChatbot = Boolean(
-    node.excerpt ||
-      polishedTheory ||
-      node.example ||
-      node.interviewPrep?.questions?.length ||
-      node.flashCards?.length
-  );
-  const topicChatContext = {
-    sectionId: section,
-    sectionTitle: sec.title,
-    slug,
-    title: node.title,
-    excerpt: node.excerpt || "",
-    theoryHtml: polishedTheory || "",
-    example: node.example || "",
-    interviewPrep: node.interviewPrep || null,
-    flashCards: Array.isArray(node.flashCards) ? node.flashCards : [],
-  };
-
   const AnimComponent  = node.animation && ComponentMap[node.animation] ? ComponentMap[node.animation] : null;
   const ToolComponent  = node.tool      && ComponentMap[node.tool]      ? ComponentMap[node.tool]      : null;
   const pageSections = [
@@ -442,7 +422,6 @@ export default async function NodePage({ params, searchParams }) {
           </nav>
 
         </section>
-        {showTopicChatbot && <TopicChatDrawer topic={topicChatContext} accentColor={meta.color} />}
       </main>
     </NodeShell>
   );

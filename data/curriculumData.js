@@ -182,7 +182,44 @@ const ML_CONCEPT_BY_SLUG = {
   "37-regularisation-concept": "supervised-learning-algorithms",
   "38-regularisation-math-linear": "supervised-learning-algorithms",
   "39-regularised-logistic-regression": "supervised-learning-algorithms",
-  "advanced-placeholder": "advanced-learning-algorithms",
+  "adv-01-neural-networks-introduction": "advanced-learning-algorithms",
+  "adv-02-neurons-and-the-brain": "advanced-learning-algorithms",
+  "adv-03-demand-prediction": "advanced-learning-algorithms",
+  "adv-04-recognizing-images": "advanced-learning-algorithms",
+  "adv-05-neural-network-layers": "advanced-learning-algorithms",
+  "adv-06-more-complex-neural-networks": "advanced-learning-algorithms",
+  "adv-07-forward-propagation": "advanced-learning-algorithms",
+  "adv-08-inference-in-code": "advanced-learning-algorithms",
+  "adv-09-data-in-tensorflow": "advanced-learning-algorithms",
+  "adv-10-build-a-neural-network": "advanced-learning-algorithms",
+  "adv-11-forward-prop-single-layer": "advanced-learning-algorithms",
+  "adv-12-general-forward-propagation": "advanced-learning-algorithms",
+  "adv-13-agi-path": "advanced-learning-algorithms",
+  "adv-14-vectorized-implementation": "advanced-learning-algorithms",
+  "adv-15-matrix-multiplication": "advanced-learning-algorithms",
+  "adv-16-matrix-multiplication-rules": "advanced-learning-algorithms",
+  "adv-17-matrix-multiplication-code": "advanced-learning-algorithms",
+  "adv-18-training-overview": "advanced-learning-algorithms",
+  "adv-19-training-details": "advanced-learning-algorithms",
+  "adv-20-alternatives-to-sigmoid": "advanced-learning-algorithms",
+  "adv-21-choosing-activation-functions": "advanced-learning-algorithms",
+  "adv-22-why-activation-functions": "advanced-learning-algorithms",
+  "adv-23-multiclass-classification": "advanced-learning-algorithms",
+  "adv-24-softmax-regression": "advanced-learning-algorithms",
+  "adv-25-neural-network-softmax-output": "advanced-learning-algorithms",
+  "adv-26-improved-softmax": "advanced-learning-algorithms",
+  "adv-27-multi-label-classification": "advanced-learning-algorithms",
+  "adv-28-advanced-optimization-adam": "advanced-learning-algorithms",
+  "adv-29-additional-layer-types": "advanced-learning-algorithms",
+  "adv-30-what-is-a-derivative": "advanced-learning-algorithms",
+  "adv-31-computation-graph": "advanced-learning-algorithms",
+  "adv-32-larger-neural-network-backprop": "advanced-learning-algorithms",
+  "adv-33-deciding-what-to-try-next": "advanced-learning-algorithms",
+  "adv-34-evaluating-a-model": "advanced-learning-algorithms",
+  "adv-35-model-selection-cross-validation": "advanced-learning-algorithms",
+  "adv-36-diagnosing-bias-and-variance": "advanced-learning-algorithms",
+  "adv-37-regularization-and-bias-variance": "advanced-learning-algorithms",
+  "adv-38-establishing-baseline-performance": "advanced-learning-algorithms",
 };
 
 // ─────────────────────────────────────────────────────────
@@ -5311,66 +5348,1412 @@ Result: users see progress continuously instead of waiting 20-30s on a static sc
 ];
 
 // ─────────────────────────────────────────────────────────
-// NODES — Advanced ML (grows over time)
+// NODES — Advanced Learning Algorithms (Neural Networks + ML Advice)
 // ─────────────────────────────────────────────────────────
 const advancedNodes = [
   {
-    slug: "advanced-placeholder",
+    slug: "adv-01-neural-networks-introduction",
     sectionId: "ml",
     conceptId: "advanced-learning-algorithms",
-    title: "Advanced ML Systems Roadmap",
-    order: 999,
-    excerpt: "Bridge from classical models to production-grade advanced ML: trees, ensembles, deep learning, and MLOps reliability.",
-    theory: `<p><b>This node is the transition point from foundational ML to advanced model systems.</b> The goal is not to memorize model names, but to understand <i>when each model family is structurally appropriate</i> and how to operate it reliably in production.</p>
-<p><b>Core advanced model families:</b></p>
+    title: "Introduction to Advanced Learning Algorithms",
+    order: 1,
+    excerpt: "Course 2 overview: neural networks, decision trees, and practical ML system advice.",
+    theory: `<p><b>Course 2 of the ML Specialisation</b> covers two of the most powerful and widely used algorithm families in modern ML, plus the engineering judgment that separates engineers who ship successful systems from those who spin for months.</p>
+<p><b>What this course teaches:</b></p>
 <ul>
-<li><b>Tree-based models</b> (decision trees, random forests, gradient boosting): strong tabular performance, interpretable feature behavior (to a degree), robust baselines.</li>
-<li><b>Ensemble methods</b>: combine weak/strong learners to improve generalization and reduce variance.</li>
-<li><b>Neural networks</b>: best for unstructured/high-dimensional data (images, text, audio) and complex nonlinear relationships.</li>
-<li><b>Specialized architectures</b>: sequence models/transformers for language and time-series, vision backbones for imaging tasks.</li>
+<li><b>Neural Networks (Deep Learning)</b>: How to build and run inference, then train your own networks. These dominate unstructured data — images, speech, text.</li>
+<li><b>Decision Trees</b>: A highly effective family for structured/tabular data. Less hyped than neural networks but equally widely used in practice. Often the right default choice.</li>
+<li><b>Practical ML System Design</b>: How to systematically diagnose what is wrong with a learning algorithm and decide where to invest time. This section is unique — even senior engineers at top companies don't consistently apply these ideas.</li>
 </ul>
-<p><b>System design lens for advanced ML:</b></p>
-<ul>
-<li>Model selection must follow data shape + latency + risk constraints, not trend preference.</li>
-<li>Evaluation must include both offline metrics and online behavior (drift, calibration, false-positive cost).</li>
-<li>Retraining policy, feature versioning, and rollback pathways are first-class requirements.</li>
-</ul>
-<p><b>Production checklist:</b></p>
+<p><b>Course structure:</b></p>
 <ol>
-<li>Establish baseline model and immutable evaluation set.</li>
-<li>Add model complexity only when baseline bottlenecks are measured.</li>
-<li>Instrument data quality, feature drift, and performance decay alerts.</li>
-<li>Gate deployments with reproducible training artifacts and canary checks.</li>
+<li>Week 1: Neural network inference — forward propagation, TensorFlow basics</li>
+<li>Week 2: Neural network training — backpropagation, activation functions, Adam optimiser</li>
+<li>Week 3: Practical ML advice — bias, variance, error analysis, diagnostics</li>
+<li>Week 4: Decision trees and ensemble methods</li>
 </ol>
-<p><b>Common mistakes:</b> jumping to deep learning on small tabular data, optimizing only leaderboard metrics, and shipping models without monitoring or rollback plans.</p>`,
-    example: `Fraud detection roadmap:
-1) Baseline logistic regression shows high false negatives.
-2) Move to gradient boosting on engineered tabular features; recall improves.
-3) Add calibrated thresholding for business cost trade-offs.
-4) Introduce daily drift monitor on top features and weekly retrain policy.
-5) Add rollback trigger if precision drops below SLA after deployment.
-
-Result: better fraud capture without uncontrolled operational risk.`,
+<p><b>The meta-lesson:</b> knowing algorithms is table stakes. The real skill is knowing <em>when to use them, how to debug them, and how to improve them systematically</em> — which is what separates a 6-month project from a 2-week project.</p>`,
+    example: "A team spends six months collecting more training data, convinced that's the bottleneck. A bias-variance diagnostic run on day one would have shown the model is underfitting — more data won't help at all. This course gives you that diagnostic toolkit so you make the right call first.",
     animation: "MLLearningSpectrumViz",
-    tool: "MLProblemFramingTool",
+    tool: null,
     interviewPrep: {
       questions: [
-        "How do you decide between tree-based models and neural networks for a new problem?",
-        "What signals tell you that model complexity should be increased?",
-        "How do you design an advanced ML deployment pipeline that can be safely rolled back?",
+        "What two algorithm families dominate modern ML, and when do you reach for each?",
+        "Why is practical ML system advice considered as valuable as knowing the algorithms themselves?",
+        "If a model is not performing well, what is the first diagnostic you run?",
       ],
-      answers: [
-        "Start from data modality and constraints: tabular data with limited scale usually favors tree-based models; unstructured high-dimensional data often favors neural networks. Final choice should be validated on latency, calibration, and operational cost targets.",
-        "Increase complexity only after baseline bottlenecks are measured on fixed evaluation sets and error slices. If the current model saturates and additional feature/process improvements no longer move key metrics, complexity may be justified.",
-        "Version datasets/features/models, deploy with canary traffic, monitor real-time metrics and drift, and define hard rollback thresholds before release. Safe rollback is a design requirement, not an incident response improvisation.",
-      ],
-      seniorTip: "Advanced ML maturity is measured by controlled iteration and operability: reproducibility, monitoring, rollback, and model-risk governance."
+      seniorTip: "When describing ML work in interviews, don't just name algorithms — describe the diagnostic process. 'We ran a bias-variance analysis first, which told us more data wouldn't help, so we changed the architecture instead.' That shows engineering maturity, not just algorithm knowledge.",
     },
     flashCards: [
-      { q: "What is the safest default for many tabular advanced ML tasks?", a: "Tree-based ensembles (for example gradient boosting) because they often provide strong performance with manageable operational complexity." },
-      { q: "When are neural networks usually justified?", a: "When data is unstructured/high-dimensional or when nonlinear representation learning provides measurable gains over classical baselines." },
-      { q: "What makes an advanced ML system production-ready?", a: "Reproducible training pipeline, drift monitoring, deployment guardrails, and explicit rollback criteria." },
-      { q: "Why is evaluation slicing important?", a: "Aggregate metrics can hide subgroup failures. Sliced analysis reveals where model behavior is unsafe or unreliable." },
+      { q: "When do you reach for neural networks vs decision trees?", a: "Neural networks for unstructured/high-dimensional data (images, speech, text). Decision trees/ensembles for structured/tabular data. Tabular data with a decision tree baseline is often the right first step." },
+      { q: "What is the biggest time-waster in ML projects?", a: "Investing effort in the wrong direction — collecting more data when the model has high bias, or adding complexity when the bottleneck is label quality. Diagnostics first." },
+      { q: "What are the four weeks of Course 2 focused on?", a: "Week 1: NN inference. Week 2: NN training. Week 3: Practical ML diagnostics. Week 4: Decision trees and ensembles." },
+      { q: "What distinguishes a junior ML answer from a senior one when asked 'how do you improve a model'?", a: "Junior: 'Try more data or a bigger model.' Senior: 'Run a bias-variance diagnostic first to determine which direction is actually worth pursuing, then choose the specific fix.'" },
+    ],
+  },
+  {
+    slug: "adv-02-neurons-and-the-brain",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Neurons and the Brain",
+    order: 2,
+    excerpt: "The biological motivation behind neural networks and why deep learning took off when it did.",
+    theory: `<p><b>Neural networks were originally inspired by the human brain</b>, but today's artificial neural networks have almost nothing to do with how biological neurons actually work. The biological analogy is a useful entry point, not an accurate model.</p>
+<p><b>The biological neuron:</b> receives electrical impulses from other neurons via dendrites, performs some computation in the cell body, and sends output via the axon to downstream neurons. An artificial neuron is a simplified mathematical version: it takes numbers in, applies a function, and outputs a number.</p>
+<p><b>Why neural networks took off around 2012:</b></p>
+<ul>
+<li><b>Data explosion</b>: The Internet, mobile phones, and digitisation created unprecedented amounts of labelled data. Traditional algorithms (logistic regression, linear regression) plateau as data grows — neural networks keep improving.</li>
+<li><b>Faster hardware</b>: GPUs, originally designed for graphics, turned out to be ideal for the large matrix multiplications neural networks require.</li>
+<li><b>Scale</b>: Small networks plateau early. Large networks on large datasets produce performance no earlier algorithm could achieve.</li>
+</ul>
+<p><b>Important caveat:</b> Even today, neuroscientists don't fully understand how the brain works. Trying to simulate the brain as a path to AGI is an extremely hard problem. Modern deep learning succeeds through engineering principles — not by accurately mimicking biology.</p>`,
+    example: "Speech recognition was the first major application where deep learning created a step-change improvement. Then computer vision (ImageNet 2012). Then NLP. The pattern: once a domain had enough data + GPU compute, neural networks dominated. The algorithm itself hadn't changed — the scale had.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Why did neural networks take off around 2012 after being invented in the 1950s?",
+        "How does an artificial neuron relate to a biological one?",
+        "What is the one learning algorithm hypothesis and what evidence supports it?",
+      ],
+      seniorTip: "Don't overclaim the brain analogy. The correct framing is: 'Neural networks are loosely inspired by biology but succeed as engineering tools — the biological motivation is a historical origin story, not a design constraint.' That shows epistemological clarity.",
+    },
+    flashCards: [
+      { q: "What are the two primary reasons neural networks scaled so well after 2012?", a: "1. Massive data growth from the internet/mobile era. 2. GPU hardware that makes large matrix multiplications fast. Traditional algorithms plateau; large neural networks keep improving with more data." },
+      { q: "What does a biological neuron do in simplified terms?", a: "Receives electrical impulses from dendrites, computes in the cell body, sends output via the axon to downstream neurons. An artificial neuron mirrors this: inputs → function → output number." },
+      { q: "What is the one learning algorithm hypothesis?", a: "Evidence from brain rewiring experiments (auditory cortex learning to see, somatosensory cortex learning to see) suggests a single algorithm underlies intelligence — it just learns from whatever data it receives." },
+      { q: "How should you describe the relationship between neural networks and the brain in an interview?", a: "Loosely inspired, not accurately modelled. Modern deep learning researchers have largely moved away from biological analogies and focus on engineering principles. We don't know how the brain really works." },
+    ],
+  },
+  {
+    slug: "adv-03-demand-prediction",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Neural Networks: Demand Prediction",
+    order: 3,
+    excerpt: "Building intuition for neural networks using a T-shirt top-seller prediction example.",
+    theory: `<p><b>The simplest neural network is a single logistic regression unit</b> — one neuron. The key insight is that when you chain many neurons together, you get a system that learns its own features rather than relying on manually engineered ones.</p>
+<p><b>Key vocabulary introduced here:</b></p>
+<ul>
+<li><b>Activation (a)</b>: the output of a neuron. Named after the biological concept of a neuron "firing". In the demand prediction example, activation = probability of top seller.</li>
+<li><b>Layer</b>: a group of neurons that take similar inputs and output a vector of activations together.</li>
+<li><b>Hidden layer</b>: a middle layer whose values are not observed in the training data. The correct labels for affordability, awareness, or perceived quality are never provided — the network learns them.</li>
+<li><b>Input layer (layer 0)</b>: the raw feature vector x.</li>
+<li><b>Output layer</b>: the final layer producing the prediction.</li>
+</ul>
+<p><b>Why this architecture matters:</b> The output layer is just logistic regression — but instead of using raw features, it uses <em>learned features</em> from the hidden layer. These learned features (affordability, awareness, perceived quality) are often better predictors than anything a human would engineer manually.</p>
+<p><b>In practice</b>, you don't manually assign which inputs go to which neuron. Every neuron in a layer receives all inputs from the previous layer. The network learns through training which inputs matter for each neuron by adjusting its parameters.</p>`,
+    example: "A retailer predicting whether a T-shirt will be a top seller has four features: price, shipping cost, marketing spend, and material quality. Rather than manually deciding that 'affordability = price + shipping', the network learns this combination itself from thousands of historical examples — and often discovers non-obvious feature interactions a human analyst would miss.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What is an activation in a neural network and where does the term come from?",
+        "Why is the hidden layer called 'hidden'?",
+        "How does a neural network differ from manually engineered logistic regression features?",
+      ],
+      seniorTip: "Frame neural networks as 'automatic feature engineering'. The hidden layers learn a transformed feature space that makes the final prediction problem easier. This framing helps non-ML stakeholders understand why deep learning works better than hand-tuned rules.",
+    },
+    flashCards: [
+      { q: "What is an 'activation' in a neural network?", a: "The output value of a neuron — a number representing how much that neuron is 'firing'. Named after biological neurons sending electrical impulses to downstream neurons." },
+      { q: "Why is the middle layer called a 'hidden' layer?", a: "Because in the training set you observe inputs x and labels y, but you never observe the values of the intermediate layers. The 'correct' affordability score, for example, is never labelled — the network learns it." },
+      { q: "What makes a neural network more powerful than logistic regression with manual features?", a: "A neural network learns its own features from data. Rather than a human deciding 'affordability = price + shipping', the hidden layer discovers that combination (and others) automatically through training." },
+      { q: "In a dense neural network, which inputs does each neuron receive?", a: "All activations from the previous layer. Every neuron in a layer is connected to every neuron in the prior layer. The network learns which inputs are relevant by setting unimportant weights near zero." },
+    ],
+  },
+  {
+    slug: "adv-04-recognizing-images",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Recognising Images with Neural Networks",
+    order: 4,
+    excerpt: "How neural networks build up visual understanding layer by layer — edges, parts, then faces.",
+    theory: `<p><b>Computer vision is where the power of hierarchical feature learning becomes visible.</b> A 1000×1000 image is represented as one million pixel intensity values (0–255). The neural network's job: map this million-number vector to an identity or label.</p>
+<p><b>What each hidden layer learns (when trained on faces):</b></p>
+<ul>
+<li><b>Layer 1</b>: Short edges and oriented lines at various angles — the most primitive visual features.</li>
+<li><b>Layer 2</b>: Parts of faces — eyes, corners of noses, edges of ears — formed by combining edges from layer 1.</li>
+<li><b>Layer 3</b>: Complete face shapes — aggregating parts into coarser representations.</li>
+<li><b>Output layer</b>: Identity prediction from the rich feature representation built up by prior layers.</li>
+</ul>
+<p><b>No one told it to do this.</b> The network discovers this hierarchical decomposition automatically from data, with no labels for "edge" or "eye". This self-organised hierarchy is why deep learning is so powerful for unstructured data.</p>
+<p><b>Generalisation:</b> Train the same architecture on cars instead of faces, and it learns car edges → car parts → car shapes automatically. The algorithm is the same — only the data changes. This is the key to transfer learning and general-purpose vision models.</p>`,
+    example: "A face recognition system trained on millions of photos never had anyone label what an 'eye detector' or 'edge detector' should look like — yet visualising layer-1 neurons reveals exactly that. The network invented these concepts because they turned out to be the most useful intermediate representations for the task.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What does each layer of a vision neural network learn, from input to output?",
+        "Why does a neural network trained on faces develop edge detectors in early layers?",
+        "What changes when you train the same architecture on car images instead of face images?",
+      ],
+      seniorTip: "When asked about feature learning, use the hierarchical decomposition framing: 'Early layers detect simple features, later layers combine them into complex concepts. This happens automatically — no feature engineering required. That's why deep learning scales while hand-engineered pipelines don't.'",
+    },
+    flashCards: [
+      { q: "How is a 1000×1000 image represented as input to a neural network?", a: "Unrolled into a vector of 1,000,000 pixel intensity values (0–255 per pixel). The neural network treats this as a 1M-dimensional feature vector." },
+      { q: "What do the three hidden layers of a face recognition network learn?", a: "Layer 1: short edges/lines. Layer 2: facial parts (eyes, nose edges). Layer 3: complete face shapes. The network discovers this hierarchy automatically — no labels for 'edge' or 'eye' are provided." },
+      { q: "What changes when you retrain a vision network on cars instead of faces?", a: "Only the data changes. The algorithm learns car edges → car parts → car shapes automatically. Same architecture, different self-organised hierarchy — demonstrating the generality of deep learning." },
+      { q: "Why is hierarchical feature learning the key insight behind deep learning for vision?", a: "Complex visual concepts can be built up from simple primitives. Networks that learn these primitives in earlier layers have a rich vocabulary for the output layer to use, which is far more powerful than hand-designing features." },
+    ],
+  },
+  {
+    slug: "adv-05-neural-network-layers",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Neural Network Layers",
+    order: 5,
+    excerpt: "Layer notation, superscripts, and how a single hidden layer computes its activations.",
+    theory: `<p><b>A layer is the fundamental building block of a neural network.</b> Understanding layer notation precisely is essential for reading research papers, debugging code, and communicating clearly with other engineers.</p>
+<p><b>Layer notation:</b></p>
+<ul>
+<li>Superscript <code>[l]</code> denotes layer <code>l</code>. So <code>a<sup>[1]</sup></code> is the activation vector from layer 1, and <code>w<sup>[1]</sup><sub>j</sub></code> is the weight vector for the j-th neuron in layer 1.</li>
+<li><b>Layer 0</b>: the input layer — also written as <code>a<sup>[0]</sup> = x</code>.</li>
+<li><b>Hidden layers</b>: numbered 1, 2, 3… — compute intermediate activations.</li>
+<li><b>Output layer</b>: the final layer producing the prediction.</li>
+</ul>
+<p><b>What one neuron computes:</b></p>
+<ol>
+<li>Take the dot product of its weight vector <code>w<sub>j</sub></code> with the input vector <code>a<sup>[l-1]</sup></code></li>
+<li>Add the bias term <code>b<sub>j</sub></code></li>
+<li>Apply the activation function <code>g(z)</code> (e.g., sigmoid)</li>
+<li>Output scalar <code>a<sub>j</sub></code></li>
+</ol>
+<p><b>All neurons in a layer share the same input</b> — they all receive <code>a<sup>[l-1]</sup></code> — but each neuron has its own independent weight vector and bias. Their outputs are collected into the activation vector <code>a<sup>[l]</sup></code> which becomes the input to the next layer.</p>`,
+    example: "In the demand-prediction example: layer 1 has 3 neurons each computing a sigmoid over all 4 input features with their own w and b. Neuron 1 outputs 0.3 (affordability probability), neuron 2 outputs 0.7 (awareness), neuron 3 outputs 0.2 (perceived quality). These three numbers form vector a[1], which becomes the input to the output layer.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What does the superscript notation [l] mean in neural network math?",
+        "Walk me through the computation a single neuron performs.",
+        "How does layer 0 relate to the input features x?",
+      ],
+      seniorTip: "Fluency with notation is a strong signal in technical interviews. Practice writing out a[l]_j = g(w[l]_j · a[l-1] + b[l]_j) and explaining each term. Engineers who can't write the forward pass equation fluently often struggle to debug network implementations.",
+    },
+    flashCards: [
+      { q: "What does superscript [l] mean in neural network notation?", a: "It refers to layer l. a[2] is the activation vector from layer 2. w[2]_j is the weight vector for neuron j in layer 2. Subscripts index neurons within a layer; superscripts index the layer itself." },
+      { q: "What four steps does one neuron perform to compute its activation?", a: "1. Compute z = w·a[l-1] + b (dot product + bias). 2. Apply activation function: a = g(z). The result is a single scalar representing that neuron's output." },
+      { q: "Why is layer 0 written as a[0] = x?", a: "To make the notation consistent. The input features x are the 'activations' of layer 0. This way, the formula a[l] = g(w[l]·a[l-1] + b[l]) works for every layer including the first hidden layer." },
+      { q: "Do all neurons in a layer receive the same input?", a: "Yes. All neurons in layer l receive the same vector a[l-1] as input, but each neuron has its own independent weight vector and bias. They learn different transformations of the same input." },
+    ],
+  },
+  {
+    slug: "adv-06-more-complex-neural-networks",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "More Complex Neural Networks",
+    order: 6,
+    excerpt: "Multi-layer networks, counting conventions, and the general activation formula for any layer.",
+    theory: `<p><b>Real neural networks have multiple hidden layers.</b> Each layer takes the output of the previous layer as input, builds a more abstract representation, and passes it forward. The general pattern:</p>
+<p><code>x → [Layer 1] → a<sup>[1]</sup> → [Layer 2] → a<sup>[2]</sup> → … → [Layer L] → a<sup>[L]</sup> = ŷ</code></p>
+<p><b>Counting convention:</b> when we say a neural network has N layers, we count all hidden layers plus the output layer, but <em>not</em> the input layer. A network with 3 hidden layers and 1 output layer is called a "4-layer network".</p>
+<p><b>General activation formula for any layer l, any unit j:</b></p>
+<p><code>a<sup>[l]</sup><sub>j</sub> = g( w<sup>[l]</sup><sub>j</sub> · a<sup>[l-1]</sup> + b<sup>[l]</sup><sub>j</sub> )</code></p>
+<p>This single formula is all you need to describe forward propagation through any layer of any depth. The activation function g (currently sigmoid) and the number of units per layer are the architectural choices.</p>
+<p><b>Architecture decisions:</b> how many hidden layers, and how many units per layer, are called the <em>neural network architecture</em>. These hyperparameters affect performance and you will learn systematic ways to choose them later in the course.</p>
+<p><b>Multilayer perceptron (MLP)</b>: the academic term for a fully-connected neural network of this type. If you see "MLP" in a paper, it means exactly this architecture.</p>`,
+    example: "A network classifying handwritten digits might have: 64 input features (8×8 image) → 25 units in layer 1 → 15 units in layer 2 → 1 output unit. The 2-layer network (counting hidden + output) produces a[2] = probability of digit being '1'. Each intermediate layer refines the representation.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "When someone says a neural network has 4 layers, what do they mean exactly?",
+        "Write out the general activation formula for unit j in layer l.",
+        "What is a multilayer perceptron (MLP)?",
+      ],
+      seniorTip: "When describing network architectures, always be explicit about what you're counting. 'A 4-layer network with 3 hidden layers and 1 output layer, not counting the input' avoids the ambiguity that trips up many engineering discussions about architecture.",
+    },
+    flashCards: [
+      { q: "How do you count layers in a neural network by convention?", a: "Count hidden layers + output layer. Do NOT count the input layer. A network with 3 hidden layers and 1 output layer is a '4-layer network'." },
+      { q: "Write the general activation formula for any unit j in layer l.", a: "a[l]_j = g(w[l]_j · a[l-1] + b[l]_j). w[l]_j is the weight vector for unit j in layer l; a[l-1] is the activation vector from the previous layer; b[l]_j is the bias; g is the activation function." },
+      { q: "What does 'neural network architecture' refer to?", a: "The structural choices: number of hidden layers and number of units per layer. These are hyperparameters — set before training — that significantly affect model performance." },
+      { q: "What is a multilayer perceptron (MLP)?", a: "The academic term for a fully-connected neural network where every neuron in each layer connects to every neuron in the adjacent layers. Synonymous with the dense-layer network described in this section." },
+    ],
+  },
+  {
+    slug: "adv-07-forward-propagation",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Inference & Forward Propagation",
+    order: 7,
+    excerpt: "The algorithm for making predictions: computing activations left to right through all layers.",
+    theory: `<p><b>Forward propagation is the inference algorithm</b> — the sequence of computations that turns input x into prediction ŷ. It proceeds layer by layer, left to right, which is why it's called "forward".</p>
+<p><b>Step-by-step for a 3-layer network:</b></p>
+<ol>
+<li><b>Compute a<sup>[1]</sup></b>: apply layer 1's 25 units to input x. Each unit computes sigmoid(w·x + b). Output: vector of 25 activations.</li>
+<li><b>Compute a<sup>[2]</sup></b>: apply layer 2's 15 units to a<sup>[1]</sup>. Output: vector of 15 activations.</li>
+<li><b>Compute a<sup>[3]</sup></b>: apply the single output unit to a<sup>[2]</sup>. Output: scalar probability.</li>
+<li><b>Optional threshold</b>: if a<sup>[3]</sup> ≥ 0.5, predict ŷ = 1 (same as logistic regression).</li>
+</ol>
+<p><b>Output of a neural network</b> is also written as f(x) — consistent with how we wrote logistic regression output in Course 1. The neural network is just a more expressive version of f(x).</p>
+<p><b>Forward vs backward:</b> forward propagation computes predictions. Backward propagation (backprop) — covered in Week 2 — computes gradients for training. If you already have trained parameters w and b (e.g., downloaded from the internet), you only need forward propagation for inference.</p>
+<p><b>Typical architecture pattern:</b> more units in earlier layers, fewer as you get deeper toward the output. This is a common and generally effective architecture choice.</p>`,
+    example: "Handwritten digit recognition (8×8 image, binary 0 vs 1): x is 64 numbers → a[1] is 25 numbers → a[2] is 15 numbers → a[3] is 1 number (probability of being digit '1'). If a[3] = 0.73, threshold at 0.5 gives ŷ = 1. That's the complete inference path.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Describe forward propagation step by step for a 3-layer neural network.",
+        "What is the difference between forward propagation and backpropagation?",
+        "Why is the neural network output written as both a[L] and f(x)?",
+      ],
+      seniorTip: "In interviews, always connect inference back to deployment: 'Forward propagation is what runs in production — it's the prediction path. Backpropagation only runs during training, offline. In serving infrastructure, you only need the trained weights and forward pass.'",
+    },
+    flashCards: [
+      { q: "What is forward propagation?", a: "The left-to-right computation that turns input x into prediction ŷ by sequentially computing activations through each layer: x → a[1] → a[2] → ... → a[L] = ŷ." },
+      { q: "Why is it called 'forward' propagation?", a: "Because activations flow forward — left to right from input to output. This contrasts with backpropagation, which computes gradients in the reverse direction during training." },
+      { q: "What does the optional thresholding step do at the output?", a: "Converts a probability into a binary label: if a[L] ≥ 0.5 → ŷ = 1, else ŷ = 0. Same as logistic regression. Used for binary classification; not needed for regression or probability outputs." },
+      { q: "If you download a pre-trained neural network from the internet, what do you need to run inference?", a: "Only the trained parameters (w and b for each layer) and forward propagation. Backpropagation is only needed for training." },
+    ],
+  },
+  {
+    slug: "adv-08-inference-in-code",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Inference in Code (TensorFlow)",
+    order: 8,
+    excerpt: "Implementing forward propagation in TensorFlow with Dense layers — the coffee roasting example.",
+    theory: `<p><b>TensorFlow is the leading framework for implementing neural networks</b>, alongside PyTorch. The same algorithm can be expressed in just a few lines of code. Understanding what those lines actually do is more important than memorising the syntax.</p>
+<p><b>TensorFlow inference workflow:</b></p>
+<ol>
+<li>Define input <code>x</code> as a NumPy array (e.g., <code>np.array([[200, 17]])</code> — temperature 200°C, duration 17 min)</li>
+<li>Create a layer: <code>layer_1 = Dense(units=3, activation='sigmoid')</code> — the Dense type means fully connected</li>
+<li>Compute activations: <code>a1 = layer_1(x)</code> — TensorFlow handles all the dot products and sigmoid calls</li>
+<li>Repeat for layer 2: <code>layer_2 = Dense(units=1, activation='sigmoid')</code> then <code>a2 = layer_2(a1)</code></li>
+<li>Optional threshold: <code>yhat = 1 if a2 >= 0.5 else 0</code></li>
+</ol>
+<p><b>Dense layer</b> is TensorFlow's name for what we've been calling a fully connected layer — every neuron in the layer connects to every input. It's the standard layer type for the networks described in this course.</p>
+<p><b>Key insight:</b> the same 5-10 lines of TensorFlow code work for speech recognition, image classification, and medical diagnosis — only the data and architecture dimensions change. The framework abstracts away all the manual dot products.</p>`,
+    example: "Coffee roasting quality prediction: input x = [200°C, 17 min]. Layer 1 has 3 units (is it undercooked? overcooked? just right?). Layer 2 has 1 unit outputting probability of good coffee. a2 = 0.8 means 80% probability the roast settings produce good coffee. Threshold at 0.5 → predict good roast.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What does tf.keras.layers.Dense do and why is it called 'Dense'?",
+        "Walk through the TensorFlow code for two-layer forward propagation.",
+        "Why does the same TensorFlow code work across so many different applications?",
+      ],
+      seniorTip: "When discussing TensorFlow in interviews, distinguish between understanding and usage: 'TensorFlow's Dense layer abstracts the matrix operations, but I understand what's happening underneath — each unit computes a dot product, adds bias, and applies an activation. That understanding helps me debug when things go wrong.'",
+    },
+    flashCards: [
+      { q: "What is a Dense layer in TensorFlow?", a: "A fully connected layer where every neuron connects to every input from the previous layer. 'Dense' = fully connected. The standard layer type for the neural networks in this course." },
+      { q: "Write the TensorFlow code for a 2-layer neural network forward pass.", a: "layer_1 = Dense(units=3, activation='sigmoid'); a1 = layer_1(x); layer_2 = Dense(units=1, activation='sigmoid'); a2 = layer_2(a1). Then optionally: yhat = 1 if a2 >= 0.5 else 0." },
+      { q: "What are the two leading frameworks for implementing neural networks?", a: "TensorFlow (used in this course) and PyTorch. Both dominate in different communities — TensorFlow more in production/industry, PyTorch more in research. Both are excellent choices." },
+      { q: "Why can the same TensorFlow code handle coffee roasting, digit recognition, and medical diagnosis?", a: "The framework abstracts the math — only the data dimensions and architecture (units per layer, number of layers) change. The inference algorithm is identical." },
+    ],
+  },
+  {
+    slug: "adv-09-data-in-tensorflow",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Data Representation in TensorFlow",
+    order: 9,
+    excerpt: "NumPy 1D vectors vs 2D matrices, TensorFlow tensors, and why the double bracket matters.",
+    theory: `<p><b>TensorFlow and NumPy handle data differently</b>, which causes confusion when moving between them. Understanding the distinction is essential for writing correct code.</p>
+<p><b>The key difference — 1D vs 2D:</b></p>
+<ul>
+<li><code>np.array([200, 17])</code> — 1D array, shape <code>(2,)</code>. No rows or columns, just a list of numbers. Used in Course 1 (logistic regression).</li>
+<li><code>np.array([[200, 17]])</code> — 2D matrix, shape <code>(1, 2)</code>. One row, two columns. TensorFlow convention.</li>
+</ul>
+<p><b>Why TensorFlow uses 2D matrices:</b> TensorFlow was designed to handle large datasets efficiently. Representing data as matrices (rows = examples, columns = features) allows batch processing of many examples simultaneously, which is far more efficient than processing one at a time.</p>
+<p><b>Tensors:</b> TensorFlow's native data type. Think of a tensor as a matrix stored in TensorFlow's format. When you compute <code>a1 = layer_1(x)</code>, the result <code>a1</code> is a TensorFlow tensor (not a NumPy array). It will show as <code>tf.Tensor([[0.2 0.7 0.3]], shape=(1,3), dtype=float32)</code>.</p>
+<p><b>Converting between NumPy and TensorFlow:</b> <code>a1.numpy()</code> converts a tensor back to a NumPy array. TensorFlow processes tensors internally but can interoperate with NumPy.</p>`,
+    example: "The double bracket [[200, 17]] is not a typo — it creates a 1×2 matrix (1 row, 2 columns) instead of a plain list. TensorFlow expects this because it processes batches of examples as rows of a matrix. If you pass a 1D array, TensorFlow will often still work but the shapes may cause subtle bugs.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What is the difference between np.array([1,2]) and np.array([[1,2]])?",
+        "Why does TensorFlow prefer 2D matrix inputs over 1D vectors?",
+        "How do you convert a TensorFlow tensor to a NumPy array?",
+      ],
+      seniorTip: "Shape mismatches are one of the most common bugs in neural network code. Always print tensor shapes during debugging. In production, validate input shapes at API boundaries before they reach the model — a wrong shape can produce incorrect predictions silently.",
+    },
+    flashCards: [
+      { q: "What is the shape of np.array([200, 17])?", a: "Shape (2,) — a 1D array with no rows or columns. This is a vector." },
+      { q: "What is the shape of np.array([[200, 17]])?", a: "Shape (1, 2) — a 2D matrix with 1 row and 2 columns. This is TensorFlow's preferred input format." },
+      { q: "Why does TensorFlow use 2D matrices instead of 1D vectors?", a: "TensorFlow was designed for batch processing. Matrices let you process many examples (rows) simultaneously. 1D arrays represent single numbers or vectors, not batches of examples." },
+      { q: "How do you convert a TensorFlow tensor to a NumPy array?", a: "Call tensor.numpy() on the tensor object. E.g., a1.numpy() converts the TensorFlow tensor a1 back to a NumPy array." },
+    ],
+  },
+  {
+    slug: "adv-10-build-a-neural-network",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Building a Neural Network in TensorFlow",
+    order: 10,
+    excerpt: "The Sequential API: string layers together, compile, fit, and predict in one workflow.",
+    theory: `<p><b>TensorFlow's Sequential API</b> is the standard way to build, train, and run inference on a neural network in a few lines of code. It strings layers together into a single model object.</p>
+<p><b>The three-step workflow:</b></p>
+<ol>
+<li><b>Specify the model</b>: <code>model = Sequential([Dense(3, activation='sigmoid'), Dense(1, activation='sigmoid')])</code> — tells TensorFlow which layers to apply in order.</li>
+<li><b>Compile</b>: <code>model.compile(loss=BinaryCrossentropy())</code> — specifies the loss function. More on this in Week 2.</li>
+<li><b>Fit</b>: <code>model.fit(X, y, epochs=100)</code> — trains the model on your dataset for 100 gradient descent steps (epochs). Covered in detail next week.</li>
+</ol>
+<p><b>Inference after training:</b> <code>model.predict(X_new)</code> — runs forward propagation and returns predictions. One call replaces all the layer-by-layer code from the previous videos.</p>
+<p><b>Why Sequential over manual layers:</b> with Sequential, TensorFlow handles the data flow between layers automatically. You don't manually compute a1 = layer_1(x), then a2 = layer_2(a1). The model object manages all of that internally.</p>
+<p><b>Important:</b> understanding what these five lines actually do (forward prop, backprop, gradient descent) is more valuable than memorising the API. Libraries change; the concepts don't.</p>`,
+    example: "Digit classification: model = Sequential([Dense(25, 'sigmoid'), Dense(15, 'sigmoid'), Dense(1, 'sigmoid')]). Compile with BinaryCrossentropy. Fit on your 60,000 training images. Then model.predict(X_new) returns probabilities for new images. That's the complete ML pipeline in ~5 lines.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What are the three steps to train a neural network in TensorFlow?",
+        "What does model.predict() do under the hood?",
+        "Why is understanding the underlying math more important than memorising the TensorFlow API?",
+      ],
+      seniorTip: "The real skill is debugging. When model.fit() produces unexpected loss curves or model.predict() returns wrong shapes, you need to know what's happening at the mathematical level. Engineers who only know the API are helpless when the black box misbehaves.",
+    },
+    flashCards: [
+      { q: "What are the three TensorFlow methods for training a neural network?", a: "1. model = Sequential([layers...]) — define architecture. 2. model.compile(loss=...) — specify loss function. 3. model.fit(X, y, epochs=N) — train with gradient descent for N epochs." },
+      { q: "What does model.predict(X_new) do?", a: "Runs forward propagation on X_new using the trained parameters and returns the output activations (predictions). It's inference — no gradient computation, no parameter updates." },
+      { q: "What is an epoch in model.fit()?", a: "One complete pass through the training dataset. Training for 100 epochs means gradient descent runs 100 iterations (steps) over the full training set." },
+      { q: "What is the Sequential API?", a: "TensorFlow's way of building a neural network by listing layers in order. The model automatically handles data flow from one layer to the next. Alternative: functional API for more complex architectures." },
+    ],
+  },
+  {
+    slug: "adv-11-forward-prop-single-layer",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Forward Prop: Single Layer from Scratch",
+    order: 11,
+    excerpt: "Implementing forward propagation in raw Python/NumPy — understanding what TensorFlow does under the hood.",
+    theory: `<p><b>Implementing forward propagation from scratch</b> in Python confirms you truly understand what TensorFlow is doing — and builds the intuition needed to debug it when something goes wrong.</p>
+<p><b>Step-by-step: coffee roasting, layer 1 (3 neurons):</b></p>
+<ol>
+<li>Define parameters: <code>w1_1, b1_1</code> for neuron 1; <code>w1_2, b1_2</code> for neuron 2; <code>w1_3, b1_3</code> for neuron 3.</li>
+<li>For each neuron j: compute <code>z = np.dot(w, x) + b</code>, then apply sigmoid: <code>a = g(z)</code>.</li>
+<li>Group outputs into a vector: <code>a1 = np.array([a1_1, a1_2, a1_3])</code>.</li>
+<li>Pass <code>a1</code> to layer 2 and repeat.</li>
+</ol>
+<p><b>The problem with this approach:</b> it hard-codes every neuron explicitly. For a 25-unit layer you'd write 25 nearly identical lines — correct but impractical. The general implementation in the next topic fixes this.</p>
+<p><b>Notation note:</b> in from-scratch Python, 1D arrays are used (single brackets) rather than TensorFlow's 2D matrices. This is a simplification for readability — the math is identical.</p>
+<p><b>Why bother if TensorFlow exists?</b> When a model produces unexpected outputs, the mental model of "every neuron is just a dot product + sigmoid" is the debugging anchor. Engineers who understand this fix bugs in hours; those who don't spend days.</p>`,
+    example: "Neuron 1 in layer 1: w = [1, -2], b = 0.5, x = [200, 17]. z = 1×200 + (-2)×17 + 0.5 = 166.5. sigmoid(166.5) ≈ 1.0. Neuron 2: w = [-0.5, 3], b = 1. z = -0.5×200 + 3×17 + 1 = -48. sigmoid(-48) ≈ 0.0. Two activations computed manually — exactly what TensorFlow does for you.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Implement forward propagation for a single dense layer in raw Python without TensorFlow.",
+        "What is the sigmoid function formula and how do you compute it in NumPy?",
+        "Why is it useful to implement forward propagation from scratch even when TensorFlow exists?",
+      ],
+      seniorTip: "In a coding interview, implementing forward prop from scratch demonstrates you understand the math, not just the API. Write: z = np.dot(w, a_prev) + b; a = 1/(1+np.exp(-z)). Then explain that TensorFlow's Dense layer does this for all units simultaneously using matrix multiplication.",
+    },
+    flashCards: [
+      { q: "What two operations does each neuron perform in forward propagation?", a: "1. Linear combination: z = np.dot(w, x) + b. 2. Activation: a = g(z) e.g. sigmoid(z) = 1/(1+e^{-z})." },
+      { q: "How do you implement sigmoid in NumPy?", a: "g = lambda z: 1 / (1 + np.exp(-z)). Accepts scalars, vectors, or matrices and applies element-wise." },
+      { q: "After computing all neuron outputs for one layer, what do you do?", a: "Group them into a NumPy array: a = np.array([a_1, a_2, a_3]). This becomes the input vector for the next layer." },
+      { q: "Why is from-scratch forward prop a valuable exercise?", a: "It confirms understanding and builds debugging intuition. When TensorFlow produces wrong outputs, you trace through the math manually to find the bug — only possible if you know what each operation does." },
+    ],
+  },
+  {
+    slug: "adv-12-general-forward-propagation",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "General Forward Propagation",
+    order: 12,
+    excerpt: "The dense() function: a reusable loop-based implementation of any layer using a weight matrix.",
+    theory: `<p><b>Instead of hard-coding each neuron</b>, write a general <code>dense(a_in, W, b)</code> function that handles any layer of any size. This bridges manual computation and TensorFlow.</p>
+<p><b>The dense() function:</b></p>
+<ol>
+<li><code>units = W.shape[1]</code> — number of neurons equals number of columns in W</li>
+<li>Initialise output: <code>a = np.zeros(units)</code></li>
+<li>Loop: for j in range(units):
+  <code>w = W[:, j]</code> (column j), <code>z = np.dot(w, a_in) + b[j]</code>, <code>a[j] = sigmoid(z)</code></li>
+<li>Return <code>a</code></li>
+</ol>
+<p><b>Key convention: weights are stacked in columns.</b> Matrix W has shape (n_inputs, n_units). Column j of W is the weight vector for neuron j. This is the same layout TensorFlow uses internally.</p>
+<p><b>Full network forward pass:</b> <code>a1 = dense(x, W1, b1)</code>, <code>a2 = dense(a1, W2, b2)</code>, <code>f_x = a2</code>. Three lines. This is exactly what TensorFlow's Sequential model does — just vectorised without the Python loop.</p>
+<p><b>Uppercase W</b> (matrix) vs lowercase w (vector per neuron) — the convention from linear algebra. Uppercase = matrix quantity. TensorFlow follows the same convention internally.</p>`,
+    example: "Layer 1 has 3 neurons, 2 input features → W has shape (2, 3). W[:,0] is neuron 1's weights, W[:,1] neuron 2's, W[:,2] neuron 3's. Calling dense(x, W, b) loops through 3 columns, computes z and sigmoid for each, returns a vector of 3 activations.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Write a general dense() function in Python that implements one layer of forward propagation.",
+        "What shape should weight matrix W have for n_in inputs and n_units neurons?",
+        "How does the dense() function relate to TensorFlow's Dense layer?",
+      ],
+      seniorTip: "The W shape (n_inputs, n_units) with neurons as columns is the standard. TensorFlow stores weights in this format. Knowing this makes reading framework source code much easier and helps you manually inspect model weights when debugging.",
+    },
+    flashCards: [
+      { q: "What shape should weight matrix W be for a dense layer with n_in inputs and n_units neurons?", a: "Shape (n_in, n_units). Each column is the weight vector for one neuron. W[:,j] gives the weights for neuron j." },
+      { q: "How do you pull the weight vector for neuron j from matrix W in Python?", a: "w_j = W[:, j] — NumPy column slicing. The colon selects all rows; j selects column j." },
+      { q: "Write the dense() function in pseudocode.", a: "def dense(a_in, W, b): units = W.shape[1]; a = zeros(units); for j in range(units): w = W[:,j]; a[j] = sigmoid(dot(w, a_in) + b[j]); return a" },
+      { q: "How does the loop-based dense() relate to TensorFlow's Dense layer?", a: "Mathematically identical. TensorFlow's Dense is a vectorised, GPU-accelerated version of this loop — same weight layout (n_in, n_units), same computation, just without the Python for-loop overhead." },
+    ],
+  },
+  {
+    slug: "adv-13-agi-path",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Is There a Path to AGI?",
+    order: 13,
+    excerpt: "ANI vs AGI, the one learning algorithm hypothesis, and keeping hype calibrated.",
+    theory: `<p><b>AI actually contains two very different ideas</b> that are routinely conflated in media coverage:</p>
+<ul>
+<li><b>ANI (Artificial Narrow Intelligence)</b>: AI that does one task extremely well — spam filter, speech recognition, recommendation systems, web search. ANI has made enormous progress and creates enormous economic value.</li>
+<li><b>AGI (Artificial General Intelligence)</b>: AI that can do anything a typical human can do. Despite impressive ANI progress, meaningful progress toward AGI is much less clear.</li>
+</ul>
+<p><b>The hype problem:</b> rapid ANI progress → people correctly conclude "AI is advancing fast" → incorrectly conclude "AGI is near". These are not the same claim.</p>
+<p><b>Why AGI is hard:</b></p>
+<ol>
+<li>Artificial neurons are vastly simpler than biological neurons. A logistic unit is nothing like what a real neuron does.</li>
+<li>We barely understand how the brain works. Fundamental neuroscience breakthroughs still happen regularly. You can't simulate what you don't understand.</li>
+</ol>
+<p><b>The one learning algorithm hypothesis:</b> brain-rewiring experiments show the same cortex tissue learns to process any sensory input depending on what data it receives (auditory cortex learns to see when fed visual data). This suggests a single general algorithm underlies cognition — finding it might unlock AGI. Whether this is true remains unknown.</p>`,
+    example: "Auditory cortex normally processes sound. When rewired in animal experiments to receive visual input instead, it learns to see. Somatosensory cortex (touch) also learned to see when given visual data. The same biological tissue, different data — different capability. If one algorithm can do all of this, finding it computationally is the holy grail of AGI research.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What is the difference between ANI and AGI?",
+        "Why doesn't rapid ANI progress mean AGI is close?",
+        "What is the one learning algorithm hypothesis and what evidence supports it?",
+      ],
+      seniorTip: "AGI questions test judgment and epistemic calibration. The right answer: 'We genuinely don't know the timeline. The one learning algorithm hypothesis is intriguing but unproven. Current neural networks are ANI tools — powerful for narrow tasks, not general intelligence. Overclaiming either direction is intellectually dishonest.'",
+    },
+    flashCards: [
+      { q: "What is the key difference between ANI and AGI?", a: "ANI = artificial narrow intelligence — one task done extremely well. AGI = artificial general intelligence — can do anything a human can do. ANI is flourishing; meaningful progress toward AGI is much less clear." },
+      { q: "Why doesn't rapid ANI progress imply AGI is near?", a: "They are different problems. Building a better spam filter doesn't bring us closer to general reasoning. Progress in a subset (narrow tasks) says little about the whole (general intelligence)." },
+      { q: "What is the one learning algorithm hypothesis?", a: "Evidence that the same cortex tissue learns to process any sensory input (visual, auditory, touch) depending on what data it receives, suggesting a single general learning algorithm might underlie all cognition." },
+      { q: "What are the two main reasons AGI is hard from a technical standpoint?", a: "1. Artificial neurons are far simpler than biological neurons. 2. We barely understand how the brain works. Simulating what we don't understand won't get us to general intelligence." },
+    ],
+  },
+  {
+    slug: "adv-14-vectorized-implementation",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Vectorised Neural Network Implementation",
+    order: 14,
+    excerpt: "Why matrix multiplication makes neural networks fast and how NumPy's matmul replaces for-loops.",
+    theory: `<p><b>The for-loop implementation of forward propagation is correct but slow.</b> Modern deep learning scales because neural networks can be fully vectorised — replacing loops with matrix multiplication that GPUs execute in parallel.</p>
+<p><b>Vectorised dense layer (one line):</b></p>
+<ol>
+<li>Represent input as a 2D row matrix: <code>A_in</code> shape (1, n_in)</li>
+<li>Stack weight vectors as columns in W shape (n_in, n_units)</li>
+<li>Compute all linear combinations: <code>Z = np.matmul(A_in, W) + B</code></li>
+<li>Apply activation: <code>A_out = g(Z)</code> element-wise</li>
+</ol>
+<p><b>What this replaces:</b> the entire for-loop over j units becomes one <code>np.matmul</code> call. For a 1000-unit layer, that's 1000 loop iterations → 1 matrix multiply. GPUs execute matrix multiplications in massive parallel — the core reason they are so valuable for deep learning.</p>
+<p><b>Why GPUs?</b> GPUs were designed for graphics — computing thousands of pixel colours in parallel. Large matrix multiplications are structurally identical to this. When deep learning arrived, GPUs were already the perfect hardware. This hardware/algorithm fit is the reason deep learning scaled in the 2010s — not a new algorithm, a new execution substrate.</p>`,
+    example: "A layer with 1000 neurons processing a batch of 64 examples: loop approach = 64,000 sequential iterations in Python. Vectorised: one matrix multiply (64, n_in) × (n_in, 1000) → (64, 1000). All 64,000 activations computed simultaneously in milliseconds on a GPU vs seconds in a Python loop.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Why is vectorisation critical for neural network performance?",
+        "How does np.matmul replace the for-loop over neurons?",
+        "Why are GPUs well-suited for neural network computation?",
+      ],
+      seniorTip: "Connect vectorisation to system design: 'We batch examples together to maximise GPU utilisation — a GPU is idle when processing one example at a time but nearly 100% utilised on a batch of 256. Choosing the right batch size is a balance between GPU efficiency and gradient noise during training.'",
+    },
+    flashCards: [
+      { q: "What single NumPy operation replaces the for-loop in a vectorised dense layer?", a: "Z = np.matmul(A_in, W) + B. One matrix multiply computes all Z values for all neurons simultaneously." },
+      { q: "Why are GPUs faster than CPUs for neural network training?", a: "GPUs execute thousands of simple operations in parallel. Large matrix multiplications — the core NN operation — map perfectly to this architecture. CPUs are optimised for sequential logic, not parallel computation." },
+      { q: "What shapes should A_in, W, and B have for a vectorised dense layer?", a: "A_in: (batch_size, n_in). W: (n_in, n_units). B: (1, n_units). Output Z = matmul(A_in, W) + B has shape (batch_size, n_units)." },
+      { q: "Why did deep learning scale specifically in the 2010s?", a: "Two reasons: 1. Massive data from the internet. 2. GPU hardware (originally built for graphics) turned out to perfectly execute matrix multiplications — the core neural network operation. Hardware + data enabled scale." },
+    ],
+  },
+  {
+    slug: "adv-15-matrix-multiplication",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Matrix Multiplication",
+    order: 15,
+    excerpt: "Dot products, transposes, and vector-matrix products — the mathematical building blocks of neural networks.",
+    theory: `<p><b>Matrix multiplication is the core mathematical operation in neural networks.</b> Mastering it precisely allows you to reason about shapes, debug dimension errors, and understand every line of framework code.</p>
+<p><b>Vector dot product:</b> <code>z = a · w = a₁w₁ + a₂w₂ + … + aₙwₙ</code>. Multiply element-by-element and sum. This is exactly what one neuron computes.</p>
+<p><b>Transpose:</b> flip a vector from column to row (or vice versa). Transposing matrix A: lay each column on its side as a row. If A has shape (m, n), then Aᵀ has shape (n, m).</p>
+<p><b>Vector-matrix product:</b> aᵀ × W where aᵀ is (1, n) and W is (n, k). Result: (1, k). Each output element j is the dot product of aᵀ with column j of W.</p>
+<p><b>Matrix-matrix product:</b> AᵀW where Aᵀ is (p, n) and W is (n, k). Result: (p, k). Element (i, j) = row i of Aᵀ dotted with column j of W.</p>
+<p><b>Dimension rule:</b> A (m×n) × B (n×k) — inner dimensions must match (both n). Output is (m×k). The inner dimensions "cancel", the outer dimensions form the result.</p>`,
+    example: "A is (2×3), W is (3×4). Inner dimensions both 3 → valid. Output is (2×4). Element at row 1, column 2 of the output = dot product of row 1 of A with column 2 of W. Compute all 8 elements this way to get the full matrix.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "State the dimension rule for matrix multiplication.",
+        "Compute aᵀW where a = [1,2] and W = [[3,5],[4,6]].",
+        "Why does the transpose appear so often in neural network math?",
+      ],
+      seniorTip: "Dimension tracking is a professional skill. Every matmul in a neural network has a specific shape contract. Knowing W is (n_in, n_units) and A_in is (batch, n_in) immediately tells you the output is (batch, n_units) without running code. This prevents bugs before they happen.",
+    },
+    flashCards: [
+      { q: "State the dimension rule for matrix multiplication A × B.", a: "Columns of A must equal rows of B. If A is (m×n) and B is (n×k), result is (m×k). Mismatch in inner dimensions → error." },
+      { q: "What is the transpose of a matrix?", a: "Swap rows and columns. Column j of A becomes row j of Aᵀ. If A has shape (m, n), Aᵀ has shape (n, m)." },
+      { q: "How do you compute element Z[i,j] of matrix product Z = A×B?", a: "Dot product of row i of A with column j of B. Sum of element-wise products of those two vectors." },
+      { q: "Why is matrix multiplication the core operation in neural networks?", a: "Each dense layer computes Z = A_in × W — one matrix multiply computes all neuron pre-activations for all examples simultaneously. Entire networks are stacks of these matrix multiplies + activation functions." },
+    ],
+  },
+  {
+    slug: "adv-16-matrix-multiplication-rules",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Matrix Multiplication Rules",
+    order: 16,
+    excerpt: "The general formula for AᵀW — computing every element systematically from rows and columns.",
+    theory: `<p><b>The general rule: element Z[i,j] = dot(row i of Aᵀ, column j of W).</b> This is all you need to compute any element of a matrix product.</p>
+<p><b>Worked example: A is (2×3), W is (2×4):</b></p>
+<ul>
+<li>Aᵀ is (3×2) — rows: a₁ᵀ, a₂ᵀ, a₃ᵀ</li>
+<li>W columns: w₁, w₂, w₃, w₄</li>
+<li>Z = AᵀW is (3×4). Z[2,3] = a₂ᵀ · w₃ — row 2 of Aᵀ dotted with column 3 of W</li>
+</ul>
+<p><b>Colour intuition:</b> each row of Aᵀ (one colour) influences an entire row of Z. Each column of W (another colour) influences an entire column of Z. The intersection element at (row i, col j) comes from row i of Aᵀ and column j of W.</p>
+<p><b>Why this matters for neural networks:</b> A_in has shape (batch, n_in). W has shape (n_in, n_units). Z = A_in × W gives (batch, n_units) — all pre-activations for all examples at once. The rule above explains every element of that output.</p>
+<p><b>Matching dimensions as taking dot products:</b> the inner dimension (n_in) is the length of both vectors being dot-producted. That's why dimensions must match — you can't dot-product vectors of different lengths.</p>`,
+    example: "Z[3,2] — row 3, column 2 — equals the dot product of row 3 of Aᵀ with column 2 of W. If row 3 of Aᵀ = [0.1, 0.2] and column 2 of W = [5, 6], then Z[3,2] = 0.1×5 + 0.2×6 = 0.5 + 1.2 = 1.7.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Compute element Z[i,j] of the matrix product Z = AᵀW step by step.",
+        "Why must inner dimensions match for matrix multiplication?",
+        "For batch_size=32, n_in=64, n_units=25 — what are the shapes of W, A_in, and Z?",
+      ],
+      seniorTip: "The ability to derive shapes from first principles (not memory) is a strong interview signal. In code review, always comment the expected shapes for each matmul. This prevents the most common class of neural network bugs — silent shape mismatches that produce wrong outputs without errors.",
+    },
+    flashCards: [
+      { q: "What is the formula for element Z[i,j] in Z = A×B?", a: "Z[i,j] = dot(row i of A, column j of B). A single dot product between two vectors of matching length." },
+      { q: "Why must inner dimensions match for matrix multiplication?", a: "Because you're taking dot products between rows and columns. A dot product requires vectors of equal length. Mismatched inner dimensions → vectors of different lengths → undefined." },
+      { q: "Shapes for batch=32, n_in=64, n_units=25: what are A_in, W, and Z?", a: "A_in: (32, 64). W: (64, 25). Z = A_in × W: (32, 25). 32 examples × 25 pre-activation values each, computed simultaneously." },
+    ],
+  },
+  {
+    slug: "adv-17-matrix-multiplication-code",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Matrix Multiplication in Code",
+    order: 17,
+    excerpt: "NumPy matmul, the @ operator, and the complete vectorised forward pass in TensorFlow.",
+    theory: `<p><b>Armed with matrix multiplication rules, the vectorised forward pass is just a few lines.</b></p>
+<p><b>Two ways to call matrix multiply in NumPy:</b></p>
+<ul>
+<li><code>np.matmul(A, B)</code> — explicit and unambiguous for 2D arrays</li>
+<li><code>A @ B</code> — Python's matrix multiplication operator (Python 3.5+). Same operation, shorter syntax.</li>
+</ul>
+<p><b>Complete vectorised dense layer:</b></p>
+<ol>
+<li><code>Z = np.matmul(A_in, W) + B</code> — all linear combinations at once</li>
+<li><code>A_out = sigmoid(Z)</code> — element-wise activation</li>
+</ol>
+<p><b>TensorFlow convention:</b> examples are stored as rows (not columns) of the input matrix. So the code uses <code>Z = matmul(A_in, W) + B</code> where A_in has shape (batch, n_in) rather than needing an explicit transpose. The math is equivalent — just a convention for how data is organised.</p>
+<p><b>Prefer np.matmul over np.dot</b> for 2D matrices in neural network code. <code>np.dot</code> behaves differently for arrays with more than 2 dimensions and is a common source of subtle bugs. Use <code>matmul</code> or <code>@</code> consistently.</p>`,
+    example: "AT = np.array([[200, 17]]); W = np.array([[1,-3,5],[-2,4,-6]]); B = np.array([[0.5, 1, -1]]); Z = np.matmul(AT, W) + B gives [[166.5, -565, 1103]]. Apply sigmoid element-wise: A_out = [[~1.0, ~0.0, ~1.0]]. Three neuron activations in one line.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What is the difference between np.matmul(A,B) and A @ B?",
+        "Why should you use np.matmul instead of np.dot for matrix operations in neural network code?",
+        "Given A_in shape (64, 256) and W shape (256, 128): what is the shape of Z = matmul(A_in, W)?",
+      ],
+      seniorTip: "In code reviews, flag use of np.dot for 2D matrix products — it works but invites bugs when shapes later change to 3D (e.g. batched operations). Prefer matmul or @ for clarity and safety. Explicit is better than implicit.",
+    },
+    flashCards: [
+      { q: "What does A @ B do in Python?", a: "Matrix multiplication — identical to np.matmul(A, B). The @ operator is Python's dedicated matrix multiply operator, available since Python 3.5." },
+      { q: "How do you compute the transpose of matrix A in NumPy?", a: "A.T — a Python attribute. Returns a transposed view (no data copy for 2D arrays). Same as np.transpose(A)." },
+      { q: "For A_in (64, 256) and W (256, 128): what is Z = matmul(A_in, W)?", a: "Shape (64, 128). Inner dimensions 256 match. Output has outer dimensions: 64 examples × 128 neurons." },
+      { q: "Why prefer np.matmul over np.dot for neural network code?", a: "np.dot behaves unexpectedly for arrays with more than 2 dimensions. np.matmul is unambiguous — always matrix multiplication for 2D+ arrays. Prevents a class of subtle bugs when shapes change." },
+    ],
+  },
+  {
+    slug: "adv-18-training-overview",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Training a Neural Network: Overview",
+    order: 18,
+    excerpt: "The three-step training loop in TensorFlow: specify architecture, compile with loss, fit to data.",
+    theory: `<p><b>Training a neural network follows the same three-step pattern as logistic regression</b> from Course 1 — specify the model, define the loss function, minimise the loss — now automated by TensorFlow at scale.</p>
+<p><b>Step 1 — Specify architecture:</b></p>
+<p><code>model = Sequential([Dense(25, 'sigmoid'), Dense(15, 'sigmoid'), Dense(1, 'sigmoid')])</code></p>
+<p>This defines what parameters exist (all w and b matrices) and how forward propagation computes predictions.</p>
+<p><b>Step 2 — Compile with loss function:</b></p>
+<p><code>model.compile(loss=BinaryCrossentropy())</code></p>
+<p>Defines the objective to minimise. Binary cross-entropy for binary classification, mean squared error for regression.</p>
+<p><b>Step 3 — Fit to data:</b></p>
+<p><code>model.fit(X, y, epochs=100)</code></p>
+<p>TensorFlow runs backpropagation to compute gradients and gradient descent (or Adam) to update all parameters, repeated 100 times (epochs).</p>
+<p><b>What TensorFlow automates:</b> forward propagation, loss computation, backpropagation (gradient computation for every parameter in every layer), and parameter updates. These 3 lines replace what would be hundreds of lines of manual calculus.</p>`,
+    example: "Handwritten digit recognition: 3-layer network (25→15→1). Compile with BinaryCrossentropy. Fit on 60,000 images for 100 epochs. TensorFlow runs backprop 100 times, updating thousands of parameters each pass. The same 3 lines that train this network also train ResNet-50 — different architecture and data, identical API.",
+    animation: "CostFunctionViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What are the three steps to train a neural network in TensorFlow?",
+        "What does model.compile() specify and why does it matter?",
+        "How does training a neural network generalise from training logistic regression?",
+      ],
+      seniorTip: "Map TensorFlow's API back to math in interviews: 'model.compile sets the objective function. model.fit runs gradient descent by computing gradients via backpropagation. This is the same algorithm as logistic regression — just applied to a more complex function with millions of parameters.'",
+    },
+    flashCards: [
+      { q: "What are the three TensorFlow steps to train a neural network?", a: "1. model = Sequential([layers]) — define architecture. 2. model.compile(loss=...) — set objective function. 3. model.fit(X, y, epochs=N) — run backprop + gradient descent N times." },
+      { q: "What does model.compile(loss=BinaryCrossentropy()) specify?", a: "The loss function to minimise during training. BinaryCrossentropy for binary classification (y=0/1), MeanSquaredError for regression, SparseCategoricalCrossentropy for multiclass." },
+      { q: "What is one epoch in model.fit()?", a: "One complete pass through the training dataset — one full gradient descent step over all training examples. Training for 100 epochs runs 100 such passes and 100 parameter updates." },
+      { q: "What does TensorFlow handle automatically during model.fit()?", a: "Forward propagation, loss computation, backpropagation (gradients for every parameter), and parameter updates. You provide only architecture and data." },
+    ],
+  },
+  {
+    slug: "adv-19-training-details",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Training Details: Loss, Cost, and Backprop",
+    order: 19,
+    excerpt: "Binary cross-entropy loss, cost function over all examples, and how TensorFlow uses backprop internally.",
+    theory: `<p><b>Understanding what happens inside model.fit() lets you debug training failures.</b> The three steps mirror exactly what you did manually for logistic regression.</p>
+<p><b>Loss function</b> — error on a single training example:</p>
+<ul>
+<li><b>Binary cross-entropy</b>: <code>L = -y·log(ŷ) - (1-y)·log(1-ŷ)</code>. Identical to logistic regression loss. TensorFlow name: <code>BinaryCrossentropy()</code>.</li>
+<li><b>Mean squared error</b>: <code>L = ½(ŷ - y)²</code>. For regression. TensorFlow: <code>MeanSquaredError()</code>.</li>
+</ul>
+<p><b>Cost function J</b>: average loss over all m training examples. Gradient descent minimises J.</p>
+<p><b>Backpropagation:</b> computes ∂J/∂w and ∂J/∂b for every parameter in every layer. TensorFlow's model.fit() calls this automatically. The parameter update rule is the same as before:</p>
+<p><code>w ← w - α · ∂J/∂w</code></p>
+<p><b>In practice</b>: TensorFlow uses Adam (not plain gradient descent) — a faster adaptive variant you will learn about in a later topic.</p>
+<p><b>Keras lineage:</b> Keras was a separate library before being merged into TensorFlow. That's why you see <code>tf.keras.losses</code> — it's Keras living inside TensorFlow. The naming conventions are all Keras's original design.</p>`,
+    example: "Prediction ŷ=0.9 for ground truth y=1: loss = -log(0.9) ≈ 0.105 (small — confident correct prediction). Prediction ŷ=0.1 for y=1: loss = -log(0.1) ≈ 2.30 (large — confident wrong prediction). Cross-entropy heavily penalises confident mistakes, which drives the network to output well-calibrated probabilities.",
+    animation: "CostFunctionViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What is binary cross-entropy and why is it preferred over MSE for classification?",
+        "What is the difference between loss and cost function?",
+        "What does backpropagation compute, and how does gradient descent use it?",
+      ],
+      seniorTip: "The cross-entropy vs MSE question tests depth: 'MSE with sigmoid outputs creates flat gradient regions near 0 and 1 (vanishing gradients) that slow learning. Cross-entropy is derived from maximum likelihood estimation and has steeper gradients when predictions are confidently wrong — exactly when you want fast learning.'",
+    },
+    flashCards: [
+      { q: "Write the binary cross-entropy loss formula.", a: "L = -y·log(ŷ) - (1-y)·log(1-ŷ). If y=1: L = -log(ŷ). If y=0: L = -log(1-ŷ). Penalises confident wrong predictions most heavily." },
+      { q: "What is the difference between loss and cost?", a: "Loss: error on one training example. Cost J: average loss over all m training examples. Gradient descent minimises J (the cost), not individual losses." },
+      { q: "What does backpropagation compute?", a: "The partial derivative ∂J/∂w and ∂J/∂b for every parameter in every layer. These gradients tell gradient descent which direction to update each parameter to reduce cost." },
+      { q: "When would you use MeanSquaredError instead of BinaryCrossentropy?", a: "For regression — when y is a continuous number (price, temperature). BinaryCrossentropy for binary classification. SparseCategoricalCrossentropy for multiclass classification." },
+    ],
+  },
+  {
+    slug: "adv-20-alternatives-to-sigmoid",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Alternatives to the Sigmoid Activation",
+    order: 20,
+    excerpt: "ReLU, linear activation, and why hidden layers should almost never use sigmoid.",
+    theory: `<p><b>Sigmoid was used initially because of the logistic regression analogy</b>, but the field has moved firmly toward ReLU for hidden layers. Understanding why is essential for building effective networks.</p>
+<p><b>Three most common activation functions:</b></p>
+<ul>
+<li><b>Sigmoid</b>: <code>g(z) = 1/(1+e⁻ᶻ)</code>. Output: (0,1). Use only at the output layer for binary classification. Problem: saturates (goes flat) at both extremes — small gradients → slow learning.</li>
+<li><b>ReLU (Rectified Linear Unit)</b>: <code>g(z) = max(0, z)</code>. Output: [0, ∞). Use for hidden layers. Only flat for z &lt; 0, not at both extremes. Faster to compute than sigmoid.</li>
+<li><b>Linear</b>: <code>g(z) = z</code>. Output: (−∞, ∞). Use at the output layer for regression problems where ŷ can be any real number.</li>
+</ul>
+<p><b>Why ReLU dominates hidden layers:</b></p>
+<ol>
+<li><b>Faster computation</b>: <code>max(0,z)</code> is cheaper than computing <code>e⁻ᶻ</code>.</li>
+<li><b>Fewer flat regions</b>: Sigmoid is flat at both extremes → small gradients throughout → slow learning. ReLU is flat only for z &lt; 0 → stronger gradients in the active region.</li>
+</ol>
+<p><b>Other options</b> — tanh, LeakyReLU, swish — appear in the literature and occasionally work slightly better. ReLU is the safe default for hidden layers in most architectures today.</p>`,
+    example: "Awareness in the demand prediction example can't be capped at 1.0 — a product can be 'extremely viral', not just 'slightly aware' vs 'very aware'. Sigmoid bounds output to (0,1), which is wrong for this feature. ReLU allows any non-negative value, modelling unbounded awareness correctly.",
+    animation: "LogisticSigmoidViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What is ReLU and why does it outperform sigmoid in hidden layers?",
+        "When should you use sigmoid vs ReLU vs linear activation?",
+        "What is the vanishing gradient problem and how does ReLU partially address it?",
+      ],
+      seniorTip: "The vanishing gradient answer is the senior one: 'Sigmoid saturates at both ends — gradients approach zero when |z| is large. Multiply near-zero gradients through many layers and early weights barely update. ReLU has gradient exactly 1 for z > 0, which prevents vanishing in the positive region. That's why deep networks became trainable.'",
+    },
+    flashCards: [
+      { q: "What is ReLU and its formula?", a: "Rectified Linear Unit. g(z) = max(0, z). Returns 0 for negative z, returns z unchanged for positive z. The dominant hidden-layer activation function." },
+      { q: "Why does ReLU outperform sigmoid in hidden layers?", a: "1. Faster to compute (max vs exponential). 2. Only flat for z < 0, not at both extremes like sigmoid. Fewer flat regions → stronger gradients → faster training." },
+      { q: "When should you use sigmoid at the output layer?", a: "Only for binary classification output (y=0 or 1). For hidden layers: ReLU. For regression output: linear. For multiclass output: softmax." },
+      { q: "What is the vanishing gradient problem?", a: "When activation functions are flat (near-zero gradient) over large regions, gradients shrink to near-zero as they propagate backward through layers. Early layers barely update — deep networks become untrainable. ReLU mitigates this with gradient=1 for positive inputs." },
+    ],
+  },
+  {
+    slug: "adv-21-choosing-activation-functions",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Choosing Activation Functions",
+    order: 21,
+    excerpt: "How to pick the right activation function for output and hidden layers based on what you're predicting.",
+    theory: `<p>The choice of activation function depends on what the neuron is computing. For the <strong>output layer</strong>, the target label <em>y</em> determines the natural choice:</p>
+<ul>
+  <li><strong>Binary classification (y = 0 or 1):</strong> Use <code>sigmoid</code> — it outputs probabilities between 0 and 1.</li>
+  <li><strong>Regression where y can be positive or negative:</strong> Use <code>linear</code> — no constraint on output range.</li>
+  <li><strong>Regression where y ≥ 0:</strong> Use <code>ReLU</code> — it only produces non-negative outputs.</li>
+</ul>
+<p>For <strong>hidden layers</strong>, ReLU has become the dominant default choice for most practitioners today. Although early neural networks used sigmoid everywhere, the field evolved because ReLU has two practical advantages:</p>
+<ol>
+  <li><strong>Computationally faster:</strong> <code>max(0, z)</code> requires no exponentiation, unlike sigmoid.</li>
+  <li><strong>Fewer flat regions:</strong> Sigmoid goes flat on <em>both</em> sides (large positive and large negative z), causing near-zero gradients. ReLU only goes flat for z &lt; 0, so fewer neurons suffer from gradient vanishing.</li>
+</ol>
+<p>Other activations (tanh, Leaky ReLU, Swish) exist and occasionally outperform ReLU in specific cases, but ReLU is the safe default. Sigmoid at hidden layers is effectively obsolete — reserve it only for binary classification output neurons.</p>`,
+    example: "Predicting house price (always positive) → ReLU output. Predicting temperature change (positive or negative) → linear output. Classifying email spam/not spam → sigmoid output. All hidden layers → ReLU by default.",
+    animation: "LogisticSigmoidViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "How do you choose the activation function for an output layer?",
+        "Why has ReLU replaced sigmoid as the default hidden-layer activation?",
+        "When would you use a linear activation function in a neural network?",
+      ],
+      seniorTip: "The senior answer connects to gradient flow: 'Sigmoid saturates at both ends — when inputs are large positive or negative, gradients vanish and layers stop learning. ReLU only saturates on the left, keeping gradients alive through the positive half. That asymmetry is why ReLU enabled deep networks to actually train.'",
+    },
+    flashCards: [
+      { q: "What output activation for binary classification?", a: "Sigmoid — outputs probability between 0 and 1 that y = 1." },
+      { q: "What output activation for regression with possible negative values?", a: "Linear activation — no bounds, can produce any real number." },
+      { q: "What output activation for non-negative regression (e.g. house price)?", a: "ReLU — only outputs zero or positive values, matching the constraint." },
+      { q: "What hidden layer activation is standard today?", a: "ReLU. It is faster to compute and has fewer flat regions than sigmoid, leading to better gradient flow and faster training." },
+    ],
+  },
+  {
+    slug: "adv-22-why-activation-functions",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Why Do We Need Activation Functions?",
+    order: 22,
+    excerpt: "Without nonlinear activations, a deep neural network collapses into a simple linear model.",
+    theory: `<p>If you use a <strong>linear activation function</strong> (g(z) = z) in every layer of a neural network, something surprising happens: the entire network reduces to a single linear model, no matter how many layers it has.</p>
+<p>Here's the intuition: if the hidden layer computes <code>a1 = w1·x + b1</code> and the output layer computes <code>a2 = w2·a1 + b2</code>, then substituting a1 gives:</p>
+<pre>a2 = w2·(w1·x + b1) + b2 = (w2·w1)·x + (w2·b1 + b2)</pre>
+<p>This is just <code>W·x + B</code> — a plain linear regression. A <em>linear function of a linear function is still linear</em>. Adding more layers does not help — the result is always expressible as a single linear equation.</p>
+<p>Two key implications:</p>
+<ul>
+  <li>A deep network with all linear activations = linear regression (useless depth)</li>
+  <li>A deep network with linear hidden activations + sigmoid output = logistic regression</li>
+</ul>
+<p>This is why <strong>nonlinear activations</strong> (ReLU, sigmoid) are essential: they let the network learn curved decision boundaries and complex feature interactions that no linear model can represent.</p>`,
+    example: "Stack 100 linear layers: still just Wx + b. Insert one ReLU: suddenly the model can approximate any continuous function. Activation functions are the source of expressive power in deep learning.",
+    animation: "OverfittingViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What happens if you use only linear activations in a neural network?",
+        "Why does depth alone not give a neural network expressive power without nonlinearity?",
+        "Can a neural network with sigmoid only at the output still be useful?",
+      ],
+      seniorTip: "The awe-moment answer: 'A linear function of a linear function is linear — this is a basic theorem from linear algebra. So 100 linear layers are mathematically equivalent to 1 linear layer. The only way depth adds power is through nonlinearity. That's why activation functions aren't optional — they're the entire reason neural networks can learn complex patterns.'",
+    },
+    flashCards: [
+      { q: "What does a neural network reduce to with all linear activations?", a: "A simple linear regression model — equivalent to Wx + b, regardless of depth." },
+      { q: "Why can't stacking linear layers give more expressive power?", a: "Linear function of a linear function is still linear (linear algebra). All layers collapse into one equivalent linear transformation." },
+      { q: "What does linear hidden + sigmoid output equal?", a: "Logistic regression — the deep network gains nothing over a shallow model." },
+      { q: "What is the role of activation functions mathematically?", a: "They introduce nonlinearity, enabling the network to approximate arbitrarily complex functions (universal approximation theorem)." },
+    ],
+  },
+  {
+    slug: "adv-23-multiclass-classification",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Multiclass Classification",
+    order: 23,
+    excerpt: "When y can take more than two values — classifying digits 0–9, diseases, or defect types.",
+    theory: `<p><strong>Multiclass classification</strong> generalizes binary classification to problems where y can take on <em>more than two</em> discrete values. Examples include:</p>
+<ul>
+  <li>Recognizing digits 0–9 (10 classes)</li>
+  <li>Diagnosing one of 3 or 5 diseases</li>
+  <li>Detecting scratch, discoloration, or chip defects on manufactured parts</li>
+</ul>
+<p>The key distinction: in binary classification y ∈ {0, 1}. In multiclass, y ∈ {1, 2, ..., n} for some n &gt; 2.</p>
+<p>Instead of estimating one probability P(y=1 | x), a multiclass model estimates:</p>
+<ul>
+  <li>P(y=1 | x), P(y=2 | x), ..., P(y=n | x)</li>
+</ul>
+<p>These probabilities must sum to 1. The decision boundary now divides the feature space into <em>n</em> regions rather than 2, which requires a fundamentally different algorithm: <strong>softmax regression</strong>.</p>
+<p>Note: multiclass is different from <em>multi-label</em> classification. In multiclass, each example belongs to exactly one class. In multi-label, each example can have multiple labels simultaneously (e.g. an image can contain both a car and a pedestrian).</p>`,
+    example: "Email classification: spam / promotional / social / primary — 4 mutually exclusive classes. Each email belongs to exactly one class. This is multiclass. If the email could have multiple labels at once (e.g. 'urgent' AND 'from boss'), that would be multi-label.",
+    animation: "MLLearningSpectrumViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What is the difference between binary, multiclass, and multi-label classification?",
+        "How does the output layer change when moving from binary to multiclass?",
+        "What constraint must the output probabilities satisfy in multiclass classification?",
+      ],
+      seniorTip: "Senior candidates distinguish the three cleanly: 'Binary: y ∈ {0,1}, one sigmoid output. Multiclass: y ∈ {1...n}, one class per example, softmax output. Multi-label: y is a vector of binary flags, one sigmoid per label. The confusion between multiclass and multi-label is a classic interview trap.'",
+    },
+    flashCards: [
+      { q: "Define multiclass classification.", a: "A classification problem where y can take on more than two discrete values, and each example belongs to exactly one class." },
+      { q: "How is multiclass different from multi-label?", a: "Multiclass: exactly one label per example. Multi-label: multiple labels can be true simultaneously for the same example." },
+      { q: "What must the output probabilities sum to in multiclass?", a: "Exactly 1 — since the classes are mutually exclusive and exhaustive." },
+      { q: "What algorithm generalizes logistic regression to multiclass?", a: "Softmax regression." },
+    ],
+  },
+  {
+    slug: "adv-24-softmax-regression",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Softmax Regression",
+    order: 24,
+    excerpt: "The generalization of logistic regression to n classes — computing mutually exclusive class probabilities.",
+    theory: `<p><strong>Softmax regression</strong> extends logistic regression to n classes. For each class j, it computes a raw score:</p>
+<pre>z_j = w_j · x + b_j</pre>
+<p>Then converts all scores to probabilities using the softmax formula:</p>
+<pre>a_j = e^(z_j) / Σ(e^(z_k)) for k=1..n</pre>
+<p>The denominator normalizes everything so all a_j sum to 1. Each a_j is the model's estimated probability that y = j.</p>
+<p>The <strong>loss function</strong> for softmax is the cross-entropy loss: if the ground truth label is y = j, the loss is <code>-log(a_j)</code>. This penalizes the model when it assigns a low probability to the correct class. Minimizing this loss forces a_j toward 1 for the correct class.</p>
+<p>When n = 2, softmax reduces to logistic regression — they are mathematically equivalent. This confirms softmax is the true generalization of logistic regression to multiple classes.</p>
+<p>Parameters: w_1 through w_n and b_1 through b_n — one set per class. The model learns n separate linear boundaries and normalizes them into a probability distribution.</p>`,
+    example: "Digit recognition with 10 classes: softmax computes 10 scores z_1..z_10, exponentiates each, divides by the sum. If z_3 is largest, e^(z_3) dominates the denominator and a_3 approaches 1. The model confidently predicts class 3.",
+    animation: "LogisticSigmoidViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Explain the softmax formula and why it produces valid probabilities.",
+        "What loss function is used with softmax regression and why?",
+        "How does softmax reduce to logistic regression when n=2?",
+      ],
+      seniorTip: "The senior angle: 'Softmax amplifies the largest score exponentially — the highest z gets a disproportionately large probability. This winner-takes-most behavior is useful but also means small score differences lead to large confidence shifts. In production, softmax probabilities can be overconfident; calibration (temperature scaling) is often needed.'",
+    },
+    flashCards: [
+      { q: "What is the softmax formula?", a: "a_j = e^(z_j) / Σ e^(z_k). Exponentiate each score, divide by the sum of all exponentiated scores. Ensures all outputs are positive and sum to 1." },
+      { q: "Why do softmax outputs always sum to 1?", a: "Each a_j is divided by the same denominator — the sum of all e^(z_k). So the sum of all a_j = (sum of numerators) / denominator = denominator / denominator = 1." },
+      { q: "What is the cross-entropy loss for softmax?", a: "If y = j, loss = -log(a_j). Low a_j (model unsure about correct class) → high loss. High a_j (model confident and correct) → loss near 0." },
+      { q: "What special case does softmax reduce to when n=2?", a: "Logistic regression — mathematically equivalent, confirming softmax is the generalization of logistic regression." },
+    ],
+  },
+  {
+    slug: "adv-25-neural-network-softmax-output",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Neural Network with Softmax Output",
+    order: 25,
+    excerpt: "Plugging softmax into the output layer to build a multiclass neural network.",
+    theory: `<p>To build a neural network for multiclass classification, replace the single sigmoid output unit with a <strong>softmax output layer</strong> containing n units — one per class.</p>
+<p>For 10-digit handwritten classification, the architecture is:</p>
+<ul>
+  <li>Hidden layers: same as before (dense + ReLU)</li>
+  <li>Output layer: 10 units with softmax activation</li>
+</ul>
+<p>The softmax layer computes z_1 through z_10 using the standard linear formula, then applies the softmax function to all z values simultaneously to produce a_1 through a_10.</p>
+<p>Key difference from other activations: softmax is <em>not element-wise</em>. Each output a_j depends on <em>all</em> z values, not just z_j. This coupling is what produces a valid probability distribution.</p>
+<p>In TensorFlow:</p>
+<pre>
+model = Sequential([
+  Dense(25, activation='relu'),
+  Dense(15, activation='relu'),
+  Dense(10, activation='softmax')
+])
+model.compile(loss=SparseCategoricalCrossentropy())
+</pre>
+<p><strong>Note:</strong> This "straightforward" implementation works but is numerically less stable. The improved version (next topic) uses <code>from_logits=True</code> for better floating-point accuracy.</p>`,
+    example: "MNIST digit classification: input is 28×28 pixel image. Two hidden layers learn edge and shape features. 10-unit softmax output produces probabilities for digits 0–9. Predicted digit = argmax(a_1..a_10).",
+    animation: "MLLearningSpectrumViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "How does the output layer differ between binary and multiclass neural networks?",
+        "Why is softmax called a 'coupled' activation unlike sigmoid or ReLU?",
+        "What TensorFlow loss function corresponds to multiclass classification?",
+      ],
+      seniorTip: "The coupling point is the interview differentiator: 'Unlike sigmoid or ReLU which apply element-wise (each output depends only on its own input), softmax is a vector operation — every output depends on every z. That coupling enforces the probability sum constraint but also means you can't compute outputs in parallel independently.'",
+    },
+    flashCards: [
+      { q: "How many output units does a 10-class neural network need?", a: "10 — one per class — with softmax activation." },
+      { q: "Why is softmax 'coupled' unlike sigmoid or ReLU?", a: "Each output a_j depends on all z values (via the shared denominator), not just z_j. This is what makes outputs sum to 1." },
+      { q: "What TensorFlow loss for multiclass classification?", a: "SparseCategoricalCrossentropy — 'sparse' means each example has one true class label (not a full probability vector)." },
+      { q: "How do you get the final predicted class from softmax output?", a: "Take argmax of the output probabilities: predicted class = argmax(a_1, a_2, ..., a_n)." },
+    ],
+  },
+  {
+    slug: "adv-26-improved-softmax",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Numerically Stable Softmax",
+    order: 26,
+    excerpt: "Using from_logits=True to avoid floating-point roundoff errors in softmax and logistic loss.",
+    theory: `<p>Computers store numbers with limited precision (floating-point). Computing softmax in two steps — first computing activations a, then computing loss using a — introduces <strong>numerical roundoff errors</strong>. These errors are small for logistic regression but can become significant for softmax.</p>
+<p>The solution: let TensorFlow combine the activation and loss computation into one step, giving it freedom to rearrange terms for numerical stability. This is triggered by setting <code>from_logits=True</code> in the loss function and changing the output layer to use <strong>linear activation</strong>:</p>
+<pre>
+# Recommended (numerically stable):
+model = Sequential([
+  Dense(25, activation='relu'),
+  Dense(15, activation='relu'),
+  Dense(10, activation='linear')  # outputs z values (logits)
+])
+model.compile(
+  loss=SparseCategoricalCrossentropy(from_logits=True)
+)
+</pre>
+<p>TensorFlow then computes the full expression internally in a numerically stable way. The downside: the output layer now produces raw z values ("logits"), not probabilities. To get probabilities for inference, apply softmax manually:</p>
+<pre>logits = model(x)
+probs = tf.nn.softmax(logits)</pre>
+<p>The <strong>same pattern applies to binary classification</strong>: use linear output + BinaryCrossentropy(from_logits=True) instead of sigmoid output + BinaryCrossentropy.</p>`,
+    example: "Computing 2/10000 directly vs. computing (1 + 1/10000) - (1 - 1/10000) gives slightly different answers due to floating-point precision. TensorFlow's from_logits=True avoids intermediate precision loss by collapsing softmax + cross-entropy into one optimized operation.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What is the numerical stability problem with the standard softmax implementation?",
+        "What does from_logits=True do in TensorFlow?",
+        "How do you get probabilities from a model trained with from_logits=True?",
+      ],
+      seniorTip: "Senior engineers know this pattern cold: 'from_logits=True tells TensorFlow to fuse the activation and loss into a single numerically stable computation. The trade-off is your output layer produces logits, not probabilities — you need an explicit softmax step at inference time. Forgetting that is a subtle production bug.'",
+    },
+    flashCards: [
+      { q: "Why is standard softmax numerically unstable?", a: "Computing e^(z) for large z can overflow. Computing the activation then feeding it to the loss separately introduces floating-point rounding errors." },
+      { q: "What does from_logits=True in TensorFlow do?", a: "Fuses the softmax (or sigmoid) activation with the cross-entropy loss into a single numerically stable computation, avoiding intermediate floating-point errors." },
+      { q: "What activation to use with from_logits=True?", a: "Linear — the output layer produces raw z values (logits). TensorFlow internally applies the softmax/sigmoid when computing the loss." },
+      { q: "How to get class probabilities at inference with from_logits=True?", a: "Apply tf.nn.softmax(model(x)) after getting the raw logit outputs from the model." },
+    ],
+  },
+  {
+    slug: "adv-27-multi-label-classification",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Multi-Label Classification",
+    order: 27,
+    excerpt: "When one input can have multiple independent labels simultaneously — cars AND pedestrians in one image.",
+    theory: `<p><strong>Multi-label classification</strong> is a problem where a single input can have <em>multiple labels true at the same time</em>. This is distinct from multiclass classification where each example belongs to exactly one class.</p>
+<p>Example: autonomous driving — given a camera frame, predict whether there is a car (yes/no), a bus (yes/no), and a pedestrian (yes/no). One image can contain all three, none, or any combination.</p>
+<p>Two approaches to multi-label classification:</p>
+<ol>
+  <li><strong>Separate models:</strong> Train one binary classifier per label. Simple but ignores shared features.</li>
+  <li><strong>Single shared network:</strong> Train one network with multiple sigmoid outputs — one per label. Shared hidden layers learn common feature representations; each output head is independent binary classification.</li>
+</ol>
+<p>Architecture for approach 2:</p>
+<pre>
+Output layer: 3 sigmoid units (not softmax)
+Each unit independently predicts: P(car), P(bus), P(pedestrian)
+</pre>
+<p>Note: use <strong>sigmoid</strong> (not softmax) for multi-label — each output is independent and probabilities don't need to sum to 1.</p>`,
+    example: "Medical imaging: a chest X-ray can simultaneously show pneumonia, a fractured rib, and an enlarged heart. Each condition is a separate binary label. The model outputs three independent probabilities, all of which can be high at the same time.",
+    animation: "MLLearningSpectrumViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What is the difference between multi-label and multiclass classification architecturally?",
+        "Why do you use sigmoid instead of softmax for multi-label classification?",
+        "What are the two architectures for multi-label classification?",
+      ],
+      seniorTip: "The architectural insight: 'Softmax enforces mutual exclusivity (outputs sum to 1), which is wrong for multi-label. Sigmoid treats each label independently — each output is a separate logistic unit with its own threshold. The shared hidden layers still benefit from joint training, but the output heads are decoupled.'",
+    },
+    flashCards: [
+      { q: "Define multi-label classification.", a: "A problem where each input can have multiple labels true simultaneously. E.g., an image can contain both a car and a pedestrian." },
+      { q: "Why sigmoid and not softmax for multi-label?", a: "Softmax enforces outputs sum to 1 (mutual exclusivity). Multi-label labels are independent — each can be true at once. Sigmoid lets each output independently be 0 or 1." },
+      { q: "What are the two architectures for multi-label?", a: "1) Separate binary classifier per label. 2) Single network with one sigmoid output unit per label, sharing hidden layers." },
+      { q: "How many output units for a 5-label multi-label problem?", a: "5 sigmoid units — one per label — each independently predicting P(label_i = 1)." },
+    ],
+  },
+  {
+    slug: "adv-28-advanced-optimization-adam",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Adam Optimizer",
+    order: 28,
+    excerpt: "Adaptive Moment Estimation — the de facto standard optimizer that auto-adjusts per-parameter learning rates.",
+    theory: `<p>Gradient descent uses a single global learning rate α for all parameters. This is suboptimal: some parameters may need larger updates while others need smaller ones. The <strong>Adam optimizer</strong> (Adaptive Moment Estimation) solves this by maintaining a <em>separate learning rate per parameter</em>.</p>
+<p>Core intuition:</p>
+<ul>
+  <li>If a parameter keeps moving in the <strong>same direction</strong> step after step → increase its learning rate (take bigger steps)</li>
+  <li>If a parameter keeps <strong>oscillating</strong> back and forth → decrease its learning rate (take smaller steps)</li>
+</ul>
+<p>With n parameters, Adam maintains n separate learning rates α_1 through α_n. All start from the same initial value but diverge based on gradient history.</p>
+<p>In TensorFlow:</p>
+<pre>
+model.compile(
+  optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
+  loss=...
+)
+</pre>
+<p>Practical notes:</p>
+<ul>
+  <li>The initial learning rate (default 1e-3) still matters — worth trying a few values</li>
+  <li>Adam is <strong>more robust</strong> to the exact learning rate choice than plain gradient descent</li>
+  <li>Adam is now the <em>de facto standard</em> — most practitioners use it over plain gradient descent</li>
+</ul>`,
+    example: "If gradient descent takes tiny identical steps toward the minimum, Adam notices the consistency and doubles the step size. If it oscillates wildly, Adam shrinks the step size. The result: faster convergence with less tuning.",
+    animation: "GradientDescentViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What problem does the Adam optimizer solve that plain gradient descent doesn't?",
+        "How does Adam adapt learning rates differently per parameter?",
+        "What does ADAM stand for and what are its two 'moments'?",
+      ],
+      seniorTip: "The deep answer on moments: 'Adam tracks two running averages per parameter: the first moment (mean of gradients — momentum) and the second moment (mean of squared gradients — RMSProp-style scaling). Dividing by the second moment normalizes the update by gradient variance, so parameters with high-variance gradients take smaller steps. That's why it handles sparse gradients well (NLP embeddings, for instance).'",
+    },
+    flashCards: [
+      { q: "What is Adam and what problem does it solve?", a: "Adaptive Moment Estimation. It assigns a separate learning rate per parameter that automatically increases for consistent gradients and decreases for oscillating gradients." },
+      { q: "How many learning rates does Adam use for a model with 100 parameters?", a: "100 — one per parameter. All start from the same initial α but adapt independently based on gradient history." },
+      { q: "What are Adam's two 'moments'?", a: "First moment: running mean of gradients (like momentum). Second moment: running mean of squared gradients (like RMSProp). Together they adapt the effective learning rate per parameter." },
+      { q: "Is Adam sensitive to the initial learning rate?", a: "Less sensitive than plain gradient descent, but still worth tuning. Default 1e-3 is a good starting point. Try 1e-2 and 1e-4 to find the best value." },
+    ],
+  },
+  {
+    slug: "adv-29-additional-layer-types",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Convolutional Layers",
+    order: 29,
+    excerpt: "Beyond dense layers — how convolutional layers let neurons see only local regions for speed and robustness.",
+    theory: `<p>In a <strong>dense layer</strong>, every neuron receives input from every activation in the previous layer. This works well but can be computationally expensive and prone to overfitting when inputs have local structure (images, time series).</p>
+<p>A <strong>convolutional layer</strong> introduces a constraint: each neuron only looks at a <em>local window</em> of the input rather than the entire input. Benefits:</p>
+<ul>
+  <li><strong>Faster computation:</strong> Each neuron has fewer connections</li>
+  <li><strong>Less overfitting:</strong> Fewer parameters, requiring less training data</li>
+  <li><strong>Translation invariance:</strong> The same pattern detected anywhere in the input</li>
+</ul>
+<p>Example with EKG classification: a 100-timestep signal has 100 inputs. Rather than each neuron connecting to all 100, neuron 1 sees timesteps 1–20, neuron 2 sees 11–30, etc. Each neuron specializes in a temporal window.</p>
+<p>Multiple convolutional layers can be stacked: the second layer's neurons look at local windows of the first layer's outputs. This builds hierarchical feature detectors.</p>
+<p>Convolutional Neural Networks (CNNs) power most computer vision. The field continues to invent new layer types — transformers, LSTMs, attention mechanisms — all following this principle of designing layers with specific inductive biases.</p>`,
+    example: "Reading an EKG signal: a 100-point time series. Convolutional layer 1: neurons each see 20 adjacent time steps. Convolutional layer 2: neurons see 5 adjacent outputs from layer 1. Final sigmoid: binary heart disease classification.",
+    animation: null,
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What is the key architectural difference between a dense layer and a convolutional layer?",
+        "What are the advantages of convolutional layers over dense layers for spatial/temporal data?",
+        "Why are convolutional layers used for image processing but dense layers for tabular data?",
+      ],
+      seniorTip: "The design principle at the senior level: 'Convolutional layers encode the inductive bias that nearby inputs are correlated and that patterns can appear anywhere (translation equivariance). Dense layers make no such assumption. You choose conv layers when the problem has local structure you want to exploit — images, audio, time series. Tabular data has no meaningful locality, so dense layers are appropriate there.'",
+    },
+    flashCards: [
+      { q: "What is a convolutional layer?", a: "A layer where each neuron connects to only a local window of the input (not all inputs), reducing parameters and exploiting local structure." },
+      { q: "Name two advantages of convolutional over dense layers.", a: "1) Faster computation (fewer connections per neuron). 2) Less overfitting (fewer parameters, needs less data). 3) Captures local patterns via weight sharing." },
+      { q: "What is a CNN?", a: "Convolutional Neural Network — a network with one or more convolutional layers, dominant in computer vision, audio, and time-series tasks." },
+      { q: "What kinds of data suit convolutional layers?", a: "Data with local spatial or temporal structure: images (spatial), EKG signals (temporal), audio waveforms (temporal). Not suited for unordered tabular data." },
+    ],
+  },
+  {
+    slug: "adv-30-what-is-a-derivative",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "What is a Derivative?",
+    order: 30,
+    excerpt: "Intuitive foundations of calculus derivatives — the engine behind gradient descent and backpropagation.",
+    theory: `<p>A <strong>derivative</strong> answers a simple question: if we nudge the input by a tiny amount ε, how much does the output change?</p>
+<p>Formally: if increasing w by ε causes J(w) to increase by k·ε, then the derivative of J with respect to w is k.</p>
+<p>Example: J(w) = w². If w = 3 and we increase by ε = 0.001, then J(3.001) = 9.006001. J increased by ~0.006 = 6·ε. So the derivative is 6.</p>
+<p>The derivative <em>depends on the current value of w</em>. When w = 2, derivative = 4. When w = -3, derivative = -6. This is why gradient descent takes variable step sizes implicitly — the same α produces different-sized parameter updates depending on gradient magnitude.</p>
+<p>In gradient descent: <code>w = w - α · (dJ/dw)</code></p>
+<ul>
+  <li>Large derivative → large update → big step toward minimum</li>
+  <li>Small derivative → small update → fine-tuning near minimum</li>
+  <li>Negative derivative → w increases (moving away from direction of steepest ascent)</li>
+</ul>
+<p>Notation: for single-variable functions, use d/dw J(w). For multi-variable functions (most ML), use ∂/∂w_j J(w) — called the partial derivative.</p>`,
+    example: "J(w) = w². Using SymPy: diff(w**2, w) returns 2w. At w=3: derivative=6, meaning if w increases by 0.001, J increases by ~0.006. Gradient descent subtracts α·6 from w, pushing w toward the minimum at w=0.",
+    animation: "GradientDescentViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "In plain terms, what does a derivative represent?",
+        "Why do large derivatives cause large gradient descent steps?",
+        "What is the difference between a derivative and a partial derivative?",
+      ],
+      seniorTip: "The practitioner insight: 'Derivatives measure local slope — how sensitive the output is to a small change in the input. In deep learning, gradients are just derivatives of the loss with respect to each parameter. The magnitude of the gradient tells you how much moving that parameter helps or hurts. Parameters with near-zero gradients are stuck — they can barely learn. That's the vanishing gradient problem in formal terms.'",
+    },
+    flashCards: [
+      { q: "Informal definition of a derivative.", a: "If increasing w by ε causes J(w) to increase by k·ε, the derivative of J w.r.t. w is k. It measures how sensitive J is to small changes in w." },
+      { q: "What does a negative derivative mean for gradient descent?", a: "The cost decreases when w increases. Gradient descent will increase w (subtracting a negative number), moving toward the minimum." },
+      { q: "Why does gradient descent step size vary even with constant α?", a: "The gradient magnitude changes with w. Near a minimum, gradients are small → small steps (fine-tuning). Far away, gradients are large → bigger steps." },
+      { q: "What is a partial derivative?", a: "Derivative of a multi-variable function with respect to one variable, holding others constant. Written ∂J/∂w_j. Used in neural network training since J depends on all parameters." },
+    ],
+  },
+  {
+    slug: "adv-31-computation-graph",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Computation Graph and Backprop",
+    order: 31,
+    excerpt: "How neural network frameworks compute gradients efficiently using forward and backward passes through a graph.",
+    theory: `<p>A <strong>computation graph</strong> breaks a complex function into small, composable steps. Each node applies a simple operation; edges show data flow.</p>
+<p>For a neural network with one output unit computing J = ½(wx + b - y)²:</p>
+<ul>
+  <li><strong>Forward pass (left → right):</strong> Compute c = wx, then a = c + b, then d = a - y, then J = ½d²</li>
+  <li><strong>Backward pass (right → left):</strong> Compute ∂J/∂d, then ∂J/∂a, then ∂J/∂b, ∂J/∂c, finally ∂J/∂w</li>
+</ul>
+<p>The backward pass uses the <strong>chain rule</strong>: to find how w affects J, compute how w affects c, how c affects a, how a affects d, and how d affects J — multiplying each local derivative along the path.</p>
+<p>Why backprop is efficient: computing all n derivatives takes O(n + p) steps rather than O(n × p). With 10,000 nodes and 100,000 parameters, that's 110,000 steps vs. 1,000,000,000 steps. This efficiency is why deep learning is practical.</p>
+<p>Modern frameworks (TensorFlow, PyTorch) implement this as <strong>autodiff</strong> (automatic differentiation) — you define the forward computation and the framework builds the computation graph and runs backprop for you.</p>`,
+    example: "Manual backprop check: w=2, x=-2, b=8, y=2. Forward: c=-4, a=4, d=2, J=2. Backprop computes ∂J/∂w = -4. Verify: if w increases by 0.001, J becomes ~1.996 — decreased by ~4×0.001. Confirmed.",
+    animation: "GradientDescentViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What is a computation graph and how does it enable efficient gradient computation?",
+        "Explain the chain rule in the context of backpropagation.",
+        "What is autodiff and why did it change neural network research?",
+      ],
+      seniorTip: "The efficiency argument is key: 'Naively computing every gradient by bumping each parameter one at a time is O(n × p) — a billion operations for a typical network. The computation graph enables O(n + p) by sharing intermediate derivative computations through the chain rule. This is the mathematical reason deep learning is computationally feasible at all.'",
+    },
+    flashCards: [
+      { q: "What is a computation graph?", a: "A directed graph where nodes are operations and edges are data. Breaks complex functions into simple composable steps for efficient derivative computation." },
+      { q: "What are the two passes in backpropagation?", a: "Forward pass (left→right): compute outputs and store intermediate values. Backward pass (right→left): compute derivatives using chain rule, reusing stored intermediate values." },
+      { q: "Why is backprop O(n+p) instead of O(n×p)?", a: "Intermediate derivatives (like ∂J/∂a) are computed once and reused for all parameters downstream. No need to re-run the forward pass per parameter." },
+      { q: "What is autodiff?", a: "Automatic differentiation — frameworks like TensorFlow/PyTorch build the computation graph from your forward pass code and run backprop automatically. Researchers no longer hand-derive gradients." },
+    ],
+  },
+  {
+    slug: "adv-32-larger-neural-network-backprop",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Backprop in a Larger Network",
+    order: 32,
+    excerpt: "Tracing backpropagation through a two-layer network — seeing how gradients flow back to every parameter.",
+    theory: `<p>In a two-layer neural network with one hidden unit per layer, backprop traces the same pattern as in the simple computation graph, but through more nodes.</p>
+<p>Given: w1=2, b1=0, w2=3, b2=1, x=1, y=5, ReLU activations:</p>
+<ul>
+  <li><strong>Forward:</strong> z1 = w1·x + b1 = 2, a1 = ReLU(2) = 2, z2 = w2·a1 + b2 = 7, a2 = ReLU(7) = 7, J = ½(7-5)² = 2</li>
+  <li><strong>Backward:</strong> ∂J/∂a2 = 2, ∂J/∂z2 = 2, ∂J/∂b2 = 2, ∂J/∂w2 = 4, ∂J/∂a1 = 6, ∂J/∂w1 = 6</li>
+</ul>
+<p>Verify ∂J/∂w1 = 6: if w1 increases by 0.001, a1 = 2.001, a2 = 7.003, J = ½(2.003)² ≈ 2.006. J increased by ~6·0.001. ✓</p>
+<p>The chain propagates gradient information backward through every layer: a change in w1 affects z1, affects a1, affects z2, affects a2, affects J. Backprop quantifies each link in this causal chain.</p>
+<p>This is exactly what TensorFlow computes for you automatically — you never need to hand-derive these equations for a production network.</p>`,
+    example: "Gradient of w1 = 6 means: increasing w1 by 1 unit would increase the cost by 6 units (at the current parameters). Gradient descent would subtract α·6 from w1, pushing J downward.",
+    animation: "GradientDescentViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "How does a gradient flow backward through a ReLU activation?",
+        "Why do gradients vanish through many layers with sigmoid activations?",
+        "What is the difference between gradient and parameter update in gradient descent?",
+      ],
+      seniorTip: "The ReLU gradient gate insight: 'ReLU has gradient 1 when z > 0, 0 when z < 0. It acts as a gate — open for positive activations, closed for negative ones. For a neuron with z < 0, the gradient is 0 and that neuron contributes nothing to learning (dead neuron). With many dead neurons, you can lose significant learning capacity. This is the dying ReLU problem, addressed by Leaky ReLU.'",
+    },
+    flashCards: [
+      { q: "What is the gradient of ReLU?", a: "1 for z > 0 (passes gradient through unchanged), 0 for z < 0 (blocks gradient — dead neuron). Gradient is undefined at exactly z = 0 (usually treated as 0 or 1)." },
+      { q: "What is the 'dying ReLU' problem?", a: "When a ReLU neuron always has z < 0 for all training examples, its gradient is always 0 and its weights never update. The neuron is 'dead'. Addressed by Leaky ReLU (small gradient for z < 0)." },
+      { q: "How does backprop know which parameters to update?", a: "The computation graph traces every path from each parameter to the output J. The chain rule accumulates gradients along each path, giving ∂J/∂w_i for every parameter w_i." },
+      { q: "What does a gradient of 0 mean for training?", a: "The parameter has no effect on the loss at the current values — changing it doesn't help. Common near minima (desired) or for dead neurons (problematic)." },
+    ],
+  },
+  {
+    slug: "adv-33-deciding-what-to-try-next",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Deciding What to Try Next",
+    order: 33,
+    excerpt: "The systematic approach to ML debugging — why intuition fails and diagnostics save months of wasted effort.",
+    theory: `<p>When a machine learning model underperforms, there are many potential fixes: more data, fewer/more features, polynomial features, different regularization λ, different architecture. Without guidance, teams can waste months on the wrong direction.</p>
+<p>Common options when predictions are too inaccurate:</p>
+<ol>
+  <li>Get more training examples</li>
+  <li>Try fewer features (reduce overfitting)</li>
+  <li>Add additional features</li>
+  <li>Add polynomial features</li>
+  <li>Decrease λ (less regularization)</li>
+  <li>Increase λ (more regularization)</li>
+</ol>
+<p>The key insight: on any given application, some of these will help and some won't. The skill of an experienced ML engineer is knowing which to try <em>without exhaustive experimentation</em>.</p>
+<p>The tool for making these decisions: <strong>diagnostics</strong> — systematic tests that give insight into what's wrong. A diagnostic might take hours to implement but can save months of misguided work by ruling out entire categories of fixes.</p>
+<p>The most powerful diagnostic: <strong>bias-variance analysis</strong> (covered in the next topics). It directly tells you whether to get more data, simplify the model, or add complexity.</p>`,
+    example: "Team spends 4 months collecting 10x more training data. Model barely improves. Diagnosis would have revealed: it's a high-bias problem. More data never fixes high bias. That 4 months was wasted. A 2-hour diagnostic would have shown this on day one.",
+    animation: "OverfittingViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What is a machine learning diagnostic and why is it valuable?",
+        "If your model has high training error, what does that tell you about what to try next?",
+        "How do you decide between getting more data vs. changing the model architecture?",
+      ],
+      seniorTip: "The senior framing: 'Experienced ML engineers don't randomly try things — they form a hypothesis about why the model is failing, design a diagnostic to test it, then act on the result. The hypothesis is usually framed as: is this a bias problem (model too simple) or a variance problem (model too complex)? That question narrows the solution space from 6 options to 2-3.'",
+    },
+    flashCards: [
+      { q: "What is an ML diagnostic?", a: "A systematic test run on a model to gain insight into what is or isn't working — not a fix itself, but guidance on where to invest effort." },
+      { q: "Why is more training data not always the answer?", a: "More data primarily helps with high-variance (overfitting) problems. For high-bias (underfitting) problems, more data rarely helps — the model is too simple to use it." },
+      { q: "Name 6 options when an ML model underperforms.", a: "1) More training data. 2) Fewer features. 3) More features. 4) Polynomial features. 5) Decrease λ. 6) Increase λ." },
+      { q: "What is the most powerful diagnostic for guiding ML improvements?", a: "Bias-variance analysis — examining training error and cross-validation error tells you whether to simplify, complicate, or add data." },
+    ],
+  },
+  {
+    slug: "adv-34-evaluating-a-model",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Evaluating a Model",
+    order: 34,
+    excerpt: "Train/test splits and why J_train alone deceives you — measuring generalization systematically.",
+    theory: `<p>Training error J_train is a poor measure of model quality: a high-degree polynomial can perfectly fit training data yet fail catastrophically on new examples. To measure <strong>generalization</strong>, you need data the model has never seen.</p>
+<p>The standard approach: split your dataset into a <strong>training set</strong> (~70%) and a <strong>test set</strong> (~30%). Train on the training set; evaluate on the test set.</p>
+<p>Metrics:</p>
+<ul>
+  <li><strong>Regression:</strong> J_test = mean squared error on test set (no regularization term)</li>
+  <li><strong>Classification:</strong> J_test = fraction of test examples misclassified</li>
+</ul>
+<p>J_train vs. J_test:</p>
+<ul>
+  <li>If J_train is low and J_test is high → model memorized training data (overfitting / high variance)</li>
+  <li>If both J_train and J_test are high → model is too simple (underfitting / high bias)</li>
+</ul>
+<p>A systematic train/test split is the foundation of reliable model evaluation. It prevents the illusion that a model works just because it fits the data it was trained on.</p>`,
+    example: "Fourth-order polynomial fit to 5 training points: J_train ≈ 0, perfect fit. J_test on 3 held-out points: very high — the model memorized noise, not patterns. The test set exposes what J_train hides.",
+    animation: "OverfittingViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Why is training error not a reliable indicator of model performance?",
+        "What is a train/test split and what is the typical ratio?",
+        "How does the test error metric differ between regression and classification?",
+      ],
+      seniorTip: "The production framing: 'J_train measures how well the model memorizes. J_test measures how well it generalizes. The gap between the two is the generalization gap — the primary diagnostic for overfitting. In production, the relevant metric is always test/validation performance, never training performance. Training performance only tells you if the model can fit at all.'",
+    },
+    flashCards: [
+      { q: "Why split data into training and test sets?", a: "To measure generalization — how well the model performs on unseen data. Training error alone is deceptive because a model can memorize training data without generalizing." },
+      { q: "What is J_test for regression?", a: "Mean squared error on the test set (not including the regularization term) — measures average prediction error on held-out examples." },
+      { q: "What is J_test for classification?", a: "Fraction of test examples misclassified — the test error rate. Simpler and more interpretable than logistic loss." },
+      { q: "What does a large gap between J_train and J_test indicate?", a: "High variance (overfitting) — model performs well on training data but poorly on new data. Model has memorized training noise rather than learned true patterns." },
+    ],
+  },
+  {
+    slug: "adv-35-model-selection-cross-validation",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Model Selection and Cross-Validation",
+    order: 35,
+    excerpt: "The three-way split — why you need a cross-validation set to choose models without contaminating the test set.",
+    theory: `<p>If you use the test set to choose between models (e.g. trying polynomial degrees 1–10 and picking the best), you introduce a subtle bias: J_test for the chosen model is an <em>optimistically biased</em> estimate of generalization. The test set was used as part of the selection process.</p>
+<p>The solution: add a third split — the <strong>cross-validation set</strong> (also called validation set, dev set, or development set).</p>
+<p>Three-way split: training (~60%) / cross-validation (~20%) / test (~20%)</p>
+<p>Workflow:</p>
+<ol>
+  <li>Fit parameters w, b on the <strong>training set</strong></li>
+  <li>Choose model (degree, architecture, λ) using <strong>J_cv</strong> on the cross-validation set</li>
+  <li>Report final performance using <strong>J_test</strong> on the test set</li>
+</ol>
+<p>This keeps the test set pristine — it never influenced any decision. J_test is then an unbiased estimate of true generalization error.</p>
+<p>Cross-validation applies to choosing any model hyperparameter: polynomial degree, neural network architecture (layers/units), regularization λ, etc.</p>`,
+    example: "Trying 10 neural network architectures: evaluate each on cross-validation set, pick the one with lowest J_cv. Never look at test set during selection. Once final architecture is chosen, evaluate once on test set to estimate real-world performance.",
+    animation: "OverfittingViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Why does using the test set for model selection give an optimistically biased estimate?",
+        "What is the purpose of each of the three data splits in train/val/test?",
+        "What types of decisions should only use the training and cross-validation sets?",
+      ],
+      seniorTip: "The leakage principle: 'Any decision you make using data from a set contaminates that set — the evaluation on it is no longer an unbiased estimate of generalization. The test set must remain completely unused until you have one final model. At companies, teams will sometimes accidentally use test set performance to guide design decisions (leakage), then wonder why production performance is worse than expected.'",
+    },
+    flashCards: [
+      { q: "What are the three data splits and their roles?", a: "Training set: fit parameters. Cross-validation set: choose model/hyperparameters. Test set: final unbiased estimate of generalization error (use only once)." },
+      { q: "Why is a cross-validation set necessary?", a: "Using test set for model selection makes J_test optimistically biased — it's no longer an unbiased generalization estimate. Cross-validation set absorbs the selection process." },
+      { q: "What is the cross-validation set also called?", a: "Validation set, dev set (development set), or hold-out set. All mean the same thing: the intermediate set used for model selection." },
+      { q: "Typical train/val/test split ratios?", a: "60/20/20 is common for smaller datasets. With large datasets (millions of examples), 98/1/1 is fine — absolute size matters more than percentage." },
+    ],
+  },
+  {
+    slug: "adv-36-diagnosing-bias-and-variance",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Diagnosing Bias and Variance",
+    order: 36,
+    excerpt: "The two fundamental failure modes of ML models — high bias underfits, high variance overfits.",
+    theory: `<p><strong>Bias</strong> and <strong>variance</strong> are the two fundamental failure modes. Diagnosing which you have tells you exactly what to try next.</p>
+<p><strong>High bias (underfitting):</strong></p>
+<ul>
+  <li>J_train is high (model can't even fit training data)</li>
+  <li>J_cv ≈ J_train (both high — model too simple for the problem)</li>
+  <li>Example: fitting a straight line to curved data</li>
+</ul>
+<p><strong>High variance (overfitting):</strong></p>
+<ul>
+  <li>J_train is low (model fits training data well)</li>
+  <li>J_cv >> J_train (big gap — model memorized training data, fails on new examples)</li>
+  <li>Example: fitting a 4th-degree polynomial to 5 data points</li>
+</ul>
+<p><strong>Just right:</strong></p>
+<ul>
+  <li>Both J_train and J_cv are low and similar</li>
+</ul>
+<p>Plotting J_train and J_cv as a function of model complexity (polynomial degree): J_train decreases monotonically with complexity. J_cv is U-shaped — high for simple models (high bias), low in the middle (just right), high again for complex models (high variance).</p>
+<p>In rare cases, especially neural networks: <strong>both high bias AND high variance simultaneously</strong>. J_train is high AND J_cv >> J_train. Happens when a model overfits part of the input space but underfits another part.</p>`,
+    example: "d=1 (linear): J_train=15%, J_cv=16% → high bias (both high). d=4 (degree 4): J_train=1%, J_cv=18% → high variance (big gap). d=2 (quadratic): J_train=5%, J_cv=6% → just right.",
+    animation: "OverfittingViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "How do you diagnose high bias vs. high variance from J_train and J_cv?",
+        "Can a model have both high bias and high variance simultaneously?",
+        "What does the J_cv curve look like as model complexity increases?",
+      ],
+      seniorTip: "The actionable framing: 'High bias → the model is too simple. Fix: more features, more layers, less regularization, polynomial features. High variance → model is too complex. Fix: more training data, fewer features, more regularization, dropout. These are opposite interventions. If you can diagnose which problem you have, you immediately know which half the solution space to ignore.'",
+    },
+    flashCards: [
+      { q: "Signature of high bias (underfitting)?", a: "J_train is high. J_cv ≈ J_train (both high). Model too simple to capture the pattern." },
+      { q: "Signature of high variance (overfitting)?", a: "J_train is low. J_cv >> J_train (large gap). Model memorized training data but can't generalize." },
+      { q: "What does J_cv look like as polynomial degree increases?", a: "U-shaped: high at low degree (high bias/underfitting), low at middle degree (good fit), high at high degree (high variance/overfitting)." },
+      { q: "Is it possible to have both high bias and high variance?", a: "Yes — especially in neural networks that overfit part of the input space and underfit another part. Signature: J_train is high AND J_cv >> J_train." },
+    ],
+  },
+  {
+    slug: "adv-37-regularization-and-bias-variance",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Regularization and Bias-Variance",
+    order: 37,
+    excerpt: "How λ shifts the bias-variance tradeoff — and how cross-validation finds the sweet spot automatically.",
+    theory: `<p>Regularization parameter λ directly controls the bias-variance tradeoff:</p>
+<ul>
+  <li><strong>Very large λ (e.g. 10,000):</strong> Strongly penalizes weights → all w≈0 → model ≈ constant → high bias, underfitting</li>
+  <li><strong>Very small λ (e.g. 0):</strong> No regularization → model overfits training data → high variance</li>
+  <li><strong>Intermediate λ:</strong> Balance between fitting and regularizing → good generalization</li>
+</ul>
+<p>How to choose λ: use cross-validation. Try λ ∈ {0, 0.01, 0.02, 0.04, ..., 10} (doubling each step). For each λ:</p>
+<ol>
+  <li>Minimize cost to get parameters w, b</li>
+  <li>Evaluate J_cv(w, b) on cross-validation set</li>
+</ol>
+<p>Pick the λ with lowest J_cv. Then estimate generalization error using J_test.</p>
+<p>Plotting J_train and J_cv vs. λ: this is a mirror image of the degree-of-polynomial plot. High variance is on the left (small λ), high bias is on the right (large λ). The minimum of J_cv is in the middle — the optimal λ.</p>`,
+    example: "λ=0: perfect training fit but overfits. λ=10000: flat prediction (constant), underfits badly. λ=0.1: J_train=8%, J_cv=9% — the sweet spot. Cross-validation found it automatically by evaluating 12 candidates.",
+    animation: "OverfittingViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "How does increasing λ affect bias and variance?",
+        "How do you choose the optimal regularization parameter λ?",
+        "Why do J_train and J_cv vs. λ look like a mirror image of the polynomial degree plots?",
+      ],
+      seniorTip: "The tradeoff articulation: 'λ controls a dial between two failure modes. Too large: model ignores the data (high bias). Too small: model memorizes the data (high variance). Cross-validation systematically scans this dial and finds the value where the model generalizes best. This principle extends beyond λ — it's how you tune any regularization hyperparameter.'",
+    },
+    flashCards: [
+      { q: "What does very large λ cause?", a: "High bias / underfitting. All weights driven near 0, model becomes approximately constant, ignores features." },
+      { q: "What does very small λ (or λ=0) cause?", a: "High variance / overfitting. No regularization penalty, model memorizes training data, large J_cv." },
+      { q: "How do you select optimal λ?", a: "Try multiple values (0, 0.01, 0.02, ... doubling), evaluate J_cv for each, pick the λ with lowest J_cv." },
+      { q: "Why is the J_cv vs λ plot U-shaped?", a: "Small λ: overfitting (high J_cv). Large λ: underfitting (high J_cv). Optimal λ in the middle gives the lowest J_cv." },
+    ],
+  },
+  {
+    slug: "adv-38-establishing-baseline-performance",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Establishing a Baseline Level of Performance",
+    order: 38,
+    excerpt: "Why raw error numbers are misleading without a baseline — human-level performance as the anchor for bias-variance judgment.",
+    theory: `<p>High J_train doesn't always mean high bias. The question is: high compared to what? For problems where perfect accuracy is impossible (noisy audio, ambiguous images), even humans make errors. A model matching human performance is succeeding.</p>
+<p><strong>Baseline level of performance</strong>: the error rate you can reasonably hope to achieve. Common choices:</p>
+<ul>
+  <li><strong>Human-level performance</strong> — for audio, images, text where humans excel</li>
+  <li><strong>Competing algorithm's performance</strong> — if a prior implementation exists</li>
+  <li><strong>Domain expert estimate</strong> — based on prior experience</li>
+</ul>
+<p>Revised bias-variance diagnosis with baseline:</p>
+<ul>
+  <li><strong>Gap between baseline and J_train</strong> → size of high-bias problem</li>
+  <li><strong>Gap between J_train and J_cv</strong> → size of high-variance problem</li>
+</ul>
+<p>Example: Speech recognition — human error = 10.6%, J_train = 10.8%, J_cv = 14.8%.</p>
+<ul>
+  <li>Bias gap: 10.8 - 10.6 = 0.2% (tiny → low bias)</li>
+  <li>Variance gap: 14.8 - 10.8 = 4.0% (large → high variance)</li>
+  <li>Conclusion: not a bias problem — it's a variance problem. More data or regularization, not a more complex model.</li>
+</ul>`,
+    example: "Without baseline: J_train=10.8% looks terrible. With baseline (human=10.6%): the model is nearly matching human performance — that 10.8% is essentially irreducible noise. The real problem is the 4% gap between J_train and J_cv (variance).",
+    animation: "OverfittingViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Why is raw training error insufficient to diagnose high bias?",
+        "How do you use human-level performance as a baseline in practice?",
+        "Walk through an example of applying baseline + bias-variance diagnosis.",
+      ],
+      seniorTip: "The irreducible error concept: 'Some errors are irreducible — no model can do better because the data itself is ambiguous or noisy. Human-level performance approximates this Bayes error floor. If your model matches human performance, it has extracted all learnable signal. Further improvement requires better data quality, not a better model. Knowing this boundary saves teams from chasing impossible accuracy targets.'",
+    },
+    flashCards: [
+      { q: "What is a baseline level of performance?", a: "The error rate you can reasonably hope to achieve — often human-level performance. Provides a reference point to judge whether J_train is actually high or expected." },
+      { q: "How do you measure the size of a high-bias problem with a baseline?", a: "Gap = J_train - baseline. Large gap → high bias. Small gap → training error is close to theoretical minimum." },
+      { q: "How do you measure the size of a high-variance problem?", a: "Gap = J_cv - J_train. Large gap → high variance (model generalizes poorly). Small gap → variance is acceptable." },
+      { q: "When is human-level performance not the right baseline?", a: "When the task is super-human (e.g. medical imaging diagnosis where models outperform doctors). Use domain expert estimates or prior art as baseline instead." },
     ],
   },
 ];
@@ -5416,7 +6799,7 @@ function applyMlTranscriptDeepening(sectionNodes) {
   if (deepeningByOrder.size === 0) return sectionNodes;
 
   return sectionNodes.map((node) => {
-    if (node.slug === "advanced-placeholder") return node;
+    if (node.conceptId === "advanced-learning-algorithms") return node;
     const deepeningHtml = deepeningByOrder.get(node.order);
     if (!deepeningHtml || !node.theory) return node;
     if (node.theory.includes("Transcript Deepening")) return node;

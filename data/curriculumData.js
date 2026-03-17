@@ -6795,7 +6795,7 @@ model.compile(
 Operational takeaway:
 - High bias -> change the model or features.
 - High variance -> more data may actually be the right investment.`,
-    animation: "OverfittingViz",
+    animation: "LearningCurveDecisionLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6831,7 +6831,7 @@ Operational takeaway:
 
 Same symptom: "model is bad."
 Different diagnosis: completely different next action.`,
-    animation: "OverfittingViz",
+    animation: "LearningCurveDecisionLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6875,7 +6875,7 @@ Different diagnosis: completely different next action.`,
 - Next move: stronger regularization, augmentation, or more labeled images.
 
 This is why deep learning teams often talk about making the model large enough first, then managing generalization.`,
-    animation: "OverfittingViz",
+    animation: "LearningCurveDecisionLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6920,7 +6920,7 @@ This is why deep learning teams often talk about making the model large enough f
 
 The loop is not "train until lucky."
 It is "diagnose, choose one informed intervention, retrain, and measure again."`,
-    animation: "MLLearningSpectrumViz",
+    animation: "MLLifecycleFlywheelViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6959,7 +6959,7 @@ It is "diagnose, choose one informed intervention, retrain, and measure again."`
 Decision:
 - Prioritize pharma and phishing fixes.
 - Do not spend the next sprint building a sophisticated misspelling detector first.`,
-    animation: "MLLearningSpectrumViz",
+    animation: "ErrorTriageBoard",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6996,7 +6996,7 @@ Decision:
 
 Counterexample:
 - Randomly adding meaningless pixel noise that never appears in production can hurt more than help.`,
-    animation: "MLLearningSpectrumViz",
+    animation: "ErrorTriageBoard",
     tool: null,
     interviewPrep: {
       questions: [
@@ -7039,7 +7039,7 @@ Counterexample:
 
 Result:
 The model starts with generic image features already learned, so far less target data is needed.`,
-    animation: "MLLearningSpectrumViz",
+    animation: "TransferLearningFlowLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -7085,7 +7085,7 @@ The model starts with generic image features already learned, so far less target
 6. Retrain and roll out an updated model when drift appears.
 
 Without monitoring and update pipelines, even a strong initial model decays in value.`,
-    animation: "MLLearningSpectrumViz",
+    animation: "MLLifecycleFlywheelViz",
     tool: "MLProblemFramingTool",
     interviewPrep: {
       questions: [
@@ -7128,7 +7128,7 @@ Without monitoring and update pipelines, even a strong initial model decays in v
 - They deploy with monitoring and a mitigation plan already prepared.
 
 This is much better than shipping first and only reacting once harm is visible in production.`,
-    animation: "MLLearningSpectrumViz",
+    animation: "FairnessRiskMatrixLab",
     tool: null,
     interviewPrep: {
       questions: [

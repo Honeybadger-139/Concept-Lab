@@ -55,6 +55,11 @@ const ComponentMap = {
   ConvolutionWindowViz:    withLoader(() => import("@/components/ConvolutionWindowViz")),
   EvaluationSplitFlowViz:  withLoader(() => import("@/components/EvaluationSplitFlowViz")),
   BiasVarianceWorkbench:   withLoader(() => import("@/components/BiasVarianceWorkbench")),
+  LearningCurveDecisionLab: withLoader(() => import("@/components/LearningCurveDecisionLab")),
+  ErrorTriageBoard:        withLoader(() => import("@/components/ErrorTriageBoard")),
+  TransferLearningFlowLab: withLoader(() => import("@/components/TransferLearningFlowLab")),
+  MLLifecycleFlywheelViz:  withLoader(() => import("@/components/MLLifecycleFlywheelViz")),
+  FairnessRiskMatrixLab:   withLoader(() => import("@/components/FairnessRiskMatrixLab")),
   PrecisionRecallTradeoffLab: withLoader(() => import("@/components/PrecisionRecallTradeoffLab")),
   DecisionTreeSplitViz:   withLoader(() => import("@/components/DecisionTreeSplitViz")),
   // RAG visualizations

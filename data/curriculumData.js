@@ -220,6 +220,24 @@ const ML_CONCEPT_BY_SLUG = {
   "adv-36-diagnosing-bias-and-variance": "advanced-learning-algorithms",
   "adv-37-regularization-and-bias-variance": "advanced-learning-algorithms",
   "adv-38-establishing-baseline-performance": "advanced-learning-algorithms",
+  "adv-39-learning-curves": "advanced-learning-algorithms",
+  "adv-40-deciding-what-to-try-next-revisited": "advanced-learning-algorithms",
+  "adv-41-bias-variance-and-neural-networks": "advanced-learning-algorithms",
+  "adv-42-iterative-loop-of-ml-development": "advanced-learning-algorithms",
+  "adv-43-error-analysis": "advanced-learning-algorithms",
+  "adv-44-adding-data": "advanced-learning-algorithms",
+  "adv-45-transfer-learning": "advanced-learning-algorithms",
+  "adv-46-full-cycle-of-a-ml-project": "advanced-learning-algorithms",
+  "adv-47-fairness-bias-and-ethics": "advanced-learning-algorithms",
+  "adv-48-error-metrics-for-skewed-datasets": "advanced-learning-algorithms",
+  "adv-49-trading-off-precision-and-recall": "advanced-learning-algorithms",
+  "adv-50-decision-tree-model": "advanced-learning-algorithms",
+  "adv-51-decision-tree-learning-process": "advanced-learning-algorithms",
+  "adv-52-measuring-purity-entropy": "advanced-learning-algorithms",
+  "adv-53-choosing-a-split-information-gain": "advanced-learning-algorithms",
+  "adv-54-decision-tree-putting-it-together": "advanced-learning-algorithms",
+  "adv-55-one-hot-encoding-categorical-features": "advanced-learning-algorithms",
+  "adv-56-continuous-valued-features": "advanced-learning-algorithms",
 };
 
 // ─────────────────────────────────────────────────────────
@@ -6754,6 +6772,801 @@ model.compile(
       { q: "How do you measure the size of a high-bias problem with a baseline?", a: "Gap = J_train - baseline. Large gap → high bias. Small gap → training error is close to theoretical minimum." },
       { q: "How do you measure the size of a high-variance problem?", a: "Gap = J_cv - J_train. Large gap → high variance (model generalizes poorly). Small gap → variance is acceptable." },
       { q: "When is human-level performance not the right baseline?", a: "When the task is super-human (e.g. medical imaging diagnosis where models outperform doctors). Use domain expert estimates or prior art as baseline instead." },
+    ],
+  },
+  {
+    slug: "adv-39-learning-curves",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Learning Curves",
+    order: 39,
+    excerpt: "How training and cross-validation error change as data grows, and what that tells you about whether collecting more data is worth it.",
+    theory: `<p><strong>Learning curves plot model error as a function of training-set size.</strong> Instead of asking only "how good is the model right now?", they ask "how is the model behaving as it gets more experience?" The horizontal axis is <code>m_train</code>, the number of training examples. The vertical axis is usually <code>J_train</code> and <code>J_cv</code>.</p>
+<p><strong>The surprising pattern:</strong> as the training set gets bigger, training error usually rises. That sounds wrong at first, but it makes sense: fitting one or two points perfectly is easy, while fitting hundreds of points perfectly is much harder. Cross-validation error usually falls because the model sees more representative data and generalizes better.</p>
+<p><strong>High-bias learning curve:</strong> both curves flatten early at a relatively high level. <code>J_train</code> is high, <code>J_cv</code> is a little higher, and the gap is small. This means the model is too simple. More data does not solve the problem because the model family itself cannot represent the pattern well enough.</p>
+<p><strong>High-variance learning curve:</strong> <code>J_train</code> stays low while <code>J_cv</code> is much higher, creating a large gap. As more data is added, the gap can shrink. This is the classic case where collecting more data is genuinely useful, because the model already has enough capacity and needs more examples to stop memorizing.</p>
+<p><strong>How to use this in practice:</strong> learning curves are a decision tool. If curves show high bias, do not launch a huge data-collection project first. Change model capacity, features, or regularization. If curves show high variance, more data, augmentation, or stronger regularization may pay off. The curve tells you which direction is worth your time.</p>
+<p><strong>Architecture note:</strong> most teams do not recompute full learning curves every day because training many sub-models is expensive. But the mental model is essential. A lot of strong ML decisions come from asking, "If I doubled data tomorrow, would the error really move?"</p>`,
+    example: `Housing-price example:
+- High-bias model: linear regression on a curved target. J_train and J_cv both flatten at high error. Doubling data does almost nothing.
+- High-variance model: fourth-degree polynomial with weak regularization. J_train is low, J_cv is high, and the gap shrinks as more data arrives.
+
+Operational takeaway:
+- High bias -> change the model or features.
+- High variance -> more data may actually be the right investment.`,
+    animation: "OverfittingViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Why does training error often increase as the number of training examples grows?",
+        "What does a high-bias learning curve look like, and what does it imply?",
+        "When do learning curves justify spending time on collecting more data?",
+      ],
+      seniorTip: "A strong answer links the curve to action. Don't stop at 'high bias means underfitting.' Continue with 'therefore more data is unlikely to help, so I would instead increase model capacity or reduce regularization.'",
+    },
+    flashCards: [
+      { q: "Why can J_train rise as training-set size increases?", a: "Because fitting a tiny dataset perfectly is easy, while fitting a large dataset perfectly is harder. More examples make the training problem more realistic and more demanding." },
+      { q: "What is the signature of a high-bias learning curve?", a: "Both J_train and J_cv plateau at a relatively high level, and the gap between them is small." },
+      { q: "What is the signature of a high-variance learning curve?", a: "J_train is much lower than J_cv, and the large gap suggests the model is memorizing rather than generalizing." },
+      { q: "When does collecting more data help the most?", a: "When the model has high variance. More examples can shrink the gap between training and cross-validation error." },
+    ],
+  },
+  {
+    slug: "adv-40-deciding-what-to-try-next-revisited",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Deciding What to Try Next, Revisited",
+    order: 40,
+    excerpt: "How bias and variance map directly to the next engineering move, so you stop guessing and start debugging systematically.",
+    theory: `<p><strong>Bias-variance analysis is only useful if it changes what you do next.</strong> This topic turns diagnosis into action. Once you know whether the problem is mostly bias or mostly variance, the list of sensible next steps becomes much smaller.</p>
+<p><strong>Fixes for high bias:</strong> use a more expressive model, add useful features, add polynomial features, decrease regularization, or increase neural-network capacity. All of these increase flexibility. The common theme is: the current model is not powerful enough to fit the signal already present in the data.</p>
+<p><strong>Fixes for high variance:</strong> collect more data, reduce features when they add noise, increase regularization, or simplify the model. The common theme here is: the model is too sensitive to the training set and needs stronger constraints or broader evidence.</p>
+<p><strong>The key engineering lesson:</strong> these interventions point in opposite directions. If you misdiagnose the problem, you can spend months making it worse. More data does not rescue a severely biased model. Bigger model capacity does not rescue a severely high-variance system unless you also address regularization or data scale.</p>
+<p><strong>One important caution from the transcript:</strong> do not "fix" high bias by throwing away training examples. Yes, a smaller training set may lower training error, but it usually hurts cross-validation performance. That is the wrong objective. The goal is generalization, not flattering the training metric.</p>
+<p><strong>Architecture note:</strong> experienced ML engineers use a loop of hypothesis -> diagnostic -> intervention. They do not maintain a generic checklist where every project gets more data, more layers, and more features. The diagnosis determines which branch of the solution space is worth exploring.</p>`,
+    example: `Spam classifier example:
+- If J_train is high and J_cv is only slightly higher, you likely have high bias. Better tokenization, stronger features, or a more expressive model may help.
+- If J_train is low but J_cv is much worse, you likely have high variance. Targeted data collection for failure categories or stronger regularization is more promising.
+
+Same symptom: "model is bad."
+Different diagnosis: completely different next action.`,
+    animation: "OverfittingViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "How do you translate a bias-variance diagnosis into concrete next steps?",
+        "Why is 'collect more data' not a universal fix for poor ML performance?",
+        "What is wrong with reducing the training set to make training error look better?",
+      ],
+      seniorTip: "Interviewers love this framing: 'The diagnosis reduces the search space.' It shows you are not debugging by random experimentation but by structured elimination.",
+    },
+    flashCards: [
+      { q: "High bias -> what types of changes?", a: "Increase model flexibility: richer features, more complex model, less regularization, or more expressive architecture." },
+      { q: "High variance -> what types of changes?", a: "Increase stability: more data, stronger regularization, simpler model, or more careful feature selection." },
+      { q: "Why is 'more data' not always good advice?", a: "Because more data mainly helps variance problems. It does not fix a model that is fundamentally too simple." },
+      { q: "Why not shrink the training set to reduce bias?", a: "Because lower training error from a tiny dataset does not mean better generalization. It usually worsens cross-validation behavior." },
+    ],
+  },
+  {
+    slug: "adv-41-bias-variance-and-neural-networks",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Bias, Variance, and Neural Networks",
+    order: 41,
+    excerpt: "Why deep learning changed the old bias-variance tradeoff story and gave engineers a new recipe for improving models.",
+    theory: `<p><strong>Classical ML teaches a harsh tradeoff:</strong> simple models have high bias, complex models have high variance, and you must carefully balance the two. Neural networks changed that story because sufficiently large networks often behave like low-bias machines: they can fit the training set very well if compute and optimization are adequate.</p>
+<p><strong>The practical recipe from the transcript is powerful:</strong></p>
+<ol>
+  <li>Train the neural network.</li>
+  <li>Ask whether it does well on the training set.</li>
+  <li>If not, increase network size or capacity to reduce bias.</li>
+  <li>Once training error is acceptable, check cross-validation performance.</li>
+  <li>If variance remains high, get more data or regularize better.</li>
+</ol>
+<p><strong>Why this is such a big deal:</strong> in many neural-network projects, you no longer have to choose between "more expressive" and "more stable" in exactly the same way older polynomial examples suggested. You can often make the network bigger and then control variance with regularization and more data.</p>
+<p><strong>Important caveat:</strong> "bigger rarely hurts" is not the same as "bigger is free." Larger networks increase training cost, inference cost, memory use, and deployment complexity. Deep learning's success was enabled by hardware growth, especially GPUs, which made these larger models practical.</p>
+<p><strong>Regularization in neural networks:</strong> the same principle still applies. If a large network is regularized appropriately, it often performs as well as or better than a smaller one. The failure mode is not bigness alone, but bigness without enough data, compute, or regularization discipline.</p>
+<p><strong>Architecture note:</strong> the modern deep-learning development loop is often "capacity first, regularization second, data third." Not because data is less important, but because capacity limits are easier to detect early by examining training error.</p>`,
+    example: `Image classifier workflow:
+- Small network: high training error, high bias.
+- Larger network: training error drops sharply.
+- Cross-validation still weak: now the problem is variance, not bias.
+- Next move: stronger regularization, augmentation, or more labeled images.
+
+This is why deep learning teams often talk about making the model large enough first, then managing generalization.`,
+    animation: "OverfittingViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "How did neural networks change the traditional bias-variance tradeoff discussion?",
+        "Why can larger neural networks often help without hurting final performance?",
+        "What is the practical workflow for reducing bias and variance in a neural-network project?",
+      ],
+      seniorTip: "The best answer here is nuanced: larger models usually help if regularized properly, but the real cost is computational and operational, not just statistical.",
+    },
+    flashCards: [
+      { q: "Why are large neural networks often called low-bias machines?", a: "Because if they are large enough and the dataset is not impossibly huge, they can usually fit the training set well." },
+      { q: "What should you check first in a neural-network project: J_train or J_cv?", a: "Check J_train first. If training performance is poor, you still have a bias problem and should not jump straight to data collection." },
+      { q: "When does a larger network 'hurt' most in practice?", a: "Through higher compute, slower training, higher inference cost, and harder deployment constraints." },
+      { q: "How do you usually control variance in large neural networks?", a: "More data, regularization, augmentation, and disciplined validation." },
+    ],
+  },
+  {
+    slug: "adv-42-iterative-loop-of-ml-development",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Iterative Loop of ML Development",
+    order: 42,
+    excerpt: "The real workflow of ML engineering: choose architecture, train, diagnose, refine, and repeat until performance is good enough.",
+    theory: `<p><strong>Real ML work is iterative, not linear.</strong> You do not design the perfect model once and then ship it. The normal workflow is: choose an initial architecture, train it, observe that it is not good enough, run diagnostics, make a change, and loop again.</p>
+<p><strong>The development loop from the transcript:</strong></p>
+<ol>
+  <li>Decide the broad architecture: model family, features, data sources, hyperparameters.</li>
+  <li>Implement and train the first version.</li>
+  <li>Run diagnostics such as bias/variance analysis and error analysis.</li>
+  <li>Use the diagnostic result to choose the next change.</li>
+  <li>Repeat the loop until the model reaches useful performance.</li>
+</ol>
+<p><strong>Why this matters:</strong> many teams waste time because they treat iteration as failure instead of the core process. A first model almost never solves the problem well. What distinguishes strong teams is not magical first-pass success, but fast feedback loops that tell them what to change next.</p>
+<p><strong>The spam-classifier example is useful here:</strong> once the first model is trained, you may have several ideas at once: more data, routing-based features, body-text features, misspelling detection, phishing URL signals. Diagnostics are what stop the team from pursuing all of them blindly.</p>
+<p><strong>Architecture note:</strong> this is why ML systems need good experiment logging. If you cannot track which change affected which metric, your loop becomes random trial-and-error. A healthy ML workflow is closer to scientific experimentation than to brute-force coding.</p>`,
+    example: `Iterative loop in practice:
+1. Train baseline spam classifier.
+2. Discover CV error is still unacceptable.
+3. Run bias/variance check.
+4. Review failure slices via error analysis.
+5. Decide to improve phishing-related features instead of spending weeks on misspelling detection.
+
+The loop is not "train until lucky."
+It is "diagnose, choose one informed intervention, retrain, and measure again."`,
+    animation: "MLLearningSpectrumViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What does the iterative loop of ML development look like in practice?",
+        "Why is a first-pass model almost never enough?",
+        "What tools make the iteration loop faster and more reliable?",
+      ],
+      seniorTip: "Frame ML development as controlled iteration. Senior engineers are judged less by the first model they train and more by how efficiently they learn from every failed model.",
+    },
+    flashCards: [
+      { q: "What are the core stages of the ML development loop?", a: "Choose architecture, train, diagnose, decide next move, retrain, repeat." },
+      { q: "Why is iteration central to ML work?", a: "Because early models rarely perform well enough, and each iteration reveals what to change next." },
+      { q: "What prevents the loop from becoming random experimentation?", a: "Diagnostics, experiment tracking, and clear evaluation metrics." },
+      { q: "What is the main value of fast iteration?", a: "It turns bad early models into useful information rather than wasted work." },
+    ],
+  },
+  {
+    slug: "adv-43-error-analysis",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Error Analysis",
+    order: 43,
+    excerpt: "Manual review of model mistakes to discover which error classes matter most and where engineering effort will pay off.",
+    theory: `<p><strong>Error analysis means manually studying the examples your model gets wrong.</strong> After bias/variance, it is one of the most important diagnostics in practical ML because it converts "the model is failing" into "the model is failing in these specific ways."</p>
+<p><strong>Typical process:</strong> take a set of cross-validation errors, manually inspect them, and group them into overlapping categories. For a spam classifier, those categories might include pharmaceutical spam, phishing, weird routing, embedded-image spam, or deliberate misspellings.</p>
+<p><strong>The purpose is prioritization.</strong> If 21 out of 100 mistakes are pharmaceutical spam and only 3 out of 100 are misspellings, then even a perfect misspelling detector can only recover a small fraction of total failures. Error analysis prevents teams from over-investing in intellectually interesting but low-impact fixes.</p>
+<p><strong>Important detail:</strong> categories do not need to be mutually exclusive. One example may count as both phishing and unusual routing. The point is not to build a mathematically perfect taxonomy. The point is to expose where most of the damage is happening.</p>
+<p><strong>When the dataset is huge:</strong> sample. You do not always need to inspect all 1,000 failures. Often 100-200 carefully reviewed errors give enough directional signal to decide the next engineering move.</p>
+<p><strong>Architecture note:</strong> error analysis is the bridge between metrics and product insight. Metrics tell you that performance is poor; error analysis tells you which exact failure modes deserve model changes, new features, new labeling instructions, or targeted data collection.</p>`,
+    example: `Cross-validation review of 100 spam mistakes:
+- 21 pharmaceutical spam
+- 18 phishing emails
+- 7 unusual routing patterns
+- 3 deliberate misspellings
+
+Decision:
+- Prioritize pharma and phishing fixes.
+- Do not spend the next sprint building a sophisticated misspelling detector first.`,
+    animation: "MLLearningSpectrumViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What is error analysis, and why is it often more actionable than aggregate metrics alone?",
+        "How do you run error analysis when the model has thousands of mistakes?",
+        "Why can overlapping error categories still be useful?",
+      ],
+      seniorTip: "A strong answer explains how error analysis changes roadmap priority. It is not just labeling mistakes; it is deciding which fixes have the highest expected leverage.",
+    },
+    flashCards: [
+      { q: "What is the main goal of error analysis?", a: "To understand which types of mistakes dominate model failure so engineering effort goes to the highest-impact fixes." },
+      { q: "Do error-analysis categories need to be mutually exclusive?", a: "No. One bad example can belong to several categories if that helps explain the failure." },
+      { q: "Why is manual review still valuable in ML?", a: "Because humans can spot failure patterns and data issues that aggregate metrics cannot reveal." },
+      { q: "When is sampling enough for error analysis?", a: "When the mistake set is very large. Reviewing 100-200 representative failures is often enough for directionally strong decisions." },
+    ],
+  },
+  {
+    slug: "adv-44-adding-data",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Adding Data",
+    order: 44,
+    excerpt: "Targeted data collection, augmentation, and synthetic data generation as strategic tools for improving model quality.",
+    theory: `<p><strong>Adding data should be guided, not generic.</strong> The transcript makes an important point: "more data" is often helpful, but "more data of everything" can be slow and expensive. Error analysis should tell you which slice of the data deserves focused collection.</p>
+<p><strong>Targeted collection:</strong> if pharma spam dominates your mistakes, collect more pharma spam examples instead of just more email overall. This is often much cheaper and more effective than broad, unfocused data growth.</p>
+<p><strong>Data augmentation:</strong> create additional examples by transforming existing ones while preserving the label. For images, this could mean rotation, resizing, contrast changes, or warping. For audio, it could mean background noise, microphone degradation, or channel distortion. The core rule is that the augmentation must resemble noise the model will actually face at test time.</p>
+<p><strong>Data synthesis:</strong> generate brand-new training examples from scratch. The OCR example is a classic case: synthesize text with many fonts, colors, and layouts. This can massively expand training data if the synthetic distribution is realistic enough.</p>
+<p><strong>Data-centric AI insight:</strong> for years, most researchers fixed the data and improved the model. In many real projects today, the model family is already strong enough, and the most productive improvement comes from engineering the data: labels, failure slices, augmentation policy, or synthetic generation.</p>
+<p><strong>Architecture note:</strong> data work should be versioned just like model code. If augmentation or synthesis changes the effective training distribution, that is an architectural change, not just "preprocessing." It needs evaluation and rollback discipline.</p>`,
+    example: `OCR project:
+- Real photos of letters are limited.
+- Team synthesizes thousands of extra labeled letters using many fonts and contrast settings.
+- Model improves because the synthetic variations resemble real-world test noise.
+
+Counterexample:
+- Randomly adding meaningless pixel noise that never appears in production can hurt more than help.`,
+    animation: "MLLearningSpectrumViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Why is targeted data collection often better than collecting more data indiscriminately?",
+        "What makes a data-augmentation policy useful rather than harmful?",
+        "How does synthetic data differ from ordinary augmentation?",
+      ],
+      seniorTip: "Say this explicitly in interviews: data work is often the highest-ROI improvement lever once the baseline model family is already competent.",
+    },
+    flashCards: [
+      { q: "What is targeted data collection?", a: "Collecting more examples specifically from the failure categories that matter most, rather than gathering data broadly without focus." },
+      { q: "What is the rule for good data augmentation?", a: "The transformation should preserve the label and resemble distortions that appear in the real test environment." },
+      { q: "How is synthetic data different from augmentation?", a: "Augmentation transforms existing examples. Synthetic data creates new examples from scratch." },
+      { q: "Why is data-centric work important in modern ML?", a: "Because good model families already exist, and many practical gains now come from improving data quality and coverage." },
+    ],
+  },
+  {
+    slug: "adv-45-transfer-learning",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Transfer Learning",
+    order: 45,
+    excerpt: "Use a model pre-trained on a large related dataset, then fine-tune it on your smaller task to get strong results with limited data.",
+    theory: `<p><strong>Transfer learning is one of the highest-leverage techniques in applied deep learning.</strong> When you do not have much labeled data for your own task, you start from a model trained on a large dataset from a related domain, then adapt it to your target problem.</p>
+<p><strong>The core workflow:</strong></p>
+<ol>
+  <li>Start with a neural network trained on a large dataset with the same input type.</li>
+  <li>Replace the output layer to match your target task.</li>
+  <li>Either freeze the earlier layers and train only the new output head, or fine-tune the full network starting from the pre-trained weights.</li>
+</ol>
+<p><strong>Why it works:</strong> the early layers of a deep network learn generic structure. In vision, these are edges, corners, and basic shapes. In language, they capture syntax and semantic patterns. Those learned representations are useful beyond the original task, so your small dataset starts from a far better initialization than random weights.</p>
+<p><strong>Two common strategies:</strong> if your dataset is tiny, freeze most of the network and train only the last layer. If you have somewhat more data, fine-tune more or all layers. The smaller the target dataset, the more cautious you usually are about updating the early layers.</p>
+<p><strong>Constraint from the transcript:</strong> input type must match. A network pre-trained on images helps image tasks. It does not directly help audio tasks. Transfer works best when the raw structure of the inputs is compatible.</p>
+<p><strong>Architecture note:</strong> transfer learning changed ML from "train everything from scratch" to "reuse strong foundations." This is now a normal systems pattern: foundation model -> task-specific head -> domain adaptation -> evaluation.</p>`,
+    example: `Digit-recognition example:
+- Pre-train on a huge image dataset with 1,000 classes.
+- Remove the 1,000-class output layer.
+- Add a 10-class digit head.
+- Fine-tune on a much smaller handwritten-digit dataset.
+
+Result:
+The model starts with generic image features already learned, so far less target data is needed.`,
+    animation: "MLLearningSpectrumViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What problem does transfer learning solve in practice?",
+        "When would you freeze earlier layers versus fine-tune the whole model?",
+        "Why must the input type usually match between pre-training and fine-tuning?",
+      ],
+      seniorTip: "The most useful framing is not 'reuse a model' but 'reuse a learned representation.' That shows you understand why transfer actually works.",
+    },
+    flashCards: [
+      { q: "What is transfer learning?", a: "Starting from a pre-trained model and adapting it to a new target task instead of training from scratch." },
+      { q: "Why does transfer learning help with small datasets?", a: "Because the model already has useful representations learned from large-scale data, so the small task does not start from random weights." },
+      { q: "When do you usually freeze early layers?", a: "When the target dataset is small and you want to avoid overfitting by changing too much of the model." },
+      { q: "What must usually match between source and target tasks?", a: "The input type or modality, such as image-to-image or text-to-text." },
+    ],
+  },
+  {
+    slug: "adv-46-full-cycle-of-a-ml-project",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Full Cycle of a Machine Learning Project",
+    order: 46,
+    excerpt: "Training a model is only one stage; real ML systems also require scoping, deployment, monitoring, retraining, and MLOps discipline.",
+    theory: `<p><strong>Model training is only part of the job.</strong> A successful ML project moves through a broader lifecycle: deciding what to build, collecting and labeling data, training and evaluating the model, deploying it, monitoring it in the real world, and updating it as conditions change.</p>
+<p><strong>The full cycle described in the transcript:</strong></p>
+<ol>
+  <li><strong>Scope the project:</strong> define the task, users, constraints, and target metric.</li>
+  <li><strong>Collect data:</strong> gather inputs and labels that match the intended production environment.</li>
+  <li><strong>Train and evaluate:</strong> build the first model, then iterate through diagnostics and improvements.</li>
+  <li><strong>Deploy:</strong> turn the model into a reliable inference service or workflow.</li>
+  <li><strong>Monitor:</strong> log inputs, outputs, data drift, latency, failures, and user-facing quality signals.</li>
+  <li><strong>Update:</strong> retrain or replace the model when the world changes.</li>
+</ol>
+<p><strong>Why this matters:</strong> a model that performs well offline can still fail badly after deployment because names, products, accents, behaviors, and distributions change. The transcript's speech-recognition example shows this clearly: new celebrities and politicians appeared, and the model degraded because production data shifted away from the original training distribution.</p>
+<p><strong>MLOps connection:</strong> this is the operational discipline that supports the full cycle. It includes reproducible training, reliable deployment, logging, resource scaling, monitoring, rollback, and controlled updates. In other words, it is what turns a good notebook result into a dependable production system.</p>
+<p><strong>Architecture note:</strong> ML systems are socio-technical systems. The model, data pipelines, labeling process, serving infrastructure, dashboards, and retraining policy all matter. If any one of those is weak, the whole product becomes brittle.</p>`,
+    example: `Voice-search system:
+1. Define success metric and supported languages.
+2. Collect audio and transcripts.
+3. Train and validate the recognizer.
+4. Deploy to production serving.
+5. Monitor errors on emerging celebrity or political names.
+6. Retrain and roll out an updated model when drift appears.
+
+Without monitoring and update pipelines, even a strong initial model decays in value.`,
+    animation: "MLLearningSpectrumViz",
+    tool: "MLProblemFramingTool",
+    interviewPrep: {
+      questions: [
+        "What are the major stages in the full lifecycle of an ML project?",
+        "Why is deployment not the end of the project?",
+        "What is the role of monitoring and retraining in a production ML system?",
+      ],
+      seniorTip: "The strongest answers connect offline modeling to operations. A senior ML engineer is expected to think about serving, logging, drift, rollback, and retraining, not only architecture and loss curves.",
+    },
+    flashCards: [
+      { q: "What comes before model training in the ML lifecycle?", a: "Project scoping and data collection. If these are wrong, model quality work is misdirected from the start." },
+      { q: "What comes after deployment?", a: "Monitoring, drift detection, and model updates. Production conditions change, so deployment is the start of system operations, not the end." },
+      { q: "Why do production models decay?", a: "Because the real-world data distribution changes over time while the model stays fixed unless updated." },
+      { q: "What is MLOps?", a: "The practice of building, deploying, monitoring, and maintaining ML systems reliably in production." },
+    ],
+  },
+  {
+    slug: "adv-47-fairness-bias-and-ethics",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Fairness, Bias, and Ethics",
+    order: 47,
+    excerpt: "Why ML engineers must think about harm, subgroup performance, and mitigation plans before and after deployment.",
+    theory: `<p><strong>Machine learning systems can cause real harm at scale.</strong> The transcript points to several classes of harm: biased hiring tools, face-recognition disparities across skin tones, discriminatory lending decisions, stereotype reinforcement, deepfakes, fraud, and manipulative engagement systems. These are not abstract edge cases; they are reasons to treat ethics as part of system design.</p>
+<p><strong>The key principle:</strong> fairness and ethics are not a post-launch PR problem. They are pre-deployment engineering responsibilities. If a system could materially affect people, then you should actively look for ways it might fail specific groups before release.</p>
+<p><strong>Practical guidance from the transcript:</strong></p>
+<ul>
+  <li>Assemble a diverse team to brainstorm possible harms and blind spots.</li>
+  <li>Review literature, regulations, and industry guidance relevant to the application.</li>
+  <li>Audit the model on the dimensions of harm you identified.</li>
+  <li>Create a mitigation plan before deployment, not after the incident.</li>
+  <li>Continue monitoring after launch so mitigation can be triggered quickly if needed.</li>
+</ul>
+<p><strong>Important realism:</strong> there is no simple five-point ethics checklist that guarantees a system is fair. Ethics requires judgment, domain knowledge, stakeholder awareness, and willingness to walk away from projects that are profitable but harmful.</p>
+<p><strong>Architecture note:</strong> ethics affects the ML stack directly. It changes data collection, subgroup evaluation, launch criteria, escalation paths, rollback policy, and who gets to sign off on deployment. Ethical design is operational design.</p>`,
+    example: `Loan-approval system:
+- Team identifies possible subgroup harm before launch.
+- They evaluate performance separately across relevant groups.
+- They define thresholds that trigger rollback or human review.
+- They deploy with monitoring and a mitigation plan already prepared.
+
+This is much better than shipping first and only reacting once harm is visible in production.`,
+    animation: "MLLearningSpectrumViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Why is ethics an engineering concern rather than just a policy concern in ML?",
+        "What concrete steps can a team take before deployment to reduce bias-related harm?",
+        "Why is a mitigation plan important even if pre-launch auditing looks good?",
+      ],
+      seniorTip: "A mature answer balances humility and responsibility: you may not be able to prove a system is perfectly fair, but you are still responsible for identifying risks, testing for them, and planning how to respond.",
+    },
+    flashCards: [
+      { q: "Why is fairness not just a legal or policy issue?", a: "Because the causes of unfairness often come from engineering choices: data, labels, evaluation, thresholds, and deployment policy." },
+      { q: "Why is team diversity valuable during pre-launch review?", a: "Because different lived experiences help expose harms and blind spots that a homogeneous team may miss." },
+      { q: "What is a mitigation plan in ML deployment?", a: "A predefined response for what to do if the system causes harm or fails fairness checks, such as rollback, human review, or disabling a feature." },
+      { q: "Why keep monitoring after launch?", a: "Because harmful behavior may emerge only at production scale or after data distributions shift." },
+    ],
+  },
+  {
+    slug: "adv-48-error-metrics-for-skewed-datasets",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Error Metrics for Skewed Datasets",
+    order: 48,
+    excerpt: "Why accuracy becomes misleading on rare-event problems, and how the confusion matrix gives a more truthful view of model usefulness.",
+    theory: `<p><strong>Skewed datasets break the intuition that accuracy tells the whole story.</strong> If one class is rare, a model can achieve spectacular-looking accuracy while being nearly useless. The transcript uses the rare-disease example for a reason: if only 0.5 percent of patients have the disease, then a trivial system that always predicts "no disease" already gets 99.5 percent accuracy. That number sounds excellent, but the system never helps catch the disease.</p>
+<p><strong>The core problem is class imbalance.</strong> In a skewed binary classification task, one label appears much more often than the other. The majority class dominates the metric, so errors on the minority class barely move the overall accuracy number. This is why two models with 99.2 percent and 99.6 percent accuracy may have completely different practical value.</p>
+<p><strong>The right starting point is the confusion matrix.</strong> Instead of collapsing everything into one score immediately, count the four outcomes on a validation or test set:</p>
+<ul>
+  <li><strong>True Positive (TP):</strong> predicted positive, actually positive.</li>
+  <li><strong>False Positive (FP):</strong> predicted positive, actually negative.</li>
+  <li><strong>False Negative (FN):</strong> predicted negative, actually positive.</li>
+  <li><strong>True Negative (TN):</strong> predicted negative, actually negative.</li>
+</ul>
+<p><strong>Why this matters:</strong> the confusion matrix exposes what kind of failure your model is making. A model that predicts zero all the time will have many true negatives, zero true positives, and terrible usefulness. Accuracy hides that. The confusion matrix does not.</p>
+<p><strong>Production interpretation:</strong> every cell means a different business or safety cost. In fraud detection, false negatives may mean missed fraud. In content moderation, false positives may mean blocking legitimate users. In disease diagnosis, false negatives may delay treatment, while false positives may trigger expensive follow-up tests. Metrics are not just math; they encode operational consequences.</p>
+<p><strong>Architecture note:</strong> on imbalanced problems, evaluation should be designed around event detection rather than average correctness. That usually means logging confusion-matrix slices by subgroup, time window, and threshold, because the real system decision is rarely "is the model accurate?" but rather "is the model making the right mistakes at an acceptable rate?"</p>
+<p><strong>Failure mode to remember:</strong> teams often optimize for a benchmark leaderboard or default library score and only later realize the model almost never predicts the rare class. If the rare event is the reason the product exists, then a model that ignores it is not a mild regression. It is a broken system hidden behind a friendly accuracy number.</p>`,
+    example: `Medical screening example:
+- Population disease rate: 0.5%
+- Dummy model: always predict "healthy"
+- Accuracy: 99.5%
+- True positives: 0
+- Recall: 0
+
+The model looks strong on accuracy but is operationally worthless because it never catches the rare condition.`,
+    animation: "PrecisionRecallTradeoffLab",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Why is accuracy a poor metric on highly imbalanced classification tasks?",
+        "What does the confusion matrix reveal that overall accuracy hides?",
+        "How do business costs change the way you interpret false positives versus false negatives?",
+      ],
+      seniorTip: "A strong answer does not stop at 'accuracy is misleading.' It connects imbalance to the actual operational cost of missing or over-flagging rare events.",
+    },
+    flashCards: [
+      { q: "What is a skewed dataset?", a: "A dataset where one class appears much more frequently than the other, such as 99.5 percent negatives and 0.5 percent positives." },
+      { q: "Why can a useless model have high accuracy on a skewed task?", a: "Because always predicting the majority class already gets most examples correct." },
+      { q: "What are the four cells of a confusion matrix?", a: "True positive, false positive, false negative, and true negative." },
+      { q: "What is the main benefit of using a confusion matrix?", a: "It shows the pattern of model decisions so you can judge whether errors are acceptable for the application." },
+    ],
+  },
+  {
+    slug: "adv-49-trading-off-precision-and-recall",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Trading Off Precision and Recall",
+    order: 49,
+    excerpt: "How threshold choices change which rare events you catch, which false alarms you accept, and why F1 is a useful but incomplete summary.",
+    theory: `<p><strong>Precision and recall answer different questions, and improving one often hurts the other.</strong> Precision asks: of everything we predicted as positive, how much was correct? Recall asks: of all the truly positive cases, how many did we catch? On rare-event tasks, both matter, but the right balance depends on the product decision you are making.</p>
+<p><strong>Definitions:</strong></p>
+<ul>
+  <li><code>precision = TP / (TP + FP)</code></li>
+  <li><code>recall = TP / (TP + FN)</code></li>
+</ul>
+<p><strong>Threshold is the control knob.</strong> If a logistic-regression or neural-network model outputs a score between 0 and 1, then the threshold determines when that score becomes a positive prediction. A default of 0.5 is only a convention. It is not a law of machine learning.</p>
+<p><strong>Raise the threshold:</strong> the model predicts positive only when it is very confident. This usually increases precision because flagged cases are more likely to be real positives, but it reduces recall because many borderline positives are now missed.</p>
+<p><strong>Lower the threshold:</strong> the model predicts positive more aggressively. This usually increases recall because you catch more actual positives, but it reduces precision because more flagged cases will be false alarms.</p>
+<p><strong>Decision framing matters.</strong> If a false positive causes expensive treatment, legal action, or user friction, you may want high precision. If a false negative means a cancer case, fraud event, or safety incident goes undetected, you may prefer higher recall. The threshold is therefore part of product design, not only model evaluation.</p>
+<p><strong>The F1 score helps when you want one summary number.</strong> The transcript is careful here: simply averaging precision and recall can be misleading because one can be high while the other is catastrophically low. The F1 score, the harmonic mean of precision and recall, penalizes those lopsided situations more heavily. It is often used when you want a single scalar score to compare models or choose a threshold.</p>
+<p><strong>But F1 is not magic.</strong> It assumes precision and recall matter in a roughly balanced way. In many production systems they do not. If false negatives are ten times more costly than false positives, then the best business threshold may not be the threshold with the highest F1. This is why mature systems expose threshold tuning as an explicit operating-policy decision.</p>
+<p><strong>Architecture note:</strong> production classifiers often separate model scoring from decision policy. The model produces calibrated or semi-calibrated scores. A policy layer chooses thresholds by use case, jurisdiction, user tier, or escalation workflow. That separation makes the system easier to audit, adjust, and monitor.</p>
+<p><strong>Flow to remember:</strong> model score -> threshold policy -> confusion matrix -> precision/recall trade-off -> business decision. If you skip the policy step, you are pretending a default threshold already knows your application's risk tolerance.</p>`,
+    example: `Fraud detection policy choices:
+- Threshold 0.90:
+  - Fewer cases are flagged.
+  - Analysts waste less time.
+  - More fraud may slip through.
+- Threshold 0.30:
+  - More fraud cases are caught.
+  - Analysts review many more false alarms.
+
+Neither threshold is "correct" in isolation. The right answer depends on the cost of manual review versus the cost of missed fraud.`,
+    animation: null,
+    tool: "PrecisionRecallTradeoffLab",
+    interviewPrep: {
+      questions: [
+        "Why does changing the classification threshold change precision and recall?",
+        "When would you intentionally optimize for precision over recall, and when would you do the reverse?",
+        "What does F1 capture well, and what does it fail to capture?",
+      ],
+      seniorTip: "Good interview answers connect metric trade-offs to business policy. The strongest framing is 'thresholding is a product-risk decision placed on top of model scores.'",
+    },
+    flashCards: [
+      { q: "What does precision measure?", a: "Of the examples predicted positive, the fraction that were actually positive." },
+      { q: "What does recall measure?", a: "Of the actually positive examples, the fraction that the model successfully predicted as positive." },
+      { q: "What usually happens when you raise the prediction threshold?", a: "Precision tends to go up and recall tends to go down." },
+      { q: "Why is F1 preferred over a simple average of precision and recall?", a: "Because it penalizes models that are extremely weak on either precision or recall, even if the other value is high." },
+    ],
+  },
+  {
+    slug: "adv-50-decision-tree-model",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Decision Tree Model",
+    order: 50,
+    excerpt: "A decision tree predicts by asking a sequence of feature-based questions, routing an example down branches until it reaches a leaf decision.",
+    theory: `<p><strong>A decision tree is a model that makes predictions by asking a sequence of simple questions.</strong> Each internal node examines one feature, each branch corresponds to one outcome of that feature test, and each leaf node emits a final prediction. The transcript introduces this with the cat-versus-not-cat example because it makes the mechanics very visual: ear shape, face shape, whiskers, then a final class decision.</p>
+<p><strong>Core structure:</strong></p>
+<ul>
+  <li><strong>Root node:</strong> the first decision at the top of the tree.</li>
+  <li><strong>Decision nodes:</strong> intermediate nodes that check features and route examples onward.</li>
+  <li><strong>Leaf nodes:</strong> terminal nodes that produce the prediction.</li>
+</ul>
+<p><strong>How inference works:</strong> start at the root, inspect the relevant feature of the input example, follow the matching branch, then repeat until you reach a leaf. That path is the model's reasoning path. For a new animal with pointy ears, round face, and whiskers, the tree might route root -> left -> left -> "cat."</p>
+<p><strong>Why trees are useful:</strong> they are naturally interpretable. You can often explain a prediction as a path of decisions rather than a dense numerical computation. This makes trees appealing for tabular ML, rule-like domains, quick baselines, and systems where model behavior must be inspectable.</p>
+<p><strong>Why there are many possible trees:</strong> even with a small number of features, you can build many different structures. Some split on one feature at the root, some on another. Some grow deeper, some stop earlier. The learning algorithm's job is to search this huge design space and choose splits that separate the classes well.</p>
+<p><strong>Practical limit:</strong> the fact that trees are interpretable does not mean every learned tree stays readable. A deep tree with many branches can become hard to reason about. In production, single trees are often valued for transparency, while tree ensembles are valued for raw predictive power.</p>
+<p><strong>Architecture note:</strong> a decision tree is best understood as learned routing logic. Each split partitions the data distribution into smaller slices that are easier to classify. Later systems such as boosted trees, random forests, and even some agentic routers echo this same idea: route different inputs to different specialized decisions.</p>
+<p><strong>Beginner intuition:</strong> if linear models draw one broad boundary, trees keep cutting the space into smaller regions until each region is easier to label. That makes them especially natural on feature sets with discrete conditions or non-linear interactions.</p>`,
+    example: `Cat classifier inference:
+1. Root node asks: "Ear shape?"
+2. If pointy, move left.
+3. Next node asks: "Face shape?"
+4. If round, move left again.
+5. Leaf node predicts: "cat"
+
+The prediction is not one giant formula. It is a routed path through the tree.`,
+    animation: "DecisionTreeSplitViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What are the roles of root nodes, decision nodes, and leaf nodes in a decision tree?",
+        "Why are decision trees often considered interpretable?",
+        "What does the learning algorithm need to decide in order to build a useful tree?",
+      ],
+      seniorTip: "Do not describe a tree as only a picture. Describe it as a learned routing policy over feature tests that partitions the input space into easier classification regions.",
+    },
+    flashCards: [
+      { q: "What is a root node?", a: "The topmost node of a decision tree where inference starts and the first split is made." },
+      { q: "What does a decision node do?", a: "It checks a feature and routes the example down one branch or another." },
+      { q: "What does a leaf node do?", a: "It outputs the final class prediction or value once routing is complete." },
+      { q: "Why are decision trees easy to explain?", a: "Because a prediction can often be described as a clear sequence of if-then feature checks." },
+    ],
+  },
+  {
+    slug: "adv-51-decision-tree-learning-process",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Decision Tree Learning Process",
+    order: 51,
+    excerpt: "How a tree is built recursively: choose the best split, partition the data, repeat on each branch, and stop when further splitting is no longer worth it.",
+    theory: `<p><strong>Training a decision tree means repeatedly choosing a feature, splitting the data, and then solving the same problem again inside each branch.</strong> The transcript walks through this using the cat dataset: first pick a root feature, split the full dataset into subsets, then inspect each subset and decide what to do next.</p>
+<p><strong>High-level flow:</strong></p>
+<ol>
+  <li>Start with all training examples at the root node.</li>
+  <li>Choose the feature that produces the best split at that node.</li>
+  <li>Partition the data into child subsets according to that feature.</li>
+  <li>For each child subset, repeat the same process.</li>
+  <li>Stop when a stopping criterion says further splitting is not worth it.</li>
+</ol>
+<p><strong>This is a recursive algorithm.</strong> The left subtree is built by training a smaller decision tree on the left subset. The right subtree is built by training another smaller decision tree on the right subset. The same logic keeps applying until you stop.</p>
+<p><strong>Two big decisions happen at every node.</strong></p>
+<ul>
+  <li><strong>Split decision:</strong> which feature should this node test?</li>
+  <li><strong>Stop decision:</strong> should the algorithm split more, or convert this node into a leaf?</li>
+</ul>
+<p><strong>Common stopping criteria from the transcript:</strong></p>
+<ul>
+  <li>The node is pure: all examples belong to the same class.</li>
+  <li>The tree would exceed a maximum allowed depth.</li>
+  <li>The information gain from splitting is too small.</li>
+  <li>The node contains too few examples to justify further splitting.</li>
+</ul>
+<p><strong>Why stopping matters:</strong> if you split forever, the tree can memorize noise and overfit. Deep trees can become brittle, unstable, and sensitive to tiny quirks in the training set. Stopping criteria are therefore not just computational convenience; they are regularization decisions.</p>
+<p><strong>Production guidance:</strong> libraries expose parameters such as <code>max_depth</code>, <code>min_samples_split</code>, and <code>min_samples_leaf</code> because these directly shape bias-variance behavior. A shallow tree may underfit. An unconstrained tree may overfit. Tuning these parameters changes the operating complexity of the model.</p>
+<p><strong>Architecture note:</strong> tree learning is a repeated partitioning workflow. At every node you are answering the same question: "Which split best increases label purity without creating too much complexity?" That makes tree training feel messy at first, but the repeating structure is simple once you see it.</p>`,
+    example: `Decision-tree build loop:
+1. Root sees 10 examples with mixed labels.
+2. Best split is chosen, for example ear shape.
+3. Left child gets the pointy-ear examples.
+4. Right child gets the floppy-ear examples.
+5. Each child is then treated as its own smaller training problem.
+6. When a child becomes pure or too small, it becomes a leaf.`,
+    animation: null,
+    tool: "DecisionTreeSplitViz",
+    interviewPrep: {
+      questions: [
+        "What are the two main decisions a tree-learning algorithm makes at each node?",
+        "Why is tree construction considered recursive?",
+        "How do stopping criteria reduce overfitting in decision trees?",
+      ],
+      seniorTip: "The strongest answers tie stopping criteria to bias-variance trade-offs. Do not present them as arbitrary library knobs; present them as controls on model capacity.",
+    },
+    flashCards: [
+      { q: "What happens first when training a decision tree?", a: "All training examples start at the root and the algorithm chooses the best first split." },
+      { q: "Why is decision-tree learning recursive?", a: "Because each branch is built by applying the same split-selection process to a smaller subset of the data." },
+      { q: "Name one common stopping criterion.", a: "Stop when the node is pure, or when further splitting gives too little gain, or when depth/example-count thresholds are reached." },
+      { q: "Why can unconstrained trees overfit?", a: "Because they can keep splitting until they memorize small irregularities and noise in the training data." },
+    ],
+  },
+  {
+    slug: "adv-52-measuring-purity-entropy",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Measuring Purity: Entropy",
+    order: 52,
+    excerpt: "Entropy is the impurity measure that tells a decision tree how mixed a node is, with 0 meaning pure and 1 meaning maximally mixed in the binary case.",
+    theory: `<p><strong>To choose good splits, a tree needs a way to quantify how mixed or pure a node is.</strong> The transcript uses entropy for this. Entropy is a scalar measure of impurity: low entropy means the node mostly contains one class, while high entropy means the node is mixed.</p>
+<p><strong>Binary-class intuition:</strong></p>
+<ul>
+  <li>If a node is all cats, entropy is 0.</li>
+  <li>If a node is all dogs, entropy is 0.</li>
+  <li>If a node is a 50-50 mix of cats and dogs, entropy is 1, which is the maximum impurity in the binary case.</li>
+</ul>
+<p><strong>Formal definition:</strong> let <code>p1</code> be the fraction of positive examples in the node and <code>p0 = 1 - p1</code> be the fraction of negatives. Then:</p>
+<p><code>H(p1) = -p1 log2(p1) - p0 log2(p0)</code></p>
+<p><strong>Why the curve behaves this way:</strong> certainty produces low entropy, while uncertainty produces high entropy. A node that is almost all one class is easy to label. A node that is half one class and half the other is hard to label cleanly, so it has high impurity.</p>
+<p><strong>Examples from the transcript:</strong> a node with 3 cats and 3 dogs has <code>p1 = 0.5</code> and entropy 1. A node with 5 cats and 1 dog has lower entropy, around 0.65. A node with 6 cats and 0 dogs has entropy 0 because it is completely pure.</p>
+<p><strong>Implementation detail:</strong> when <code>p1 = 0</code> or <code>p0 = 0</code>, the term <code>0 log(0)</code> is treated as 0 by convention. This avoids numerical issues and gives the correct result that a pure node has zero entropy.</p>
+<p><strong>Why entropy matters operationally:</strong> the learning algorithm is trying to push training examples into cleaner and cleaner subsets. Entropy gives a numerical way to say whether a candidate split actually improved that cleanliness.</p>
+<p><strong>Architecture note:</strong> entropy is not the only impurity metric. Libraries may also use Gini impurity, which has a similar shape and similar purpose. What matters conceptually is not memorizing one formula; it is understanding that the tree needs a consistent impurity measure to compare candidate splits.</p>
+<p><strong>Failure mode:</strong> beginners often think "more branches means better tree." Not necessarily. A split is only useful if it produces child nodes that are meaningfully purer. Entropy helps you distinguish productive splitting from meaningless branching.</p>`,
+    example: `Entropy intuition on binary labels:
+- Node A: 6 cats, 0 dogs -> entropy 0.00
+- Node B: 5 cats, 1 dog -> entropy about 0.65
+- Node C: 3 cats, 3 dogs -> entropy 1.00
+
+As the label mix gets closer to 50-50, impurity rises.`,
+    animation: "DecisionTreeSplitViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What does entropy measure in a decision tree?",
+        "Why is entropy highest at a 50-50 class mix in binary classification?",
+        "Why do implementations define 0 log(0) as 0 when computing entropy?",
+      ],
+      seniorTip: "Interviewers care more about whether you understand entropy as an impurity measure than whether you can reproduce the exact formula from memory without context.",
+    },
+    flashCards: [
+      { q: "What does low entropy mean?", a: "The node is relatively pure, with most examples belonging to one class." },
+      { q: "What does high entropy mean?", a: "The node is mixed and therefore harder to classify cleanly with a single label." },
+      { q: "What is the maximum binary entropy?", a: "1, which occurs when the node has a 50-50 class split." },
+      { q: "Why does a pure node have entropy 0?", a: "Because there is no uncertainty about the class label inside that node." },
+    ],
+  },
+  {
+    slug: "adv-53-choosing-a-split-information-gain",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Choosing a Split with Information Gain",
+    order: 53,
+    excerpt: "Information gain measures how much a candidate split reduces weighted entropy, allowing the tree to choose the most purity-improving feature.",
+    theory: `<p><strong>Once you can measure impurity, the next question is how to choose a split.</strong> Decision trees do this by computing how much each candidate split reduces entropy. That reduction is called <strong>information gain</strong>.</p>
+<p><strong>The workflow at a node:</strong></p>
+<ol>
+  <li>Compute the entropy of the current node.</li>
+  <li>For each candidate feature, imagine splitting the data.</li>
+  <li>Compute the entropy of each child branch.</li>
+  <li>Take a weighted average of child entropies based on how many examples go left and right.</li>
+  <li>Subtract that weighted child impurity from the parent impurity.</li>
+</ol>
+<p><strong>Formula:</strong></p>
+<p><code>information gain = H(root) - [w_left * H(left) + w_right * H(right)]</code></p>
+<p>Here <code>w_left</code> and <code>w_right</code> are the fractions of examples that go to the left and right branches. The weighting matters because a highly impure branch containing many examples is more important than a highly impure branch containing only a tiny number of examples.</p>
+<p><strong>Interpretation:</strong> a large information gain means the split made the children much cleaner than the parent. A small information gain means the split did little to reduce uncertainty and may not be worth the added complexity.</p>
+<p><strong>Transcript example:</strong> at the root, splitting on ear shape gives a larger reduction in entropy than splitting on face shape or whiskers. That is why the tree chooses ear shape as the root feature in the worked example.</p>
+<p><strong>Why use reduction instead of only weighted child entropy?</strong> Because the reduction value is directly useful as a stopping signal. If the gain is tiny, the split may not justify a larger tree. This connects split quality to regularization: the tree should grow only when it earns the right to grow.</p>
+<p><strong>Production guidance:</strong> information gain is local, not global. A greedy tree algorithm chooses the best split at the current node, not the globally optimal full tree. This is one reason trees are fast and practical, but also one reason different samples or perturbations can lead to different learned trees.</p>
+<p><strong>Architecture note:</strong> information gain is the scoring function behind learned routing. It decides which question best separates the current slice of data. If the gain is weak everywhere, the node may already be as simple as it should be for the available evidence.</p>`,
+    example: `Suppose the parent node has entropy 1.00.
+
+Candidate A:
+- weighted child entropy = 0.72
+- information gain = 1.00 - 0.72 = 0.28
+
+Candidate B:
+- weighted child entropy = 0.97
+- information gain = 0.03
+
+Candidate A is clearly better because it creates much cleaner child branches.`,
+    animation: null,
+    tool: "DecisionTreeSplitViz",
+    interviewPrep: {
+      questions: [
+        "What is information gain in a decision tree?",
+        "Why are child entropies weighted by branch size?",
+        "Why can a split with low information gain be a bad idea even if it technically improves the tree?",
+      ],
+      seniorTip: "A strong answer calls out that information gain is a greedy local criterion and explains why that trade-off is acceptable in practice.",
+    },
+    flashCards: [
+      { q: "What is information gain?", a: "The reduction in entropy achieved by making a split at a node." },
+      { q: "Why do we use weighted child entropy?", a: "Because impurity in a large branch matters more than impurity in a tiny branch." },
+      { q: "Which split is preferred by the tree?", a: "The one with the highest information gain." },
+      { q: "Why can a tiny information gain be ignored?", a: "Because the split may add complexity and overfitting risk without meaningfully improving purity." },
+    ],
+  },
+  {
+    slug: "adv-54-decision-tree-putting-it-together",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Decision Tree: Putting It Together",
+    order: 54,
+    excerpt: "The full tree-building algorithm combines repeated split selection, recursive branch construction, and stopping rules into one practical training loop.",
+    theory: `<p><strong>This is the complete training picture.</strong> A decision tree starts with all examples at the root, picks the split with the highest information gain, partitions the examples, and then repeats the same process on each resulting child node until a stopping criterion is met.</p>
+<p><strong>End-to-end training flow:</strong></p>
+<ol>
+  <li>Place all training examples at the root node.</li>
+  <li>Evaluate all candidate splits and choose the highest-gain one.</li>
+  <li>Create child branches and route examples into them.</li>
+  <li>For each child node, ask whether to stop or keep splitting.</li>
+  <li>If continuing, treat that child as a new mini-root and recurse.</li>
+  <li>If stopping, turn the node into a leaf with a prediction.</li>
+</ol>
+<p><strong>Stopping criteria in the transcript:</strong> stop when the node is pure, when the tree would exceed maximum depth, when the information gain is too small, or when the node contains too few examples.</p>
+<p><strong>Why this works:</strong> every split tries to create subsets that are easier to classify than the parent set. Over time, the tree carves the dataset into progressively simpler regions, and the leaves represent those final simplified regions.</p>
+<p><strong>Why it can still fail:</strong> the algorithm is greedy and myopic. It chooses the best immediate split, not necessarily the globally best future tree. Trees are also sensitive to data variation: small changes in data can change early splits, and early splits influence everything below them.</p>
+<p><strong>Operational perspective:</strong> parameters such as maximum depth and minimum information gain are capacity controls. They decide how expressive the tree is allowed to become. That means training a tree is partly an optimization problem and partly a governance problem about acceptable complexity.</p>
+<p><strong>Inference after training:</strong> prediction is simple. Start at the root and follow feature tests until you reach a leaf. This separation between complex training and simple inference is one reason trees are attractive in low-latency prediction settings.</p>
+<p><strong>Architecture note:</strong> tree training is a recursive partition-and-score system. It resembles many production routing systems: take a population, divide it by the best question, then specialize downstream logic per branch. That conceptual pattern is larger than decision trees themselves.</p>`,
+    example: `Full training pass on the cat dataset:
+1. Root split: ear shape
+2. Left branch best split: face shape
+3. Left-left child becomes a cat leaf because it is pure
+4. Left-right child becomes a not-cat leaf because it is pure
+5. Right branch best split: whiskers
+6. Its children become leaf predictions
+
+The full tree emerges by repeating one local routine at each node.`,
+    animation: "DecisionTreeSplitViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "Can you walk through the full training loop of a decision tree from root to leaves?",
+        "Why is decision-tree training recursive but inference straightforward?",
+        "What practical role do maximum depth and minimum gain thresholds play?",
+      ],
+      seniorTip: "When explaining the full algorithm, emphasize the repeating pattern. Strong answers make the algorithm feel systematic rather than like a bag of unrelated heuristics.",
+    },
+    flashCards: [
+      { q: "What does a decision tree do after choosing a root split?", a: "It partitions the data and then repeats the split-selection process separately within each child branch." },
+      { q: "Why is inference fast in a trained decision tree?", a: "Because prediction only requires following one path of feature checks from the root to a leaf." },
+      { q: "What does maximum depth control?", a: "How large and complex the tree is allowed to become." },
+      { q: "Why is tree training called greedy?", a: "Because each split is chosen based on the best immediate local improvement rather than a globally optimal future structure." },
+    ],
+  },
+  {
+    slug: "adv-55-one-hot-encoding-categorical-features",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "One-Hot Encoding of Categorical Features",
+    order: 55,
+    excerpt: "How to convert a feature with multiple discrete categories into several binary indicators so trees and other models can use it cleanly.",
+    theory: `<p><strong>Not all categorical features are binary.</strong> Earlier examples used features such as whiskers present or absent, which naturally map to two-way splits. But many real features have more than two possible values: color, city, browser type, product category, education level, and so on.</p>
+<p><strong>One-hot encoding solves this by expanding a categorical feature into multiple binary features.</strong> If ear shape can be pointy, floppy, or oval, then instead of one three-valued feature, you create three yes/no features:</p>
+<ul>
+  <li>Is ear shape pointy?</li>
+  <li>Is ear shape floppy?</li>
+  <li>Is ear shape oval?</li>
+</ul>
+<p><strong>Why it is called one-hot:</strong> for each example, exactly one of those binary indicators is 1 and the others are 0. One position is "hot."</p>
+<p><strong>Why this is useful for trees:</strong> after one-hot encoding, the tree can use the same splitting machinery it already knows. It now tests binary indicators instead of dealing with a multi-valued symbolic feature directly.</p>
+<p><strong>Why this matters beyond trees:</strong> the transcript explicitly notes that one-hot encoding also lets categorical data be fed into neural networks, logistic regression, and other models that expect numeric features. This is one of the most reusable preprocessing ideas in practical machine learning.</p>
+<p><strong>Trade-off:</strong> one-hot encoding increases dimensionality. A feature with <code>k</code> categories becomes <code>k</code> binary features. For small category sets this is fine. For very large cardinality features, it can create sparsity, memory overhead, and poor generalization for rare categories.</p>
+<p><strong>Production note:</strong> category handling must be stable between training and inference. If the system sees a category at inference time that was never present during training, you need a policy for unseen categories, such as an "other" bucket or a hashing-based alternative.</p>
+<p><strong>Architecture note:</strong> one-hot encoding is part of feature engineering, not just data cleaning. It changes how information is represented, which directly changes what splits and relationships the model can learn.</p>`,
+    example: `Feature engineering example:
+- Original feature: browser = {Chrome, Safari, Firefox}
+- One-hot representation:
+  - is_chrome
+  - is_safari
+  - is_firefox
+
+If the example uses Safari, then the encoded vector is:
+[0, 1, 0]`,
+    animation: "DecisionTreeSplitViz",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "What is one-hot encoding, and why is it useful?",
+        "Why can one-hot encoding be applied to neural networks and logistic regression as well as trees?",
+        "What practical issue arises when categorical features have many possible values?",
+      ],
+      seniorTip: "Mention both the representational benefit and the operational risk: one-hot encoding is simple and powerful, but high-cardinality features can become sparse and awkward to manage.",
+    },
+    flashCards: [
+      { q: "What is one-hot encoding?", a: "A way of turning one categorical feature with k values into k binary indicator features." },
+      { q: "Why is it called one-hot?", a: "Because for each example, exactly one of the encoded category positions is set to 1." },
+      { q: "Why is one-hot encoding useful for non-tree models?", a: "Because many models require numeric inputs, and one-hot encoding converts categories into numbers without imposing an arbitrary numeric ranking." },
+      { q: "What is a common downside of one-hot encoding?", a: "It can create many sparse features when the category vocabulary is large." },
+    ],
+  },
+  {
+    slug: "adv-56-continuous-valued-features",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Continuous-Valued Features",
+    order: 56,
+    excerpt: "How trees handle numeric features by testing candidate thresholds and selecting the split with the highest information gain.",
+    theory: `<p><strong>Continuous-valued features are numbers that can take many possible values, not just a small set of categories.</strong> Weight, temperature, age, account balance, time-on-site, and transaction amount are all examples. A decision tree handles these by converting a numeric feature into a threshold question.</p>
+<p><strong>The idea:</strong> instead of asking "what category is this feature?", the tree asks "is the value less than or equal to some threshold?" For the cat example in the transcript, the threshold question is something like <code>weight &lt;= 9</code>.</p>
+<p><strong>How the tree finds the threshold:</strong> it tries many candidate thresholds, computes the information gain for each one, and picks the best threshold if that best threshold beats the gains available from other features.</p>
+<p><strong>Why thresholds work:</strong> a numeric feature often separates the labels better at some cut point than at others. In the example, splitting at weight 9 creates a much cleaner partition than splitting at weight 8 or 13, so the information gain is higher.</p>
+<p><strong>Candidate threshold generation:</strong> a common convention is to sort the observed training values for that feature and test the midpoints between neighboring examples. If there are <code>n</code> sorted values, this gives up to <code>n - 1</code> candidate thresholds.</p>
+<p><strong>Important nuance:</strong> a continuous feature may produce many possible thresholds, so the split search is more involved than for a simple binary category. But conceptually it is the same algorithm: propose a split, compute weighted child impurity, and keep the highest-gain option.</p>
+<p><strong>Production guidance:</strong> threshold-based splits are sensitive to outliers, data drift, and unit consistency. If a feature is recorded differently across environments or populations, the learned thresholds may become unstable. That makes feature governance and monitoring important even for seemingly simple tree models.</p>
+<p><strong>Architecture note:</strong> continuous splits let trees represent piecewise decision boundaries. Each threshold carves the numeric space into regions, and deeper levels of the tree keep refining those regions. This is one reason trees can model non-linear tabular relationships so effectively.</p>
+<p><strong>Failure mode:</strong> teams sometimes assume the tree will always choose sensible thresholds automatically. It often does, but only relative to the training data distribution. If production distributions shift, yesterday's best threshold can become tomorrow's brittle rule.</p>`,
+    example: `Animal-weight split search:
+- Try threshold 8 -> information gain 0.24
+- Try threshold 9 -> information gain 0.61
+- Try threshold 13 -> information gain 0.40
+
+The best threshold is 9 because it creates the largest reduction in impurity.`,
+    animation: null,
+    tool: "DecisionTreeSplitViz",
+    interviewPrep: {
+      questions: [
+        "How does a decision tree use a continuous feature such as weight or age?",
+        "How are candidate thresholds typically generated?",
+        "Why can threshold-based splits become brittle in production?",
+      ],
+      seniorTip: "Good answers treat thresholds as learned policy boundaries and mention that they depend on the data distribution, not on some universal truth about the feature.",
+    },
+    flashCards: [
+      { q: "How does a tree split on a continuous-valued feature?", a: "By testing whether the feature is less than or equal to a candidate threshold." },
+      { q: "How does the tree choose the threshold?", a: "It evaluates multiple candidate thresholds and picks the one with the highest information gain." },
+      { q: "Why sort feature values when searching thresholds?", a: "Because the useful candidate splits lie between observed values, so the sorted order defines the possible cut points." },
+      { q: "Why can continuous splits become fragile over time?", a: "Because changes in the production data distribution can make previously learned thresholds less appropriate." },
     ],
   },
 ];

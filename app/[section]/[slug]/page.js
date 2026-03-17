@@ -41,6 +41,8 @@ const ComponentMap = {
   LearningRateViz:        withLoader(() => import("@/components/LearningRateViz")),
   FeatureScalingViz:      withLoader(() => import("@/components/FeatureScalingViz")),
   PolynomialRegressionViz: withLoader(() => import("@/components/PolynomialRegressionViz")),
+  PrecisionRecallTradeoffLab: withLoader(() => import("@/components/PrecisionRecallTradeoffLab")),
+  DecisionTreeSplitViz:   withLoader(() => import("@/components/DecisionTreeSplitViz")),
   // RAG visualizations
   RetrievalQueryViz:      withLoader(() => import("@/components/RetrievalQueryViz")),
   MultiQueryRAGViz:       withLoader(() => import("@/components/MultiQueryRAGViz")),

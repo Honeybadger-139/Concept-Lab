@@ -293,7 +293,7 @@ const mlNodes = [
     excerpt: "ML as the dominant path to AI; the $13-trillion opportunity ahead.",
     theory: "<p>Traditional programming works for tasks where we can write the rules — like GPS routing. But for <b>speech recognition, disease diagnosis, or self-driving cars</b>, we simply don't know how to write those rules by hand. The only approach that works is to let machines learn from data.</p><p>As Andrew Ng explained in the lecture: there are basic things we could program a machine to do, like finding the shortest path from A to B. But <b>\'for the most part, we just did not know how to write an explicit program\'</b> to do the interesting things — web search, speech recognition, medical diagnosis.</p><p>Why does this matter economically? A McKinsey study estimates ML will create an additional <b>$13 trillion in annual economic value by 2030</b>. The biggest gains are still untapped outside software — in retail, healthcare, agriculture, and manufacturing. The demand far outstrips the supply of ML practitioners today.</p><p>The long-term goal of AI research is <b>AGI</b> (Artificial General Intelligence) — machines as intelligent as humans. Most researchers believe learning algorithms are the best known path, even if it takes 50 or 500 years.</p>",
     example: "Andrew Ng founded and led Google Brain (speech recognition, Street View image analysis), led AI at Baidu (augmented reality, fraud detection, self-driving), and now works on AI for factories, agriculture, and healthcare at Landing AI. The common thread: every breakthrough required machines to learn from data — no one hand-coded those systems.",
-    animation: null,
+    animation: "NeuralNetworkPipelineLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -398,7 +398,7 @@ Same dataset can support multiple valid ML framings depending on business questi
     excerpt: "Predicting continuous output values — the engine behind 99% of ML's economic value.",
     theory: "<p>Andrew Ng made a striking claim in this lecture: <b>'I think 99% of the economic value created by machine learning today is through one type — supervised learning.'</b></p><p><b>Supervised learning</b> means you give the algorithm examples with the correct answers (input X → output Y pairs). It learns the mapping. Then you give it a new X it has never seen and it predicts Y.</p><p>Two sub-types exist. <b>Regression</b> is when the output Y is a continuous number — any value on a scale. Examples from the lecture:</p><ul><li>House price prediction: input = size in sq ft → output = price in dollars (e.g. $150,000 or $340,000)</li><li>Advertising click probability: input = [ad features, user features] → output = probability of click (a number)</li><li>Speech-to-text: input = audio clip → output = text transcript</li></ul><p>The key insight: the model doesn't output a category — it outputs <b>a specific number from an infinite range of possible values</b>.</p>",
     example: "The house price dataset from Portland: you have hundreds of past sales. Each sale is [size in sq ft] → [price in $K]. You train a linear regression model on these. Now a client has a 1,250 sq ft house — the model predicts ~$250K by finding the best-fit line through the training data.",
-    animation: null,
+    animation: "NeuralNetworkPipelineLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -504,7 +504,7 @@ This is why classification design includes both model and operational escalation
     theory: "<p>Andrew Ng's framing: <b>'Don't let the name fool you — unsupervised learning is just as super as supervised learning.'</b></p><p>In unsupervised learning, your dataset has <b>no output labels Y</b> — just input features X. You're not trying to predict anything specific. Instead, the algorithm must discover hidden structure, patterns, or groupings all by itself.</p><p>The most common type is <b>clustering</b> — grouping similar data points together. Real example from the lecture: Google News. Every day, thousands of news articles are published. Google News groups stories about the same event across hundreds of different sources — no human manually labels which articles belong together. The clustering algorithm discovers the groups by text similarity.</p><p>Another example from the lecture: DNA microarray data — researchers measure gene activity across thousands of people and cluster them to discover which individuals share similar genetic patterns. No one told the algorithm what to look for.</p><p>Other unsupervised types you'll learn later: <b>anomaly detection</b> (fraud detection) and <b>dimensionality reduction</b> (compressing data while preserving structure).</p>",
     example: "Google News uses unsupervised clustering to group stories about the same event from hundreds of different news sources — no one manually labelled which articles go together.",
     animation: null,
-    tool: null,
+    tool: "NeuralNetworkPipelineLab",
     interviewPrep: {
       questions: [
         "What is unsupervised learning — how does it differ from supervised?",
@@ -540,7 +540,7 @@ This is why classification design includes both model and operational escalation
     excerpt: "Detecting fraud, defects, and outliers — the three types of unsupervised learning.",
     theory: "<p>This lecture formally defined all three unsupervised learning types. In unsupervised learning, data has inputs X but <b>no output labels Y</b>. The algorithm finds structure on its own.</p><p><b>Three unsupervised learning types from the lecture:</b></p><ul><li><b>Clustering</b> (already covered): group similar data points. Used in Google News grouping news stories, customer segmentation, gene expression analysis.</li><li><b>Anomaly Detection</b>: learn what 'normal' looks like, then flag anything that deviates. Critical use case: <b>fraud detection in the financial system</b> — Andrew Ng's exact words. Unusual transactions could be signs of fraud. Also used in manufacturing quality control to detect defective products.</li><li><b>Dimensionality Reduction</b>: 'take a big dataset and almost magically compress it to a much smaller dataset while losing as little information as possible' — Andrew Ng's description. Used to visualise high-dimensional data, speed up ML training, and remove noise.</li></ul>",
     example: "Credit card fraud: model trains on millions of normal transactions and learns what 'normal spending' looks like (grocery on Tuesdays, coffee daily, occasional online purchase). A $2,000 charge in a foreign country at 3am deviates from that learned pattern — flagged as anomalous, even if this specific fraud pattern was never seen before.",
-    animation: null,
+    animation: "NeuralNetworkPipelineLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -595,7 +595,7 @@ This is why classification design includes both model and operational escalation
 
 This preserves exploration speed while achieving production reliability.`,
     animation: null,
-    tool: null,
+    tool: "NeuralNetworkPipelineLab",
     interviewPrep: {
       questions: [
         "What is Jupyter Notebook and why is it the standard tool for ML?",
@@ -632,7 +632,7 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "Your first supervised learning model — probably the most widely used ML algorithm in the world.",
     theory: "<p>Andrew Ng's claim: <b>Linear regression is 'probably the most widely used learning algorithm in the world today'</b>. It's the foundation everything else builds on.</p><p>The problem from the lecture: you want to predict house prices in Portland, Oregon. The dataset has houses with sizes (sq ft) vs. their sale prices ($K). Plot them: horizontal axis = size, vertical axis = price. Each cross is a real sold house.</p><p>The model fits a straight line through those crosses. When a client asks 'how much can I get for my 1,250 sq ft house?', you trace 1,250 up to the line and read off the prediction — approximately $300K.</p><p><b>Key vocabulary from this lecture:</b></p><ul><li><b>Training set</b>: the dataset you use to train the model</li><li><b>Input feature (x)</b>: the variable you use for prediction (house size)</li><li><b>Output target (y)</b>: the value you're trying to predict (house price)</li><li><b>m</b>: number of training examples in the dataset</li><li><b>Training example (x⁽ⁱ⁾, y⁽ⁱ⁾)</b>: the i-th row in the training set</li></ul>",
     example: "Portland housing dataset: you plot 50 past house sales. The model fits a best-fit line. A 1,250 sq ft house traces to ~$300K on that line. That prediction comes from generalising the learned pattern — not from looking up that specific size in the data.",
-    animation: null,
+    animation: "NeuralNetworkPipelineLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -870,7 +870,7 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "The core optimisation algorithm that trains virtually every ML model.",
     theory: "<p><b>Gradient Descent</b> is the algorithm that trains virtually every ML model — from linear regression to GPT-4. Understanding it is non-negotiable for interviews.</p><p><b>The blind hiker analogy:</b> Imagine you're blindfolded on a hilly landscape. You can't see the whole terrain. You can only feel the slope under your feet. Your goal: reach the lowest valley. Your strategy: at every step, feel which direction is downhill and take one step that way. Repeat until you can't go any lower.</p><p>In ML: the 'landscape' is the cost function J(w,b). The 'valley floor' is the minimum cost (best model). The 'slope' is the gradient (mathematical derivative). Gradient descent is the algorithm that takes those downhill steps.</p><p><b>The update rule (memorise this):</b></p><ul><li>w := w − α × (∂J/∂w)</li><li>b := b − α × (∂J/∂b)</li></ul><p>Where α (alpha) = learning rate (step size). Both updates happen simultaneously using the same current values.</p><p><b>Critical rule:</b> Update ALL parameters simultaneously. Compute all derivatives first using current values, then update them all at once. Updating w first and using the new w to compute b's derivative is a bug — you'd be computing the wrong gradient.</p><p><b>Three variants you must know:</b></p><ul><li><b>Batch GD</b>: use all training data for each step — very stable but slow for large datasets</li><li><b>Stochastic GD (SGD)</b>: use one random sample per step — fast but very noisy (zigzags)</li><li><b>Mini-batch GD</b>: use batches of 32–512 samples — industry standard, balances speed + stability + GPU parallelism</li></ul>",
     example: "Think of gradient descent as hiking down a foggy mountain — you can't see the bottom, but you always step in the steepest downhill direction. In linear regression, each step updates the weights to reduce the prediction error a little, until you settle into the valley (minimum cost).",
-    animation: "GradientDescentViz",
+    animation: "BackpropComputationGraphViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -921,7 +921,7 @@ This preserves exploration speed while achieving production reliability.`,
     theory: "<p>This lecture gave the actual mathematical update rule. Andrew Ng's exact formulation:</p><p><b>On each step:</b></p><ul><li><code>w := w − α × (∂J(w,b)/∂w)</code></li><li><code>b := b − α × (∂J(w,b)/∂b)</code></li></ul><p>The <code>:=</code> symbol is the <b>assignment operator</b> (not a mathematical equality). It means 'compute the right side, then store it in the variable on the left'. Andrew Ng was careful to distinguish this from mathematical equality.</p><p><b>Breaking down the formula:</b></p><ul><li><b>α (alpha)</b>: the learning rate — controls how big each step is</li><li><b>∂J/∂w</b>: the partial derivative of the cost w.r.t. w — tells you the slope in the w direction</li><li><b>Subtract</b>: because we want to go downhill (reduce J), we move against the gradient</li></ul><p><b>Critical rule — simultaneous update:</b> You MUST compute both ∂J/∂w and ∂J/∂b using the CURRENT values of (w, b) first, then update both. Updating w first and using the new w to compute ∂J/∂b is a bug — you're computing the derivative at a different point.</p><p><b>Correct implementation:</b></p><ul><li>temp_w = w − α × ∂J/∂w  (computed with current w, b)</li><li>temp_b = b − α × ∂J/∂b  (computed with current w, b)</li><li>w = temp_w</li><li>b = temp_b</li></ul>",
     example: "Pseudocode implementing simultaneous update correctly:\n  dJ_dw = (1/m) × sum(f_wb(x[i]) - y[i]) × x[i] for all i\n  dJ_db = (1/m) × sum(f_wb(x[i]) - y[i]) for all i\n  w = w - alpha × dJ_dw   # Use dJ_dw computed BEFORE updating w\n  b = b - alpha × dJ_db   # Use dJ_db computed with ORIGINAL (w, b)",
     animation: "GradientDescentViz",
-    tool: null,
+    tool: "BackpropComputationGraphViz",
     interviewPrep: {
       questions: [
         "Why must w and b be updated simultaneously in gradient descent?",
@@ -958,7 +958,7 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "The tangent line trick — why the sign and magnitude of the gradient guide every step.",
     theory: "<p>This lecture built intuition for derivatives without heavy calculus. Key idea: the derivative at a point is the <b>slope of the tangent line</b> at that point.</p><p>Andrew Ng's example: take the J(w) curve (with b=0 for simplicity). Pick a point to the right of the minimum:</p><ul><li>Draw the tangent line at that point — it slopes upward (positive slope)</li><li>∂J/∂w = positive value</li><li>Update: w := w − α × (positive value) → <b>w decreases</b></li><li>On the graph: w moves left, toward the minimum</li></ul><p>Pick a point to the left of the minimum:</p><ul><li>Tangent line slopes downward (negative slope)</li><li>∂J/∂w = negative value</li><li>Update: w := w − α × (negative value) = w + positive → <b>w increases</b></li><li>On the graph: w moves right, toward the minimum</li></ul><p>Both cases converge toward the minimum automatically. <b>This is the elegance of gradient descent — the sign of the derivative always pushes you in the right direction.</b></p><p><b>Magnitude matters too:</b> Far from the minimum, the slope is steep (large derivative → large step). Near the minimum, the slope is flat (small derivative → small step). Gradient descent naturally takes bigger steps when far away and smaller steps as it approaches — even with a fixed learning rate.</p>",
     example: "You're at w=3 on the J(w) curve. The tangent at w=3 has slope +2 (positive). Update: w = 3 − 0.1 × 2 = 2.8. Move left. Next step at w=2.8 has slope +1.5 (less steep). Update: w = 2.8 − 0.1 × 1.5 = 2.65. Steps get smaller as you approach the minimum. No code changes needed — the math handles it automatically.",
-    animation: "GradientDescentViz",
+    animation: "BackpropComputationGraphViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -5462,7 +5462,7 @@ const advancedNodes = [
 <p><b>Why this architecture matters:</b> The output layer is just logistic regression — but instead of using raw features, it uses <em>learned features</em> from the hidden layer. These learned features (affordability, awareness, perceived quality) are often better predictors than anything a human would engineer manually.</p>
 <p><b>In practice</b>, you don't manually assign which inputs go to which neuron. Every neuron in a layer receives all inputs from the previous layer. The network learns through training which inputs matter for each neuron by adjusting its parameters.</p>`,
     example: "A retailer predicting whether a T-shirt will be a top seller has four features: price, shipping cost, marketing spend, and material quality. Rather than manually deciding that 'affordability = price + shipping', the network learns this combination itself from thousands of historical examples — and often discovers non-obvious feature interactions a human analyst would miss.",
-    animation: null,
+    animation: "NeuralNetworkPipelineLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -5538,7 +5538,7 @@ const advancedNodes = [
 </ol>
 <p><b>All neurons in a layer share the same input</b> — they all receive <code>a<sup>[l-1]</sup></code> — but each neuron has its own independent weight vector and bias. Their outputs are collected into the activation vector <code>a<sup>[l]</sup></code> which becomes the input to the next layer.</p>`,
     example: "In the demand-prediction example: layer 1 has 3 neurons each computing a sigmoid over all 4 input features with their own w and b. Neuron 1 outputs 0.3 (affordability probability), neuron 2 outputs 0.7 (awareness), neuron 3 outputs 0.2 (perceived quality). These three numbers form vector a[1], which becomes the input to the output layer.",
-    animation: null,
+    animation: "NeuralNetworkPipelineLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -5608,7 +5608,7 @@ const advancedNodes = [
 <p><b>Typical architecture pattern:</b> more units in earlier layers, fewer as you get deeper toward the output. This is a common and generally effective architecture choice.</p>`,
     example: "Handwritten digit recognition (8×8 image, binary 0 vs 1): x is 64 numbers → a[1] is 25 numbers → a[2] is 15 numbers → a[3] is 1 number (probability of being digit '1'). If a[3] = 0.73, threshold at 0.5 gives ŷ = 1. That's the complete inference path.",
     animation: null,
-    tool: null,
+    tool: "NeuralNetworkPipelineLab",
     interviewPrep: {
       questions: [
         "Describe forward propagation step by step for a 3-layer neural network.",
@@ -5712,7 +5712,7 @@ const advancedNodes = [
 <p><b>Why Sequential over manual layers:</b> with Sequential, TensorFlow handles the data flow between layers automatically. You don't manually compute a1 = layer_1(x), then a2 = layer_2(a1). The model object manages all of that internally.</p>
 <p><b>Important:</b> understanding what these five lines actually do (forward prop, backprop, gradient descent) is more valuable than memorising the API. Libraries change; the concepts don't.</p>`,
     example: "Digit classification: model = Sequential([Dense(25, 'sigmoid'), Dense(15, 'sigmoid'), Dense(1, 'sigmoid')]). Compile with BinaryCrossentropy. Fit on your 60,000 training images. Then model.predict(X_new) returns probabilities for new images. That's the complete ML pipeline in ~5 lines.",
-    animation: null,
+    animation: "NeuralNetworkPipelineLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -5749,7 +5749,7 @@ const advancedNodes = [
 <p><b>Why bother if TensorFlow exists?</b> When a model produces unexpected outputs, the mental model of "every neuron is just a dot product + sigmoid" is the debugging anchor. Engineers who understand this fix bugs in hours; those who don't spend days.</p>`,
     example: "Neuron 1 in layer 1: w = [1, -2], b = 0.5, x = [200, 17]. z = 1×200 + (-2)×17 + 0.5 = 166.5. sigmoid(166.5) ≈ 1.0. Neuron 2: w = [-0.5, 3], b = 1. z = -0.5×200 + 3×17 + 1 = -48. sigmoid(-48) ≈ 0.0. Two activations computed manually — exactly what TensorFlow does for you.",
     animation: null,
-    tool: null,
+    tool: "NeuralNetworkPipelineLab",
     interviewPrep: {
       questions: [
         "Implement forward propagation for a single dense layer in raw Python without TensorFlow.",
@@ -5785,7 +5785,7 @@ const advancedNodes = [
 <p><b>Full network forward pass:</b> <code>a1 = dense(x, W1, b1)</code>, <code>a2 = dense(a1, W2, b2)</code>, <code>f_x = a2</code>. Three lines. This is exactly what TensorFlow's Sequential model does — just vectorised without the Python loop.</p>
 <p><b>Uppercase W</b> (matrix) vs lowercase w (vector per neuron) — the convention from linear algebra. Uppercase = matrix quantity. TensorFlow follows the same convention internally.</p>`,
     example: "Layer 1 has 3 neurons, 2 input features → W has shape (2, 3). W[:,0] is neuron 1's weights, W[:,1] neuron 2's, W[:,2] neuron 3's. Calling dense(x, W, b) loops through 3 columns, computes z and sigmoid for each, returns a vector of 3 activations.",
-    animation: null,
+    animation: "NeuralNetworkPipelineLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6452,7 +6452,7 @@ model.compile(
 </ul>
 <p>Notation: for single-variable functions, use d/dw J(w). For multi-variable functions (most ML), use ∂/∂w_j J(w) — called the partial derivative.</p>`,
     example: "J(w) = w². Using SymPy: diff(w**2, w) returns 2w. At w=3: derivative=6, meaning if w increases by 0.001, J increases by ~0.006. Gradient descent subtracts α·6 from w, pushing w toward the minimum at w=0.",
-    animation: "GradientDescentViz",
+    animation: "BackpropComputationGraphViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6487,7 +6487,7 @@ model.compile(
 <p>Modern frameworks (TensorFlow, PyTorch) implement this as <strong>autodiff</strong> (automatic differentiation) — you define the forward computation and the framework builds the computation graph and runs backprop for you.</p>`,
     example: "Manual backprop check: w=2, x=-2, b=8, y=2. Forward: c=-4, a=4, d=2, J=2. Backprop computes ∂J/∂w = -4. Verify: if w increases by 0.001, J becomes ~1.996 — decreased by ~4×0.001. Confirmed.",
     animation: "GradientDescentViz",
-    tool: null,
+    tool: "BackpropComputationGraphViz",
     interviewPrep: {
       questions: [
         "What is a computation graph and how does it enable efficient gradient computation?",
@@ -6520,7 +6520,7 @@ model.compile(
 <p>The chain propagates gradient information backward through every layer: a change in w1 affects z1, affects a1, affects z2, affects a2, affects J. Backprop quantifies each link in this causal chain.</p>
 <p>This is exactly what TensorFlow computes for you automatically — you never need to hand-derive these equations for a production network.</p>`,
     example: "Gradient of w1 = 6 means: increasing w1 by 1 unit would increase the cost by 6 units (at the current parameters). Gradient descent would subtract α·6 from w1, pushing J downward.",
-    animation: "GradientDescentViz",
+    animation: "BackpropComputationGraphViz",
     tool: null,
     interviewPrep: {
       questions: [

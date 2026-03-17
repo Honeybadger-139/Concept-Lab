@@ -9,6 +9,7 @@ import {
   getTrackHref,
   nodes,
 } from "@/data/curriculumData";
+import { ADVANCED_TRACK_THEORY_POLISH_BY_ORDER } from "@/data/advancedTrackTheoryPolish";
 import styles from "./node.module.css";
 import dynamic from "next/dynamic";
 import NodeShell from "@/components/NodeShell";
@@ -41,6 +42,8 @@ const ComponentMap = {
   LearningRateViz:        withLoader(() => import("@/components/LearningRateViz")),
   FeatureScalingViz:      withLoader(() => import("@/components/FeatureScalingViz")),
   PolynomialRegressionViz: withLoader(() => import("@/components/PolynomialRegressionViz")),
+  NeuralNetworkPipelineLab: withLoader(() => import("@/components/NeuralNetworkPipelineLab")),
+  BackpropComputationGraphViz: withLoader(() => import("@/components/BackpropComputationGraphViz")),
   PrecisionRecallTradeoffLab: withLoader(() => import("@/components/PrecisionRecallTradeoffLab")),
   DecisionTreeSplitViz:   withLoader(() => import("@/components/DecisionTreeSplitViz")),
   // RAG visualizations
@@ -105,16 +108,32 @@ const THEORY_POLISH_NOTES = {
     production:
       "Bound autonomy with loop limits, tool policies, and checkpoints. Capture route decisions and state snapshots for replay and incident analysis.",
   },
+  ml: {
+    beginner:
+      "Read each model as a dataflow system: inputs become representations, representations become scores, and scores become decisions through a chosen loss and thresholding policy.",
+    production:
+      "Track three things relentlessly in ML systems: data shape contracts, evaluation methodology, and the operational meaning of the model's errors. Most expensive failures come from one of those three.",
+  },
 };
 
-function getPolishedTheory(sectionId, theoryHtml) {
+function getPolishedTheory(sectionId, node) {
+  const theoryHtml = node?.theory;
   if (!theoryHtml) return theoryHtml;
   if (theoryHtml.includes("data-theory-polish")) return theoryHtml;
 
   const notes = THEORY_POLISH_NOTES[sectionId];
-  if (!notes) return theoryHtml;
+  const advancedPolish =
+    node?.conceptId === "advanced-learning-algorithms"
+      ? ADVANCED_TRACK_THEORY_POLISH_BY_ORDER[node.order] ?? ""
+      : "";
 
-  return `${theoryHtml}<p data-theory-polish="beginner"><b>First-time learner note:</b> ${notes.beginner}</p><p data-theory-polish="production"><b>Production note:</b> ${notes.production}</p>`;
+  if (!notes && !advancedPolish) return theoryHtml;
+
+  const sharedNotes = notes
+    ? `<p data-theory-polish="beginner"><b>First-time learner note:</b> ${notes.beginner}</p><p data-theory-polish="production"><b>Production note:</b> ${notes.production}</p>`
+    : "";
+
+  return `${theoryHtml}${sharedNotes}${advancedPolish}`;
 }
 
 function deriveHighlightTerms(entry) {
@@ -210,7 +229,7 @@ export default async function NodePage({ params, searchParams }) {
   const prevNode       = currentIndex > 0 ? activeNodes[currentIndex - 1] : null;
   const nextNode       = currentIndex < activeNodes.length - 1 ? activeNodes[currentIndex + 1] : null;
   const meta           = SECTION_META[section] || { color: "#6366f1", emoji: "📚" };
-  const polishedTheory = getPolishedTheory(section, node.theory);
+  const polishedTheory = getPolishedTheory(section, node);
   const rt             = readingTime(polishedTheory);
   const topicHref = buildTopicHref(section, slug, activeTrack?.id ?? null);
   const backHref = activeTrack ? getTrackHref(activeTrack.id) : `/${section}`;

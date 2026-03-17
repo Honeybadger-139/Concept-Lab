@@ -118,9 +118,9 @@ export default function BiasVarianceWorkbench() {
                 ))}
               </div>
               <div style={{ fontSize: "0.79rem", color: "#cbd5e1", lineHeight: 1.5 }}>
-                Baseline -> Train gap: <strong style={{ color: "#f8fafc" }}>{diagnosis.biasGap.toFixed(1)}%</strong>
+                Baseline -{">"} Train gap: <strong style={{ color: "#f8fafc" }}>{diagnosis.biasGap.toFixed(1)}%</strong>
                 <br />
-                Train -> CV gap: <strong style={{ color: "#f8fafc" }}>{diagnosis.varianceGap.toFixed(1)}%</strong>
+                Train -{">"} CV gap: <strong style={{ color: "#f8fafc" }}>{diagnosis.varianceGap.toFixed(1)}%</strong>
               </div>
             </div>
           </div>

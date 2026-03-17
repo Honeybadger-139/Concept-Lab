@@ -665,7 +665,7 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "How supervised learning actually works end-to-end — training set in, function out.",
     theory: "<p>This lecture formalised the supervised learning pipeline with precise vocabulary used in every ML paper and interview.</p><p><b>The pipeline, step by step:</b></p><ol><li><b>Training Set</b> → fed to the learning algorithm (both features X and targets Y)</li><li>Algorithm outputs a <b>function f</b> — historically called the 'hypothesis', Andrew Ng calls it simply 'f'</li><li>Given a new input x, f produces <b>ŷ</b> (y-hat) — the prediction</li></ol><p><b>Key vocabulary from the lecture:</b></p><ul><li><b>f (the model)</b>: the function that maps inputs to predictions</li><li><b>x (input feature)</b>: what you feed the model at inference time</li><li><b>y (output target)</b>: the true correct answer from the training data</li><li><b>ŷ (y-hat)</b>: what the model predicts — may or may not equal y</li></ul><p><b>The key design question</b>: how do you represent f? For linear regression: f(x) = wx + b. This is a straight line. But the same framework — choose f, measure wrongness, optimise — applies to neural networks with millions of parameters.</p>",
     example: "Andrew Ng's framing: 'The job of f is to take a new input x and output an estimate or prediction, which I'm going to call y-hat.' For the house price problem: x = house size (1,250 sq ft) → f(x) = w × 1250 + b → ŷ = $300K (predicted price). The true y is the actual sale price — you only know this in training, not at prediction time.",
-    animation: "TensorShapeFlowViz",
+    animation: "SupervisedPipelineFlowViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1142,8 +1142,8 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "Extending to many features simultaneously — the vectorised dot product form.",
     theory: "<p>Real business problems almost never depend on one feature. <b>Multiple linear regression</b> generalises simple regression to many inputs:</p><p><code>ŷ = w⃗ · x⃗ + b = w₁x₁ + w₂x₂ + ... + wₙxₙ + b</code></p><p>The dot product gives a weighted contribution from each feature. Each wⱼ answers a conditional question: if xⱼ increases by one unit while other features stay fixed, how much does prediction change?</p><p><b>Parameter count:</b> n features means n weights plus one bias. This seems simple, but parameter interactions become hard to reason about when features are correlated.</p><p><b>Why vector form is not optional:</b> the vector equation is the form used by every serious implementation. It maps directly to optimized linear algebra kernels and makes training/inference scale to large feature sets.</p><p><b>Practical caveats:</b></p><ul><li>Coefficient interpretation is fragile when predictors are collinear.</li><li>Different feature units can distort optimisation unless scaled.</li><li>Good train fit does not imply causal interpretation of coefficients.</li></ul><p><b>Gradient descent in multi-feature settings:</b> each weight gets its own gradient term, all updated simultaneously. Efficient code computes full gradient vectors in one pass rather than looping feature-by-feature in Python.</p>",
     example: "House price prediction: ŷ = 200·(sqft) + 50000·(bedrooms) + 30000·(bathrooms) − 1000·(age) + 80000. Each coefficient independently captures that feature's contribution. Adding 1 bedroom adds $50,000 to the predicted price, regardless of the other features.",
-    animation: "TensorShapeFlowViz",
-    tool: null,
+    animation: "VectorizationShapeLab",
+    tool: "VectorizationThroughputLab",
     interviewPrep: {
       questions: [
         "How does the gradient descent update rule change when moving from simple to multiple linear regression?",
@@ -1169,8 +1169,8 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "Why vectorised code is 100× faster — numpy and hardware parallelism.",
     theory: "<p><b>Vectorisation</b> replaces explicit Python for-loops with matrix/vector operations that execute in parallel on CPU/GPU hardware.</p><p>A naive Python loop processes one element at a time sequentially. NumPy's vectorised operations leverage <b>SIMD (Single Instruction, Multiple Data)</b> hardware — applying one instruction to many values simultaneously.</p><p>Result: the same computation in NumPy is typically 100–300× faster than a Python loop. In deep learning, this is not a minor optimisation — it's the difference between training in hours vs. years.</p><p><b>Concrete example:</b> Computing w⃗ · x⃗ for 1,000 features:</p><ul><li>Python loop: 1,000 multiply operations, 999 additions, executed sequentially</li><li>np.dot(w, x): single BLAS call, all operations execute in parallel on hardware</li></ul><p>The key insight from the lecture: when you implement gradient descent with vectorisation, the update for all n parameters happens in a single matrix operation rather than a loop over n parameters. This is why modern ML libraries (PyTorch, TensorFlow, sklearn) are all vectorised under the hood.</p>",
     example: "np.dot(w, x) vs a Python loop summing w[i]*x[i] for all i: identical output, but np.dot exploits CPU vectorisation hardware and is orders of magnitude faster. On a 1,000-feature model: Python loop ≈ 1ms, np.dot ≈ 0.001ms — 1,000× speedup.",
-    animation: "TensorShapeFlowViz",
-    tool: null,
+    animation: "VectorizationThroughputLab",
+    tool: "VectorizationShapeLab",
     interviewPrep: {
       questions: [
         "Why is vectorisation faster than a for-loop in Python?",
@@ -1194,7 +1194,7 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "How NumPy, BLAS, and GPU kernels actually execute computations in parallel.",
     theory: "<p>NumPy calls highly optimised <b>BLAS/LAPACK libraries</b> (OpenBLAS, Intel MKL) written in Fortran/C and hand-tuned for CPU cache architecture. These libraries achieve near-theoretical peak CPU performance.</p><p><b>Vectorised gradient descent for multiple linear regression:</b></p><ul><li>Model: ŷ = Xw + b (matrix form, X is m×n)</li><li>Predictions: ŷ = X · w + b (single matrix multiply)</li><li>Errors: e = ŷ − y (element-wise subtraction)</li><li>Gradient for w: ∇w = (1/m) Xᵀ · e (matrix-vector multiply)</li><li>Update: w := w − α · ∇w (element-wise)</li></ul><p>The entire gradient descent step for all n parameters reduces to two matrix operations. Compare this to a nested loop over m examples and n features — the vectorised version is n×m times faster.</p><p>On <b>GPUs</b>, operations like matrix multiply are CUDA kernels — the GPU's thousands of cores each compute a small portion of the result in parallel. A single matrix multiplication that takes seconds on CPU takes milliseconds on GPU.</p>",
     example: "Gradient descent for 1,000 features, 100,000 training examples: Loop version = 10⁸ multiply-add operations executed sequentially ≈ 100 seconds per iteration. Vectorised NumPy ≈ 0.1 seconds. GPU ≈ 0.001 seconds. Same math, 100,000× speedup.",
-    animation: "TensorShapeFlowViz",
+    animation: "VectorizationShapeLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1319,7 +1319,7 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "Creating better input features using domain knowledge — often the biggest performance lever.",
     theory: "<p><b>Feature engineering</b> means translating raw fields into signals that better represent the mechanism behind the target.</p><p>Raw columns are often weak proxies. Domain-aware transforms can expose linear relationships, stabilize variance, and encode important thresholds the model cannot infer easily from sparse data.</p><p><b>High-impact patterns:</b></p><ul><li><b>Compositions</b>: frontage*depth, debt/income, revenue/user.</li><li><b>Temporal decomposition</b>: hour, day-of-week, seasonality flags.</li><li><b>Non-linear transforms</b>: log, sqrt, capped/clipped versions.</li><li><b>Interaction terms</b>: x1*x2 when effect appears only jointly.</li><li><b>Domain indicators</b>: holiday, promo window, policy change flag.</li></ul><p><b>Quality guardrails:</b> every engineered feature must be computable at inference time, leakage-safe, and versioned in the feature pipeline. If you cannot reproduce it online the same way as offline, model performance will collapse after deployment.</p><p>Strong feature engineering is often the fastest path from baseline to production-grade model quality in tabular ML.</p>",
     example: "House pricing: instead of 'frontage' and 'depth' separately, create 'area = frontage × depth'. The model now has a single feature that directly captures what buyers care about. Traffic prediction: 'is_rush_hour' = (weekday AND hour in 7–9am or 4–7pm) captures a complex pattern as a single binary feature.",
-    animation: null,
+    animation: "FeatureEngineeringWorkflowLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1372,7 +1372,7 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "Why linear regression fails for classification and what to use instead.",
     theory: "<p>Classification asks for category decisions, not unconstrained numeric values. That is why plain linear regression is structurally wrong for binary tasks.</p><p><b>Failure modes of linear regression for classification:</b></p><ul><li>Predictions can be less than 0 or greater than 1, so they are not valid probabilities.</li><li>Decision behavior is fragile under outliers; one extreme point can move the boundary too much.</li><li>Error objective is misaligned with probabilistic classification goals.</li></ul><p>These issues motivate logistic regression, which maps logits to probabilities in [0,1] and supports principled thresholding.</p><p><b>Classification vs regression:</b></p><ul><li>Regression outputs continuous quantities.</li><li>Classification outputs one class from a finite set.</li></ul><p><b>Important production concepts introduced here:</b> class imbalance, threshold tuning, and cost-sensitive decisions. The best threshold is rarely 0.5 when false positives and false negatives have different business costs.</p>",
     example: "Tumour classification: if you use linear regression and add a patient with a very large tumour, the regression line tilts, causing previously-correct predictions to flip. Logistic regression is immune to this — the sigmoid function always outputs [0,1] regardless of extreme inputs.",
-    animation: "LogisticSigmoidViz",
+    animation: "LogisticDecisionBoundaryLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1399,7 +1399,7 @@ This preserves exploration speed while achieving production reliability.`,
     theory: "<p><b>Logistic Regression</b> applies the sigmoid function to the output of a linear equation:</p><p><code>ŷ = σ(z) = 1 / (1 + e^−z)  where z = w⃗ · x⃗ + b</code></p><p>The sigmoid (σ) maps any real number to the range (0, 1):</p><ul><li>z → +∞ : σ → 1 (very confident class 1)</li><li>z = 0 : σ = 0.5 (maximum uncertainty)</li><li>z → −∞ : σ → 0 (very confident class 0)</li></ul><p>The output is interpreted as P(y=1 | x) — the probability the input belongs to the positive class. We typically classify as 1 if ŷ > 0.5.</p><p><b>Why sigmoid?</b> It's the natural function that maps logits (log-odds) to probabilities. The logistic function has a beautiful property: it's differentiable everywhere, which makes gradient descent work smoothly.</p><p><b>The S-curve shape</b> is the key intuition: flat near 0 and 1 (confident predictions), steep in the middle (uncertain region). The model becomes more confident as inputs move further from the decision boundary.</p>",
     example: "Spam filter: σ(wx+b) = 0.87 means '87% probability this is spam'. Decision rule: if ŷ > 0.5, classify as spam. The threshold 0.5 can be adjusted — in fraud detection you might use 0.3 to catch more fraud at the cost of more false positives.",
     animation: "LogisticSigmoidViz",
-    tool: null,
+    tool: "LogisticDecisionBoundaryLab",
     interviewPrep: {
       questions: [
         "Why do we use logistic regression instead of linear regression for classification?",
@@ -1423,7 +1423,7 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "Where the model draws the line between classes — linear and non-linear boundaries.",
     theory: "<p>The <b>decision boundary</b> is the set of points where model confidence is exactly at threshold. For logistic regression with default threshold 0.5, this is where <code>z = w⃗·x⃗ + b = 0</code>.</p><p>Everything on one side is predicted positive, everything on the other side negative.</p><ul><li>Linear features -> line/plane/hyperplane boundary.</li><li>Engineered polynomial features -> curved boundary in original input space.</li></ul><p><b>Important distinction:</b> the boundary is determined by learned parameters, while threshold determines how probabilities are mapped to classes. Changing threshold moves operational decisions even when parameters stay fixed.</p><p><b>Production implications:</b></p><ul><li>For imbalanced classes, threshold 0.5 is often suboptimal.</li><li>Boundary quality must be judged with precision/recall trade-offs, not accuracy alone.</li><li>Calibration matters: two models can share similar boundary accuracy but very different probability reliability.</li></ul><p><b>Core geometric intuition:</b> training does not directly draw a line; it optimises parameters so boundary placement minimizes loss under data constraints.</p>",
     example: "Email spam: decision boundary in 2D feature space (word count vs. link count). The line separates spam (high links, many words) from legitimate email. A curved boundary might separate better if spam has a non-linear pattern.",
-    animation: "LogisticSigmoidViz",
+    animation: "LogisticDecisionBoundaryLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1450,7 +1450,7 @@ This preserves exploration speed while achieving production reliability.`,
     theory: "<p>For logistic regression, the standard objective is <b>binary cross-entropy (log loss)</b>, not MSE.</p><p><b>Why:</b> MSE composed with sigmoid creates difficult optimization geometry; log loss is derived from likelihood and gives stable, principled probability training.</p><p><b>Per-example loss:</b></p><ul><li>y=1 -> <code>-log(ŷ)</code></li><li>y=0 -> <code>-log(1-ŷ)</code></li></ul><p><b>Dataset objective:</b> <code>J=(1/m) * sum(-y*log(ŷ) - (1-y)*log(1-ŷ))</code>.</p><p><b>Intuition:</b> confident wrong predictions are penalized extremely hard. This is why cross-entropy pushes models toward better calibration and sharper decision quality.</p><p><b>Implementation caution:</b> direct sigmoid then log can hit numerical issues near 0 or 1. Production code usually uses logits-space losses (for example BCEWithLogitsLoss) for stability.</p><p><b>Evaluation reminder:</b> optimizing log loss improves probabilistic quality, but operational success also depends on threshold-specific metrics (precision/recall/F1) aligned with business cost.</p>",
     example: "If y=1 (tumour is malignant) and model predicts ŷ=0.01 (99% confident it's benign): loss = −log(0.01) ≈ 4.6 (very high penalty). If model predicts ŷ=0.99: loss = −log(0.99) ≈ 0.01 (tiny penalty). Log loss harshly penalises confident wrong predictions.",
     animation: "LogisticSigmoidViz",
-    tool: null,
+    tool: "LogisticDecisionBoundaryLab",
     interviewPrep: {
       questions: [
         "Why can't we use MSE as the cost function for logistic regression?",
@@ -1477,7 +1477,7 @@ This preserves exploration speed while achieving production reliability.`,
     theory: "<p>The y=0 and y=1 cases collapse into one vectorizable expression:</p><p><code>loss(ŷ,y) = -y*log(ŷ) - (1-y)*log(1-ŷ)</code></p><p>This works because one term automatically becomes zero depending on class label.</p><p><b>Why this matters:</b></p><ul><li>One formula for both classes simplifies implementation.</li><li>Enables fully vectorized batch training.</li><li>Matches framework APIs and autodiff expectations.</li></ul><p><b>Batch objective:</b> <code>J(w,b)=-(1/m)*sum(y_i*log(ŷ_i)+(1-y_i)*log(1-ŷ_i))</code>.</p><p><b>Numerical safety:</b> exact 0 or 1 predictions make log undefined. Real implementations clamp probabilities or, better, compute loss directly from logits for stability.</p><p>This compact form is the production-grade way to implement binary classification loss consistently across tooling.</p>",
     example: "Verify: y=1, ŷ=0.8: loss = −1·log(0.8) − 0·log(0.2) = −log(0.8) ≈ 0.22. y=0, ŷ=0.3: loss = −0·log(0.3) − 1·log(0.7) = −log(0.7) ≈ 0.36. Both cases handled by one formula.",
     animation: "LogisticSigmoidViz",
-    tool: null,
+    tool: "LogisticDecisionBoundaryLab",
     interviewPrep: {
       questions: [
         "Write the unified binary cross-entropy loss formula and verify it for y=1 and y=0.",
@@ -1503,7 +1503,7 @@ This preserves exploration speed while achieving production reliability.`,
     theory: "<p>Gradient descent for logistic regression keeps the same outer loop structure as linear regression, but uses logistic predictions.</p><p><b>Updates:</b></p><p><code>w_j := w_j - alpha*(1/m)*sum((ŷ_i-y_i)*x_ij)</code><br/><code>b := b - alpha*(1/m)*sum(ŷ_i-y_i)</code></p><p>with <code>ŷ_i = sigmoid(w⃗·x⃗_i + b)</code>.</p><p><b>Key point:</b> same update shape, different prediction function and loss. This is why moving from linear to logistic code is mostly a model-head change plus BCE loss choice.</p><p><b>Production diagnostics:</b></p><ul><li>Monitor loss and calibration metrics (Brier/log loss) alongside accuracy.</li><li>Use scaled features for faster convergence.</li><li>Check class imbalance; consider class weights when positive class is rare.</li></ul><p><b>Vectorized implementation:</b> compute all logits in one matrix multiply, apply sigmoid, compute residual vector (ŷ-y), then backprop/update in batch.</p>",
     example: "Linear regression: ŷ = w⃗·x⃗ + b, gradient = (ŷ−y)·x. Logistic regression: ŷ = σ(w⃗·x⃗ + b), gradient = (ŷ−y)·x. Same formula, different ŷ computation. The gradient descent loop is identical.",
     animation: "LogisticSigmoidViz",
-    tool: null,
+    tool: "LogisticDecisionBoundaryLab",
     interviewPrep: {
       questions: [
         "Why do the gradient descent update rules for logistic and linear regression look the same?",
@@ -1972,8 +1972,8 @@ const ragNodes = [
     excerpt: "LLM-driven chunking with dynamic metadata — the highest-quality approach.",
     theory: "<p>Agentic chunking delegates boundary decisions to an LLM. Instead of fixed heuristics, the model reasons about topic continuity and places chunk boundaries where meaning changes.</p><p><strong>Typical implementation:</strong></p><ol><li>Provide text plus chunking instructions (target size, boundary rules, preserve references).</li><li>Model emits boundary markers (for example <code>SPLIT_HERE</code>).</li><li>Pipeline converts markers into chunk objects and attaches metadata.</li></ol><p><strong>Why teams explore this:</strong> it can preserve concept integrity better than deterministic splitters on messy, cross-topic, narrative text.</p><p><strong>Risks and operational limits:</strong></p><ul><li><b>Cost</b>: additional LLM calls during ingestion.</li><li><b>Latency</b>: slower pipeline throughput for large corpora.</li><li><b>Consistency</b>: boundaries may vary across runs/model versions.</li><li><b>Control</b>: model may produce malformed markers or overfit to prompt phrasing.</li></ul><p><strong>Production pattern:</strong> use deterministic chunking by default and apply agentic chunking selectively to high-value documents where retrieval errors are expensive. Keep validator checks for marker format, chunk size bounds, and minimum semantic coverage.</p><p>For visually complex enterprise PDFs, a robust pre-processing stack (layout extraction + OCR + table parsing) is often a bigger quality lever than agentic chunking alone.</p>",
     example: "An LLM is prompted: 'Identify distinct claims and insert SPLIT_HERE at logical boundaries.' For a research paper, it emits chunks like 'Claim: BERT outperforms RNNs on NLU tasks' and 'Evidence: benchmark shows +3.2 F1.' These chunks are more searchable than raw paragraph slices, but the pipeline must validate marker format and chunk size to stay production-safe.",
-    animation: null,
-    tool: null,
+    animation: "RAGChunkingPolicyLab",
+    tool: "ChunkingStrategyWorkbench",
     interviewPrep: {
       questions: [
         "How does agentic chunking work and what makes it more accurate than character-based splitting?",
@@ -2640,7 +2640,7 @@ This survives restarts unlike in-memory lists.`,
 
 Prompt changes become auditable software changes, not hidden string edits.`,
     animation: "LCELChainViz",
-    tool: null,
+    tool: "LangChainPromptFlowLab",
     interviewPrep: {
       questions: [
         "What problem do prompt templates solve compared to f-string prompts?",
@@ -3609,7 +3609,7 @@ Failure path:
 - Tool timeout -> observation stores structured error.
 - Route retries once with backoff.
 - If still failing, graph returns safe fallback and avoids hallucinated answers.`,
-    animation: null,
+    animation: "LangGraphAgentLoopViz",
     tool: "AgentToolLoopSimulator",
     interviewPrep: {
       questions: [
@@ -7173,8 +7173,8 @@ This is much better than shipping first and only reacting once harm is visible i
 - Recall: 0
 
 The model looks strong on accuracy but is operationally worthless because it never catches the rare condition.`,
-    animation: "PrecisionRecallTradeoffLab",
-    tool: null,
+    animation: "ImbalanceConfusionLab",
+    tool: "PrecisionRecallTradeoffLab",
     interviewPrep: {
       questions: [
         "Why is accuracy a poor metric on highly imbalanced classification tasks?",
@@ -7221,8 +7221,8 @@ The model looks strong on accuracy but is operationally worthless because it nev
   - Analysts review many more false alarms.
 
 Neither threshold is "correct" in isolation. The right answer depends on the cost of manual review versus the cost of missed fraud.`,
-    animation: null,
-    tool: "PrecisionRecallTradeoffLab",
+    animation: "PrecisionRecallTradeoffLab",
+    tool: null,
     interviewPrep: {
       questions: [
         "Why does changing the classification threshold change precision and recall?",
@@ -7322,7 +7322,7 @@ The prediction is not one giant formula. It is a routed path through the tree.`,
 4. Right child gets the floppy-ear examples.
 5. Each child is then treated as its own smaller training problem.
 6. When a child becomes pure or too small, it becomes a leaf.`,
-    animation: null,
+    animation: "DecisionTreeBuildFlowLab",
     tool: "DecisionTreeSplitViz",
     interviewPrep: {
       questions: [
@@ -7367,8 +7367,8 @@ The prediction is not one giant formula. It is a routed path through the tree.`,
 - Node C: 3 cats, 3 dogs -> entropy 1.00
 
 As the label mix gets closer to 50-50, impurity rises.`,
-    animation: "DecisionTreeSplitViz",
-    tool: null,
+    animation: "EntropyCurveExplorer",
+    tool: "DecisionTreeSplitViz",
     interviewPrep: {
       questions: [
         "What does entropy measure in a decision tree?",
@@ -7468,8 +7468,8 @@ Candidate A is clearly better because it creates much cleaner child branches.`,
 6. Its children become leaf predictions
 
 The full tree emerges by repeating one local routine at each node.`,
-    animation: "DecisionTreeSplitViz",
-    tool: null,
+    animation: "DecisionTreeBuildFlowLab",
+    tool: "DecisionTreeSplitViz",
     interviewPrep: {
       questions: [
         "Can you walk through the full training loop of a decision tree from root to leaves?",
@@ -7514,8 +7514,8 @@ The full tree emerges by repeating one local routine at each node.`,
 
 If the example uses Safari, then the encoded vector is:
 [0, 1, 0]`,
-    animation: "DecisionTreeSplitViz",
-    tool: null,
+    animation: "OneHotEncodingLab",
+    tool: "DecisionTreeSplitViz",
     interviewPrep: {
       questions: [
         "What is one-hot encoding, and why is it useful?",
@@ -7553,7 +7553,7 @@ If the example uses Safari, then the encoded vector is:
 - Try threshold 13 -> information gain 0.40
 
 The best threshold is 9 because it creates the largest reduction in impurity.`,
-    animation: null,
+    animation: "ContinuousThresholdExplorer",
     tool: "DecisionTreeSplitViz",
     interviewPrep: {
       questions: [

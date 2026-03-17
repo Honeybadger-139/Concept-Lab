@@ -78,7 +78,7 @@ export default function ErrorTriageBoard() {
                   />
                 </label>
                 <label style={{ display: "block", fontSize: "0.73rem", color: "var(--text-secondary)", marginTop: "0.3rem" }}>
-                  Effort (1 low -> 5 high)
+                  Effort (1 low -{">"} 5 high)
                   <input
                     type="range"
                     min="1"

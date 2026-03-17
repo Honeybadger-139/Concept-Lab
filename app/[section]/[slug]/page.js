@@ -48,6 +48,13 @@ const ComponentMap = {
   TensorShapeFlowViz:      withLoader(() => import("@/components/TensorShapeFlowViz")),
   TrainingLoopMap:         withLoader(() => import("@/components/TrainingLoopMap")),
   ActivationDecisionLab:   withLoader(() => import("@/components/ActivationDecisionLab")),
+  ActivationCollapseViz:   withLoader(() => import("@/components/ActivationCollapseViz")),
+  SoftmaxProbabilityLab:   withLoader(() => import("@/components/SoftmaxProbabilityLab")),
+  MultiLabelOutputStudio:  withLoader(() => import("@/components/MultiLabelOutputStudio")),
+  OptimizerStepLab:        withLoader(() => import("@/components/OptimizerStepLab")),
+  ConvolutionWindowViz:    withLoader(() => import("@/components/ConvolutionWindowViz")),
+  EvaluationSplitFlowViz:  withLoader(() => import("@/components/EvaluationSplitFlowViz")),
+  BiasVarianceWorkbench:   withLoader(() => import("@/components/BiasVarianceWorkbench")),
   PrecisionRecallTradeoffLab: withLoader(() => import("@/components/PrecisionRecallTradeoffLab")),
   DecisionTreeSplitViz:   withLoader(() => import("@/components/DecisionTreeSplitViz")),
   // RAG visualizations

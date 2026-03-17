@@ -1528,7 +1528,7 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "The bias-variance tradeoff — the single most important concept in applied ML.",
     theory: "<p>These are the two central generalization failures:</p><p><b>Underfitting (high bias)</b>: model is too rigid; both train and validation error stay high.</p><p><b>Overfitting (high variance)</b>: train error is low but validation/test error degrades because model captures noise patterns.</p><p><b>Bias-variance tradeoff:</b> complexity typically reduces bias but raises variance. The best operating point minimizes validation error, not training error.</p><p><b>How to diagnose correctly:</b></p><ul><li>Compare training vs validation curves over epochs.</li><li>Use confusion matrix/PR metrics for classification tasks.</li><li>Check whether performance gap grows with training time.</li></ul><p><b>Overfitting interventions:</b> more data, stronger regularization, simpler model, early stopping, better feature selection.</p><p><b>Underfitting interventions:</b> richer features, weaker regularization, more expressive model family, longer training if optimization incomplete.</p><p><b>Production reality:</b> data drift can turn a previously well-balanced model into high-variance behavior post-deployment. Continual monitoring is part of bias-variance management.</p>",
     example: "Fitting a polynomial to 10 data points: degree=1 underfit (misses the S-curve, high bias). Degree=9 overfit (passes through every point but oscillates wildly between them, high variance). Degree=3 is just right (captures the curve without memorising noise).",
-    animation: "OverfittingViz",
+    animation: "ActivationCollapseViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1555,7 +1555,7 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "Adding a penalty for large weights — the elegant way to prevent overfitting.",
     theory: "<p><b>Regularization</b> adds controlled bias to reduce variance and improve out-of-sample stability.</p><p><b>Mechanism:</b> penalize large weights so model avoids brittle, high-sensitivity decision surfaces.</p><p>Lambda controls the strength:</p><ul><li>lambda=0 -> no penalty, overfit risk higher.</li><li>lambda too high -> overly constrained model, underfitting.</li><li>lambda tuned -> better validation behavior.</li></ul><p><b>Main forms:</b></p><ul><li><b>L2 / Ridge:</b> smooth shrinkage of all weights.</li><li><b>L1 / Lasso:</b> sparse solution, can zero irrelevant features.</li><li><b>Elastic Net:</b> combines L1 and L2 when both sparsity and stability are desired.</li></ul><p><b>Operational guidance:</b> choose lambda with validation/CV, not training loss. Retune after major feature or data-distribution shifts.</p><p>In deep learning stacks this appears as <code>weight_decay</code> plus additional regularizers such as dropout, augmentation, and early stopping.</p>",
     example: "Without regularisation: polynomial degree-9 model memorises all 10 training points perfectly. With λ=1: weights are penalised, the model smooths out, degree-9 behaves like degree-3. Regularisation effectively reduces the model's complexity without changing its architecture.",
-    animation: "OverfittingViz",
+    animation: "BiasVarianceWorkbench",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1582,7 +1582,7 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "L2 penalty added to MSE; weight decay in the gradient update.",
     theory: "<p>L2-regularized linear regression objective:</p><p><code>J(w,b) = (1/2m) * sum((ŷ_i - y_i)^2) + (lambda/2m) * sum(w_j^2)</code></p><p><b>Details that matter:</b></p><ul><li>bias term b is usually excluded from penalty.</li><li>lambda term is normalized by m for scale consistency.</li><li>regularization acts on weights, not labels/features.</li></ul><p><b>Weight update with decay:</b></p><p><code>w_j := w_j*(1 - alpha*lambda/m) - alpha*(1/m)*sum((ŷ_i-y_i)*x_ij)</code></p><p>The first factor is weight decay. Each step slightly shrinks coefficient magnitude before fitting residual structure.</p><p><b>Practical insight:</b> if features are not standardized, regularization acts unevenly because coefficient scales are not comparable. Standardize first, then tune lambda.</p><p><b>Operational check:</b> monitor coefficient norms as lambda changes; exploding norms indicate weak regularization or unstable optimization settings.</p>",
     example: "With α=0.01, λ=1, m=100: decay factor = 1 − (0.01·1/100) = 1 − 0.0001 = 0.9999. Each step, w shrinks by 0.01% before the gradient update. Over 10,000 steps, this prevents w from growing unboundedly.",
-    animation: "OverfittingViz",
+    animation: "EvaluationSplitFlowViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1608,7 +1608,7 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "Applying L2 regularisation to logistic regression — the production standard.",
     theory: "<p>Regularized logistic regression combines cross-entropy classification with L2 control on weight magnitude.</p><p><code>J(w,b) = (1/m)*sum(BCE loss) + (lambda/2m)*sum(w_j^2)</code></p><p>Weight updates include the same decay factor used in linear regression regularization.</p><p><b>Library mapping:</b> in sklearn, <code>C = 1/lambda</code> (inverse convention). Smaller C means stronger regularization. In deep-learning frameworks, this appears as optimizer <code>weight_decay</code>.</p><p><b>Production guidance:</b></p><ul><li>Tune C on validation folds with metrics aligned to class imbalance (PR-AUC/F1/recall).</li><li>Do not optimize only for accuracy on skewed datasets.</li><li>Pair regularization with threshold tuning; they solve different failure modes.</li></ul><p>This model is still a strong baseline in many tabular and risk-scoring systems because it is interpretable, stable, and cheap to serve.</p>",
     example: "sklearn: LogisticRegression(C=0.1) means λ=10 (strong regularisation). LogisticRegression(C=10) means λ=0.1 (weak regularisation). Default C=1 means λ=1. Always tune C on the validation set.",
-    animation: "OverfittingViz",
+    animation: "EvaluationSplitFlowViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -5393,7 +5393,7 @@ const advancedNodes = [
 </ol>
 <p><b>The meta-lesson:</b> knowing algorithms is table stakes. The real skill is knowing <em>when to use them, how to debug them, and how to improve them systematically</em> — which is what separates a 6-month project from a 2-week project.</p>`,
     example: "A team spends six months collecting more training data, convinced that's the bottleneck. A bias-variance diagnostic run on day one would have shown the model is underfitting — more data won't help at all. This course gives you that diagnostic toolkit so you make the right call first.",
-    animation: "MLLearningSpectrumViz",
+    animation: "SoftmaxProbabilityLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6143,7 +6143,7 @@ const advancedNodes = [
 </ul>
 <p>This is why <strong>nonlinear activations</strong> (ReLU, sigmoid) are essential: they let the network learn curved decision boundaries and complex feature interactions that no linear model can represent.</p>`,
     example: "Stack 100 linear layers: still just Wx + b. Insert one ReLU: suddenly the model can approximate any continuous function. Activation functions are the source of expressive power in deep learning.",
-    animation: "OverfittingViz",
+    animation: "ActivationCollapseViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6181,7 +6181,7 @@ const advancedNodes = [
 <p>These probabilities must sum to 1. The decision boundary now divides the feature space into <em>n</em> regions rather than 2, which requires a fundamentally different algorithm: <strong>softmax regression</strong>.</p>
 <p>Note: multiclass is different from <em>multi-label</em> classification. In multiclass, each example belongs to exactly one class. In multi-label, each example can have multiple labels simultaneously (e.g. an image can contain both a car and a pedestrian).</p>`,
     example: "Email classification: spam / promotional / social / primary — 4 mutually exclusive classes. Each email belongs to exactly one class. This is multiclass. If the email could have multiple labels at once (e.g. 'urgent' AND 'from boss'), that would be multi-label.",
-    animation: "MLLearningSpectrumViz",
+    animation: "SoftmaxProbabilityLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6214,7 +6214,7 @@ const advancedNodes = [
 <p>When n = 2, softmax reduces to logistic regression — they are mathematically equivalent. This confirms softmax is the true generalization of logistic regression to multiple classes.</p>
 <p>Parameters: w_1 through w_n and b_1 through b_n — one set per class. The model learns n separate linear boundaries and normalizes them into a probability distribution.</p>`,
     example: "Digit recognition with 10 classes: softmax computes 10 scores z_1..z_10, exponentiates each, divides by the sum. If z_3 is largest, e^(z_3) dominates the denominator and a_3 approaches 1. The model confidently predicts class 3.",
-    animation: "LogisticSigmoidViz",
+    animation: "SoftmaxProbabilityLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6257,7 +6257,7 @@ model.compile(loss=SparseCategoricalCrossentropy())
 </pre>
 <p><strong>Note:</strong> This "straightforward" implementation works but is numerically less stable. The improved version (next topic) uses <code>from_logits=True</code> for better floating-point accuracy.</p>`,
     example: "MNIST digit classification: input is 28×28 pixel image. Two hidden layers learn edge and shape features. 10-unit softmax output produces probabilities for digits 0–9. Predicted digit = argmax(a_1..a_10).",
-    animation: "MLLearningSpectrumViz",
+    animation: "SoftmaxProbabilityLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6299,7 +6299,7 @@ model.compile(
 probs = tf.nn.softmax(logits)</pre>
 <p>The <strong>same pattern applies to binary classification</strong>: use linear output + BinaryCrossentropy(from_logits=True) instead of sigmoid output + BinaryCrossentropy.</p>`,
     example: "Computing 2/10000 directly vs. computing (1 + 1/10000) - (1 - 1/10000) gives slightly different answers due to floating-point precision. TensorFlow's from_logits=True avoids intermediate precision loss by collapsing softmax + cross-entropy into one optimized operation.",
-    animation: null,
+    animation: "SoftmaxProbabilityLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6337,7 +6337,7 @@ Each unit independently predicts: P(car), P(bus), P(pedestrian)
 </pre>
 <p>Note: use <strong>sigmoid</strong> (not softmax) for multi-label — each output is independent and probabilities don't need to sum to 1.</p>`,
     example: "Medical imaging: a chest X-ray can simultaneously show pneumonia, a fractured rib, and an enlarged heart. Each condition is a separate binary label. The model outputs three independent probabilities, all of which can be high at the same time.",
-    animation: "MLLearningSpectrumViz",
+    animation: "MultiLabelOutputStudio",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6382,7 +6382,7 @@ model.compile(
   <li>Adam is now the <em>de facto standard</em> — most practitioners use it over plain gradient descent</li>
 </ul>`,
     example: "If gradient descent takes tiny identical steps toward the minimum, Adam notices the consistency and doubles the step size. If it oscillates wildly, Adam shrinks the step size. The result: faster convergence with less tuning.",
-    animation: "GradientDescentViz",
+    animation: "OptimizerStepLab",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6417,7 +6417,7 @@ model.compile(
 <p>Multiple convolutional layers can be stacked: the second layer's neurons look at local windows of the first layer's outputs. This builds hierarchical feature detectors.</p>
 <p>Convolutional Neural Networks (CNNs) power most computer vision. The field continues to invent new layer types — transformers, LSTMs, attention mechanisms — all following this principle of designing layers with specific inductive biases.</p>`,
     example: "Reading an EKG signal: a 100-point time series. Convolutional layer 1: neurons each see 20 adjacent time steps. Convolutional layer 2: neurons see 5 adjacent outputs from layer 1. Final sigmoid: binary heart disease classification.",
-    animation: null,
+    animation: "ConvolutionWindowViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6559,7 +6559,7 @@ model.compile(
 <p>The tool for making these decisions: <strong>diagnostics</strong> — systematic tests that give insight into what's wrong. A diagnostic might take hours to implement but can save months of misguided work by ruling out entire categories of fixes.</p>
 <p>The most powerful diagnostic: <strong>bias-variance analysis</strong> (covered in the next topics). It directly tells you whether to get more data, simplify the model, or add complexity.</p>`,
     example: "Team spends 4 months collecting 10x more training data. Model barely improves. Diagnosis would have revealed: it's a high-bias problem. More data never fixes high bias. That 4 months was wasted. A 2-hour diagnostic would have shown this on day one.",
-    animation: "OverfittingViz",
+    animation: "BiasVarianceWorkbench",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6597,7 +6597,7 @@ model.compile(
 </ul>
 <p>A systematic train/test split is the foundation of reliable model evaluation. It prevents the illusion that a model works just because it fits the data it was trained on.</p>`,
     example: "Fourth-order polynomial fit to 5 training points: J_train ≈ 0, perfect fit. J_test on 3 held-out points: very high — the model memorized noise, not patterns. The test set exposes what J_train hides.",
-    animation: "OverfittingViz",
+    animation: "EvaluationSplitFlowViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6633,7 +6633,7 @@ model.compile(
 <p>This keeps the test set pristine — it never influenced any decision. J_test is then an unbiased estimate of true generalization error.</p>
 <p>Cross-validation applies to choosing any model hyperparameter: polynomial degree, neural network architecture (layers/units), regularization λ, etc.</p>`,
     example: "Trying 10 neural network architectures: evaluate each on cross-validation set, pick the one with lowest J_cv. Never look at test set during selection. Once final architecture is chosen, evaluate once on test set to estimate real-world performance.",
-    animation: "OverfittingViz",
+    animation: "EvaluationSplitFlowViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6677,7 +6677,7 @@ model.compile(
 <p>Plotting J_train and J_cv as a function of model complexity (polynomial degree): J_train decreases monotonically with complexity. J_cv is U-shaped — high for simple models (high bias), low in the middle (just right), high again for complex models (high variance).</p>
 <p>In rare cases, especially neural networks: <strong>both high bias AND high variance simultaneously</strong>. J_train is high AND J_cv >> J_train. Happens when a model overfits part of the input space but underfits another part.</p>`,
     example: "d=1 (linear): J_train=15%, J_cv=16% → high bias (both high). d=4 (degree 4): J_train=1%, J_cv=18% → high variance (big gap). d=2 (quadratic): J_train=5%, J_cv=6% → just right.",
-    animation: "OverfittingViz",
+    animation: "BiasVarianceWorkbench",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6715,7 +6715,7 @@ model.compile(
 <p>Pick the λ with lowest J_cv. Then estimate generalization error using J_test.</p>
 <p>Plotting J_train and J_cv vs. λ: this is a mirror image of the degree-of-polynomial plot. High variance is on the left (small λ), high bias is on the right (large λ). The minimum of J_cv is in the middle — the optimal λ.</p>`,
     example: "λ=0: perfect training fit but overfits. λ=10000: flat prediction (constant), underfits badly. λ=0.1: J_train=8%, J_cv=9% — the sweet spot. Cross-validation found it automatically by evaluating 12 candidates.",
-    animation: "OverfittingViz",
+    animation: "BiasVarianceWorkbench",
     tool: null,
     interviewPrep: {
       questions: [
@@ -6758,7 +6758,7 @@ model.compile(
   <li>Conclusion: not a bias problem — it's a variance problem. More data or regularization, not a more complex model.</li>
 </ul>`,
     example: "Without baseline: J_train=10.8% looks terrible. With baseline (human=10.6%): the model is nearly matching human performance — that 10.8% is essentially irreducible noise. The real problem is the 4% gap between J_train and J_cv (variance).",
-    animation: "OverfittingViz",
+    animation: "BiasVarianceWorkbench",
     tool: null,
     interviewPrep: {
       questions: [

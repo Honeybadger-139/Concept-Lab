@@ -665,7 +665,7 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "How supervised learning actually works end-to-end — training set in, function out.",
     theory: "<p>This lecture formalised the supervised learning pipeline with precise vocabulary used in every ML paper and interview.</p><p><b>The pipeline, step by step:</b></p><ol><li><b>Training Set</b> → fed to the learning algorithm (both features X and targets Y)</li><li>Algorithm outputs a <b>function f</b> — historically called the 'hypothesis', Andrew Ng calls it simply 'f'</li><li>Given a new input x, f produces <b>ŷ</b> (y-hat) — the prediction</li></ol><p><b>Key vocabulary from the lecture:</b></p><ul><li><b>f (the model)</b>: the function that maps inputs to predictions</li><li><b>x (input feature)</b>: what you feed the model at inference time</li><li><b>y (output target)</b>: the true correct answer from the training data</li><li><b>ŷ (y-hat)</b>: what the model predicts — may or may not equal y</li></ul><p><b>The key design question</b>: how do you represent f? For linear regression: f(x) = wx + b. This is a straight line. But the same framework — choose f, measure wrongness, optimise — applies to neural networks with millions of parameters.</p>",
     example: "Andrew Ng's framing: 'The job of f is to take a new input x and output an estimate or prediction, which I'm going to call y-hat.' For the house price problem: x = house size (1,250 sq ft) → f(x) = w × 1250 + b → ŷ = $300K (predicted price). The true y is the actual sale price — you only know this in training, not at prediction time.",
-    animation: null,
+    animation: "TensorShapeFlowViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1142,7 +1142,7 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "Extending to many features simultaneously — the vectorised dot product form.",
     theory: "<p>Real business problems almost never depend on one feature. <b>Multiple linear regression</b> generalises simple regression to many inputs:</p><p><code>ŷ = w⃗ · x⃗ + b = w₁x₁ + w₂x₂ + ... + wₙxₙ + b</code></p><p>The dot product gives a weighted contribution from each feature. Each wⱼ answers a conditional question: if xⱼ increases by one unit while other features stay fixed, how much does prediction change?</p><p><b>Parameter count:</b> n features means n weights plus one bias. This seems simple, but parameter interactions become hard to reason about when features are correlated.</p><p><b>Why vector form is not optional:</b> the vector equation is the form used by every serious implementation. It maps directly to optimized linear algebra kernels and makes training/inference scale to large feature sets.</p><p><b>Practical caveats:</b></p><ul><li>Coefficient interpretation is fragile when predictors are collinear.</li><li>Different feature units can distort optimisation unless scaled.</li><li>Good train fit does not imply causal interpretation of coefficients.</li></ul><p><b>Gradient descent in multi-feature settings:</b> each weight gets its own gradient term, all updated simultaneously. Efficient code computes full gradient vectors in one pass rather than looping feature-by-feature in Python.</p>",
     example: "House price prediction: ŷ = 200·(sqft) + 50000·(bedrooms) + 30000·(bathrooms) − 1000·(age) + 80000. Each coefficient independently captures that feature's contribution. Adding 1 bedroom adds $50,000 to the predicted price, regardless of the other features.",
-    animation: null,
+    animation: "TensorShapeFlowViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1169,7 +1169,7 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "Why vectorised code is 100× faster — numpy and hardware parallelism.",
     theory: "<p><b>Vectorisation</b> replaces explicit Python for-loops with matrix/vector operations that execute in parallel on CPU/GPU hardware.</p><p>A naive Python loop processes one element at a time sequentially. NumPy's vectorised operations leverage <b>SIMD (Single Instruction, Multiple Data)</b> hardware — applying one instruction to many values simultaneously.</p><p>Result: the same computation in NumPy is typically 100–300× faster than a Python loop. In deep learning, this is not a minor optimisation — it's the difference between training in hours vs. years.</p><p><b>Concrete example:</b> Computing w⃗ · x⃗ for 1,000 features:</p><ul><li>Python loop: 1,000 multiply operations, 999 additions, executed sequentially</li><li>np.dot(w, x): single BLAS call, all operations execute in parallel on hardware</li></ul><p>The key insight from the lecture: when you implement gradient descent with vectorisation, the update for all n parameters happens in a single matrix operation rather than a loop over n parameters. This is why modern ML libraries (PyTorch, TensorFlow, sklearn) are all vectorised under the hood.</p>",
     example: "np.dot(w, x) vs a Python loop summing w[i]*x[i] for all i: identical output, but np.dot exploits CPU vectorisation hardware and is orders of magnitude faster. On a 1,000-feature model: Python loop ≈ 1ms, np.dot ≈ 0.001ms — 1,000× speedup.",
-    animation: null,
+    animation: "TensorShapeFlowViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -1194,7 +1194,7 @@ This preserves exploration speed while achieving production reliability.`,
     excerpt: "How NumPy, BLAS, and GPU kernels actually execute computations in parallel.",
     theory: "<p>NumPy calls highly optimised <b>BLAS/LAPACK libraries</b> (OpenBLAS, Intel MKL) written in Fortran/C and hand-tuned for CPU cache architecture. These libraries achieve near-theoretical peak CPU performance.</p><p><b>Vectorised gradient descent for multiple linear regression:</b></p><ul><li>Model: ŷ = Xw + b (matrix form, X is m×n)</li><li>Predictions: ŷ = X · w + b (single matrix multiply)</li><li>Errors: e = ŷ − y (element-wise subtraction)</li><li>Gradient for w: ∇w = (1/m) Xᵀ · e (matrix-vector multiply)</li><li>Update: w := w − α · ∇w (element-wise)</li></ul><p>The entire gradient descent step for all n parameters reduces to two matrix operations. Compare this to a nested loop over m examples and n features — the vectorised version is n×m times faster.</p><p>On <b>GPUs</b>, operations like matrix multiply are CUDA kernels — the GPU's thousands of cores each compute a small portion of the result in parallel. A single matrix multiplication that takes seconds on CPU takes milliseconds on GPU.</p>",
     example: "Gradient descent for 1,000 features, 100,000 training examples: Loop version = 10⁸ multiply-add operations executed sequentially ≈ 100 seconds per iteration. Vectorised NumPy ≈ 0.1 seconds. GPU ≈ 0.001 seconds. Same math, 100,000× speedup.",
-    animation: null,
+    animation: "TensorShapeFlowViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -2475,8 +2475,8 @@ This keeps every later chain consistent and observable.`,
 4) If history is omitted, follow-up quality drops immediately.
 
 LLMs are stateless; history passing creates conversational continuity.`,
-    animation: null,
-    tool: null,
+    animation: "LangChainMemoryFlowViz",
+    tool: "ChatModelDemo",
     interviewPrep: {
       questions: [
         "Why do LLMs not remember previous messages without explicit history passing?",
@@ -2506,7 +2506,7 @@ LLMs are stateless; history passing creates conversational continuity.`,
 
 This is vendor portability in practice.`,
     animation: null,
-    tool: null,
+    tool: "ChatModelDemo",
     interviewPrep: {
       questions: [
         "How does LangChain enable switching between OpenAI and Anthropic with minimal code changes?",
@@ -2524,43 +2524,47 @@ This is vendor portability in practice.`,
   {
     slug: "10-chat-models-realtime",
     sectionId: "langchain",
-    title: "Chat Models — Real-time Streaming",
+    title: "Chat Models — Real-time Conversation",
     order: 10,
-    excerpt: "Token-by-token responses with .stream() — perceived latency drops dramatically.",
-    theory: `<p><b>Streaming is a user-experience architecture decision, not just a UI trick.</b> Without streaming, users wait for full completion; with streaming, they get immediate progressive feedback.</p>
-<p><b>Mechanics:</b> <code>.stream()</code> yields chunks (usually token groups) as the model generates them. Frontends append chunks incrementally to render the response in real time.</p>
-<p><b>Operational details that matter:</b></p>
-<ul>
-<li>Transport: SSE or WebSocket for browser clients.</li>
-<li>Chunk handling: gracefully process empty/whitespace chunks.</li>
-<li>Cancellation: support user stop action to cut unnecessary token spend.</li>
-<li>Backpressure: throttle UI rendering if chunk frequency is high.</li>
-</ul>
-<p><b>Failure modes:</b> dropped network connection mid-stream, duplicated chunks due reconnect logic, and partial response persistence bugs. Production streaming should include reconnection policy and chunk-id aware append logic where possible.</p>`,
-    example:`Streaming UX flow:
-1) Backend calls model.stream(messages).
-2) Chunks are sent to frontend over SSE.
-3) UI appends text progressively.
-4) User may cancel mid-stream to save tokens.
-5) Backend closes stream and logs partial completion.
+    excerpt: "Building a local multi-turn chat loop that keeps history in memory and answers follow-up questions correctly.",
+    theory: `<p><b>This example is about building an interactive conversation loop, not just making one isolated model call.</b> The program keeps asking the user for input, appends that input to a history list, sends the full history to the chat model, appends the AI response, and repeats. That repeated loop is what makes the application feel like ChatGPT running locally in your terminal.</p>
+<p><b>Core flow:</b></p>
+<ol>
+<li>Initialize a <code>chat_history</code> list.</li>
+<li>Seed it with a <code>SystemMessage</code> so the assistant has a stable role.</li>
+<li>Inside a loop, read user input from the terminal.</li>
+<li>If the user types <code>exit</code>, break the loop.</li>
+<li>Append the current input as a <code>HumanMessage</code>.</li>
+<li>Invoke the model with the full message history.</li>
+<li>Append the returned content as an <code>AIMessage</code>.</li>
+</ol>
+<p><b>Why follow-up questions work:</b> because every new model call receives the previous conversation turns again. If the user asks, <code>Do the same for 81</code> after asking about the square root of 49, the model can infer that the new question refers to square roots only because the prior turns are still inside <code>chat_history</code>.</p>
+<p><b>Practical limitation:</b> this design keeps state only in RAM. It is excellent for understanding how chat products work, but once the process stops the conversation vanishes. That leads directly to the next architecture pattern: durable cloud-backed history.</p>`,
+    example:`Conversation loop walkthrough:
+1) Terminal asks the user for a question.
+2) User types "What is the square root of 49?"
+3) The app appends that as a HumanMessage and invokes the model.
+4) The AI replies "7" and the app stores that answer as an AIMessage.
+5) The user then asks "Do the same for 81."
+6) The model answers correctly because the earlier turns are still in history.
 
-Perceived latency drops even if total compute time stays similar.`,
-    animation: null,
-    tool: null,
+This is the simplest working architecture for a local multi-turn chat experience.`,
+    animation: "LangChainMemoryFlowViz",
+    tool: "ChatModelDemo",
     interviewPrep: {
       questions: [
-        "What is the difference between .invoke() and .stream() in LangChain?",
-        "How does streaming improve user experience without reducing actual computation time?",
-        "What is an AIMessageChunk?",
-        "What operational safeguards are needed for streaming in production?",
+        "How does a terminal-based chat application preserve multi-turn context using LangChain message classes?",
+        "Why do follow-up questions work in a local chat loop even though the model itself is stateless?",
+        "What responsibilities belong inside the main conversation loop?",
+        "What breaks when this design stays in-memory only?",
       ],
-      seniorTip: "In web applications, streaming requires Server-Sent Events (SSE) or WebSockets — you can't stream over a standard HTTP request-response cycle. LangChain's streaming is designed to work with FastAPI's <code>StreamingResponse</code> or Next.js Route Handlers with <code>ReadableStream</code>. The pattern: backend streams chunks via SSE, frontend's JavaScript event listener appends each chunk to the DOM. This is exactly how ChatGPT and Claude.ai work."
+      seniorTip: "The important design lesson here is the control loop, not the terminal UI itself. Once you understand the loop, you can swap the terminal input for a web form, a mobile chat box, or an API endpoint. The harder production problems are then session isolation, persistence, rate limiting, and cancellation semantics, not the prompt syntax."
     },
     flashCards: [
-      { q: "What is the difference between model.invoke() and model.stream()?", a: "invoke() waits for the complete response before returning anything. stream() yields tokens as they're generated, enabling real-time display. stream() uses a for loop: for chunk in model.stream(messages)." },
-      { q: "Does streaming reduce total response time?", a: "No — the model still takes the same time to generate the full response. Streaming reduces perceived latency by showing text immediately as it's generated, rather than making users wait for completion." },
-      { q: "What is an AIMessageChunk?", a: "A small piece of the LLM's response yielded during streaming. Each chunk has a .content attribute with 1-5 tokens of text. The full response is built by concatenating all chunks." },
-      { q: "Why implement cancel support in streaming UIs?", a: "It improves UX and prevents paying for tokens users no longer want." },
+      { q: "What makes a terminal chat app feel conversational?", a: "Each turn appends a new HumanMessage and AIMessage to the same chat_history list, then sends the full history again on the next model call." },
+      { q: "Why can the model answer a follow-up like 'Do the same for 81'?", a: "Because the earlier exchange about square roots is replayed in the next invocation, giving the model the missing context." },
+      { q: "What is the purpose of the exit check in the conversation loop?", a: "It provides a clean termination condition so the application can stop reading input instead of running forever." },
+      { q: "What is the biggest limitation of the local conversation-loop design?", a: "The state is stored only in memory, so the conversation disappears when the process exits or restarts." },
     ],
   },
   {
@@ -2592,7 +2596,7 @@ Perceived latency drops even if total compute time stays similar.`,
 5) Next request repeats with same session key.
 
 This survives restarts unlike in-memory lists.`,
-    animation: null,
+    animation: "LangChainMemoryFlowViz",
     tool: null,
     interviewPrep: {
       questions: [
@@ -2670,7 +2674,7 @@ Prompt changes become auditable software changes, not hidden string edits.`,
 
 This is the core LangChain execution model.`,
     animation: "LCELChainViz",
-    tool: null,
+    tool: "ChainExecutionTimelineLab",
     interviewPrep: {
       questions: [
         "What is LCEL and what does the pipe operator (|) do?",
@@ -2767,7 +2771,7 @@ A simple deterministic chain should be production-stable before adding routing.`
 
 This makes failures attributable to the exact stage, not "LLM was wrong."`,
     animation: "ChainRoutingPatternsViz",
-    tool: null,
+    tool: "ChainExecutionTimelineLab",
     interviewPrep: {
       questions: [
         "Walk through the full runtime lifecycle of an LCEL chain invocation.",
@@ -2809,7 +2813,7 @@ This makes failures attributable to the exact stage, not "LLM was wrong."`,
 
 Each step depends on previous output, so execution order is intentionally fixed.`,
     animation: "ChainRoutingPatternsViz",
-    tool: null,
+    tool: "ChainExecutionTimelineLab",
     interviewPrep: {
       questions: [
         "How do you decide if a workflow should stay sequential instead of branching?",
@@ -2856,7 +2860,7 @@ Each step depends on previous output, so execution order is intentionally fixed.
 
 Parallelism lowers latency when branches have no dependency.`,
     animation: "ChainRoutingPatternsViz",
-    tool: null,
+    tool: "ChainExecutionTimelineLab",
     interviewPrep: {
       questions: [
         "What technical condition must be true before parallelizing chain stages?",
@@ -2903,7 +2907,7 @@ Parallelism lowers latency when branches have no dependency.`,
 
 This avoids one oversized chain trying to handle every intent poorly.`,
     animation: "ChainRoutingPatternsViz",
-    tool: null,
+    tool: "ChainExecutionTimelineLab",
     interviewPrep: {
       questions: [
         "What are the minimum components of a robust conditional chain?",
@@ -3173,25 +3177,28 @@ This stage determines what users actually experience as quality.`,
     sectionId: "langchain",
     title: "RAGs - Basic Example (1)",
     order: 24,
-    excerpt: "First basic end-to-end RAG example.",
-    theory: `<p><b>Basic Example 1 is the first complete RAG implementation.</b> The goal is not perfection; it is to build a small, working baseline from ingestion to answer generation.</p>
-<p><b>What this baseline should demonstrate:</b></p>
-<ul>
-<li>End-to-end connectivity between retriever and model.</li>
-<li>Grounded answer generation from retrieved context.</li>
-<li>Minimal observability (input query, retrieved docs, final response).</li>
-</ul>
-<p><b>Why this step is essential:</b> without a baseline, tuning is guesswork. A simple pipeline provides a control condition for later improvements (chunking changes, reranking, metadata filtering, query rewriting).</p>
-<p><b>Success criterion:</b> system answers correctly for straightforward queries and fails gracefully for unsupported ones.</p>`,
-    example:`Minimal end-to-end test:
-1) Ask a question clearly present in docs.
-2) Verify answer correctness with source.
-3) Ask partially covered question and verify caveats.
-4) Ask unsupported question and verify abstention.
+    excerpt: "Ingestion pipeline: load a document, chunk it, embed it, and persist it in a local vector store.",
+    theory: `<p><b>This first basic example focuses on the ingestion half of a RAG system.</b> The document is loaded from disk, split into chunks, embedded with an embedding model, and stored in a persistent vector database so it can be queried later without repeating the expensive embedding work.</p>
+<p><b>The concrete implementation sequence is:</b></p>
+<ol>
+<li>Resolve the document path and the persistent Chroma directory.</li>
+<li>Load the text into memory with a document loader.</li>
+<li>Split the text into chunks with a configured chunk size and overlap.</li>
+<li>Convert each chunk into an embedding vector.</li>
+<li>Store both the chunk text and the vector in the local vector store.</li>
+</ol>
+<p><b>Why the persistence check matters:</b> embedding is not free. If the local database already exists, recreating it on every run wastes money and time. That is why this example checks whether the persistent directory already contains the vector store before starting a new ingestion pass.</p>
+<p><b>Why chunk overlap matters:</b> overlap preserves continuity when a sentence or idea spans a chunk boundary. Zero overlap may work for simple content, but long-form narrative or technical text often benefits from a non-zero overlap so retrieval does not lose meaning exactly at the split point.</p>`,
+    example:`Ingestion walkthrough:
+1) Point the loader at the source document.
+2) Create chunks with a chosen size and overlap.
+3) Embed each chunk with the selected embedding model.
+4) Save the vectors and original text into Chroma.
+5) Reuse that persistent store later instead of embedding the same document again.
 
-Only after this baseline should you start advanced optimization.`,
-    animation: "ChunkingVisualizer",
-    tool: null,
+This stage prepares the private knowledge base that the query path will use later.`,
+    animation: "RetrievalQueryViz",
+    tool: "RAGRetrievalWorkbench",
     interviewPrep: {
       questions: [
         "Why is a minimal end-to-end baseline important before optimization?",
@@ -3214,26 +3221,25 @@ Only after this baseline should you start advanced optimization.`,
     sectionId: "langchain",
     title: "RAGs - Basic Example (2)",
     order: 25,
-    excerpt: "Second basic RAG example with incremental improvements.",
-    theory: `<p><b>Basic Example 2 introduces targeted improvements over baseline.</b> After proving the pipeline works, this stage improves precision by tightening retrieval and context assembly.</p>
-<p><b>Typical upgrades from example 1:</b></p>
+    excerpt: "Query-time retrieval: load the vector store, embed the question, and tune threshold and top-k to return the right chunks.",
+    theory: `<p><b>This second basic example focuses on the retrieval half of the pipeline.</b> The vector store already exists, so the system now loads that persistent store and uses it to pull back the most relevant chunks for a user's question.</p>
+<p><b>The most important implementation rule:</b> the embedding model used for the user question must match the embedding model used during ingestion. If stored chunks were embedded with one model and the incoming query is embedded with another, the similarity scores become unreliable because the vectors are no longer comparable in the same space.</p>
+<p><b>The retriever is then configured with two important controls:</b></p>
 <ul>
-<li>Retriever parameter tuning (top-k, score thresholds).</li>
-<li>Better chunk strategy for domain-specific documents.</li>
-<li>Deduplication of near-identical chunks.</li>
-<li>Prompt instructions that prioritize evidence hierarchy.</li>
+<li><b>top-k</b>: how many highest-ranked chunks to return.</li>
+<li><b>similarity threshold</b>: the minimum score a chunk must have to be considered relevant.</li>
 </ul>
-<p><b>Core lesson:</b> RAG quality grows through small controlled iterations, not one giant rewrite. Each change should be linked to measurable quality gain.</p>
-<p><b>Evaluation emphasis:</b> compare before/after on the same question set to avoid subjective conclusions.</p>`,
-    example:`Incremental improvement cycle:
-1) Start from baseline config.
-2) Tune one parameter (for example top-k).
-3) Compare on fixed eval questions.
-4) Keep or rollback based on measured delta.
+<p><b>Why tuning matters:</b> if the threshold is too low, the generator receives noisy context. If it is too high, the retriever may return no chunks at all, even when the answer is present. This example teaches that retrieval quality is a balancing problem, not a fixed default.</p>`,
+    example:`Query-time retrieval walkthrough:
+1) Reload the persisted Chroma store.
+2) Embed the user's question with the same embedding model used for the documents.
+3) Ask the retriever for the top-k chunks above the score threshold.
+4) Inspect the returned chunks before blaming answer quality on the generator.
+5) Adjust threshold or top-k only after seeing what evidence the retriever is actually returning.
 
-Small controlled changes produce reliable quality gains.`,
-    animation: "MultiQueryRAGViz",
-    tool: null,
+Good generation depends on getting this step right first.`,
+    animation: "RetrievalQueryViz",
+    tool: "RAGRetrievalWorkbench",
     interviewPrep: {
       questions: [
         "How do you choose which retrieval parameter to tune first?",
@@ -3254,9 +3260,9 @@ Small controlled changes produce reliable quality gains.`,
   {
     slug: "26-rags-with-metadata",
     sectionId: "langchain",
-    title: "RAGs - With MetaData",
+    title: "RAGs - With Metadata",
     order: 26,
-    excerpt: "Using metadata filters to improve retrieval precision.",
+    excerpt: "Attach source information to chunks so retrieval returns both evidence and provenance.",
     theory: `<p><b>Metadata transforms retrieval from broad semantic search into controlled context selection.</b> Without metadata, vector similarity may retrieve semantically related but operationally irrelevant chunks.</p>
 <p><b>Typical metadata fields:</b></p>
 <ul>
@@ -3279,7 +3285,7 @@ Small controlled changes produce reliable quality gains.`,
 4) Generation uses only scoped evidence.
 
 This improves precision and prevents cross-scope leakage.`,
-    animation: "RetrievalQueryViz",
+    animation: "MetadataFilterWorkbench",
     tool: null,
     interviewPrep: {
       questions: [
@@ -3303,24 +3309,19 @@ This improves precision and prevents cross-scope leakage.`,
     sectionId: "langchain",
     title: "RAGs - One-off Question",
     order: 27,
-    excerpt: "Handling single-query retrieval scenarios efficiently.",
-    theory: `<p><b>One-off RAG handles isolated questions without persistent conversational memory.</b> This pattern is ideal for search-style interactions, dashboards, and embedded Q&A widgets.</p>
-<p><b>Design characteristics:</b></p>
-<ul>
-<li>No long conversation history dependency.</li>
-<li>Lower token usage and reduced context complexity.</li>
-<li>Fast response path optimized for single-turn grounding.</li>
-</ul>
-<p><b>Benefits:</b> simpler architecture, easier caching, lower latency, easier observability because each request is independent.</p>
-<p><b>Trade-off:</b> no implicit continuity across turns. If follow-up context is needed, user input must restate context or system must explicitly support short-term context stitching.</p>`,
-    example:`Stateless one-off Q&A flow:
-1) User asks a single isolated question.
-2) Retriever fetches evidence.
-3) Model answers with citations.
-4) Request ends with no persistent chat memory.
+    excerpt: "Build one grounded prompt from retrieved chunks and answer statelessly from those documents only.",
+    theory: `<p><b>This one-off question pattern is the simplest complete answering path after retrieval.</b> The application already has the user question and the retrieved chunks. It now joins those chunks into one combined prompt and tells the model to answer only from the provided documents.</p>
+<p><b>The grounding instruction is critical:</b> if the answer is not found in the retrieved documents, the model should respond with something like <code>I'm not sure</code> rather than filling the gap from its own general knowledge. That instruction is what turns retrieval into a controllable evidence-bound answering step.</p>
+<p><b>Why this is called one-off:</b> there is no persistent conversation state. Each question is handled independently, which makes the architecture cheaper, easier to cache, and easier to observe. It is an excellent fit for search-style experiences, simple knowledge widgets, and endpoints where the user cares more about accuracy and speed than about multi-turn conversation continuity.</p>`,
+    example:`One-off grounded answer flow:
+1) Receive a single question.
+2) Retrieve the most relevant chunks.
+3) Build one prompt containing the question plus those chunks.
+4) Instruct the model to answer only from the provided documents.
+5) Return the answer or explicit uncertainty if the evidence is insufficient.
 
-Great for search widgets and low-latency doc Q&A endpoints.`,
-    animation: "RetrievalQueryViz",
+This keeps the system stateless and easier to operate than conversational RAG.`,
+    animation: "RAGRetrievalWorkbench",
     tool: null,
     interviewPrep: {
       questions: [
@@ -3367,7 +3368,7 @@ Great for search widgets and low-latency doc Q&A endpoints.`,
 4) Decides whether to continue or finalize.
 
 Dynamic action selection is useful only when fixed chains are insufficient.`,
-    animation: "LangChainArchitectureMap",
+    animation: "ReActExecutionTraceViz",
     tool: "AgentToolLoopSimulator",
     interviewPrep: {
       questions: [
@@ -3418,7 +3419,7 @@ Dynamic action selection is useful only when fixed chains are insufficient.`,
 5) Agent emits final answer or safe fallback.
 
 Reliability comes from loop bounds, tool contracts, and trace visibility.`,
-    animation: "ChainRoutingPatternsViz",
+    animation: "ReActExecutionTraceViz",
     tool: "AgentToolLoopSimulator",
     interviewPrep: {
       questions: [
@@ -5997,7 +5998,7 @@ const advancedNodes = [
 <p><b>What TensorFlow automates:</b> forward propagation, loss computation, backpropagation (gradient computation for every parameter in every layer), and parameter updates. These 3 lines replace what would be hundreds of lines of manual calculus.</p>`,
     example: "Handwritten digit recognition: 3-layer network (25→15→1). Compile with BinaryCrossentropy. Fit on 60,000 images for 100 epochs. TensorFlow runs backprop 100 times, updating thousands of parameters each pass. The same 3 lines that train this network also train ResNet-50 — different architecture and data, identical API.",
     animation: "CostFunctionViz",
-    tool: null,
+    tool: "TrainingLoopMap",
     interviewPrep: {
       questions: [
         "What are the three steps to train a neural network in TensorFlow?",
@@ -6033,7 +6034,7 @@ const advancedNodes = [
 <p><b>Keras lineage:</b> Keras was a separate library before being merged into TensorFlow. That's why you see <code>tf.keras.losses</code> — it's Keras living inside TensorFlow. The naming conventions are all Keras's original design.</p>`,
     example: "Prediction ŷ=0.9 for ground truth y=1: loss = -log(0.9) ≈ 0.105 (small — confident correct prediction). Prediction ŷ=0.1 for y=1: loss = -log(0.1) ≈ 2.30 (large — confident wrong prediction). Cross-entropy heavily penalises confident mistakes, which drives the network to output well-calibrated probabilities.",
     animation: "CostFunctionViz",
-    tool: null,
+    tool: "TrainingLoopMap",
     interviewPrep: {
       questions: [
         "What is binary cross-entropy and why is it preferred over MSE for classification?",
@@ -6071,7 +6072,7 @@ const advancedNodes = [
 <p><b>Other options</b> — tanh, LeakyReLU, swish — appear in the literature and occasionally work slightly better. ReLU is the safe default for hidden layers in most architectures today.</p>`,
     example: "Awareness in the demand prediction example can't be capped at 1.0 — a product can be 'extremely viral', not just 'slightly aware' vs 'very aware'. Sigmoid bounds output to (0,1), which is wrong for this feature. ReLU allows any non-negative value, modelling unbounded awareness correctly.",
     animation: "LogisticSigmoidViz",
-    tool: null,
+    tool: "ActivationDecisionLab",
     interviewPrep: {
       questions: [
         "What is ReLU and why does it outperform sigmoid in hidden layers?",
@@ -6108,7 +6109,7 @@ const advancedNodes = [
 <p>Other activations (tanh, Leaky ReLU, Swish) exist and occasionally outperform ReLU in specific cases, but ReLU is the safe default. Sigmoid at hidden layers is effectively obsolete — reserve it only for binary classification output neurons.</p>`,
     example: "Predicting house price (always positive) → ReLU output. Predicting temperature change (positive or negative) → linear output. Classifying email spam/not spam → sigmoid output. All hidden layers → ReLU by default.",
     animation: "LogisticSigmoidViz",
-    tool: null,
+    tool: "ActivationDecisionLab",
     interviewPrep: {
       questions: [
         "How do you choose the activation function for an output layer?",

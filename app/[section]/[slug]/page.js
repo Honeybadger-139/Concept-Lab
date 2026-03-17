@@ -10,6 +10,7 @@ import {
   nodes,
 } from "@/data/curriculumData";
 import { ADVANCED_TRACK_THEORY_POLISH_BY_ORDER } from "@/data/advancedTrackTheoryPolish";
+import { LANGCHAIN_TRACK_THEORY_POLISH_BY_ORDER } from "@/data/langchainTrackTheoryPolish";
 import styles from "./node.module.css";
 import dynamic from "next/dynamic";
 import NodeShell from "@/components/NodeShell";
@@ -44,10 +45,14 @@ const ComponentMap = {
   PolynomialRegressionViz: withLoader(() => import("@/components/PolynomialRegressionViz")),
   NeuralNetworkPipelineLab: withLoader(() => import("@/components/NeuralNetworkPipelineLab")),
   BackpropComputationGraphViz: withLoader(() => import("@/components/BackpropComputationGraphViz")),
+  TensorShapeFlowViz:      withLoader(() => import("@/components/TensorShapeFlowViz")),
+  TrainingLoopMap:         withLoader(() => import("@/components/TrainingLoopMap")),
+  ActivationDecisionLab:   withLoader(() => import("@/components/ActivationDecisionLab")),
   PrecisionRecallTradeoffLab: withLoader(() => import("@/components/PrecisionRecallTradeoffLab")),
   DecisionTreeSplitViz:   withLoader(() => import("@/components/DecisionTreeSplitViz")),
   // RAG visualizations
   RetrievalQueryViz:      withLoader(() => import("@/components/RetrievalQueryViz")),
+  RAGRetrievalWorkbench:  withLoader(() => import("@/components/RAGRetrievalWorkbench")),
   MultiQueryRAGViz:       withLoader(() => import("@/components/MultiQueryRAGViz")),
   RAGGuardrailsStudio:    withLoader(() => import("@/components/RAGGuardrailsStudio")),
   HistoryAwareQueryLab:   withLoader(() => import("@/components/HistoryAwareQueryLab")),
@@ -56,15 +61,19 @@ const ComponentMap = {
   AdvancedRetrievalLab:   withLoader(() => import("@/components/AdvancedRetrievalLab")),
   HybridFusionLab:        withLoader(() => import("@/components/HybridFusionLab")),
   RerankerViz:            withLoader(() => import("@/components/RerankerViz")),
+  MetadataFilterWorkbench: withLoader(() => import("@/components/MetadataFilterWorkbench")),
   // LangGraph visualizations
   LangGraphArchitectureViz: withLoader(() => import("@/components/LangGraphArchitectureViz")),
   StateGraphFlowViz:        withLoader(() => import("@/components/StateGraphFlowViz")),
   ReActGraphInspector:      withLoader(() => import("@/components/ReActGraphInspector")),
   AutonomyLadderViz:        withLoader(() => import("@/components/AutonomyLadderViz")),
   AgentToolLoopSimulator:   withLoader(() => import("@/components/AgentToolLoopSimulator")),
+  ReActExecutionTraceViz:   withLoader(() => import("@/components/ReActExecutionTraceViz")),
   // LangChain visualizations
   LangChainArchitectureMap: withLoader(() => import("@/components/LangChainArchitectureMap")),
   ChainRoutingPatternsViz:  withLoader(() => import("@/components/ChainRoutingPatternsViz")),
+  LangChainMemoryFlowViz:   withLoader(() => import("@/components/LangChainMemoryFlowViz")),
+  ChainExecutionTimelineLab: withLoader(() => import("@/components/ChainExecutionTimelineLab")),
   // ML visualizations
   MLLearningSpectrumViz:    withLoader(() => import("@/components/MLLearningSpectrumViz")),
   MLProblemFramingTool:     withLoader(() => import("@/components/MLProblemFramingTool")),
@@ -126,14 +135,18 @@ function getPolishedTheory(sectionId, node) {
     node?.conceptId === "advanced-learning-algorithms"
       ? ADVANCED_TRACK_THEORY_POLISH_BY_ORDER[node.order] ?? ""
       : "";
+  const langchainPolish =
+    sectionId === "langchain"
+      ? LANGCHAIN_TRACK_THEORY_POLISH_BY_ORDER[node.order] ?? ""
+      : "";
 
-  if (!notes && !advancedPolish) return theoryHtml;
+  if (!notes && !advancedPolish && !langchainPolish) return theoryHtml;
 
   const sharedNotes = notes
     ? `<p data-theory-polish="beginner"><b>First-time learner note:</b> ${notes.beginner}</p><p data-theory-polish="production"><b>Production note:</b> ${notes.production}</p>`
     : "";
 
-  return `${theoryHtml}${sharedNotes}${advancedPolish}`;
+  return `${theoryHtml}${sharedNotes}${advancedPolish}${langchainPolish}`;
 }
 
 function deriveHighlightTerms(entry) {

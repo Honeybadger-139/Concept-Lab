@@ -22,7 +22,7 @@ export default async function HomePage() {
 
         {/* ── Hero ── */}
         <header className={styles.hero}>
-          <div className={styles.heroEyebrow}>Abhishek&apos;s Personal Learning Hub</div>
+          <div className={styles.heroEyebrow}>Learning Hub</div>
           <h1 className={styles.title}>Concept Lab</h1>
           <p className={styles.subtitle}>
             Disciplines, tracks, and topics are structured for sustained, cumulative study.

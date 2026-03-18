@@ -46,7 +46,7 @@ export default function RootLayout({ children }) {
           <header className={styles.header}>
             <div className={styles.headerInner}>
               <a href="/" className={styles.brandText}>
-                ABHISHEK'S PERSONAL LEARNING HUB
+                Concept-Lab
               </a>
 
               <div className={styles.actions}>
@@ -60,7 +60,7 @@ export default function RootLayout({ children }) {
 
           <footer className={styles.footer}>
             <p className={styles.footerText}>
-              @2026 ABHISHEK'S PERSONAL LEARNING HUB
+              @2026 Concept-Lab
             </p>
           </footer>
         </ThemeProvider>

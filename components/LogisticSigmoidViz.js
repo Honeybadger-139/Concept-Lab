@@ -67,7 +67,7 @@ export default function LogisticSigmoidViz() {
           transform={`rotate(-90,${PAD.l - 38},${H / 2})`}>P(y=1 | x)</text>
         <text x={W / 2} y={H - 5} textAnchor="middle" fill={t.labelMid} fontSize={11}>z = w·x + b</text>
 
-        <path d={CURVE} fill="none" stroke="#6366f1" strokeWidth={2.5} />
+        <path d={CURVE} fill="none" stroke="#d97706" strokeWidth={2.5} />
         <text x={W - PAD.r - 4} y={sp(threshold) + 14} textAnchor="end" fill="rgba(34,211,238,0.7)" fontSize={11}>Class 1 ✓</text>
         <text x={W - PAD.r - 4} y={sp(threshold) - 6}  textAnchor="end" fill="rgba(244,63,94,0.7)"  fontSize={11}>Class 0 ✗</text>
 
@@ -109,7 +109,7 @@ export default function LogisticSigmoidViz() {
           <span style={{ fontFamily: "monospace", color: "#a5b4fc", fontWeight: 700 }}>{zInput.toFixed(1)}</span>
         </label>
         <input type="range" min={-6} max={6} step={0.1} value={zInput} onChange={e => setZInput(+e.target.value)}
-          style={{ width: "100%", accentColor: "#6366f1", marginTop: 4 }} />
+          style={{ width: "100%", accentColor: "#d97706", marginTop: 4 }} />
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: t.tick, marginTop: 2 }}>
           <span>-6 → P≈0</span><span>0 → P=0.5</span><span>+6 → P≈1</span>
         </div>
@@ -137,7 +137,7 @@ export default function LogisticSigmoidViz() {
         </button>
       </div>
 
-      <div style={{ marginTop: 12, background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.25)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: t.muted3 }}>
+      <div style={{ marginTop: 12, background: "rgba(217, 119, 6,0.08)", border: "1px solid rgba(217, 119, 6,0.25)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: t.muted3 }}>
         <strong style={{ color: "#a5b4fc" }}>Key insight:</strong> The sigmoid maps any real number z to a probability (0–1).
         z = w·x + b is a linear combination of features. The threshold (default 0.5) converts probability → class label.
         Change the threshold to adjust sensitivity — lower threshold = more Class 1 predictions (recall ↑, precision ↓).

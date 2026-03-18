@@ -60,7 +60,7 @@ export default async function HomePage() {
                 key={domain.id}
                 href={`/domains/${domain.id}`}
                 className={styles.card}
-                style={{ "--card-color": domain.color ?? "#6366f1" }}
+                style={{ "--card-color": domain.color ?? "#d97706" }}
               >
                 <div className={styles.cardEmoji}>{domain.emoji ?? "📚"}</div>
                 <h2 className={styles.cardTitle}>{domain.title}</h2>

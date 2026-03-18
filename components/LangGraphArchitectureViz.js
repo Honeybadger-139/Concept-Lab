@@ -114,7 +114,7 @@ export default function LangGraphArchitectureViz() {
           style={{
             border: "none",
             borderRadius: "8px",
-            background: "#6366f1",
+            background: "#d97706",
             color: "white",
             padding: "0.42rem 0.8rem",
             fontSize: "0.8rem",

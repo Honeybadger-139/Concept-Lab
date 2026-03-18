@@ -112,10 +112,10 @@ export default function RAGGuardrailsStudio() {
                     borderRadius: "999px",
                     border:
                       retrievalQuality === key
-                        ? "1px solid #6366f1"
+                        ? "1px solid #d97706"
                         : "1px solid var(--glass-border)",
                     background:
-                      retrievalQuality === key ? "rgba(99,102,241,0.2)" : "transparent",
+                      retrievalQuality === key ? "rgba(217, 119, 6,0.2)" : "transparent",
                     color: "var(--text-primary)",
                     fontSize: "0.72rem",
                     padding: "0.25rem 0.4rem",
@@ -208,8 +208,8 @@ export default function RAGGuardrailsStudio() {
       <div
         style={{
           marginTop: "0.75rem",
-          border: "1px solid rgba(99,102,241,0.28)",
-          background: "rgba(99,102,241,0.08)",
+          border: "1px solid rgba(217, 119, 6,0.28)",
+          background: "rgba(217, 119, 6,0.08)",
           borderRadius: "var(--radius-sm)",
           padding: "0.65rem 0.75rem",
         }}

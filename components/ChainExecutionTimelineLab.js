@@ -10,7 +10,7 @@ const MODES = {
       { label: "Generate facts", duration: 3, color: "#38bdf8" },
       { label: "Prepare translation input", duration: 2, color: "#f59e0b" },
       { label: "Translate to target language", duration: 3, color: "#22c55e" },
-      { label: "Validate and publish", duration: 2, color: "#a78bfa" },
+      { label: "Validate and publish", duration: 2, color: "#fbbf24" },
     ],
     advice: "Keep stages narrow. If a stage only reformats data, make that explicit so debugging is cheap.",
     failureModes: [
@@ -26,7 +26,7 @@ const MODES = {
       { label: "Create shared summary", duration: 2, color: "#38bdf8" },
       { label: "Plot analysis branch", duration: 4, color: "#22c55e", lane: 0 },
       { label: "Character analysis branch", duration: 4, color: "#f59e0b", lane: 1 },
-      { label: "Merge final blog draft", duration: 2, color: "#a78bfa" },
+      { label: "Merge final blog draft", duration: 2, color: "#fbbf24" },
     ],
     advice: "Only parallelize truly independent work. Otherwise merge logic becomes the new bottleneck.",
     failureModes: [
@@ -97,12 +97,12 @@ export default function ChainExecutionTimelineLab() {
         [
           { label: "Shared summary", duration: 2, color: "#38bdf8" },
           { label: "Plot analysis", duration: 4, color: "#22c55e" },
-          { label: "Merge", duration: 2, color: "#a78bfa" },
+          { label: "Merge", duration: 2, color: "#fbbf24" },
         ],
         [
           { label: "Shared summary", duration: 2, color: "#38bdf8", ghost: true },
           { label: "Character analysis", duration: 4, color: "#f59e0b" },
-          { label: "Merge", duration: 2, color: "#a78bfa", ghost: true },
+          { label: "Merge", duration: 2, color: "#fbbf24", ghost: true },
         ],
       ];
     }
@@ -135,8 +135,8 @@ export default function ChainExecutionTimelineLab() {
             }}
             style={{
               borderRadius: "999px",
-              border: mode === key ? "1px solid #6366f1" : "1px solid var(--glass-border)",
-              background: mode === key ? "rgba(99,102,241,0.15)" : "var(--bg-tertiary)",
+              border: mode === key ? "1px solid #d97706" : "1px solid var(--glass-border)",
+              background: mode === key ? "rgba(217, 119, 6,0.15)" : "var(--bg-tertiary)",
               color: mode === key ? "#a5b4fc" : "var(--text-secondary)",
               padding: "0.35rem 0.72rem",
               fontSize: "0.78rem",

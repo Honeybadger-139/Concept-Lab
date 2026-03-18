@@ -15,7 +15,7 @@ const LAYERS = [
   {
     id: "orchestration",
     label: "LangChain Orchestration",
-    color: "#6366f1",
+    color: "#d97706",
     points: [
       "Prompt templates, LCEL chains, routers, and output parsers.",
       "Composes deterministic and dynamic execution paths.",

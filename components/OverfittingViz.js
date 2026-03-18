@@ -121,7 +121,7 @@ export default function OverfittingViz() {
         <path d={fitPath} fill="none" stroke={fitColor} strokeWidth={2.5} />
         {/* Data points */}
         {DATA.map(([x, y], i) => (
-          <circle key={i} cx={sx(x)} cy={sy(y)} r={5.5} fill="#6366f1" stroke="#fff" strokeWidth={1.5} />
+          <circle key={i} cx={sx(x)} cy={sy(y)} r={5.5} fill="#d97706" stroke="#fff" strokeWidth={1.5} />
         ))}
       </svg>
 
@@ -143,7 +143,7 @@ export default function OverfittingViz() {
       {/* Error bars */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 12 }}>
         {[
-          { label: "Train MSE",            value: trainMSE, maxVal: 6,  color: "#6366f1", note: "Lower → fits training data better" },
+          { label: "Train MSE",            value: trainMSE, maxVal: 6,  color: "#d97706", note: "Lower → fits training data better" },
           { label: "Test MSE (simulated)", value: testMSE,  maxVal: 12, color: "#f97316", note: "Lower → generalises to new data" },
         ].map(({ label, value, maxVal, color, note }) => (
           <div key={label} style={{ background: t.surface2, borderRadius: 8, padding: "10px 12px" }}>
@@ -157,7 +157,7 @@ export default function OverfittingViz() {
         ))}
       </div>
 
-      <div style={{ marginTop: 12, background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.25)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: t.muted3 }}>
+      <div style={{ marginTop: 12, background: "rgba(217, 119, 6,0.08)", border: "1px solid rgba(217, 119, 6,0.25)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: t.muted3 }}>
         <strong style={{ color: "#a5b4fc" }}>Interview key:</strong> Drag to degree 7–9 and watch the line wiggle through every point (train MSE → 0, test MSE spikes).
         That's overfitting. The fix: regularisation (L1/L2) penalises large coefficients, effectively reducing effective complexity.
       </div>

@@ -136,7 +136,7 @@ export default function ActivationDecisionLab() {
             <input type="range" min="-8" max="8" step="0.1" value={zValue} onChange={(event) => setZValue(Number(event.target.value))} style={{ width: "100%", marginTop: "0.22rem" }} />
           </label>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.45rem" }}>
-            <div style={{ borderRadius: "10px", background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.25)", padding: "0.55rem 0.6rem" }}>
+            <div style={{ borderRadius: "10px", background: "rgba(217, 119, 6,0.08)", border: "1px solid rgba(217, 119, 6,0.25)", padding: "0.55rem 0.6rem" }}>
               <div style={{ fontSize: "0.72rem", color: "#a5b4fc", fontWeight: 700 }}>Sigmoid</div>
               <div style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 700 }}>{activations.sigmoid.toFixed(4)}</div>
             </div>

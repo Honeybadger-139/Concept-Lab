@@ -216,7 +216,7 @@ export default function AgentToolLoopSimulator() {
           type="button"
           onClick={step}
           disabled={status === "done"}
-          style={{ border: "none", borderRadius: "8px", background: "#6366f1", color: "white", padding: "0.4rem 0.8rem", fontSize: "0.8rem", fontWeight: 700, cursor: status === "done" ? "not-allowed" : "pointer", opacity: status === "done" ? 0.6 : 1 }}
+          style={{ border: "none", borderRadius: "8px", background: "#d97706", color: "white", padding: "0.4rem 0.8rem", fontSize: "0.8rem", fontWeight: 700, cursor: status === "done" ? "not-allowed" : "pointer", opacity: status === "done" ? 0.6 : 1 }}
         >
           Run one step
         </button>

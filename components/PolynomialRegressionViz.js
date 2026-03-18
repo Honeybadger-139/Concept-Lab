@@ -165,7 +165,7 @@ export default function PolynomialRegressionViz() {
         </button>
       </div>
 
-      <div style={{ marginTop: 10, background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.25)", borderRadius: 8, padding: "10px 12px", fontSize: 13, color: t.muted3 }}>
+      <div style={{ marginTop: 10, background: "rgba(217, 119, 6,0.08)", border: "1px solid rgba(217, 119, 6,0.25)", borderRadius: 8, padding: "10px 12px", fontSize: 13, color: t.muted3 }}>
         <strong style={{ color: "#a5b4fc" }}>Interpretation:</strong> increase degree only when validation error improves.
         Higher degree usually lowers training error, but can hurt generalisation. Pair polynomial terms with scaling and regularisation.
       </div>

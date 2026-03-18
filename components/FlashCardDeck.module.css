@@ -56,7 +56,7 @@
 
 .progressFill {
   height: 100%;
-  background: linear-gradient(90deg, #6366f1, #a78bfa);
+  background: linear-gradient(90deg, #d97706, #fbbf24);
   border-radius: 999px;
   transition: width 0.4s ease;
 }
@@ -79,7 +79,7 @@
 }
 
 .scene:focus-visible .card {
-  outline: 2px solid rgba(99, 102, 241, 0.7);
+  outline: 2px solid rgba(217, 119, 6, 0.7);
   outline-offset: 3px;
   border-radius: var(--radius-lg);
 }
@@ -118,13 +118,13 @@
 }
 
 .face:hover {
-  box-shadow: 0 4px 24px rgba(99, 102, 241, 0.12);
+  box-shadow: 0 4px 24px rgba(217, 119, 6, 0.12);
 }
 
 /* Answer face — flipped 180° and tinted */
 .back {
-  background: rgba(99, 102, 241, 0.07);
-  border-color: rgba(99, 102, 241, 0.3);
+  background: rgba(217, 119, 6, 0.07);
+  border-color: rgba(217, 119, 6, 0.3);
   transform: rotateY(180deg);
 }
 
@@ -184,9 +184,9 @@
 }
 
 .btn:hover:not(:disabled) {
-  border-color: rgba(99, 102, 241, 0.4);
+  border-color: rgba(217, 119, 6, 0.4);
   color: var(--text-primary);
-  background: rgba(99, 102, 241, 0.06);
+  background: rgba(217, 119, 6, 0.06);
 }
 
 .btn:disabled {
@@ -196,16 +196,16 @@
 
 .flipBtn {
   flex: 1;
-  background: rgba(99, 102, 241, 0.1);
-  border-color: rgba(99, 102, 241, 0.3);
+  background: rgba(217, 119, 6, 0.1);
+  border-color: rgba(217, 119, 6, 0.3);
   color: var(--accent-tertiary);
   font-weight: 600;
   letter-spacing: 0.02em;
 }
 
 .flipBtn:hover {
-  background: rgba(99, 102, 241, 0.18) !important;
-  border-color: rgba(99, 102, 241, 0.55) !important;
+  background: rgba(217, 119, 6, 0.18) !important;
+  border-color: rgba(217, 119, 6, 0.55) !important;
   color: var(--accent-tertiary) !important;
 }
 
@@ -231,8 +231,8 @@
 }
 
 .dot:hover {
-  border-color: rgba(99, 102, 241, 0.5);
-  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(217, 119, 6, 0.5);
+  background: rgba(217, 119, 6, 0.2);
 }
 
 .dotActive {
@@ -242,8 +242,8 @@
 }
 
 .dotDone {
-  background: rgba(99, 102, 241, 0.35);
-  border-color: rgba(99, 102, 241, 0.5);
+  background: rgba(217, 119, 6, 0.35);
+  border-color: rgba(217, 119, 6, 0.5);
 }
 
 .dotActive.dotDone {

@@ -14,7 +14,7 @@ const COMPONENTS = [
     id: "prompt",
     label: "ChatPromptTemplate",
     icon: "📝",
-    color: "#6366f1",
+    color: "#d97706",
     desc: 'Formats variables into a structured prompt. e.g. "You are {role}. Answer: {question}"',
     code: 'ChatPromptTemplate.from_messages([\n  ("system", "You are {role}."),\n  ("human", "{question}")\n])',
   },
@@ -114,7 +114,7 @@ export default function LCELChainViz() {
         marginBottom: "1rem",
       }}>
         {/* Python code representation */}
-        <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.85rem", color: "#c4b5fd", marginBottom: "1rem" }}>
+        <div style={{ fontFamily: "var(--font-mono)", fontSize: "0.85rem", color: "#fcd34d", marginBottom: "1rem" }}>
           <span style={{ color: "var(--text-tertiary)" }}># Build the chain with LCEL</span>
           <br />
           <span style={{ color: "#60a5fa" }}>chain</span>
@@ -199,7 +199,7 @@ export default function LCELChainViz() {
               display: "block",
               fontFamily: "var(--font-mono)",
               fontSize: "0.78rem",
-              color: "#c4b5fd",
+              color: "#fcd34d",
               background: "#0a0f1e",
               padding: "0.5rem 0.75rem",
               borderRadius: "4px",
@@ -221,7 +221,7 @@ export default function LCELChainViz() {
             padding: "0.6rem 1.25rem",
             borderRadius: "var(--radius-sm)",
             border: "none",
-            background: running ? "var(--bg-tertiary)" : "#6366f1",
+            background: running ? "var(--bg-tertiary)" : "#d97706",
             color: running ? "var(--text-tertiary)" : "white",
             fontWeight: 700,
             fontSize: "0.875rem",
@@ -254,14 +254,14 @@ export default function LCELChainViz() {
         marginTop: "1rem",
         padding: "0.625rem 0.875rem",
         borderRadius: "var(--radius-sm)",
-        background: "rgba(167,139,250,0.07)",
+        background: "rgba(251, 191, 36,0.07)",
         borderLeft: "3px solid var(--accent-tertiary)",
         fontSize: "0.8rem",
         color: "var(--text-secondary)",
       }}>
         <strong style={{ color: "var(--accent-tertiary)" }}>Senior insight:</strong>{" "}
         LCEL&apos;s composability is not just syntactic sugar. It enables streaming (every step
-        gets called with <code style={{ fontSize: "0.8em", background: "rgba(99,102,241,0.15)", padding: "0.1em 0.3em", borderRadius: "3px" }}>stream()</code>), parallel execution of multiple chains,
+        gets called with <code style={{ fontSize: "0.8em", background: "rgba(217, 119, 6,0.15)", padding: "0.1em 0.3em", borderRadius: "3px" }}>stream()</code>), parallel execution of multiple chains,
         and built-in observability with LangSmith — all without changing your chain code.
       </div>
     </div>

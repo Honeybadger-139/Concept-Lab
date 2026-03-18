@@ -19,7 +19,7 @@
 .button:hover {
   color: var(--text-primary);
   border-color: var(--accent-tertiary);
-  box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.15);
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.15);
 }
 
 .button:focus-visible {

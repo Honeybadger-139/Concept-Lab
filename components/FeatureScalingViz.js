@@ -50,11 +50,11 @@ function ContourPlot({ title, path, color, ellipse, t }) {
         {ellipse
           ? [0.15, 0.3, 0.5, 0.7, 0.9].map((r, i) => (
               <ellipse key={i} cx={px(0)} cy={py(0)} rx={r * CPW * 0.48} ry={r * CPH * 0.06}
-                fill="none" stroke={`rgba(99,102,241,${0.5 - i * 0.08})`} strokeWidth={1} />
+                fill="none" stroke={`rgba(217, 119, 6,${0.5 - i * 0.08})`} strokeWidth={1} />
             ))
           : [0.15, 0.3, 0.5, 0.7, 0.9].map((r, i) => (
               <circle key={i} cx={px(0)} cy={py(0)} r={r * Math.min(CPW, CPH) * 0.47}
-                fill="none" stroke={`rgba(99,102,241,${0.5 - i * 0.08})`} strokeWidth={1} />
+                fill="none" stroke={`rgba(217, 119, 6,${0.5 - i * 0.08})`} strokeWidth={1} />
             ))
         }
         <line x1={CPAD} y1={py(0)} x2={CW - CPAD} y2={py(0)} stroke={t.rule} strokeWidth={1} />
@@ -129,7 +129,7 @@ export default function FeatureScalingViz() {
       <div style={{ display: "flex", gap: 6, marginBottom: 10, flexWrap: "wrap" }}>
         {METHODS.map((m, i) => (
           <button key={i} onClick={() => setActiveMethod(i)}
-            style={{ background: activeMethod === i ? "rgba(99,102,241,0.3)" : t.btnBg, border: `1px solid ${activeMethod === i ? "#6366f1" : t.btnBorder}`, color: activeMethod === i ? "#a5b4fc" : t.btnText, borderRadius: 6, padding: "5px 12px", cursor: "pointer", fontSize: 12, fontWeight: activeMethod === i ? 600 : 400 }}>
+            style={{ background: activeMethod === i ? "rgba(217, 119, 6,0.3)" : t.btnBg, border: `1px solid ${activeMethod === i ? "#d97706" : t.btnBorder}`, color: activeMethod === i ? "#a5b4fc" : t.btnText, borderRadius: 6, padding: "5px 12px", cursor: "pointer", fontSize: 12, fontWeight: activeMethod === i ? 600 : 400 }}>
             {m.name}
           </button>
         ))}

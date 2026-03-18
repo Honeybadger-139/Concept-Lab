@@ -42,7 +42,7 @@ const STAGES = [
     title: "Train and Tune",
     description: "Fit the model, choose regularization and capacity, and compare candidate versions with the same evaluation protocol.",
     checkpoint: "Failure checkpoint: overfitting shows up as strong train performance with weak validation performance.",
-    color: "#a78bfa",
+    color: "#fbbf24",
   },
   {
     id: "evaluate",
@@ -140,7 +140,7 @@ export default function SupervisedPipelineFlowViz() {
             {[
               { key: "labelQuality", label: "Label quality", note: "Consistency and annotation accuracy", color: "#22c55e" },
               { key: "featureSignal", label: "Feature signal", note: "How predictive the raw inputs actually are", color: "#38bdf8" },
-              { key: "modelCapacity", label: "Model capacity", note: "How flexible the model family is", color: "#a78bfa" },
+              { key: "modelCapacity", label: "Model capacity", note: "How flexible the model family is", color: "#fbbf24" },
               { key: "drift", label: "Production drift", note: "How much serving data differs from training data", color: "#f97316" },
             ].map((control) => (
               <label key={control.key} style={{ display: "block", marginBottom: "0.8rem" }}>

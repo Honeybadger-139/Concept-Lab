@@ -23,9 +23,9 @@
   --text-tertiary:  #7e8da5;
 
   /* Accent / brand */
-  --accent-primary:  #6366f1;
-  --accent-tertiary: #a78bfa;
-  --primary:         #6366f1;
+  --accent-primary:  #d97706; /* Copper */
+  --accent-tertiary: #fbbf24; /* Amber */
+  --primary:         #d97706;
 
   /* Section colour themes */
   --color-ml:        #3b82f6;
@@ -34,8 +34,8 @@
   --color-rag-glow:  rgba(249, 115, 22, 0.15);
   --color-lc:        #10b981;
   --color-lc-glow:   rgba(16, 185, 129, 0.15);
-  --color-adv:       #a78bfa;
-  --color-adv-glow:  rgba(167, 139, 250, 0.15);
+  --color-adv:       #fbbf24;
+  --color-adv-glow:  rgba(251, 191, 36, 0.15);
 
   /* Status */
   --color-success: #10b981;
@@ -192,10 +192,10 @@ a:hover { text-decoration: underline; }
   font-family: var(--font-mono);
   font-size: 0.82em;
   padding: 0.15em 0.45em;
-  background: rgba(99, 102, 241, 0.12);
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  background: rgba(217, 119, 6, 0.12);
+  border: 1px solid rgba(217, 119, 6, 0.2);
   border-radius: 4px;
-  color: #c4b5fd;
+  color: #fbbf24;
   word-break: break-word;
 }
 
@@ -234,7 +234,7 @@ a:hover { text-decoration: underline; }
   border-left: 3px solid var(--accent-tertiary);
   margin: 1rem 0;
   padding: 0.5rem 1rem;
-  background: rgba(167, 139, 250, 0.05);
+  background: rgba(251, 191, 36, 0.05);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   color: var(--text-secondary);
   font-style: italic;
@@ -258,10 +258,10 @@ a:hover { text-decoration: underline; }
   --text-secondary: #334155;
   --text-tertiary:  #64748b;
 
-  /* Accent / brand — slightly deeper for light bg contrast */
-  --accent-primary:  #4f46e5;
-  --accent-tertiary: #6d28d9;
-  --primary:         #4f46e5;
+  /* Accent / brand — portfolio copper for light bg contrast */
+  --accent-primary:  #d97706;
+  --accent-tertiary: #f59e0b;
+  --primary:         #d97706;
 
   /* Section colour themes — richer on white */
   --color-ml:        #1d4ed8;
@@ -270,8 +270,8 @@ a:hover { text-decoration: underline; }
   --color-rag-glow:  rgba(194, 65, 12, 0.1);
   --color-lc:        #047857;
   --color-lc-glow:   rgba(4, 120, 87, 0.1);
-  --color-adv:       #7c3aed;
-  --color-adv-glow:  rgba(124, 58, 237, 0.1);
+  --color-adv:       #d97706;
+  --color-adv-glow:  rgba(217, 119, 6, 0.1);
 
   /* Status */
   --color-success: #059669;
@@ -292,9 +292,9 @@ a:hover { text-decoration: underline; }
 
 /* ── Light mode: inline code ── */
 [data-theme="light"] .theoryContent code {
-  background: rgba(79, 70, 229, 0.07);
-  border-color: rgba(79, 70, 229, 0.18);
-  color: #4c1d95;
+  background: rgba(217, 119, 6, 0.07);
+  border-color: rgba(217, 119, 6, 0.18);
+  color: #b45309;
 }
 
 /* ── Light mode: pre / code block ── */
@@ -308,7 +308,7 @@ a:hover { text-decoration: underline; }
 
 /* ── Light mode: blockquote ── */
 [data-theme="light"] .theoryContent blockquote {
-  background: rgba(109, 40, 217, 0.05);
+  background: rgba(245, 158, 11, 0.05); /* amber/gold */
   border-left-color: var(--accent-tertiary);
 }
 

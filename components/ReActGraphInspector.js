@@ -40,7 +40,7 @@ const CONFIGS = [
 const STAGE_COLORS = {
   reason: "#22c55e",
   act: "#f59e0b",
-  end: "#a78bfa",
+  end: "#fbbf24",
 };
 
 function sum(items, pick) {
@@ -113,7 +113,7 @@ export default function ReActGraphInspector() {
           style={{
             border: "none",
             borderRadius: "8px",
-            background: "#6366f1",
+            background: "#d97706",
             color: "white",
             padding: "0.4rem 0.7rem",
             fontSize: "0.8rem",

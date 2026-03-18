@@ -13,19 +13,19 @@ const SAMPLE_TEXT =
   "Retrieval-Augmented Generation (RAG) is an AI framework that combines the strengths of retrieval-based systems with generative models. Rather than relying solely on what was baked into the model during training, RAG allows LLMs to query an external knowledge base at inference time. This gives the model access to up-to-date and domain-specific information. The retrieval step finds the most relevant document chunks using vector similarity search, then passes those chunks as context to the LLM. The LLM uses that context to produce a grounded, accurate answer. Poor chunking is the number one reason RAG systems fail in production.";
 
 const CHUNK_COLORS = [
-  "rgba(99,102,241,0.18)",
+  "rgba(217, 119, 6,0.18)",
   "rgba(249,115,22,0.18)",
   "rgba(16,185,129,0.18)",
-  "rgba(167,139,250,0.18)",
+  "rgba(251, 191, 36,0.18)",
   "rgba(245,158,11,0.18)",
   "rgba(59,130,246,0.18)",
 ];
 
 const OVERLAP_COLORS = [
-  "rgba(99,102,241,0.35)",
+  "rgba(217, 119, 6,0.35)",
   "rgba(249,115,22,0.35)",
   "rgba(16,185,129,0.35)",
-  "rgba(167,139,250,0.35)",
+  "rgba(251, 191, 36,0.35)",
   "rgba(245,158,11,0.35)",
   "rgba(59,130,246,0.35)",
 ];
@@ -96,7 +96,7 @@ export default function ChunkingVisualizer() {
           </label>
           <input type="range" min="10" max="80" value={chunkSize}
             onChange={e => setChunkSize(+e.target.value)}
-            style={{ width: "100%", accentColor: "#6366f1" }} />
+            style={{ width: "100%", accentColor: "#d97706" }} />
         </div>
         <div>
           <label style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", marginBottom: "0.4rem", color: "var(--text-secondary)" }}>

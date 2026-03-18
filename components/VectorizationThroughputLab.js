@@ -35,7 +35,7 @@ function metricCard(t, title, value, tone, subtitle) {
     sky: "#38bdf8",
     green: "#22c55e",
     orange: "#f97316",
-    violet: "#a78bfa",
+    violet: "#fbbf24",
   };
 
   return (
@@ -209,10 +209,10 @@ export default function VectorizationThroughputLab() {
             <div style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: "0.75rem" }}>
               <div style={{ border: `1px solid ${t.border}`, borderRadius: 12, background: t.surface2, padding: "0.8rem" }}>
                 <div style={{ fontSize: "0.8rem", fontWeight: 800, color: t.labelMid }}>Vectorization flow</div>
-                <div style={{ marginTop: "0.65rem", display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: "0.45rem" }}>
+                <div style={{ marginTop: "0.65rem", display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "0.45rem" }}>
                   {[
                     { label: "Collect batch", note: `${batchSize} examples per call`, color: "#38bdf8" },
-                    { label: "Pack tensor", note: `${featureCount} features each`, color: "#a78bfa" },
+                    { label: "Pack tensor", note: `${featureCount} features each`, color: "#fbbf24" },
                     { label: "Run kernel", note: "one vectorized compute step", color: "#22c55e" },
                     { label: "Return outputs", note: "split results back per example", color: "#f97316" },
                   ].map((step, index) => (

@@ -67,9 +67,9 @@ export default function ChainRoutingPatternsViz() {
             onClick={() => setMode(key)}
             style={{
               borderRadius: "999px",
-              border: mode === key ? "1px solid #6366f1" : "1px solid var(--glass-border)",
-              background: mode === key ? "rgba(99,102,241,0.12)" : "var(--bg-tertiary)",
-              color: mode === key ? "#818cf8" : "var(--text-secondary)",
+              border: mode === key ? "1px solid #d97706" : "1px solid var(--glass-border)",
+              background: mode === key ? "rgba(217, 119, 6,0.12)" : "var(--bg-tertiary)",
+              color: mode === key ? "#f59e0b" : "var(--text-secondary)",
               padding: "0.34rem 0.7rem",
               fontSize: "0.78rem",
               fontWeight: 700,
@@ -107,7 +107,7 @@ export default function ChainRoutingPatternsViz() {
                 textAlign: "center",
                 borderRadius: "8px",
                 border: "1px solid rgba(129,140,248,0.45)",
-                background: "rgba(99,102,241,0.16)",
+                background: "rgba(217, 119, 6,0.16)",
                 color: "#e2e8f0",
                 padding: "0.35rem 0.5rem",
                 fontSize: "0.76rem",

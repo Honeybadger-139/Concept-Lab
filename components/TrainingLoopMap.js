@@ -69,7 +69,7 @@ export default function TrainingLoopMap() {
         <div style={{ border: "1px solid var(--glass-border)", borderRadius: "12px", background: "var(--bg-tertiary)", padding: "0.8rem" }}>
           <div style={{ fontSize: "0.88rem", color: "var(--text-primary)", fontWeight: 700, marginBottom: "0.25rem" }}>{activeStep.title}</div>
           <p style={{ margin: "0 0 0.55rem", fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: 1.55 }}>{activeStep.detail}</p>
-          <pre style={{ margin: "0 0 0.65rem", whiteSpace: "pre-wrap", fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "#c4b5fd", lineHeight: 1.55, background: "rgba(15,23,42,0.55)", borderRadius: "10px", border: "1px solid var(--glass-border)", padding: "0.65rem 0.75rem" }}>{activeStep.code}</pre>
+          <pre style={{ margin: "0 0 0.65rem", whiteSpace: "pre-wrap", fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "#fcd34d", lineHeight: 1.55, background: "rgba(15,23,42,0.55)", borderRadius: "10px", border: "1px solid var(--glass-border)", padding: "0.65rem 0.75rem" }}>{activeStep.code}</pre>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.55rem", marginBottom: "0.55rem" }}>
             <label style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>

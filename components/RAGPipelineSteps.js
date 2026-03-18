@@ -48,8 +48,8 @@ function PipelineStep({ icon, label, desc, active, onClick }) {
         gap: "0.75rem",
         padding: "0.625rem 0.875rem",
         borderRadius: "var(--radius-sm)",
-        border: `1px solid ${active ? "rgba(99,102,241,0.45)" : "var(--glass-border)"}`,
-        background: active ? "rgba(99,102,241,0.1)" : "var(--bg-tertiary)",
+        border: `1px solid ${active ? "rgba(217, 119, 6,0.45)" : "var(--glass-border)"}`,
+        background: active ? "rgba(217, 119, 6,0.1)" : "var(--bg-tertiary)",
         cursor: "pointer",
         transition: "all 0.2s",
       }}
@@ -127,11 +127,11 @@ export default function RAGPipelineSteps() {
             marginBottom: "0.875rem",
             padding: "0.4rem 0.875rem",
             borderRadius: "99px",
-            background: "rgba(99,102,241,0.12)",
-            border: "1px solid rgba(99,102,241,0.25)",
+            background: "rgba(217, 119, 6,0.12)",
+            border: "1px solid rgba(217, 119, 6,0.25)",
             fontSize: "0.75rem",
             fontWeight: 700,
-            color: "#6366f1",
+            color: "#d97706",
             textTransform: "uppercase",
             letterSpacing: "0.08em",
           }}>
@@ -153,10 +153,10 @@ export default function RAGPipelineSteps() {
             marginTop: "0.875rem",
             padding: "0.5rem 0.75rem",
             borderRadius: "var(--radius-sm)",
-            background: "rgba(99,102,241,0.06)",
-            border: "1px solid rgba(99,102,241,0.15)",
+            background: "rgba(217, 119, 6,0.06)",
+            border: "1px solid rgba(217, 119, 6,0.15)",
             fontSize: "0.75rem",
-            color: "#6366f1",
+            color: "#d97706",
           }}>
             ⚡ Runs every query. Must be fast (&lt;500 ms target).
           </div>
@@ -169,14 +169,14 @@ export default function RAGPipelineSteps() {
         marginTop: "1.25rem",
         padding: "0.75rem 1rem",
         borderRadius: "var(--radius-sm)",
-        background: "rgba(167,139,250,0.07)",
+        background: "rgba(251, 191, 36,0.07)",
         borderLeft: "3px solid var(--accent-tertiary)",
         fontSize: "0.85rem",
         color: "var(--text-secondary)",
       }}>
         <strong style={{ color: "var(--accent-tertiary)" }}>Key constraint:</strong>{" "}
         Both pipelines <em>must use the exact same embedding model</em>. If you embed
-        documents with <code style={{ fontSize: "0.8em", background: "rgba(99,102,241,0.15)", padding: "0.1em 0.35em", borderRadius: "3px" }}>text-embedding-3-small</code> you must
+        documents with <code style={{ fontSize: "0.8em", background: "rgba(217, 119, 6,0.15)", padding: "0.1em 0.35em", borderRadius: "3px" }}>text-embedding-3-small</code> you must
         also embed queries with it. Mixing models corrupts the similarity scores entirely.
       </div>
       <div style={{

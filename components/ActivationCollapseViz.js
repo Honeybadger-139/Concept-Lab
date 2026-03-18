@@ -92,7 +92,7 @@ export default function ActivationCollapseViz() {
             </div>
             <div style={{ color: "#64748b", fontWeight: 700 }}>-{'>'}</div>
             <div style={{ borderRadius: "10px", background: "rgba(168,85,247,0.12)", border: "1px solid rgba(168,85,247,0.28)", padding: "0.7rem" }}>
-              <div style={{ fontSize: "0.72rem", color: "#c4b5fd", fontWeight: 700 }}>Hidden</div>
+              <div style={{ fontSize: "0.72rem", color: "#fcd34d", fontWeight: 700 }}>Hidden</div>
               <div style={{ fontSize: "0.78rem", color: "#e2e8f0" }}>z1 = 1.5x - 0.8</div>
               <div style={{ fontSize: "0.78rem", color: "#e2e8f0" }}>
                 a1 = {mode === "linear" ? "z1" : "ReLU(z1)"}

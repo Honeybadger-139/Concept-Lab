@@ -18,7 +18,7 @@
   margin: 0 0 0.6rem 0;
   font-weight: 800;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #e8eef8 30%, #a78bfa 100%);
+  background: linear-gradient(135deg, #e8eef8 30%, #fbbf24 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -26,7 +26,7 @@
 
 /* Light mode: dark-to-violet gradient so title stays visible */
 :global([data-theme="light"]) .title {
-  background: linear-gradient(135deg, #0f172a 20%, #7c3aed 100%);
+  background: linear-gradient(135deg, #0f172a 20%, #d97706 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

@@ -64,7 +64,7 @@ export default function CostFunctionViz() {
           stroke="rgba(34,211,238,0.25)" strokeWidth={1.5} strokeDasharray="6,4" />
         <text x={sx(4.6)} y={sy(optW * 4.6 + optB) - 8} fill="rgba(34,211,238,0.5)" fontSize={10}>best fit</text>
         <line x1={sx(X_MIN)} y1={sy(Math.max(-50, w * X_MIN + b))} x2={sx(X_MAX)} y2={sy(Math.min(700, w * X_MAX + b))}
-          stroke="#6366f1" strokeWidth={2.5} />
+          stroke="#d97706" strokeWidth={2.5} />
         {showResiduals && DATA.map(([x, y], i) => {
           const yHat = w * x + b;
           return <line key={i} x1={sx(x)} y1={sy(y)} x2={sx(x)} y2={sy(yHat)}
@@ -83,14 +83,14 @@ export default function CostFunctionViz() {
         <div style={{ flex: 1, background: t.surface, borderRadius: 10, padding: "10px 14px", border: `1px solid ${t.border}` }}>
           <div style={{ fontSize: 11, color: t.muted, marginBottom: 6 }}>J(w) cost curve — varying w</div>
           <svg viewBox="0 0 220 100" style={{ width: "100%", display: "block" }}>
-            <path d={costCurveW} fill="none" stroke="#6366f1" strokeWidth={2} />
+            <path d={costCurveW} fill="none" stroke="#d97706" strokeWidth={2} />
             <circle cx={wDotX} cy={wDotY} r={5} fill="#facc15" stroke="#fff" strokeWidth={1.5} />
             <line x1={wDotX} y1={10} x2={wDotX} y2={90} stroke="rgba(250,204,21,0.3)" strokeWidth={1} strokeDasharray="3,3" />
           </svg>
           <div style={{ fontSize: 11, color: t.tick, textAlign: "center" }}>← Move w slider to see dot move</div>
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ background: "rgba(99,102,241,0.1)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: 10, padding: "10px 14px", marginBottom: 10 }}>
+          <div style={{ background: "rgba(217, 119, 6,0.1)", border: "1px solid rgba(217, 119, 6,0.3)", borderRadius: 10, padding: "10px 14px", marginBottom: 10 }}>
             <div style={{ fontSize: 11, color: t.muted, marginBottom: 4 }}>Mean Squared Error</div>
             <div style={{ fontSize: 26, fontWeight: 800, color: J < optJ * 1.5 ? "#22d3ee" : "#facc15", fontFamily: "monospace" }}>
               {J.toFixed(0)}
@@ -99,7 +99,7 @@ export default function CostFunctionViz() {
           </div>
           <div style={{ fontSize: 12, color: t.muted, marginBottom: 4 }}>Optimal (min) J = {optJ.toFixed(0)}</div>
           <div style={{ height: 6, background: t.surface3, borderRadius: 4, overflow: "hidden" }}>
-            <div style={{ height: "100%", width: `${Math.min(100, (optJ / J) * 100)}%`, background: J < optJ * 1.5 ? "#22d3ee" : "#6366f1", borderRadius: 4, transition: "width .2s" }} />
+            <div style={{ height: "100%", width: `${Math.min(100, (optJ / J) * 100)}%`, background: J < optJ * 1.5 ? "#22d3ee" : "#d97706", borderRadius: 4, transition: "width .2s" }} />
           </div>
           <div style={{ fontSize: 11, color: t.tick, marginTop: 3 }}>
             {J < optJ * 1.1 ? "✓ Near optimal!" : `${((J / optJ - 1) * 100).toFixed(0)}% above optimal`}
@@ -108,7 +108,7 @@ export default function CostFunctionViz() {
       </div>
 
       {/* Sliders */}
-      {[{ label: "Slope w (weight)", val: w, set: setW, min: -40, max: 200, color: "#6366f1" },
+      {[{ label: "Slope w (weight)", val: w, set: setW, min: -40, max: 200, color: "#d97706" },
         { label: "Intercept b (bias)", val: b, set: setB, min: -50, max: 200, color: "#f97316" }].map(({ label, val, set, min, max, color }) => (
         <div key={label} style={{ marginTop: 10 }}>
           <label style={{ fontSize: 13, color: t.muted3, display: "flex", justifyContent: "space-between" }}>

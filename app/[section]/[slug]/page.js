@@ -266,7 +266,7 @@ export default async function NodePage({ params, searchParams }) {
   const currentIndex   = activeNodes.findIndex((n) => n.slug === slug);
   const prevNode       = currentIndex > 0 ? activeNodes[currentIndex - 1] : null;
   const nextNode       = currentIndex < activeNodes.length - 1 ? activeNodes[currentIndex + 1] : null;
-  const meta           = SECTION_META[section] || { color: "#6366f1", emoji: "📚" };
+  const meta           = SECTION_META[section] || { color: "#d97706", emoji: "📚" };
   const polishedTheory = getPolishedTheory(section, node);
   const rt             = readingTime(polishedTheory);
   const topicHref = buildTopicHref(section, slug, activeTrack?.id ?? null);

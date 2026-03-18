@@ -120,7 +120,7 @@ const GRAPH_LAYOUT = [
   { id: "START", x: 70, y: 60, color: "#38bdf8" },
   { id: "reason", x: 290, y: 60, color: "#22c55e" },
   { id: "act", x: 510, y: 60, color: "#f59e0b" },
-  { id: "END", x: 730, y: 60, color: "#a78bfa" },
+  { id: "END", x: 730, y: 60, color: "#fbbf24" },
 ];
 
 function NodeBox({ node, active }) {
@@ -207,7 +207,7 @@ export default function StateGraphFlowViz() {
           style={{
             border: "none",
             borderRadius: "8px",
-            background: "#6366f1",
+            background: "#d97706",
             color: "white",
             padding: "0.4rem 0.7rem",
             fontSize: "0.8rem",

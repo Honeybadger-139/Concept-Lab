@@ -195,8 +195,8 @@ export default function DecisionTreeSplitViz() {
         <div
           style={{
             marginTop: "0.9rem",
-            background: "rgba(99,102,241,0.08)",
-            border: "1px solid rgba(99,102,241,0.25)",
+            background: "rgba(217, 119, 6,0.08)",
+            border: "1px solid rgba(217, 119, 6,0.25)",
             borderRadius: 10,
             padding: "0.8rem",
           }}

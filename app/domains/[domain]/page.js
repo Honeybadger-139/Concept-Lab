@@ -62,7 +62,7 @@ export default async function DomainPage({ params }) {
                 key={track.id}
                 href={getTrackHref(track.id)}
                 className={styles.card}
-                style={{ "--card-color": track.color ?? currentDomain.color ?? "#6366f1" }}
+                style={{ "--card-color": track.color ?? currentDomain.color ?? "#d97706" }}
               >
                 <div className={styles.cardEmoji}>{track.emoji ?? "📚"}</div>
                 <h2 className={styles.cardTitle}>{track.title}</h2>

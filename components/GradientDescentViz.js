@@ -107,7 +107,7 @@ export default function GradientDescentViz() {
         <text x={W / 2} y={H - 6} textAnchor="middle" fill={t.labelMid} fontSize={11}>w — Parameter</text>
         <line x1={wx(2)} y1={PAD.t} x2={wx(2)} y2={H - PAD.b} stroke="rgba(34,211,238,0.25)" strokeWidth={1} strokeDasharray="4,4" />
         <text x={wx(2) + 4} y={PAD.t + 14} fill="rgba(34,211,238,0.6)" fontSize={10}>optimum w=2</text>
-        <path d={CURVE} fill="none" stroke="#6366f1" strokeWidth={2.5} />
+        <path d={CURVE} fill="none" stroke="#d97706" strokeWidth={2.5} />
         {pathStr && <path d={pathStr} fill="none" stroke="rgba(250,204,21,0.5)" strokeWidth={1.5} strokeDasharray="3,3" />}
         {!converged && (() => {
           const x0 = wx(wVal - 0.8), x1 = wx(wVal + 0.8);
@@ -148,7 +148,7 @@ export default function GradientDescentViz() {
         </label>
         <input type="range" min={0.01} max={1.0} step={0.01} value={alpha}
           onChange={e => { const v = parseFloat(e.target.value); setAlpha(v); stateRef.current.alpha = v; }}
-          style={{ width: "100%", accentColor: "#6366f1", marginTop: 4 }} />
+          style={{ width: "100%", accentColor: "#d97706", marginTop: 4 }} />
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: t.tick, marginTop: 2 }}>
           <span>0.01 — too slow</span><span>0.5 — good</span><span>1.0 — may diverge</span>
         </div>
@@ -157,7 +157,7 @@ export default function GradientDescentViz() {
       {/* Controls */}
       <div style={{ display: "flex", gap: 8 }}>
         <button onClick={() => setRunning(r => !r)}
-          style={{ flex: 1, background: running ? "rgba(244,63,94,0.2)" : "rgba(99,102,241,0.25)", color: t.btnText, border: `1.5px solid ${running ? "#f43f5e" : "#6366f1"}`, borderRadius: 8, padding: "9px 0", cursor: "pointer", fontSize: 14, fontWeight: 700, transition: "all .2s" }}>
+          style={{ flex: 1, background: running ? "rgba(244,63,94,0.2)" : "rgba(217, 119, 6,0.25)", color: t.btnText, border: `1.5px solid ${running ? "#f43f5e" : "#d97706"}`, borderRadius: 8, padding: "9px 0", cursor: "pointer", fontSize: 14, fontWeight: 700, transition: "all .2s" }}>
           {running ? "⏸ Pause" : converged ? "✓ Converged" : "▶ Run"}
         </button>
         <button onClick={() => reset(-1.5)}

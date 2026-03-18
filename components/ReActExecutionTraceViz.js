@@ -27,7 +27,7 @@ const STAGES = [
   {
     label: "Prompt initialization",
     detail: "LangChain builds the ReAct prompt with the user question plus the tool names and descriptions.",
-    color: "#6366f1",
+    color: "#d97706",
   },
   {
     label: "Reason",
@@ -47,7 +47,7 @@ const STAGES = [
   {
     label: "Observation",
     detail: "The tool result is sent back into the prompt so the LLM can continue reasoning or finalize.",
-    color: "#a78bfa",
+    color: "#fbbf24",
   },
   {
     label: "Final answer",
@@ -144,7 +144,7 @@ export default function ReActExecutionTraceViz() {
           <div style={{ fontSize: "0.78rem", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 700, marginBottom: "0.35rem" }}>
             ReAct prompt contract
           </div>
-          <pre style={{ margin: 0, whiteSpace: "pre-wrap", fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "#c4b5fd", lineHeight: 1.55 }}>{promptContract}</pre>
+          <pre style={{ margin: 0, whiteSpace: "pre-wrap", fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "#fcd34d", lineHeight: 1.55 }}>{promptContract}</pre>
         </div>
       )}
     </div>

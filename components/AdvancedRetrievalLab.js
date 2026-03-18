@@ -67,8 +67,8 @@ export default function AdvancedRetrievalLab() {
             style={{
               flex: 1,
               borderRadius: "999px",
-              border: mode === id ? "1px solid #6366f1" : "1px solid var(--glass-border)",
-              background: mode === id ? "rgba(99,102,241,0.2)" : "transparent",
+              border: mode === id ? "1px solid #d97706" : "1px solid var(--glass-border)",
+              background: mode === id ? "rgba(217, 119, 6,0.2)" : "transparent",
               color: "var(--text-primary)",
               fontSize: "0.73rem",
               padding: "0.32rem 0.5rem",

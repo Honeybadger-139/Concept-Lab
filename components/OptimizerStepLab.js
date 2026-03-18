@@ -54,7 +54,7 @@ export default function OptimizerStepLab() {
               borderRadius: "999px",
               border: scenario === key ? "1px solid #8b5cf6" : "1px solid var(--glass-border)",
               background: scenario === key ? "rgba(139,92,246,0.12)" : "var(--bg-tertiary)",
-              color: scenario === key ? "#c4b5fd" : "var(--text-secondary)",
+              color: scenario === key ? "#fcd34d" : "var(--text-secondary)",
               padding: "0.35rem 0.72rem",
               fontSize: "0.77rem",
               fontWeight: 700,

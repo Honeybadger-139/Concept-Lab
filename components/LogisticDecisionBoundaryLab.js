@@ -300,7 +300,7 @@ export default function LogisticDecisionBoundaryLab() {
                 step="0.05"
                 value={weight2}
                 onChange={(event) => setWeight2(Number(event.target.value))}
-                style={{ width: "100%", marginTop: "0.24rem", accentColor: "#818cf8" }}
+                style={{ width: "100%", marginTop: "0.24rem", accentColor: "#f59e0b" }}
               />
             </label>
             <label style={{ fontSize: "0.78rem", color: t.muted2 }}>
@@ -365,7 +365,7 @@ export default function LogisticDecisionBoundaryLab() {
               {[
                 { label: "Precision", value: formatPct(analysis.precision), color: "#f59e0b" },
                 { label: "Recall", value: formatPct(analysis.recall), color: "#22c55e" },
-                { label: "F1 Score", value: analysis.f1.toFixed(3), color: "#a78bfa" },
+                { label: "F1 Score", value: analysis.f1.toFixed(3), color: "#fbbf24" },
                 { label: "Accuracy", value: formatPct(analysis.accuracy), color: "#60a5fa" },
               ].map((item) => (
                 <div key={item.label} style={{ borderRadius: 10, border: `1px solid ${t.border}`, background: t.surface3, padding: "0.55rem 0.65rem" }}>

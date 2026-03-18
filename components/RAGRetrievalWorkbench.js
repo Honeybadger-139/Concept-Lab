@@ -170,7 +170,7 @@ export default function RAGRetrievalWorkbench() {
               <option value="conversational">Conversational follow-up</option>
             </select>
           </label>
-          <div style={{ marginTop: "0.65rem", padding: "0.55rem 0.65rem", borderRadius: "10px", background: "rgba(99,102,241,0.08)", borderLeft: "3px solid #6366f1", fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+          <div style={{ marginTop: "0.65rem", padding: "0.55rem 0.65rem", borderRadius: "10px", background: "rgba(217, 119, 6,0.08)", borderLeft: "3px solid #d97706", fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
             <strong style={{ color: "#a5b4fc" }}>Key constraint:</strong> the same embedding model must be used for stored chunks and incoming user queries, otherwise similarity scores become meaningless.
           </div>
         </div>
@@ -207,7 +207,7 @@ export default function RAGRetrievalWorkbench() {
           <div style={{ fontSize: "0.78rem", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 700, marginBottom: "0.35rem" }}>
             Prompt assembly preview
           </div>
-          <pre style={{ margin: 0, whiteSpace: "pre-wrap", fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "#c4b5fd", lineHeight: 1.55 }}>{promptPreview}</pre>
+          <pre style={{ margin: 0, whiteSpace: "pre-wrap", fontFamily: "var(--font-mono)", fontSize: "0.75rem", color: "#fcd34d", lineHeight: 1.55 }}>{promptPreview}</pre>
         </div>
         <div style={{ border: "1px solid var(--glass-border)", borderRadius: "12px", background: "var(--bg-tertiary)", padding: "0.8rem" }}>
           <div style={{ fontSize: "0.78rem", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em", fontWeight: 700, marginBottom: "0.35rem" }}>

@@ -68,7 +68,7 @@ export default function BiasVarianceWorkbench() {
               borderRadius: "999px",
               border: mode === key ? "1px solid #8b5cf6" : "1px solid var(--glass-border)",
               background: mode === key ? "rgba(139,92,246,0.12)" : "var(--bg-tertiary)",
-              color: mode === key ? "#c4b5fd" : "var(--text-secondary)",
+              color: mode === key ? "#fcd34d" : "var(--text-secondary)",
               padding: "0.35rem 0.72rem",
               fontSize: "0.77rem",
               fontWeight: 700,
@@ -103,7 +103,7 @@ export default function BiasVarianceWorkbench() {
               <div style={{ display: "grid", gap: "0.45rem", marginBottom: "0.6rem" }}>
                 {[
                   ["Baseline", baseline, "#38bdf8"],
-                  ["Train", trainError, "#a78bfa"],
+                  ["Train", trainError, "#fbbf24"],
                   ["CV", cvError, "#34d399"],
                 ].map(([label, value, color]) => (
                   <div key={label}>

@@ -75,7 +75,7 @@ export default function HybridFusionLab() {
         ))}
       </div>
 
-      <div style={{ marginTop: "0.6rem", border: "1px solid rgba(99,102,241,0.25)", background: "rgba(99,102,241,0.08)", borderRadius: "0.45rem", padding: "0.45rem 0.6rem", fontSize: "0.71rem", color: "var(--text-secondary)" }}>
+      <div style={{ marginTop: "0.6rem", border: "1px solid rgba(217, 119, 6,0.25)", background: "rgba(217, 119, 6,0.08)", borderRadius: "0.45rem", padding: "0.45rem 0.6rem", fontSize: "0.71rem", color: "var(--text-secondary)" }}>
         Rank fusion is robust when vector and keyword scores are not calibrated to the same numeric scale.
       </div>
     </div>

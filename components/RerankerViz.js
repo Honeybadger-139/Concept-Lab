@@ -57,14 +57,14 @@ export default function RerankerViz() {
   return (
     <div style={{ fontFamily: "inherit" }}>
       {/* Query */}
-      <div style={{ background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.35)", borderRadius: 8, padding: "10px 14px", marginBottom: 14, fontSize: 13, color: "#a5b4fc", fontStyle: "italic" }}>
+      <div style={{ background: "rgba(217, 119, 6,0.12)", border: "1px solid rgba(217, 119, 6,0.35)", borderRadius: 8, padding: "10px 14px", marginBottom: 14, fontSize: 13, color: "#a5b4fc", fontStyle: "italic" }}>
         Query: "{QUERY}"
       </div>
 
       {/* Toggle */}
       <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
         <button onClick={() => setShowReranked(false)}
-          style={{ flex: 1, background: !showReranked ? "rgba(99,102,241,0.25)" : "rgba(255,255,255,0.06)", border: `1.5px solid ${!showReranked ? "#6366f1" : "rgba(255,255,255,0.15)"}`, color: "#fff", borderRadius: 8, padding: "8px", cursor: "pointer", fontSize: 13, fontWeight: !showReranked ? 700 : 400 }}>
+          style={{ flex: 1, background: !showReranked ? "rgba(217, 119, 6,0.25)" : "rgba(255,255,255,0.06)", border: `1.5px solid ${!showReranked ? "#d97706" : "rgba(255,255,255,0.15)"}`, color: "#fff", borderRadius: 8, padding: "8px", cursor: "pointer", fontSize: 13, fontWeight: !showReranked ? 700 : 400 }}>
           🔍 Before: Vector Search
         </button>
         <button onClick={() => setShowReranked(true)}
@@ -90,7 +90,7 @@ export default function RerankerViz() {
                 border: `1.5px solid ${doc.relevant ? "rgba(34,211,238,0.25)" : "rgba(255,255,255,0.08)"}` }}>
               {/* Rank badge */}
               <div style={{ width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: 15, flexShrink: 0,
-                background: rank === 1 ? "#facc15" : rank <= 3 ? "rgba(99,102,241,0.4)" : "rgba(255,255,255,0.1)",
+                background: rank === 1 ? "#facc15" : rank <= 3 ? "rgba(217, 119, 6,0.4)" : "rgba(255,255,255,0.1)",
                 color: rank === 1 ? "#000" : "#fff" }}>
                 {rank}
               </div>
@@ -124,7 +124,7 @@ export default function RerankerViz() {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
               {[
-                { label: "Vector", score: doc.vectorScore, color: "#6366f1" },
+                { label: "Vector", score: doc.vectorScore, color: "#d97706" },
                 { label: "Cross", score: doc.crossScore, color: "#10b981" },
               ].map(({ label, score, color }) => (
                 <div key={label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -140,7 +140,7 @@ export default function RerankerViz() {
         ))}
       </div>
 
-      <div style={{ marginTop: 12, background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.25)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
+      <div style={{ marginTop: 12, background: "rgba(217, 119, 6,0.08)", border: "1px solid rgba(217, 119, 6,0.25)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
         <strong style={{ color: "#a5b4fc" }}>Bi-encoder vs cross-encoder:</strong> Vector search uses a bi-encoder (fast, pre-computed). Cross-encoders see query+doc together — more accurate but 10–50× slower. Two-stage: fast retrieval first (top-50), then rerank with cross-encoder (top-3 sent to LLM).
       </div>
     </div>

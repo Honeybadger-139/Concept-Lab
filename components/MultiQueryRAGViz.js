@@ -4,9 +4,9 @@ import { useState, useEffect, useRef } from "react";
 const ORIGINAL = "What are the health benefits of green tea?";
 
 const VARIANTS = [
-  { q: "How does green tea improve physical health?", color: "#6366f1" },
+  { q: "How does green tea improve physical health?", color: "#d97706" },
   { q: "What nutrients and antioxidants are found in green tea?", color: "#8b5cf6" },
-  { q: "Can green tea reduce disease risk or inflammation?", color: "#a78bfa" },
+  { q: "Can green tea reduce disease risk or inflammation?", color: "#fbbf24" },
 ];
 
 const RESULTS = [
@@ -58,14 +58,14 @@ export default function MultiQueryRAGViz() {
       {/* Progress bar */}
       <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
         {STAGES.map((s, i) => (
-          <div key={s} onClick={() => setStage(i)} style={{ flex: 1, height: 4, borderRadius: 4, cursor: "pointer", background: i <= stage ? "#6366f1" : "rgba(255,255,255,0.1)", transition: "background .3s" }} />
+          <div key={s} onClick={() => setStage(i)} style={{ flex: 1, height: 4, borderRadius: 4, cursor: "pointer", background: i <= stage ? "#d97706" : "rgba(255,255,255,0.1)", transition: "background .3s" }} />
         ))}
       </div>
 
       {/* Stage 0: Original query */}
       <div style={{ opacity: stage >= 0 ? 1 : 0, transition: "opacity .4s", marginBottom: 14 }}>
         <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 4, textTransform: "uppercase", letterSpacing: 1 }}>Original User Query</div>
-        <div style={{ background: "rgba(99,102,241,0.15)", border: "1.5px solid #6366f1", borderRadius: 10, padding: "12px 16px", fontSize: 14, color: "#a5b4fc", fontStyle: "italic" }}>
+        <div style={{ background: "rgba(217, 119, 6,0.15)", border: "1.5px solid #d97706", borderRadius: 10, padding: "12px 16px", fontSize: 14, color: "#a5b4fc", fontStyle: "italic" }}>
           "{ORIGINAL}"
         </div>
       </div>
@@ -140,7 +140,7 @@ export default function MultiQueryRAGViz() {
       {/* Controls */}
       <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
         <button onClick={autoPlay} disabled={animating}
-          style={{ flex: 1, background: animating ? "rgba(255,255,255,0.05)" : "rgba(99,102,241,0.25)", border: `1.5px solid ${animating ? "rgba(255,255,255,0.1)" : "#6366f1"}`, color: "#fff", borderRadius: 8, padding: "8px 0", cursor: animating ? "default" : "pointer", fontSize: 14, fontWeight: 700, opacity: animating ? 0.5 : 1 }}>
+          style={{ flex: 1, background: animating ? "rgba(255,255,255,0.05)" : "rgba(217, 119, 6,0.25)", border: `1.5px solid ${animating ? "rgba(255,255,255,0.1)" : "#d97706"}`, color: "#fff", borderRadius: 8, padding: "8px 0", cursor: animating ? "default" : "pointer", fontSize: 14, fontWeight: 700, opacity: animating ? 0.5 : 1 }}>
           ▶ Auto-play
         </button>
         <button onClick={advance} disabled={stage >= STAGES.length - 1}
@@ -153,7 +153,7 @@ export default function MultiQueryRAGViz() {
         </button>
       </div>
 
-      <div style={{ marginTop: 12, background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.25)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
+      <div style={{ marginTop: 12, background: "rgba(217, 119, 6,0.08)", border: "1px solid rgba(217, 119, 6,0.25)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "rgba(255,255,255,0.6)" }}>
         <strong style={{ color: "#a5b4fc" }}>Why it works:</strong> A single query may miss relevant chunks due to vocabulary mismatch.
         Multi-query expands coverage at the cost of {VARIANTS.length}× more embedding calls and LLM tokens. Use when recall is critical and latency allows.
       </div>

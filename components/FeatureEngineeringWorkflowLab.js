@@ -53,7 +53,7 @@ const SCENARIOS = {
 
 const STEP_META = [
   { id: "raw", label: "1. Raw Data", color: "#38bdf8" },
-  { id: "transform", label: "2. Transform", color: "#a78bfa" },
+  { id: "transform", label: "2. Transform", color: "#fbbf24" },
   { id: "validate", label: "3. Validate", color: "#facc15" },
   { id: "train", label: "4. Train", color: "#22c55e" },
 ];
@@ -343,7 +343,7 @@ export default function FeatureEngineeringWorkflowLab() {
               >
                 {[
                   { title: "Raw", body: `${scenario.raw.length} source fields enter the pipeline`, color: "#38bdf8" },
-                  { title: "Transform", body: `${derived.transformedFeatures.length} engineered outputs prepared`, color: "#a78bfa" },
+                  { title: "Transform", body: `${derived.transformedFeatures.length} engineered outputs prepared`, color: "#fbbf24" },
                   { title: "Validate", body: `${derived.leakageWarnings.length + derived.validationWarnings.length} active checks`, color: "#facc15" },
                   { title: "Train", body: derived.readiness ? "Pipeline ready for model fitting" : "Training should wait for guardrail fixes", color: derived.readiness ? "#22c55e" : "#ef4444" },
                 ].map((card, index) => (

@@ -102,7 +102,7 @@ export const tracks = [
     conceptId: "advanced-learning-algorithms",
     title: "Advanced Learning Algorithms",
     emoji: "🧩",
-    color: "#6366f1",
+    color: "#d97706",
     description:
       "The advanced ML track. It stays transcript-driven as new advanced lessons are added into Concept Lab.",
     order: 2,

@@ -81,7 +81,7 @@ function MetricBar({ label, value, inverted = false }) {
             width,
             height: "100%",
             borderRadius: "999px",
-            background: "linear-gradient(90deg, #38bdf8, #818cf8)",
+            background: "linear-gradient(90deg, #38bdf8, #f59e0b)",
           }}
         />
       </div>
@@ -152,8 +152,8 @@ export default function AutonomyLadderViz() {
               style={{
                 textAlign: "left",
                 borderRadius: "10px",
-                border: active ? "1px solid #6366f1" : "1px solid var(--glass-border)",
-                background: active ? "rgba(99,102,241,0.12)" : "var(--bg-tertiary)",
+                border: active ? "1px solid #d97706" : "1px solid var(--glass-border)",
+                background: active ? "rgba(217, 119, 6,0.12)" : "var(--bg-tertiary)",
                 color: "var(--text-primary)",
                 padding: "0.65rem 0.75rem",
                 cursor: "pointer",
@@ -223,7 +223,7 @@ export default function AutonomyLadderViz() {
         </div>
 
         <div style={{ marginTop: "0.65rem", fontSize: "0.83rem", color: "var(--text-secondary)", lineHeight: 1.45 }}>
-          <strong style={{ color: "#818cf8" }}>Suggested baseline:</strong> {recommendation.title}
+          <strong style={{ color: "#f59e0b" }}>Suggested baseline:</strong> {recommendation.title}
           <br />
           {recommendation.reason}
         </div>

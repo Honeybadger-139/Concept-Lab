@@ -8,7 +8,7 @@ const SCENARIOS = {
     summary:
       "LangChain conversations are explicit message arrays. The model only knows what you send in the current request.",
     timeline: [
-      { label: "SystemMessage", color: "#a78bfa", detail: "Defines role, tone, and operating constraints." },
+      { label: "SystemMessage", color: "#fbbf24", detail: "Defines role, tone, and operating constraints." },
       { label: "HumanMessage", color: "#60a5fa", detail: "Carries the user's current question or instruction." },
       { label: "AIMessage", color: "#10b981", detail: "Stores the assistant reply so later turns can refer back to it." },
       { label: "Next HumanMessage", color: "#60a5fa", detail: "Arrives with the earlier messages replayed as context." },
@@ -194,7 +194,7 @@ export default function LangChainMemoryFlowViz() {
 
           <div style={{ border: "1px dashed var(--glass-border)", borderRadius: "10px", padding: "0.7rem", background: "rgba(15,23,42,0.45)" }}>
             <div style={{ fontSize: "0.75rem", color: "var(--text-tertiary)", marginBottom: "0.35rem" }}>Representative payload</div>
-            <pre style={{ margin: 0, fontFamily: "var(--font-mono)", fontSize: "0.76rem", color: "#c4b5fd", whiteSpace: "pre-wrap" }}>{`session_id: user-42\nstorage: ${storage}\nmessages:\n  - system: You are a helpful assistant.\n  - human: Summarize the last release.\n  - ai: The release added evaluation dashboards.\n  - human: What changed for monitoring?\n  ${mode === "cloud" ? "- persisted_at: 2026-03-17T11:20:00Z" : "- lifecycle: process-memory only"}`}</pre>
+            <pre style={{ margin: 0, fontFamily: "var(--font-mono)", fontSize: "0.76rem", color: "#fcd34d", whiteSpace: "pre-wrap" }}>{`session_id: user-42\nstorage: ${storage}\nmessages:\n  - system: You are a helpful assistant.\n  - human: Summarize the last release.\n  - ai: The release added evaluation dashboards.\n  - human: What changed for monitoring?\n  ${mode === "cloud" ? "- persisted_at: 2026-03-17T11:20:00Z" : "- lifecycle: process-memory only"}`}</pre>
           </div>
         </div>
 

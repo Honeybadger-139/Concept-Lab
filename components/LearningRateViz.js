@@ -80,7 +80,7 @@ export default function LearningRateViz() {
     <div style={{ fontFamily: "inherit" }}>
       <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
         <button onClick={() => setRunning(r => !r)}
-          style={{ flex: 1, background: running ? "rgba(244,63,94,0.2)" : "rgba(99,102,241,0.25)", color: t.btnText, border: `1.5px solid ${running ? "#f43f5e" : "#6366f1"}`, borderRadius: 8, padding: "8px 0", cursor: "pointer", fontSize: 14, fontWeight: 700 }}>
+          style={{ flex: 1, background: running ? "rgba(244,63,94,0.2)" : "rgba(217, 119, 6,0.25)", color: t.btnText, border: `1.5px solid ${running ? "#f43f5e" : "#d97706"}`, borderRadius: 8, padding: "8px 0", cursor: "pointer", fontSize: 14, fontWeight: 700 }}>
           {running ? "⏸ Pause" : "▶ Run All Three"}
         </button>
         <button onClick={reset}
@@ -158,10 +158,10 @@ export default function LearningRateViz() {
         </label>
         <input type="range" min={0} max={MAX_ITER} step={1} value={iter}
           onChange={e => { setRunning(false); setIter(+e.target.value); }}
-          style={{ width: "100%", accentColor: "#6366f1", marginTop: 4 }} />
+          style={{ width: "100%", accentColor: "#d97706", marginTop: 4 }} />
       </div>
 
-      <div style={{ marginTop: 12, background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.25)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: t.muted3 }}>
+      <div style={{ marginTop: 12, background: "rgba(217, 119, 6,0.08)", border: "1px solid rgba(217, 119, 6,0.25)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: t.muted3 }}>
         <strong style={{ color: "#a5b4fc" }}>Rule of thumb:</strong> Start with α = 0.1, then tune. If loss goes up → halve it. If converging too slow → double it.
         In practice: learning rate schedules (decay, cosine annealing, warm-up) adapt α during training — no single value works for the full run.
       </div>

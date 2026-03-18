@@ -71,6 +71,10 @@ const ComponentMap = {
   EntropyCurveExplorer:    withLoader(() => import("@/components/EntropyCurveExplorer")),
   OneHotEncodingLab:       withLoader(() => import("@/components/OneHotEncodingLab")),
   ContinuousThresholdExplorer: withLoader(() => import("@/components/ContinuousThresholdExplorer")),
+  RegressionTreeSplitLab:  withLoader(() => import("@/components/RegressionTreeSplitLab")),
+  BootstrapSamplingViz:    withLoader(() => import("@/components/BootstrapSamplingViz")),
+  TreeEnsembleWorkbench:   withLoader(() => import("@/components/TreeEnsembleWorkbench")),
+  ModelSelectionMatrixViz: withLoader(() => import("@/components/ModelSelectionMatrixViz")),
   DecisionTreeSplitViz:   withLoader(() => import("@/components/DecisionTreeSplitViz")),
   // RAG visualizations
   RetrievalQueryViz:      withLoader(() => import("@/components/RetrievalQueryViz")),

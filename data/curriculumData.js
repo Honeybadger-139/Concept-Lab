@@ -238,6 +238,12 @@ const ML_CONCEPT_BY_SLUG = {
   "adv-54-decision-tree-putting-it-together": "advanced-learning-algorithms",
   "adv-55-one-hot-encoding-categorical-features": "advanced-learning-algorithms",
   "adv-56-continuous-valued-features": "advanced-learning-algorithms",
+  "adv-57-regression-trees": "advanced-learning-algorithms",
+  "adv-58-using-multiple-decision-trees": "advanced-learning-algorithms",
+  "adv-59-sampling-with-replacement": "advanced-learning-algorithms",
+  "adv-60-random-forest-algorithm": "advanced-learning-algorithms",
+  "adv-61-xgboost": "advanced-learning-algorithms",
+  "adv-62-when-to-use-decision-trees": "advanced-learning-algorithms",
 };
 
 // ─────────────────────────────────────────────────────────
@@ -7568,6 +7574,257 @@ The best threshold is 9 because it creates the largest reduction in impurity.`,
       { q: "How does the tree choose the threshold?", a: "It evaluates multiple candidate thresholds and picks the one with the highest information gain." },
       { q: "Why sort feature values when searching thresholds?", a: "Because the useful candidate splits lie between observed values, so the sorted order defines the possible cut points." },
       { q: "Why can continuous splits become fragile over time?", a: "Because changes in the production data distribution can make previously learned thresholds less appropriate." },
+    ],
+  },
+  {
+    slug: "adv-57-regression-trees",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Regression Trees",
+    order: 57,
+    excerpt: "Generalizing decision trees from class prediction to numeric prediction by minimizing weighted variance and predicting leaf averages.",
+    theory: `<p><strong>Regression trees are decision trees for numeric targets.</strong> Instead of predicting class labels at leaves, they predict a number. The leaf prediction is usually the <strong>average target value</strong> of training samples that reached that leaf.</p>
+<p><strong>Core difference from classification trees:</strong></p>
+<ul>
+  <li>Classification trees optimize impurity reduction (entropy/Gini).</li>
+  <li>Regression trees optimize <strong>variance reduction</strong> (or equivalent MSE reduction).</li>
+</ul>
+<p><strong>Node split scoring:</strong> at each node, compute variance of the target at the parent node, then subtract weighted child variances after a candidate split:</p>
+<p><code>variance reduction = Var(parent) - [w_left * Var(left) + w_right * Var(right)]</code></p>
+<p>Choose the split with the highest reduction. This is the regression analogue of information gain.</p>
+<p><strong>Leaf prediction rule:</strong> once stopping criteria are met (depth limit, low variance reduction, low sample count), output the mean target of leaf samples. That mean is the model's prediction for every future sample routed to that leaf.</p>
+<p><strong>Production implication:</strong> regression trees are piecewise-constant models. They perform well when target behavior changes across interpretable segments but can be unstable with very small leaves or noisy labels.</p>
+<p><strong>Failure mode:</strong> over-deep trees can memorize small target fluctuations. Use depth/min-samples/min-gain controls and validation-based tuning.</p>`,
+    example: `Animal-weight prediction:
+- Leaf A receives weights [7.2, 8.4, 7.6, 10.2] -> prediction = average = 8.35
+- Leaf B receives [9.2] -> prediction = 9.2
+
+For a new animal routed to Leaf A, the model outputs 8.35 lbs.`,
+    animation: "RegressionTreeSplitLab",
+    tool: "DecisionTreeSplitViz",
+    interviewPrep: {
+      questions: [
+        "How do regression trees differ from classification trees?",
+        "What does a regression-tree leaf predict?",
+        "How is split quality measured in regression trees?",
+      ],
+      seniorTip: "A strong answer connects variance reduction to MSE minimization and explains that regression trees are piecewise-constant approximators with explicit capacity controls.",
+    },
+    flashCards: [
+      { q: "What does a regression-tree leaf output?", a: "A numeric prediction, typically the mean target value of training samples in that leaf." },
+      { q: "What split criterion is common in regression trees?", a: "Maximum weighted variance reduction (or equivalent reduction in squared error)." },
+      { q: "Why are tiny leaves risky?", a: "They overfit noise and make predictions unstable across retrains." },
+      { q: "What is the shape of regression-tree predictions?", a: "Piecewise constant across partitioned regions of feature space." },
+    ],
+  },
+  {
+    slug: "adv-58-using-multiple-decision-trees",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Using Multiple Decision Trees",
+    order: 58,
+    excerpt: "Why single trees are sensitive to small data changes and how voting across many trees improves robustness.",
+    theory: `<p><strong>Single decision trees are high-variance models.</strong> Small changes in training data can alter early splits, which changes entire subtrees and final predictions.</p>
+<p><strong>Ensemble idea:</strong> train many trees, each slightly different, then aggregate predictions:</p>
+<ul>
+  <li>Classification: majority vote.</li>
+  <li>Regression: average prediction.</li>
+</ul>
+<p>This reduces sensitivity to any one tree's errors and usually improves generalization.</p>
+<p><strong>Why it works:</strong> tree errors are only partly correlated. Averaging/voting cancels idiosyncratic split mistakes and keeps shared signal.</p>
+<p><strong>Architecture pattern:</strong></p>
+<ol>
+  <li>Generate diverse trees.</li>
+  <li>Run all trees at inference.</li>
+  <li>Aggregate outputs into final decision.</li>
+</ol>
+<p><strong>Trade-off:</strong> ensembles improve accuracy and robustness, but increase training/inference compute and model artifact size.</p>`,
+    example: `Three-tree voting on a new sample:
+- Tree 1 -> cat
+- Tree 2 -> not cat
+- Tree 3 -> cat
+
+Final prediction: cat (2 out of 3 votes).`,
+    animation: "TreeEnsembleWorkbench",
+    tool: "BootstrapSamplingViz",
+    interviewPrep: {
+      questions: [
+        "Why are single trees unstable under small data changes?",
+        "How does tree voting reduce prediction variance?",
+        "When do ensembles outperform single trees most clearly?",
+      ],
+      seniorTip: "Frame ensemble benefit as variance reduction: many weakly correlated high-variance trees become a lower-variance aggregate predictor.",
+    },
+    flashCards: [
+      { q: "What weakness of single trees motivates ensembles?", a: "High sensitivity to small training-set changes (high variance)." },
+      { q: "How do ensemble classifiers combine predictions?", a: "Typically by majority vote across trees." },
+      { q: "How do ensemble regressors combine predictions?", a: "Typically by averaging numeric outputs across trees." },
+      { q: "Main trade-off of ensembles?", a: "Better robustness and quality, higher compute and latency." },
+    ],
+  },
+  {
+    slug: "adv-59-sampling-with-replacement",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Sampling with Replacement",
+    order: 59,
+    excerpt: "Bootstrap sampling creates new training sets by repeatedly drawing from the original set with replacement.",
+    theory: `<p><strong>Sampling with replacement</strong> (bootstrap sampling) repeatedly draws examples from the original dataset and returns each draw to the pool before the next draw.</p>
+<p><strong>Consequences:</strong></p>
+<ul>
+  <li>Some examples appear multiple times.</li>
+  <li>Some examples are absent in a given bootstrap set.</li>
+</ul>
+<p>This creates training sets that are similar to the original but different enough to induce model diversity.</p>
+<p><strong>Why it's essential for bagging:</strong> if each tree saw exactly the same data, trees would be too similar and voting would add less value.</p>
+<p><strong>Operational perspective:</strong> bootstrap diversity is one source of ensemble robustness. It pairs naturally with feature subsampling in random forests.</p>`,
+    example: `Original example IDs: [1..10]
+Bootstrap draw of size 10:
+[3, 7, 7, 1, 9, 3, 10, 2, 2, 6]
+
+ID 7 and 3 repeat; some IDs are missing in this draw.`,
+    animation: "BootstrapSamplingViz",
+    tool: "TreeEnsembleWorkbench",
+    interviewPrep: {
+      questions: [
+        "What does 'with replacement' mean in bootstrap sampling?",
+        "Why are repeated examples acceptable in a bootstrap dataset?",
+        "How does bootstrap sampling help ensemble diversity?",
+      ],
+      seniorTip: "The key is not 'perfectly representative mini-datasets'; the key is controlled randomness that makes tree errors less correlated.",
+    },
+    flashCards: [
+      { q: "What is bootstrap sampling?", a: "Drawing N samples from N originals with replacement, producing a randomized dataset with repeats and omissions." },
+      { q: "Why replace after each draw?", a: "To keep each draw independent and allow duplicates, which creates useful diversity." },
+      { q: "Does each bootstrap set contain all original rows?", a: "No. Some rows repeat, some are absent." },
+      { q: "Why does bagging need bootstrap sampling?", a: "To train different trees on slightly different datasets so voting is effective." },
+    ],
+  },
+  {
+    slug: "adv-60-random-forest-algorithm",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "Random Forest Algorithm",
+    order: 60,
+    excerpt: "Bagging plus random feature subsets per split yields more diverse trees and stronger aggregate performance.",
+    theory: `<p><strong>Random forest</strong> builds many decision trees and aggregates them. It extends bagging with one critical randomization step: at each split, each tree considers only a random subset of features.</p>
+<p><strong>Pipeline:</strong></p>
+<ol>
+  <li>Create bootstrap sample.</li>
+  <li>Train tree; at each node choose split from random subset of features.</li>
+  <li>Repeat for many trees (<code>B</code> often ~64 to 256).</li>
+  <li>Aggregate by vote/average.</li>
+</ol>
+<p><strong>Why feature subsampling helps:</strong> it prevents all trees from repeatedly selecting the same dominant feature near the root, increasing diversity and reducing correlation between tree errors.</p>
+<p><strong>Tuning levers:</strong> number of trees, max depth, min samples per leaf, max features per split.</p>
+<p><strong>Practical guidance:</strong> increasing tree count usually improves stability until diminishing returns; latency and memory become the limiting factors.</p>`,
+    example: `Random forest setup:
+- 128 trees
+- max_depth = 10
+- max_features = sqrt(num_features)
+
+Outcome: more stable performance than one deep tree, especially on noisy tabular datasets.`,
+    animation: "TreeEnsembleWorkbench",
+    tool: "BootstrapSamplingViz",
+    interviewPrep: {
+      questions: [
+        "What extra randomness does random forest add beyond bagging?",
+        "Why does random feature subsampling improve robustness?",
+        "How do you choose number of trees in practice?",
+      ],
+      seniorTip: "Call out diminishing returns: more trees rarely hurt accuracy, but eventually cost/latency gains flatten. Choose the quality-per-millisecond sweet spot.",
+    },
+    flashCards: [
+      { q: "How is random forest different from plain bagging?", a: "It adds random feature subset selection at each split, not just bootstrap sampling." },
+      { q: "Why use sqrt(N) features per split?", a: "It is a common heuristic that increases tree diversity while preserving split quality." },
+      { q: "What is the main benefit of many trees?", a: "Lower variance and more stable predictions." },
+      { q: "Main cost of larger forests?", a: "Higher training and inference compute plus larger model footprint." },
+    ],
+  },
+  {
+    slug: "adv-61-xgboost",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "XGBoost",
+    order: 61,
+    excerpt: "Boosted trees focus sequentially on hard examples and are often top-performing on structured/tabular tasks.",
+    theory: `<p><strong>XGBoost</strong> is a highly optimized gradient boosting implementation for tree ensembles. Unlike bagging, boosting trains trees sequentially, where each new tree focuses on errors made by earlier trees.</p>
+<p><strong>Intuition:</strong> deliberate practice for models. Instead of treating all samples equally forever, the algorithm increases attention on difficult/misclassified examples.</p>
+<p><strong>Core properties:</strong></p>
+<ul>
+  <li>Sequential residual/error-focused learning.</li>
+  <li>Strong regularization controls to prevent overfitting.</li>
+  <li>Efficient, battle-tested open-source implementation.</li>
+  <li>Works for classification (<code>XGBClassifier</code>) and regression (<code>XGBRegressor</code>).</li>
+</ul>
+<p><strong>Production reality:</strong> XGBoost is frequently competitive or state-of-the-art on tabular datasets and ML competitions, especially when feature engineering is strong.</p>
+<p><strong>Important contrast:</strong> bagging mainly reduces variance in parallel; boosting reduces bias/remaining error sequentially. In many tabular problems boosting wins, but tuning sensitivity is higher.</p>`,
+    example: `Boosting flow:
+1) Train tree #1 on current data.
+2) Identify large residuals / hard examples.
+3) Train tree #2 to correct those errors.
+4) Continue for B rounds and combine trees additively.
+
+Result: each stage targets what previous stages still miss.`,
+    animation: "TreeEnsembleWorkbench",
+    tool: null,
+    interviewPrep: {
+      questions: [
+        "How is boosting different from bagging?",
+        "Why is XGBoost popular in tabular ML competitions?",
+        "When would you choose XGBRegressor over XGBClassifier?",
+      ],
+      seniorTip: "Explain both optimization and systems reasons: boosting improves hard cases sequentially, and XGBoost's engineering (regularization, efficient implementation) makes it production-viable.",
+    },
+    flashCards: [
+      { q: "Bagging vs boosting in one line?", a: "Bagging trains many trees independently and averages; boosting trains sequential trees that correct previous errors." },
+      { q: "Why is XGBoost widely used?", a: "It is fast, regularized, and usually very strong on structured/tabular data." },
+      { q: "What does XGBClassifier solve?", a: "Classification tasks with discrete labels." },
+      { q: "What does XGBRegressor solve?", a: "Regression tasks with continuous numeric targets." },
+    ],
+  },
+  {
+    slug: "adv-62-when-to-use-decision-trees",
+    sectionId: "ml",
+    conceptId: "advanced-learning-algorithms",
+    title: "When to Use Decision Trees",
+    order: 62,
+    excerpt: "Choosing between tree ensembles and neural networks based on data modality, iteration speed, interpretability, and transfer learning needs.",
+    theory: `<p><strong>Model choice is context-dependent.</strong> Decision-tree ensembles and neural networks are both strong, but they shine in different regimes.</p>
+<p><strong>Tree ensembles are often a strong default for:</strong></p>
+<ul>
+  <li>Tabular/structured data (spreadsheet-like features).</li>
+  <li>Fast iteration loops where training speed matters.</li>
+  <li>Teams needing simpler debugging and some interpretability (especially with smaller trees).</li>
+</ul>
+<p><strong>Neural networks are often better for:</strong></p>
+<ul>
+  <li>Unstructured data (image/audio/video/text).</li>
+  <li>Transfer-learning-heavy workflows with pretrained models.</li>
+  <li>Multi-modal and end-to-end representation learning pipelines.</li>
+</ul>
+<p><strong>Important nuance on interpretability:</strong> a small single tree can be readable, but large ensembles are not automatically interpretable in a human-friendly sense.</p>
+<p><strong>Operational decision frame:</strong> choose based on data type, iteration budget, infra constraints, and error-cost profile, then validate empirically on your holdout and production-like slices.</p>`,
+    example: `Selection example:
+- Fraud risk scoring on tabular transaction features -> start with XGBoost / random forest.
+- Product-image quality inspection -> use CNN/vision model (neural network).
+
+If both are plausible on tabular data, benchmark both against latency and reliability targets.`,
+    animation: "ModelSelectionMatrixViz",
+    tool: "TreeEnsembleWorkbench",
+    interviewPrep: {
+      questions: [
+        "When are tree ensembles preferred over neural networks?",
+        "Why do neural networks dominate unstructured-data workloads?",
+        "How does iteration speed influence algorithm choice in real projects?",
+      ],
+      seniorTip: "Best answer combines data modality + system constraints + evaluation loop speed, then validates with benchmark evidence instead of ideology.",
+    },
+    flashCards: [
+      { q: "Best algorithm family for tabular data (common baseline)?", a: "Tree ensembles, especially random forest or XGBoost, are usually strong baselines." },
+      { q: "Best family for unstructured data?", a: "Neural networks are typically preferred for image/audio/video/text." },
+      { q: "Why do teams still pick trees even with deep learning available?", a: "Fast training, strong tabular performance, and practical iteration speed for many business problems." },
+      { q: "Should model family be chosen by intuition alone?", a: "No. Use validation benchmarks, latency constraints, and error-cost analysis to decide." },
     ],
   },
 ];

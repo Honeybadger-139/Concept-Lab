@@ -13,6 +13,7 @@ import { authoredInterviewAnswers } from "./authoredInterviewAnswers.js";
 import { getLangGraphTranscriptDeepeningByOrder } from "./langgraphTranscriptDeepening.js";
 import { getMlTranscriptDeepeningByOrder } from "./mlTranscriptDeepening.js";
 import { topicCodeGuides } from "./topicCodeGuides.js";
+import { urrlNodes } from "./urrlNodes.js";
 
 // ─────────────────────────────────────────────────────────
 // DOMAINS & TRACKS
@@ -80,6 +81,11 @@ const SECTION_DOMAIN_ID = Object.freeze({
 export const mlConcepts = [
   { id: "supervised-learning-algorithms", title: "Supervised Learning Algorithms", order: 1 },
   { id: "advanced-learning-algorithms", title: "Advanced Learning Algorithms", order: 2 },
+  {
+    id: "unsupervised-recommenders-reinforcement-learning",
+    title: "Unsupervised, Recommenders & Reinforcement",
+    order: 3,
+  },
 ];
 
 export const tracks = [
@@ -106,6 +112,18 @@ export const tracks = [
     description:
       "The advanced ML track. It stays transcript-driven as new advanced lessons are added into Concept Lab.",
     order: 2,
+  },
+  {
+    id: "unsupervised-recommenders-reinforcement-learning",
+    domainId: "machine-learning",
+    sectionId: "ml",
+    conceptId: "unsupervised-recommenders-reinforcement-learning",
+    title: "Unsupervised, Recommenders & Reinforcement",
+    emoji: "🧭",
+    color: "#0ea5e9",
+    description:
+      "Clustering and anomaly detection foundations from the URRL sequence, with deep notes and interactive labs.",
+    order: 3,
   },
   {
     id: "rag",
@@ -244,6 +262,19 @@ const ML_CONCEPT_BY_SLUG = {
   "adv-60-random-forest-algorithm": "advanced-learning-algorithms",
   "adv-61-xgboost": "advanced-learning-algorithms",
   "adv-62-when-to-use-decision-trees": "advanced-learning-algorithms",
+  "urrl-01-welcome": "unsupervised-recommenders-reinforcement-learning",
+  "urrl-02-what-is-clustering": "unsupervised-recommenders-reinforcement-learning",
+  "urrl-03-k-means-intuition": "unsupervised-recommenders-reinforcement-learning",
+  "urrl-04-k-means-algorithm": "unsupervised-recommenders-reinforcement-learning",
+  "urrl-05-optimization-objective": "unsupervised-recommenders-reinforcement-learning",
+  "urrl-06-initializing-k-means": "unsupervised-recommenders-reinforcement-learning",
+  "urrl-07-choosing-the-number-of-clusters": "unsupervised-recommenders-reinforcement-learning",
+  "urrl-08-finding-unusual-events": "unsupervised-recommenders-reinforcement-learning",
+  "urrl-09-gaussian-normal-distribution": "unsupervised-recommenders-reinforcement-learning",
+  "urrl-10-anomaly-detection-algorithm": "unsupervised-recommenders-reinforcement-learning",
+  "urrl-11-developing-and-evaluating-an-anomaly-detection-system": "unsupervised-recommenders-reinforcement-learning",
+  "urrl-12-anomaly-detection-vs-supervised-learning": "unsupervised-recommenders-reinforcement-learning",
+  "urrl-13-choosing-what-features-to-use": "unsupervised-recommenders-reinforcement-learning",
 };
 
 // ─────────────────────────────────────────────────────────
@@ -7970,6 +8001,10 @@ const authoredAdvancedNodes = applyTopicCodeGuides(
   applyAuthoredInterviewAnswers(advancedNodes, "ml"),
   "ml"
 );
+const authoredURRLNodes = applyTopicCodeGuides(
+  applyAuthoredInterviewAnswers(urrlNodes, "ml"),
+  "ml"
+);
 
 // ─────────────────────────────────────────────────────────
 // COMBINED EXPORTS
@@ -7980,6 +8015,7 @@ export const nodes = [
   ...authoredLangchainNodes,
   ...authoredLangGraphNodes,
   ...authoredAdvancedNodes,
+  ...authoredURRLNodes,
 ];
 
 export function getSections() {

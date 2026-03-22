@@ -61,7 +61,7 @@ export default function GaussianDensityAnomalyViz() {
         </svg>
 
         <div style={{ marginTop: "0.68rem", fontSize: "0.8rem", color: t.labelMid }}>
-          <b>p(x_test) = {density.toFixed(4)}</b> and epsilon = {epsilon.toFixed(3)} ->{" "}
+          <b>p(x_test) = {density.toFixed(4)}</b> and epsilon = {epsilon.toFixed(3)}{" -> "}
           <b style={{ color: flagged ? "#ef4444" : "#22c55e" }}>{flagged ? "flag anomaly" : "normal"}</b>
         </div>
       </div>

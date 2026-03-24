@@ -269,12 +269,18 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]</code></pre>
   <li><strong>Smaller rebuild loops:</strong> changing one application file should not reinstall the whole runtime stack unnecessarily.</li>
   <li><strong>Cleaner production images:</strong> keep build tools out of the final runtime when possible.</li>
 </ul>
+<h3>Architecture Flow For Build Pipelines</h3>
+<ul>
+  <li><strong>Layer boundary design:</strong> put volatile files (source code) after stable files (dependency manifests).</li>
+  <li><strong>CI throughput impact:</strong> cache-friendly Dockerfiles shorten rebuild time for every pull request, not just local development.</li>
+  <li><strong>Release reliability:</strong> deterministic build ordering reduces "works locally but rebuild failed in CI" surprises.</li>
+</ul>
 <p><strong>For data science workloads, the base image choice is strategic.</strong> CPU-only inference, notebook experimentation, model training, and GPU serving may all need different bases. The principle stays the same: define the runtime explicitly, cache expensive steps intelligently, and avoid baking mutable secrets or large local datasets into the image.</p>
 <p><strong>Production note:</strong> even if the transcript focuses on single-stage builds, you should know that multi-stage builds are a common extension. They let you separate build tooling from the final runtime artifact, which improves security and image size.</p>`,
     example:
       "For a model-serving FastAPI app, copying `requirements.txt` before the rest of the code prevents full dependency reinstalls every time you change one API route.",
-    animation: "DockerArchitectureViz",
-    tool: "DockerCommandWorkbench",
+    animation: "DockerLayerCacheLab",
+    tool: "DockerLayerCacheLab",
     interviewPrep: buildInterviewPrep(
       [
         "Why does Dockerfile instruction order affect build performance?",
@@ -435,11 +441,17 @@ docker run -d --name postgres --network my-app-net postgres:16</code></pre>
   <li><strong>Container -> container:</strong> usually via a shared Docker network.</li>
   <li><strong>Host -> container:</strong> usually via published ports.</li>
   <li><strong>Container -> internet or external systems:</strong> controlled by Docker networking plus the host environment.</li>
+</ul>
+<h3>Architecture Flow For Connectivity Debugging</h3>
+<ul>
+  <li><strong>Step 1:</strong> validate host-to-service path (published port + listener).</li>
+  <li><strong>Step 2:</strong> validate service-to-dependency path (same network + correct hostname).</li>
+  <li><strong>Step 3:</strong> validate dependency health (DB/cache/vector-store actually reachable).</li>
 </ul>`,
     example:
       "A retrieval system may run an embedding API, Postgres, and a vector database in separate containers on one custom bridge network so each service can talk to the others by name.",
-    animation: "DockerArchitectureViz",
-    tool: "DockerCommandWorkbench",
+    animation: "DockerNetworkFlowLab",
+    tool: "DockerNetworkFlowLab",
     interviewPrep: buildInterviewPrep(
       [
         "Why are custom bridge networks often better than relying on the default bridge?",
@@ -481,11 +493,23 @@ docker run -d --name postgres --network my-app-net postgres:16</code></pre>
 <pre><code>notebook / training job -> packaged image -> validated container ->
 Compose stack for local integration -> pushed image ->
 model-serving API deployment with versioned rollback path</code></pre>
+<h3>Architecture Flow For Model-Serving Delivery</h3>
+<ul>
+  <li><strong>Build lane:</strong> write Dockerfile, build image, run local smoke tests, and capture tag metadata (commit + model version).</li>
+  <li><strong>Validation lane:</strong> run CI checks, ensure dependency reachability, and verify runtime config contract before promotion.</li>
+  <li><strong>Release lane:</strong> push immutable tags to registry, promote to staging, then production with rollback-ready previous tag.</li>
+</ul>
+<h3>Interaction Examples You Should Be Able To Explain</h3>
+<ul>
+  <li><strong>Config drift incident:</strong> container is up, but API fails due to wrong DB host environment variable.</li>
+  <li><strong>Dependency outage incident:</strong> service endpoint responds slowly because cache/vector-store connection is failing.</li>
+  <li><strong>Model drift incident:</strong> image deploys successfully but serves an older model artifact due to weak version pinning.</li>
+</ul>
 <p><strong>That is the real value of Docker:</strong> it turns runtime assumptions into versioned engineering assets.</p>
 <p><strong>Cheat sheet usage tip:</strong> use the PDF for command recall, and use the topic pages in this Docker section for deeper reasoning, tradeoffs, and architectural understanding.</p>`,
     example:
       "Before shipping a new inference service, a team can rehearse the whole path locally: build the image, run the API, connect it to a database through Compose, mount persistent state if needed, and then promote the same image tag to a registry.",
-    animation: "DockerCheatSheetPanel",
+    animation: "DockerMlOpsPipelineStudio",
     tool: "DockerCheatSheetPanel",
     interviewPrep: buildInterviewPrep(
       [

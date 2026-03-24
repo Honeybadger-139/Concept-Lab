@@ -112,6 +112,9 @@ const ComponentMap = {
   DockerArchitectureViz:    withLoader(() => import("@/components/DockerArchitectureViz")),
   DockerCommandWorkbench:   withLoader(() => import("@/components/DockerCommandWorkbench")),
   DockerCheatSheetPanel:    withLoader(() => import("@/components/DockerCheatSheetPanel")),
+  DockerLayerCacheLab:      withLoader(() => import("@/components/DockerLayerCacheLab")),
+  DockerNetworkFlowLab:     withLoader(() => import("@/components/DockerNetworkFlowLab")),
+  DockerMlOpsPipelineStudio: withLoader(() => import("@/components/DockerMlOpsPipelineStudio")),
   // ML visualizations
   MLLearningSpectrumViz:    withLoader(() => import("@/components/MLLearningSpectrumViz")),
   MLProblemFramingTool:     withLoader(() => import("@/components/MLProblemFramingTool")),
@@ -155,6 +158,12 @@ const THEORY_POLISH_NOTES = {
       "Think in state transitions, not giant prompts. Keep node responsibilities small and route logic deterministic so each step is easy to reason about.",
     production:
       "Bound autonomy with loop limits, tool policies, and checkpoints. Capture route decisions and state snapshots for replay and incident analysis.",
+  },
+  docker: {
+    beginner:
+      "Learn Docker as a systems flow, not a command list: image design, container runtime, storage, networking, and orchestration each solve a different problem.",
+    production:
+      "Treat containers as release artifacts with runtime contracts: version tags, explicit config, health checks, dependency connectivity, and rollback strategy.",
   },
   ml: {
     beginner:

@@ -115,6 +115,9 @@ const ComponentMap = {
   DockerLayerCacheLab:      withLoader(() => import("@/components/DockerLayerCacheLab")),
   DockerNetworkFlowLab:     withLoader(() => import("@/components/DockerNetworkFlowLab")),
   DockerMlOpsPipelineStudio: withLoader(() => import("@/components/DockerMlOpsPipelineStudio")),
+  DockerInstallReadinessLab: withLoader(() => import("@/components/DockerInstallReadinessLab")),
+  DockerReleaseFlowLab:      withLoader(() => import("@/components/DockerReleaseFlowLab")),
+  DockerCourseTimelineStudio: withLoader(() => import("@/components/DockerCourseTimelineStudio")),
   // ML visualizations
   MLLearningSpectrumViz:    withLoader(() => import("@/components/MLLearningSpectrumViz")),
   MLProblemFramingTool:     withLoader(() => import("@/components/MLProblemFramingTool")),

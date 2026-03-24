@@ -121,7 +121,7 @@ export default function DockerReleaseFlowLab() {
         </div>
 
         <div style={{ fontSize: "0.74rem", color: "var(--text-tertiary)" }}>
-          Promotion sequence: build -> tag -> push -> staging verify -> production deploy -> fallback to previous stable tag if needed.
+          Promotion sequence: build {"->"} tag {"->"} push {"->"} staging verify {"->"} production deploy {"->"} fallback to previous stable tag if needed.
         </div>
       </div>
     </div>

@@ -190,7 +190,7 @@ export default function DockerMlOpsPipelineStudio() {
             Promotion Path
           </div>
           <div style={{ fontSize: "0.78rem", color: "var(--text-secondary)" }}>
-            local -> CI -> registry -> staging -> production
+            local {"->"} CI {"->"} registry {"->"} staging {"->"} production
           </div>
         </div>
         <div>

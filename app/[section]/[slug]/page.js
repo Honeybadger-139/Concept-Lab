@@ -108,6 +108,10 @@ const ComponentMap = {
   LangChainMemoryFlowViz:   withLoader(() => import("@/components/LangChainMemoryFlowViz")),
   ChainExecutionTimelineLab: withLoader(() => import("@/components/ChainExecutionTimelineLab")),
   LangChainPromptFlowLab:   withLoader(() => import("@/components/LangChainPromptFlowLab")),
+  // Docker visualizations
+  DockerArchitectureViz:    withLoader(() => import("@/components/DockerArchitectureViz")),
+  DockerCommandWorkbench:   withLoader(() => import("@/components/DockerCommandWorkbench")),
+  DockerCheatSheetPanel:    withLoader(() => import("@/components/DockerCheatSheetPanel")),
   // ML visualizations
   MLLearningSpectrumViz:    withLoader(() => import("@/components/MLLearningSpectrumViz")),
   MLProblemFramingTool:     withLoader(() => import("@/components/MLProblemFramingTool")),
@@ -121,6 +125,7 @@ const SECTION_META = {
   rag:       { color: "#f97316", emoji: "🔍" },
   langchain: { color: "#10b981", emoji: "⛓️" },
   langgraph: { color: "#8b5cf6", emoji: "🕸️" },
+  docker:    { color: "#06b6d4", emoji: "🐳" },
 };
 
 // Rough reading-time estimate from HTML string

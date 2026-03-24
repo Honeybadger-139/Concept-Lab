@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import {
   getDomain,
   getDomains,
-  getNodesByTrack,
+  getTrackTopicCount,
   getTrackHref,
   getTracksByDomain,
 } from "@/data/curriculumData";
@@ -28,7 +28,7 @@ export default async function DomainPage({ params }) {
   if (!currentDomain) notFound();
 
   const tracks = getTracksByDomain(domain);
-  const topicCount = tracks.reduce((acc, track) => acc + getNodesByTrack(track.id).length, 0);
+  const topicCount = tracks.reduce((acc, track) => acc + getTrackTopicCount(track.id), 0);
 
   return (
     <main className={styles.main}>
@@ -56,7 +56,6 @@ export default async function DomainPage({ params }) {
 
         <div className={styles.grid}>
           {tracks.map((track) => {
-            const trackTopics = getNodesByTrack(track.id);
             return (
               <Link
                 key={track.id}
@@ -68,7 +67,7 @@ export default async function DomainPage({ params }) {
                 <h2 className={styles.cardTitle}>{track.title}</h2>
                 <p className={styles.cardDesc}>{track.description}</p>
                 <div className={styles.cardFooter}>
-                  <span className={styles.nodeCount}>{trackTopics.length} topics</span>
+                  <span className={styles.nodeCount}>{getTrackTopicCount(track.id)} topics</span>
                   <span className={styles.cardArrow}>→</span>
                 </div>
               </Link>

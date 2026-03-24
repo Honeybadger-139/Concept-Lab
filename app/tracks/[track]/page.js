@@ -2,8 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   getDomain,
-  getNodesByTrack,
-  getNodesByTrackGrouped,
+  getNodeCardModelsByTrack,
+  getNodeCardModelsByTrackGrouped,
   getTrack,
   tracks,
 } from "@/data/curriculumData";
@@ -29,8 +29,8 @@ export default async function TrackPage({ params }) {
   if (!currentTrack) notFound();
 
   const currentDomain = getDomain(currentTrack.domainId);
-  const nodes = getNodesByTrack(track);
-  const grouped = getNodesByTrackGrouped(track);
+  const nodes = getNodeCardModelsByTrack(track);
+  const grouped = getNodeCardModelsByTrackGrouped(track);
 
   return (
     <main className={styles.main}>

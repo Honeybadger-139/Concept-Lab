@@ -2,8 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   getDomainForSection,
-  getNodesBySection,
-  getNodesBySectionGroupedByConcept,
+  getNodeCardModelsBySection,
+  getNodeCardModelsBySectionGroupedByConcept,
   getSection,
   sections,
 } from "@/data/curriculumData";
@@ -30,8 +30,8 @@ export default async function SectionPage({ params }) {
   if (!sec) notFound();
   const domain = getDomainForSection(section);
 
-  const nodes = getNodesBySection(section);
-  const grouped = getNodesBySectionGroupedByConcept(section);
+  const nodes = getNodeCardModelsBySection(section);
+  const grouped = getNodeCardModelsBySectionGroupedByConcept(section);
 
   return (
     <main className={styles.main}>

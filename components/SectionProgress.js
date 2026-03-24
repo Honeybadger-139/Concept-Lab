@@ -13,6 +13,9 @@ import { useMemo, useState } from "react";
 import styles from "./SectionProgress.module.css";
 
 function estimateNodeMinutes(node) {
+  if (typeof node?.estimatedMinutes === "number" && Number.isFinite(node.estimatedMinutes)) {
+    return Math.max(2, Math.round(node.estimatedMinutes));
+  }
   const content = `${node?.excerpt ?? ""} ${String(node?.theory ?? "").replace(/<[^>]+>/g, " ")}`.trim();
   const words = content ? content.split(/\s+/).length : 0;
   return Math.max(2, Math.round(words / 180));

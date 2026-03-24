@@ -10,6 +10,7 @@
  *   2. Create a new node array and spread it into `nodes` at the bottom.
  */
 import { authoredInterviewAnswers } from "./authoredInterviewAnswers.js";
+import { dockerNodes } from "./dockerNodes.js";
 import { getLangGraphTranscriptDeepeningByOrder } from "./langgraphTranscriptDeepening.js";
 import { getMlTranscriptDeepeningByOrder } from "./mlTranscriptDeepening.js";
 import { topicCodeGuides } from "./topicCodeGuides.js";
@@ -34,7 +35,7 @@ export const domains = [
     emoji: "🛠️",
     color: "#10b981",
     description:
-      "RAG, LangChain, and LangGraph organized as separate learning tracks under one systems-focused domain.",
+      "RAG, LangChain, LangGraph, and Docker organized as separate learning tracks under one systems-focused domain.",
     order: 2,
   },
 ];
@@ -68,6 +69,13 @@ export const sections = [
       "Building LLM-powered applications with LangChain: chat models, prompt templates, chains, memory, and connecting to real data sources.",
     order: 4,
   },
+  {
+    id: "docker",
+    title: "Docker",
+    description:
+      "Containerization foundations: images, containers, Dockerfiles, Compose, volumes, networking, and deployment-oriented troubleshooting.",
+    order: 5,
+  },
 ];
 
 const SECTION_DOMAIN_ID = Object.freeze({
@@ -75,6 +83,7 @@ const SECTION_DOMAIN_ID = Object.freeze({
   rag: "ai-engineering",
   langgraph: "ai-engineering",
   langchain: "ai-engineering",
+  docker: "ai-engineering",
 });
 
 // ML concept folders (used when sectionId === "ml")
@@ -157,6 +166,17 @@ export const tracks = [
     description:
       "State graphs, agent loops, HITL, RAG agents, multi-agent systems, and streaming workflows.",
     order: 3,
+  },
+  {
+    id: "docker",
+    domainId: "ai-engineering",
+    sectionId: "docker",
+    title: "Docker",
+    emoji: "🐳",
+    color: "#06b6d4",
+    description:
+      "Transcript-derived Docker fundamentals, from images and containers to Compose, volumes, networking, and reproducible delivery.",
+    order: 4,
   },
 ];
 
@@ -8005,6 +8025,10 @@ const authoredURRLNodes = applyTopicCodeGuides(
   applyAuthoredInterviewAnswers(urrlNodes, "ml"),
   "ml"
 );
+const authoredDockerNodes = applyTopicCodeGuides(
+  applyAuthoredInterviewAnswers(dockerNodes, "docker"),
+  "docker"
+);
 
 // ─────────────────────────────────────────────────────────
 // COMBINED EXPORTS
@@ -8016,6 +8040,7 @@ export const nodes = [
   ...authoredLangGraphNodes,
   ...authoredAdvancedNodes,
   ...authoredURRLNodes,
+  ...authoredDockerNodes,
 ];
 
 export function getSections() {
@@ -8071,11 +8096,53 @@ export function getNodesByTrack(trackId) {
   });
 }
 
+function buildNodeCardModel(node) {
+  const content = `${node?.excerpt ?? ""} ${String(node?.theory ?? "").replace(/<[^>]+>/g, " ")}`.trim();
+  const words = content ? content.split(/\s+/).length : 0;
+
+  return {
+    slug: node.slug,
+    order: node.order,
+    title: node.title,
+    excerpt: node.excerpt,
+    animation: node.animation,
+    tool: node.tool,
+    conceptId: node.conceptId ?? null,
+    estimatedMinutes: Math.max(2, Math.round(words / 180)),
+  };
+}
+
+export function getNodeCardModelsBySection(sectionId) {
+  return getNodesBySection(sectionId).map(buildNodeCardModel);
+}
+
+export function getNodeCardModelsByTrack(trackId) {
+  return getNodesByTrack(trackId).map(buildNodeCardModel);
+}
+
 export function getNodesByTrackGrouped(trackId) {
   const track = getTrack(trackId);
   if (!track) return [];
 
   const trackNodes = getNodesByTrack(trackId);
+  if (!track.conceptId) {
+    return [{ conceptId: null, conceptTitle: null, nodes: trackNodes }];
+  }
+
+  return [
+    {
+      conceptId: track.conceptId,
+      conceptTitle: track.title,
+      nodes: trackNodes,
+    },
+  ];
+}
+
+export function getNodeCardModelsByTrackGrouped(trackId) {
+  const track = getTrack(trackId);
+  if (!track) return [];
+
+  const trackNodes = getNodeCardModelsByTrack(trackId);
   if (!track.conceptId) {
     return [{ conceptId: null, conceptTitle: null, nodes: trackNodes }];
   }
@@ -8122,4 +8189,16 @@ export function getNodesBySectionGroupedByConcept(sectionId) {
   });
 
   return groups;
+}
+
+export function getNodeCardModelsBySectionGroupedByConcept(sectionId) {
+  const grouped = getNodesBySectionGroupedByConcept(sectionId);
+  return grouped.map((group) => ({
+    ...group,
+    nodes: group.nodes.map(buildNodeCardModel),
+  }));
+}
+
+export function getTrackTopicCount(trackId) {
+  return getNodesByTrack(trackId).length;
 }

@@ -130,8 +130,18 @@ function toSafeText(value) {
   return String(value ?? "").replace(/\s+/g, " ").trim();
 }
 
+function decodeHtmlEntities(value) {
+  return String(value ?? "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&quot;/gi, '"')
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">");
+}
+
 function stripHtmlTags(value) {
-  return String(value ?? "").replace(/<[^>]+>/g, " ");
+  return decodeHtmlEntities(String(value ?? "").replace(/<[^>]+>/g, " "));
 }
 
 function stripTimeMarkers(value) {
@@ -160,7 +170,7 @@ function normalizeTextbookLanguage(value) {
 }
 
 function sanitizePlainText(value) {
-  return toSafeText(normalizeTextbookLanguage(stripTimeMarkers(value)));
+  return toSafeText(normalizeTextbookLanguage(stripTimeMarkers(decodeHtmlEntities(value))));
 }
 
 function sanitizeHtmlText(value) {
@@ -194,6 +204,131 @@ function chunkTextFallback(text, chunkSize = 260, step = 210) {
     chunks.push(slice);
   }
   return chunks.slice(0, 120);
+}
+
+function extractTagTexts(html, tagName) {
+  const text = String(html ?? "");
+  const regex = new RegExp(`<${tagName}[^>]*>([\\s\\S]*?)<\\/${tagName}>`, "gi");
+  const out = [];
+  let match;
+  while ((match = regex.exec(text)) !== null) {
+    out.push(stripHtmlTags(match[1]));
+  }
+  return out;
+}
+
+function isCoveragePointUsable(value) {
+  const text = sanitizePlainText(value);
+  if (!text) return false;
+  if (!/^[A-Z0-9]/.test(text)) return false;
+  if (text.length < 45 || text.length > 240) return false;
+  const words = text.split(/\s+/).length;
+  if (words < 8 || words > 42) return false;
+  if (/[\u0900-\u097F]/.test(text)) return false;
+  if (!/[a-zA-Z]/.test(text)) return false;
+  const latinCount = (text.match(/[a-zA-Z]/g) ?? []).length;
+  if (latinCount / text.length < 0.45) return false;
+  if (/\?/.test(text)) return false;
+  if (/^(and|so|well|now|today|alright|okay|thus|then|finally|next|let'?s)\b/i.test(text)) return false;
+  if (/\b(i|me|my|mine|myself|you|your|yours|yourself|i'm|i've|i'll|you'll|you're|you've)\b/i.test(text)) return false;
+  if (
+    /\b(source-backed reinforcement|source note|session source note|in this class|in this topic|in this course|in this module|in this video|next video|previous video|last video|next topic|next section|watching|video streaming|video|videos|timestamp|prompt \d+)\b/i.test(
+      text
+    )
+  ) {
+    return false;
+  }
+  if (
+    /\b(in|during|from)\s+(this|the|previous|last|next)\s+(video|topic|module|section)\b/i.test(
+      text
+    )
+  ) {
+    return false;
+  }
+  if (
+    /\blet'?s\s+(take|look|go|dive|walk|move)\b/i.test(
+      text
+    )
+  ) {
+    return false;
+  }
+  if (/\buh\b|\bright so\b|\bis going to\b.{0,80}\bis going to\b/i.test(text)) return false;
+  if (/(^|\\s)(core concept|architecture diagram|interview-ready deepening)(\\s|:|$)/i.test(text)) return false;
+  if (/->|\\|\\s{2,}|\\b(?:docker\\s+run|docker\\s+build|pip\\s+install)\\b/i.test(text)) return false;
+  return true;
+}
+
+function dedupeCoveragePoints(lines) {
+  const seen = new Set();
+  const out = [];
+  for (const raw of lines) {
+    const cleaned = sanitizePlainText(raw);
+    if (!cleaned) continue;
+    const key = cleaned.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(cleaned);
+  }
+  return out;
+}
+
+function buildTheoryCoverageCandidates(node) {
+  const theoryHtml = sanitizeHtmlText(node?.theory ?? "");
+  const listItems = extractTagTexts(theoryHtml, "li");
+  const paragraphTexts = extractTagTexts(theoryHtml, "p");
+  const paragraphSentences = paragraphTexts.flatMap((paragraph) => splitSentences(paragraph));
+
+  const seed = [
+    ...listItems,
+    ...paragraphSentences,
+    node?.excerpt ?? "",
+    node?.example ?? "",
+  ];
+
+  return dedupeCoveragePoints(seed).filter(isCoveragePointUsable);
+}
+
+function buildCoveragePoints(node, cleanedTranscript) {
+  const topicTerms = inferTopicTerms(node);
+  const theoryCandidates = buildTheoryCoverageCandidates(node)
+    .map((sentence, index) => ({
+      sentence,
+      index,
+      score: scoreSentence(sentence, topicTerms) + 3,
+    }))
+    .sort((a, b) => b.score - a.score || a.index - b.index)
+    .map((row) => row.sentence);
+
+  const transcriptCandidates = splitSentences(cleanedTranscript)
+    .map((sentence) => sanitizePlainText(sentence))
+    .filter(isCoveragePointUsable)
+    .map((sentence, index) => ({
+      sentence,
+      index,
+      score: scoreSentence(sentence, topicTerms),
+    }))
+    .filter((row) => row.score >= 4)
+    .sort((a, b) => b.score - a.score || a.index - b.index)
+    .map((row) => row.sentence);
+
+  const merged = dedupeCoveragePoints([
+    ...theoryCandidates.slice(0, 20),
+    ...transcriptCandidates.slice(0, 10),
+  ]);
+
+  if (merged.length >= 10) return merged.slice(0, 24);
+
+  const fallback = dedupeCoveragePoints([
+    ...merged,
+    ...inferTradeoffs(node),
+    sanitizePlainText(node?.excerpt ?? ""),
+    sanitizePlainText(
+      `${sanitizePlainText(node?.title ?? "")}: ${sanitizePlainText(node?.example ?? "")}`
+    ),
+    ...splitSentences(stripHtmlTags(node?.theory ?? "")).map((line) => sanitizePlainText(line)),
+  ]).filter(isCoveragePointUsable);
+
+  return fallback.slice(0, 24);
 }
 
 function cleanTranscript(raw) {
@@ -868,14 +1003,7 @@ function buildInteractiveSessions(node, architectureFlow) {
 function buildTranscriptInsights(trackId, node) {
   const transcript = findTranscriptForNode(trackId, node);
   if (!transcript) {
-    const fallbackSource = sanitizePlainText(
-      `${stripHtmlTags(node.theory ?? "")} ${node.excerpt ?? ""} ${node.example ?? ""}`
-    );
-    const fallbackCandidates = splitSentences(fallbackSource);
-    const fallbackCoverage = (fallbackCandidates.length > 0
-      ? fallbackCandidates
-      : chunkTextFallback(fallbackSource)
-    ).slice(0, 40);
+    const fallbackCoverage = buildCoveragePoints(node, "");
     const topicTerms = inferTopicTerms(node);
     const fallbackHighlights = fallbackCoverage
       .map((sentence, index) => ({
@@ -900,11 +1028,7 @@ function buildTranscriptInsights(trackId, node) {
 
   const raw = fs.readFileSync(transcript.path, "utf8");
   const cleaned = cleanTranscript(raw);
-  const sentenceCandidates = splitSentences(cleaned);
-  const coveragePoints = (sentenceCandidates.length > 0
-    ? sentenceCandidates
-    : chunkTextFallback(cleaned)
-  ).slice(0, 80);
+  const coveragePoints = buildCoveragePoints(node, cleaned);
   const topicTerms = inferTopicTerms(node);
   const highlights = coveragePoints
     .map((sentence, index) => ({
@@ -916,12 +1040,15 @@ function buildTranscriptInsights(trackId, node) {
     .slice(0, 8)
     .map((row) => sanitizePlainText(row.sentence));
 
+  const normalizedCoverage = coveragePoints.map((line) => sanitizePlainText(line));
+  const safeHighlights = highlights.length > 0 ? highlights : normalizedCoverage.slice(0, 4);
+
   return {
     sourcePath: path.relative(ROOT, transcript.path),
-    highlights,
-    coveragePoints: coveragePoints.map((line) => sanitizePlainText(line)),
+    highlights: safeHighlights,
+    coveragePoints: normalizedCoverage,
     cleanedTranscript: cleaned,
-    deepTheoryHtml: buildInterviewReadyTheory(node, highlights),
+    deepTheoryHtml: buildInterviewReadyTheory(node, safeHighlights),
   };
 }
 

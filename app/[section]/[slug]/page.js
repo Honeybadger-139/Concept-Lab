@@ -137,15 +137,6 @@ const SECTION_META = {
   docker:    { color: "#06b6d4", emoji: "🐳" },
 };
 
-// Rough reading-time estimate from HTML string
-function readingTime(html) {
-  if (!html) return null;
-  const text = html.replace(/<[^>]+>/g, " ");
-  const words = text.trim().split(/\s+/).length;
-  const mins = Math.max(1, Math.ceil(words / 200));
-  return `${mins} min read`;
-}
-
 const THEORY_POLISH_NOTES = {
   rag: {
     beginner:
@@ -360,7 +351,6 @@ export default async function NodePage({ params, searchParams }) {
   const nextNode       = currentIndex < activeNodes.length - 1 ? activeNodes[currentIndex + 1] : null;
   const meta           = SECTION_META[section] || { color: "#d97706", emoji: "📚" };
   const polishedTheory = getPolishedTheory(section, node);
-  const rt             = readingTime(polishedTheory);
   const topicHref = buildTopicHref(section, slug, activeTrack?.id ?? null);
   const backHref = activeTrack ? getTrackHref(activeTrack.id) : `/${section}`;
   const backLabel = activeTrack ? activeTrack.title : sec.title;
@@ -409,7 +399,6 @@ export default async function NodePage({ params, searchParams }) {
             <h1>{node.title}</h1>
             <div className={styles.headerMeta}>
               <p className={styles.excerpt}>{node.excerpt}</p>
-              {rt && <span className={styles.readingTime}>📖 {rt}</span>}
             </div>
           </header>
 

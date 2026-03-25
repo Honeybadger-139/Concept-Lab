@@ -12,15 +12,6 @@ import { useProgress } from "@/hooks/useProgress";
 import { useMemo, useState } from "react";
 import styles from "./SectionProgress.module.css";
 
-function estimateNodeMinutes(node) {
-  if (typeof node?.estimatedMinutes === "number" && Number.isFinite(node.estimatedMinutes)) {
-    return Math.max(2, Math.round(node.estimatedMinutes));
-  }
-  const content = `${node?.excerpt ?? ""} ${String(node?.theory ?? "").replace(/<[^>]+>/g, " ")}`.trim();
-  const words = content ? content.split(/\s+/).length : 0;
-  return Math.max(2, Math.round(words / 180));
-}
-
 function detectNodeMode(node) {
   if (node?.tool && node?.animation) return "Lab";
   if (node?.tool || node?.animation) return "Interactive";
@@ -29,7 +20,6 @@ function detectNodeMode(node) {
 
 function NodeCard({ sectionId, node, isVisited, topicHref }) {
   const done = isVisited(sectionId, node.slug);
-  const estMins = estimateNodeMinutes(node);
   const mode = detectNodeMode(node);
 
   return (
@@ -47,7 +37,6 @@ function NodeCard({ sectionId, node, isVisited, topicHref }) {
       <p className={styles.cardExcerpt}>{node.excerpt}</p>
       <div className={styles.cardMetaRow}>
         <span className={styles.metaChip}>{mode}</span>
-        <span className={styles.metaChip}>{estMins} min</span>
       </div>
     </Link>
   );
@@ -62,9 +51,6 @@ export default function SectionProgress({ sectionId, nodes, groupedByConcept, tr
   const visitedCount = nodes.filter((n) => isVisited(sectionId, n.slug)).length;
   const total = nodes.length;
   const pct = total === 0 ? 0 : Math.round((visitedCount / total) * 100);
-  const remainingMinutes = nodes
-    .filter((n) => !isVisited(sectionId, n.slug))
-    .reduce((acc, n) => acc + estimateNodeMinutes(n), 0);
 
   const hasConceptFolders = groupedByConcept?.length > 0 && groupedByConcept[0].conceptTitle;
   const matchesFilters = (node) => {
@@ -108,7 +94,7 @@ export default function SectionProgress({ sectionId, nodes, groupedByConcept, tr
         <div className={styles.trackFill} style={{ width: `${pct}%` }} />
       </div>
       <div className={styles.progressMeta}>
-        <span>{remainingMinutes} min remaining</span>
+        <span>{total - visitedCount} remaining</span>
         <span>Showing {filteredNodes.length} of {total} nodes</span>
       </div>
 
@@ -145,10 +131,7 @@ export default function SectionProgress({ sectionId, nodes, groupedByConcept, tr
                 <div className={styles.conceptHeadingRow}>
                   <h3 className={styles.conceptHeading}>{conceptTitle}</h3>
                   <span className={styles.conceptSummary}>
-                    {groupNodes.filter((node) => isVisited(sectionId, node.slug)).length}/{groupNodes.length} done • {" "}
-                    {groupNodes
-                      .filter((node) => !isVisited(sectionId, node.slug))
-                      .reduce((acc, node) => acc + estimateNodeMinutes(node), 0)} min left
+                    {groupNodes.filter((node) => isVisited(sectionId, node.slug)).length}/{groupNodes.length} done
                   </span>
                 </div>
               )}

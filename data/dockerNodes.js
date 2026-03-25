@@ -21,8 +21,8 @@ export const dockerNodes = [
     order: 1,
     title: "Introduction to Docker",
     excerpt:
-      "Timestamp 00:01:40. Foundations: what Docker is, why it became essential, and how it fixes environment drift in teams.",
-    theory: `<p><strong>Transcript anchor (00:01:40):</strong> the lecture starts with a realistic team problem: code is same, environment is not. One machine uses Node 16 + MongoDB 4.2, another machine uses newer versions, and behavior diverges.</p>
+      "Foundations: what Docker is, why it became essential, and how it fixes environment drift in teams.",
+    theory: `<p><strong>Core concept:</strong> this topic starts with a realistic team problem: code is same, environment is not. One machine uses Node 16 + MongoDB 4.2, another machine uses newer versions, and behavior diverges.</p>
 <p><strong>Docker's core contribution is runtime standardization.</strong> Instead of sharing instructions and hoping each machine reproduces them correctly, we package runtime assumptions into image artifacts and run containers from those artifacts.</p>
 <h3>Architecture Diagram</h3>
 <pre><code>Without Docker:
@@ -36,9 +36,9 @@ source code + Dockerfile -> image artifact -> container runtime (dev/CI/prod par
   <li><strong>Portability:</strong> same image can be promoted across environments with fewer surprises.</li>
   <li><strong>Operational clarity:</strong> debugging shifts from tribal setup knowledge to explicit runtime metadata.</li>
 </ul>
-<h3>Transcript Coverage in This Segment</h3>
+<h3>Coverage in This Segment</h3>
 <ul>
-  <li>The lecture starts from a team drift scenario and motivates Docker with real environment mismatch pain.</li>
+  <li>The topic starts from a team drift scenario and motivates Docker with real environment mismatch pain.</li>
   <li>It introduces <strong>container</strong> as the runnable packaged runtime and <strong>image</strong> as the blueprint artifact behind that runtime.</li>
   <li>It also highlights a core practical benefit: different projects can run different dependency versions on the same host via isolated containers.</li>
 </ul>
@@ -73,8 +73,8 @@ source code + Dockerfile -> image artifact -> container runtime (dev/CI/prod par
     order: 2,
     title: "Docker Installation",
     excerpt:
-      "Timestamp 00:14:50. Install and verify Docker correctly so the CLI-daemon pipeline is stable before development begins.",
-    theory: `<p><strong>Transcript anchor (00:14:50):</strong> installation is not just downloading Docker Desktop. The real goal is a healthy CLI-to-daemon execution path.</p>
+      "Install and verify Docker correctly so the CLI-daemon pipeline is stable before development begins.",
+    theory: `<p><strong>Core concept:</strong> installation is not just downloading Docker Desktop. The real goal is a healthy CLI-to-daemon execution path.</p>
 <p><strong>Docker execution model:</strong> CLI issues commands, daemon executes build/run/network/storage operations. If daemon permissions or virtualization support are broken, all workflows fail later.</p>
 <h3>Architecture Diagram</h3>
 <pre><code>Terminal command (docker ...)
@@ -122,8 +122,8 @@ docker run hello-world</code></pre>
     order: 3,
     title: "Docker Commands",
     excerpt:
-      "Timestamp 00:21:00. Operational command fluency for image lifecycle, container lifecycle, and runtime diagnostics.",
-    theory: `<p><strong>Transcript anchor (00:21:00):</strong> command literacy is the practical backbone of Docker usage.</p>
+      "Operational command fluency for image lifecycle, container lifecycle, and runtime diagnostics.",
+    theory: `<p><strong>Core concept:</strong> command literacy is the practical backbone of Docker usage.</p>
 <p><strong>Theory lens:</strong> commands map to object types. Most confusion disappears when you first decide whether you are operating on images, containers, volumes, or networks.</p>
 <h3>Command Groups</h3>
 <ul>
@@ -170,8 +170,8 @@ Debug path: container -> logs/inspect/exec -> root cause</code></pre>
     order: 4,
     title: "Docker Image Layers",
     excerpt:
-      "Timestamp 00:34:13. Layering mechanics, cache invalidation behavior, and performance implications for build pipelines.",
-    theory: `<p><strong>Transcript anchor (00:34:13):</strong> image layering explains why some builds take seconds and others take minutes for tiny code changes.</p>
+      "Layering mechanics, cache invalidation behavior, and performance implications for build pipelines.",
+    theory: `<p><strong>Core concept:</strong> image layering explains why some builds take seconds and others take minutes for tiny code changes.</p>
 <p><strong>Each Dockerfile instruction forms a layer.</strong> Docker reuses unchanged layers. If an early instruction changes, downstream layers rebuild.</p>
 <h3>Architecture Diagram</h3>
 <pre><code>FROM base
@@ -218,8 +218,8 @@ COPY source
     order: 5,
     title: "Port Binding",
     excerpt:
-      "Timestamp 00:37:08. Host-to-container port mapping, listener behavior, and reliable service exposure.",
-    theory: `<p><strong>Transcript anchor (00:37:08):</strong> many Docker issues are not crashes, but reachability failures caused by wrong port mapping or listener configuration.</p>
+      "Host-to-container port mapping, listener behavior, and reliable service exposure.",
+    theory: `<p><strong>Core concept:</strong> many Docker issues are not crashes, but reachability failures caused by wrong port mapping or listener configuration.</p>
 <p><strong>Port binding maps external host traffic to internal container service ports.</strong></p>
 <pre><code>docker run -d --name scoring-api -p 8000:8000 scoring-api:1.0</code></pre>
 <h3>Architecture Diagram</h3>
@@ -262,8 +262,8 @@ COPY source
     order: 6,
     title: "Troubleshoot Commands and Logs",
     excerpt:
-      "Timestamp 00:42:45. Structured troubleshooting workflow using logs, inspect, exec, and dependency validation.",
-    theory: `<p><strong>Transcript anchor (00:42:45):</strong> troubleshooting requires sequence and failure-domain thinking.</p>
+      "Structured troubleshooting workflow using logs, inspect, exec, and dependency validation.",
+    theory: `<p><strong>Core concept:</strong> troubleshooting requires sequence and failure-domain thinking.</p>
 <pre><code>docker ps -a
 docker logs -f service
 docker inspect service
@@ -311,8 +311,8 @@ docker stats</code></pre>
     order: 7,
     title: "Docker vs Virtual Machine",
     excerpt:
-      "Timestamp 00:45:30. Architectural comparison: isolation model, overhead profile, startup behavior, and deployment fit.",
-    theory: `<p><strong>Transcript anchor (00:45:30):</strong> Docker and VMs solve different isolation problems. Containers are not a universal VM replacement.</p>
+      "Architectural comparison: isolation model, overhead profile, startup behavior, and deployment fit.",
+    theory: `<p><strong>Core concept:</strong> Docker and VMs solve different isolation problems. Containers are not a universal VM replacement.</p>
 <h3>Architecture Diagram</h3>
 <pre><code>VM stack:
 app + libs + guest OS + hypervisor
@@ -355,8 +355,8 @@ app + libs + shared host kernel primitives</code></pre>
     order: 8,
     title: "Developing with Docker",
     excerpt:
-      "Timestamp 00:48:43. Practical local development loops with containers, mounts, env config, and service parity.",
-    theory: `<p><strong>Transcript anchor (00:48:43):</strong> Docker is a daily development workflow tool, not only a deployment tool.</p>
+      "Practical local development loops with containers, mounts, env config, and service parity.",
+    theory: `<p><strong>Core concept:</strong> Docker is a daily development workflow tool, not only a deployment tool.</p>
 <p><strong>Goal:</strong> make local dev environment reproducible while preserving fast edit-run-debug cycles.</p>
 <h3>Architecture Diagram</h3>
 <pre><code>Host source code (bind mount)
@@ -399,8 +399,8 @@ app + libs + shared host kernel primitives</code></pre>
     order: 9,
     title: "Docker Compose",
     excerpt:
-      "Timestamp 01:07:17. Declarative orchestration for multi-container application stacks and dependency coordination.",
-    theory: `<p><strong>Transcript anchor (01:07:17):</strong> real systems are multi-service. Compose captures service topology in a single versioned spec.</p>
+      "Declarative orchestration for multi-container application stacks and dependency coordination.",
+    theory: `<p><strong>Core concept:</strong> real systems are multi-service. Compose captures service topology in a single versioned spec.</p>
 <pre><code>services:
   api:
     build: .
@@ -456,8 +456,8 @@ volumes:
     order: 10,
     title: "Dockerizing Our Application",
     excerpt:
-      "Timestamp 01:20:53. Convert your own app into a robust image with deterministic dependencies and production-ready runtime contract.",
-    theory: `<p><strong>Transcript anchor (01:20:53):</strong> this is the shift from consuming public images to defining your own runtime artifact.</p>
+      "Convert your own app into a robust image with deterministic dependencies and production-ready runtime contract.",
+    theory: `<p><strong>Core concept:</strong> this is the shift from consuming public images to defining your own runtime artifact.</p>
 <h3>Architecture Diagram</h3>
 <pre><code>Application source + dependency manifest
     -> Dockerfile instructions
@@ -502,8 +502,8 @@ volumes:
     order: 11,
     title: "Publishing Images to Docker Hub",
     excerpt:
-      "Timestamp 01:35:00. Registry publishing, tag governance, release promotion, and rollback safety.",
-    theory: `<p><strong>Transcript anchor (01:35:00):</strong> once image is built, distribution through registries enables consistent deployment across environments.</p>
+      "Registry publishing, tag governance, release promotion, and rollback safety.",
+    theory: `<p><strong>Core concept:</strong> once image is built, distribution through registries enables consistent deployment across environments.</p>
 <pre><code>docker build -t fraud-api:1.0 .
 docker tag fraud-api:1.0 yourname/fraud-api:1.0
 docker login
@@ -549,8 +549,8 @@ docker pull yourname/fraud-api:1.0</code></pre>
     order: 12,
     title: "Docker Volumes",
     excerpt:
-      "Timestamp 01:39:40. Persistent storage strategy with named volumes, anonymous volumes, bind mounts, and lifecycle cleanup.",
-    theory: `<p><strong>Transcript anchor (01:39:40):</strong> containers are disposable, but data is not. Volumes keep state independent from container lifecycle.</p>
+      "Persistent storage strategy with named volumes, anonymous volumes, bind mounts, and lifecycle cleanup.",
+    theory: `<p><strong>Core concept:</strong> containers are disposable, but data is not. Volumes keep state independent from container lifecycle.</p>
 <h3>Architecture Diagram</h3>
 <pre><code>Image (immutable runtime)
     + Container (ephemeral process state)
@@ -594,8 +594,8 @@ docker volume prune</code></pre>
     order: 13,
     title: "Docker Networks",
     excerpt:
-      "Timestamp 01:59:45. Networking drivers, custom bridges, host/none behavior, and container communication debugging.",
-    theory: `<p><strong>Transcript anchor (01:59:45):</strong> Docker networking defines traffic boundaries among containers, host, and external systems.</p>
+      "Networking drivers, custom bridges, host/none behavior, and container communication debugging.",
+    theory: `<p><strong>Core concept:</strong> Docker networking defines traffic boundaries among containers, host, and external systems.</p>
 <h3>Driver Types Covered</h3>
 <ul>
   <li><strong>Bridge:</strong> default, isolated container network on single host.</li>
@@ -645,23 +645,23 @@ API container -> optional outbound external services</code></pre>
     order: 14,
     title: "Summary and Docker Cheat Sheet",
     excerpt:
-      "Final revision node: full timeline recap, architecture-level synthesis, and cheat-sheet access for rapid command recall.",
-    theory: `<p><strong>This is the consolidated summary node for the entire lecture flow.</strong> It integrates conceptual understanding, system design, and operational practice from the Hindi transcript into English revision notes.</p>
-<h3>Timeline Recap (as requested)</h3>
+      "Final revision node: full coverage recap, architecture-level synthesis, and cheat-sheet access for rapid command recall.",
+    theory: `<p><strong>This is the consolidated summary node for the entire topic flow.</strong> It integrates conceptual understanding, system design, and operational practice into structured English revision notes.</p>
+<h3>Coverage Recap</h3>
 <ul>
-  <li>00:01:40 Introduction to Docker</li>
-  <li>00:14:50 Docker Installation</li>
-  <li>00:21:00 Docker Commands</li>
-  <li>00:34:13 Docker Image Layers</li>
-  <li>00:37:08 Port Binding</li>
-  <li>00:42:45 Troubleshoot Commands and Logs</li>
-  <li>00:45:30 Docker vs Virtual Machine</li>
-  <li>00:48:43 Developing with Docker</li>
-  <li>01:07:17 Docker Compose</li>
-  <li>01:20:53 Dockerizing Our Application</li>
-  <li>01:35:00 Publishing Images to Docker Hub</li>
-  <li>01:39:40 Docker Volumes</li>
-  <li>01:59:45 Docker Networks</li>
+  <li>Introduction to Docker</li>
+  <li>Docker Installation</li>
+  <li>Docker Commands</li>
+  <li>Docker Image Layers</li>
+  <li>Port Binding</li>
+  <li>Troubleshoot Commands and Logs</li>
+  <li>Docker vs Virtual Machine</li>
+  <li>Developing with Docker</li>
+  <li>Docker Compose</li>
+  <li>Dockerizing Our Application</li>
+  <li>Publishing Images to Docker Hub</li>
+  <li>Docker Volumes</li>
+  <li>Docker Networks</li>
 </ul>
 <h3>Architecture Synthesis</h3>
 <pre><code>Build plane: Dockerfile -> image layers -> tagged artifact
@@ -671,7 +671,7 @@ Release plane: registry promotion -> staging validation -> rollback-ready produc
 <h3>Data Science Deployment Summary</h3>
 <p>For model-centric systems, Docker's biggest value is end-to-end reproducibility: consistent runtime from notebook/prototype to API serving, with traceable versions and reliable rollback controls.</p>
 <p><strong>Cheat sheet:</strong> <a href="${CHEAT_SHEET_URL}" target="_blank" rel="noreferrer">Open Docker Cheat Sheet PDF</a>.</p>
-<p><strong>How to revise:</strong> use this summary node for architecture-level memory, the timeline visual for subsection recall, and the embedded PDF panel for command-level speed recall.</p>`,
+<p><strong>How to revise:</strong> use this summary node for architecture-level memory, the topic map visual for subsection recall, and the embedded PDF panel for command-level speed recall.</p>`,
     example:
       "Before production rollout, validate one full release rehearsal: build tagged image, run local integration with Compose, verify dependency paths, push to registry, test staging, then promote unchanged artifact.",
     animation: "DockerCourseTimelineStudio",

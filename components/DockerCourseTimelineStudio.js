@@ -193,7 +193,7 @@ export default function DockerCourseTimelineStudio() {
   return (
     <div style={{ fontFamily: "var(--font-body)" }}>
       <p style={{ margin: "0 0 0.8rem", fontSize: "0.84rem", color: "var(--text-secondary)" }}>
-        Transcript-aligned Docker journey map with data-science deployment scenarios.
+        Structured Docker journey map with data-science deployment scenarios.
       </p>
 
       <div style={{ display: "flex", gap: "0.45rem", flexWrap: "wrap", marginBottom: "0.75rem" }}>
@@ -235,7 +235,7 @@ export default function DockerCourseTimelineStudio() {
           Choose subsection
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(185px, 1fr))", gap: "0.48rem" }}>
-          {CHAPTERS.map((chapter) => (
+          {CHAPTERS.map((chapter, index) => (
             <button
               key={chapter.id}
               type="button"
@@ -250,7 +250,7 @@ export default function DockerCourseTimelineStudio() {
                 cursor: "pointer",
               }}
             >
-              <div style={{ fontSize: "0.71rem", fontWeight: 800, marginBottom: "0.22rem" }}>{chapter.timestamp}</div>
+              <div style={{ fontSize: "0.71rem", fontWeight: 800, marginBottom: "0.22rem" }}>{`Module ${index + 1}`}</div>
               <div style={{ fontSize: "0.76rem", lineHeight: 1.35 }}>{chapter.title}</div>
             </button>
           ))}
@@ -265,12 +265,10 @@ export default function DockerCourseTimelineStudio() {
           padding: "0.8rem",
         }}
       >
-        <div style={{ fontSize: "0.82rem", color: "#67e8f9", fontWeight: 800, marginBottom: "0.3rem" }}>
-          {active.timestamp} - {active.title}
-        </div>
+        <div style={{ fontSize: "0.82rem", color: "#67e8f9", fontWeight: 800, marginBottom: "0.3rem" }}>{active.title}</div>
 
         <div style={{ fontSize: "0.74rem", color: "var(--text-tertiary)", marginBottom: "0.3rem" }}>
-          Transcript highlights
+          Key learning points
         </div>
         <ul style={{ margin: "0 0 0.62rem", paddingLeft: "1.05rem", color: "var(--text-secondary)", fontSize: "0.78rem", lineHeight: 1.5 }}>
           {active.transcriptFocus.map((point) => (

@@ -9,6 +9,7 @@ import {
   getTrackHref,
   nodes,
 } from "@/data/curriculumData";
+import { getUniversalEnhancement } from "@/data/universalLearningEnhancements";
 import { ADVANCED_TRACK_THEORY_POLISH_BY_ORDER } from "@/data/advancedTrackTheoryPolish";
 import { LANGCHAIN_TRACK_THEORY_POLISH_BY_ORDER } from "@/data/langchainTrackTheoryPolish";
 import styles from "./node.module.css";
@@ -121,6 +122,8 @@ const ComponentMap = {
   // ML visualizations
   MLLearningSpectrumViz:    withLoader(() => import("@/components/MLLearningSpectrumViz")),
   MLProblemFramingTool:     withLoader(() => import("@/components/MLProblemFramingTool")),
+  ArchitectureFlowStudio:   withLoader(() => import("@/components/ArchitectureFlowStudio")),
+  TranscriptCoverageLab:    withLoader(() => import("@/components/TranscriptCoverageLab")),
 };
 
 const FlashCardDeck = withLoader(() => import("@/components/FlashCardDeck"));
@@ -266,6 +269,67 @@ function buildTopicHref(sectionId, slug, trackId) {
   return trackId ? `${base}?track=${trackId}` : base;
 }
 
+function mergeNodeWithEnhancement(node, enhancement) {
+  if (!enhancement) return node;
+
+  const mergedFlashCards = Array.isArray(enhancement.flashCards) && enhancement.flashCards.length > 0
+    ? enhancement.flashCards
+    : node.flashCards;
+
+  const mergedInterviewPrep =
+    Array.isArray(enhancement.interviewPrep?.questions) && enhancement.interviewPrep.questions.length > 0
+      ? enhancement.interviewPrep
+      : node.interviewPrep;
+
+  const preferredAnimation =
+    node.animation ??
+    enhancement.interactiveLayer?.find((item) => item.type === "react-component")?.name ??
+    "ArchitectureFlowStudio";
+  const preferredTool =
+    node.tool ??
+    enhancement.interactiveLayer?.find((item) => item.type === "react-component")?.name ??
+    "TranscriptCoverageLab";
+
+  return {
+    ...node,
+    theory: enhancement.theory || node.theory,
+    example: enhancement.example || node.example,
+    flashCards: mergedFlashCards,
+    interviewPrep: mergedInterviewPrep,
+    interviewTiers: enhancement.interviewTiers || null,
+    transcriptCoverage: Array.isArray(enhancement.transcriptCoverage)
+      ? enhancement.transcriptCoverage
+      : [],
+    transcriptHighlights: Array.isArray(enhancement.transcriptHighlights)
+      ? enhancement.transcriptHighlights
+      : [],
+    beginnerExamples: Array.isArray(enhancement.beginnerExamples) ? enhancement.beginnerExamples : [],
+    architectureFlow: enhancement.architectureFlow || null,
+    interactiveSessions: Array.isArray(enhancement.interactiveSessions)
+      ? enhancement.interactiveSessions
+      : [],
+    codeGuide:
+      node.codeGuide ||
+      enhancement.codeGuide ||
+      (Array.isArray(enhancement.codeFiles) && enhancement.codeFiles.length > 0
+        ? {
+            summary: "Source-linked code references auto-mapped from local GitHub mirror.",
+            files: enhancement.codeFiles.map((file, index) => ({
+              path: file.path,
+              focus: file.focus || `Code walkthrough segment ${index + 1}`,
+            })),
+            checkpoints: [
+              "Trace file from imports to runtime entrypoint.",
+              "Explain each critical block in interview style.",
+              "Relate code decisions to transcript concepts and tradeoffs.",
+            ],
+          }
+        : null),
+    animation: preferredAnimation,
+    tool: preferredTool,
+  };
+}
+
 export default async function NodePage({ params, searchParams }) {
   const { section, slug } = await params;
   const query = await searchParams;
@@ -276,8 +340,10 @@ export default async function NodePage({ params, searchParams }) {
       : `/${section}/${slug}`;
   await requireAuthPage(callbackPath);
   const sec   = getSection(section);
-  const node  = getNode(section, slug);
-  if (!sec || !node) notFound();
+  const baseNode  = getNode(section, slug);
+  if (!sec || !baseNode) notFound();
+  const enhancement = getUniversalEnhancement(section, slug);
+  const node = mergeNodeWithEnhancement(baseNode, enhancement);
 
   const rawTrackId = Array.isArray(query?.track) ? query.track[0] : query?.track;
   const requestedTrack = rawTrackId ? getTrack(String(rawTrackId)) : null;
@@ -300,11 +366,17 @@ export default async function NodePage({ params, searchParams }) {
   const backLabel = activeTrack ? activeTrack.title : sec.title;
   const AnimComponent  = node.animation && ComponentMap[node.animation] ? ComponentMap[node.animation] : null;
   const ToolComponent  = node.tool      && ComponentMap[node.tool]      ? ComponentMap[node.tool]      : null;
+  const ArchitectureFlowComponent = ComponentMap.ArchitectureFlowStudio;
+  const TranscriptCoverageComponent = ComponentMap.TranscriptCoverageLab;
   const pageSections = [
     { id: "core-theory", label: "Theory" },
+    ...(node.transcriptCoverage?.length > 0 ? [{ id: "transcript-coverage", label: "Coverage" }] : []),
     ...(node.example ? [{ id: "concrete-example", label: "Example" }] : []),
+    ...(node.beginnerExamples?.length > 0 ? [{ id: "beginner-examples", label: "Beginner Examples" }] : []),
+    ...(node.architectureFlow ? [{ id: "architecture-flow", label: "Architecture Flow" }] : []),
     ...((AnimComponent || node.animation) ? [{ id: "interactive-visualization", label: "Visualization" }] : []),
     ...((ToolComponent || node.tool) ? [{ id: "interactive-tool", label: "Tool" }] : []),
+    ...(node.interactiveSessions?.length > 0 ? [{ id: "interactive-sessions", label: "Interactive Sessions" }] : []),
     ...(node.codeGuide ? [{ id: "code-walkthrough", label: "Code" }] : []),
     ...(node.interviewPrep?.questions?.length > 0 ? [{ id: "interview-prep", label: "Interview" }] : []),
     ...(node.flashCards?.length > 0 ? [{ id: "flash-cards", label: "Flash Cards" }] : []),
@@ -363,9 +435,20 @@ export default async function NodePage({ params, searchParams }) {
                   dangerouslySetInnerHTML={{ __html: polishedTheory }}
                 />
               ) : (
-                <p className="placeholder">Theory content will be added from transcript.</p>
+                <p className="placeholder">Theory content will be added from source notes.</p>
               )}
             </section>
+
+            {/* ── Transcript coverage ── */}
+            {node.transcriptCoverage?.length > 0 && (
+              <section id="transcript-coverage" className={`nodeBlock ${styles.exampleBlock}`}>
+                <h2>🧾 Comprehensive Coverage</h2>
+                <p className={styles.exampleText}>
+                  Exhaustive coverage points to ensure complete topic understanding without missing core concepts.
+                </p>
+                <TranscriptCoverageComponent node={node} />
+              </section>
+            )}
 
             {/* ── Example ── */}
             {node.example && (
@@ -377,12 +460,35 @@ export default async function NodePage({ params, searchParams }) {
               </section>
             )}
 
+            {/* ── Beginner examples ── */}
+            {node.beginnerExamples?.length > 0 && (
+              <section id="beginner-examples" className={`nodeBlock ${styles.exampleBlock}`}>
+                <h2>🧠 Beginner-Friendly Examples</h2>
+                <div className={styles.codeFiles}>
+                  {node.beginnerExamples.map((item, index) => (
+                    <article key={`${item.title}-${index}`} className={styles.codeFileCard}>
+                      <p className={styles.codeFocus}><strong>{item.title}</strong></p>
+                      <p className={styles.exampleText}>{item.explanation}</p>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* ── Architecture flow ── */}
+            {node.architectureFlow && (
+              <section id="architecture-flow" className={`nodeBlock ${styles.vizBlock}`}>
+                <h2>🧭 Architecture Flow</h2>
+                <ArchitectureFlowComponent node={node} />
+              </section>
+            )}
+
             {/* ── Animation / Visualization ── */}
             {(AnimComponent || node.animation) && (
               <section id="interactive-visualization" className={`nodeBlock ${styles.vizBlock}`}>
                 <h2>🎬 Interactive Visualization</h2>
                 {AnimComponent ? (
-                  <AnimComponent />
+                  <AnimComponent node={node} />
                 ) : (
                   <p className="placeholder">
                     Component <code>{node.animation}</code> — coming soon.
@@ -396,12 +502,26 @@ export default async function NodePage({ params, searchParams }) {
               <section id="interactive-tool" className={`nodeBlock ${styles.toolBlock}`}>
                 <h2>🛠 Interactive Tool</h2>
                 {ToolComponent ? (
-                  <ToolComponent />
+                  <ToolComponent node={node} />
                 ) : (
                   <p className="placeholder">
                     Tool <code>{node.tool}</code> — coming soon.
                   </p>
                 )}
+              </section>
+            )}
+
+            {/* ── Interactive sessions ── */}
+            {node.interactiveSessions?.length > 0 && (
+              <section id="interactive-sessions" className={`nodeBlock ${styles.toolBlock}`}>
+                <h2>🧪 Interactive Sessions</h2>
+                <ol className={styles.codeChecklist}>
+                  {node.interactiveSessions.map((session, index) => (
+                    <li key={`${session.title}-${index}`}>
+                      <strong>{session.title}:</strong> {session.objective}
+                    </li>
+                  ))}
+                </ol>
               </section>
             )}
 

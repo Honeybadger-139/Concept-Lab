@@ -6,7 +6,10 @@ import { requireAuthPage } from "@/lib/requireAuthPage";
 import styles from "./page.module.css";
 
 const ROOT = process.cwd();
-const ALLOWED_PREFIX = path.join(ROOT, "content", "github_code");
+const ALLOWED_PREFIXES = [
+  path.join(ROOT, "content", "github_code"),
+  path.join(ROOT, "scratch_pad", "github_code"),
+];
 const MAX_NOTES = 8;
 
 export const metadata = {
@@ -27,7 +30,10 @@ function getSafeAbsolutePath(fileParam) {
   if (!fileParam || typeof fileParam !== "string") return null;
   const normalized = path.normalize(fileParam);
   const absolute = path.resolve(ROOT, normalized);
-  if (!absolute.startsWith(ALLOWED_PREFIX + path.sep) && absolute !== ALLOWED_PREFIX) {
+  const allowed = ALLOWED_PREFIXES.some(
+    (prefix) => absolute === prefix || absolute.startsWith(prefix + path.sep)
+  );
+  if (!allowed) {
     return null;
   }
   return absolute;

@@ -9,6 +9,7 @@
     "start": "next start -p 3001",
     "lint": "eslint .",
     "check:parity": "node scripts/check-transcript-parity.mjs",
+    "build:universal-engine": "node scripts/build-universal-learning-engine.mjs",
     "sync:topic-code": "node scripts/sync-topic-code-assets.mjs",
     "sync:ml-transcripts": "node scripts/sync-ml-transcripts.mjs",
     "sync:langgraph-transcripts": "node scripts/sync-langgraph-transcripts.mjs"

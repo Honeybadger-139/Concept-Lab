@@ -19,6 +19,25 @@ npm run dev
 
 Open [http://localhost:3001](http://localhost:3001).
 
+## Universal Learning Engine payload
+
+Generate the batch-parallel, transcript/code/PDF-grounded payload:
+
+```bash
+npm run build:universal-engine
+```
+
+Then run the app. Topic pages automatically consume this payload for deep theory, transcript coverage, architecture-flow labs, and expanded assessments.
+
+Output file:
+
+- `data/generated/universalLearningEnginePayload.json`
+
+Optional orchestration tuning:
+
+- `ULE_BATCH_SIZE` (sub-topics per batch, default `4`)
+- `ULE_TOPIC_BATCH_PARALLELISM` (parallel batch-agent pool per topic, default `3`)
+
 ### Local mode (default)
 
 By default, auth is disabled locally.
